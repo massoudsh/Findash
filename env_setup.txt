@@ -1,0 +1,16 @@
+# Copy this content to create a .env file in your project root
+APP_ENV=development
+LOG_LEVEL=DEBUG
+DATABASE_URL=postgresql://postgres:postgres@db:5432/trading_db
+POSTGRES_DB=trading_db
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+REDIS_URL=redis://redis:6379/0
+SECRET_KEY=dev-secret-key-change-in-production
+ALPHA_VANTAGE_API_KEY=demo
+ALPACA_API_KEY=your-alpaca-api-key
+ALPACA_SECRET_KEY=your-alpaca-secret-key
+GRAFANA_USER=admin
+GRAFANA_PASSWORD=admin
+ENVIRONMENT=development
+PYTHONPATH=/app 

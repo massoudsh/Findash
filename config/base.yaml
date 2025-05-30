@@ -1,0 +1,36 @@
+app:
+  name: finance_app
+  debug: false
+  version: "1.0.0"
+
+api:
+  alpaca:
+    base_url: "https://paper-api.alpaca.markets"
+    ws_url: "wss://stream.data.alpaca.markets/v2/iex"
+  alpha_vantage:
+    base_url: "https://www.alphavantage.co/query"
+  finextra:
+    base_url: "https://www.finextra.com"
+
+database:
+  type: "postgresql"
+  pool_size: 5
+  max_overflow: 10
+  pool_timeout: 30
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_size: 10485760  # 10MB
+  backup_count: 5
+
+scraping:
+  timeout: 30
+  retry_attempts: 3
+  retry_delay: 1
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+
+social_metrics:
+  batch_size: 100
+  cache_ttl: 3600
+  sentiment_threshold: 0.5 

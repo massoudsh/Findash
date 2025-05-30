@@ -1,0 +1,37 @@
+services:
+  api:
+    environment:
+      - APP_ENV=development
+      - LOG_LEVEL=DEBUG
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/trading_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - ALPHA_VANTAGE_API_KEY=demo
+      - ALPACA_API_KEY=demo
+      - ALPACA_SECRET_KEY=demo
+      - ENVIRONMENT=development
+      - PYTHONPATH=/app
+
+  worker:
+    environment:
+      - APP_ENV=development
+      - LOG_LEVEL=DEBUG
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/trading_db
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - ALPHA_VANTAGE_API_KEY=demo
+      - ALPACA_API_KEY=demo
+      - ALPACA_SECRET_KEY=demo
+      - ENVIRONMENT=development
+      - PYTHONPATH=/app
+
+  db:
+    environment:
+      - POSTGRES_DB=trading_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  grafana:
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin 

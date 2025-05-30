@@ -1,0 +1,12 @@
+app:
+  debug: true
+
+logging:
+  level: "DEBUG"
+
+database:
+  url: "postgresql://localhost:5432/finance_dev"
+
+cache:
+  type: "local"
+  ttl: 300 
