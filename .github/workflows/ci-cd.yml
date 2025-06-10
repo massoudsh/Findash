@@ -218,3 +218,9 @@ jobs:
         run: |
           # Update your ECS service or other deployment method
           aws ecs update-service --cluster prod-cluster --service trading-service --force-new-deployment 
+
+      - name: Start Docker Compose services
+        run: docker compose -f deploy/production.yml up -d 
+
+      - name: Check Docker Compose logs
+        run: docker compose logs <service-name> 

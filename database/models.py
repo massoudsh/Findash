@@ -9,6 +9,7 @@ from sqlalchemy.sql import func
 from enum import Enum as PyEnum
 import uuid
 from datetime import datetime
+from sqlalchemy.dialects.postgresql import JSONB
 
 Base = declarative_base()
 
@@ -46,6 +47,7 @@ class User(Base):
     portfolios = relationship("Portfolio", back_populates="user")
     option_positions = relationship("OptionPosition", back_populates="user")
     risk_reports = relationship("RiskReport", back_populates="user")
+    backtest_results = relationship("BacktestResult", back_populates="user")
 
 class Portfolio(Base):
     __tablename__ = "portfolios"
@@ -259,4 +261,30 @@ class AuditLog(Base):
     user_agent = Column(String)
     
     # Timestamp
-    timestamp = Column(DateTime(timezone=True), server_default=func.now()) 
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+class BacktestResult(Base):
+    __tablename__ = "backtest_results"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    
+    strategy_name = Column(String, nullable=False)
+    parameters = Column(JSONB) # Store the backtest parameters (tickers, dates, etc.)
+    
+    # Key performance metrics
+    total_return = Column(Float)
+    annual_return = Column(Float)
+    sharpe_ratio = Column(Float)
+    max_drawdown = Column(Float)
+    win_rate = Column(Float)
+    
+    # Full time-series data (stored as JSON)
+    equity_curve = Column(JSONB)
+    drawdown_curve = Column(JSONB)
+    
+    # Metadata
+    ran_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    user = relationship("User", back_populates="backtest_results") 

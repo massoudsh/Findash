@@ -76,6 +76,26 @@ Custom metrics specifically designed for trading platforms:
 - **Low Model Accuracy**: <70% accuracy
 - **System Resource Issues**: CPU >80%, Memory >80%
 
+# Disk space usage
+- alert: HighDiskUsage
+  expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} * 100 > 90
+  for: 5m
+  labels:
+    severity: warning
+  annotations:
+    summary: "High disk usage detected"
+    description: "Disk usage is {{ $value }}% on instance {{ $labels.instance }}"
+
+# API error rate
+- alert: HighAPIErrorRate
+  expr: sum(rate(trading_platform_api_request_duration_seconds_count{status_code=~\"5..\"}[5m])) / sum(rate(trading_platform_api_request_duration_seconds_count[5m])) > 0.05
+  for: 5m
+  labels:
+    severity: warning
+  annotations:
+    summary: "High API error rate"
+    description: "API 5xx error rate is {{ $value | humanizePercentage }} for the last 5 minutes"
+
 ## Quick Start
 
 ### 1. Start the Monitoring Stack

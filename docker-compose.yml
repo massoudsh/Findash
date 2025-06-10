@@ -16,12 +16,12 @@ services:
     environment:
       - ENVIRONMENT=production
       - LOG_LEVEL=INFO
-      - DATABASE_URL=postgresql://admin:password123@postgres:5432/trading_platform
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/trading_db
       - REDIS_URL=redis://redis:6379
       - SECRET_KEY=${SECRET_KEY}
       - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
     depends_on:
-      - postgres
+      - db
       - redis
       - prometheus
     networks:
@@ -32,6 +32,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 
   # Worker for background tasks
   worker:
@@ -49,53 +50,49 @@ services:
     environment:
       - ENVIRONMENT=production
       - LOG_LEVEL=INFO
-      - DATABASE_URL=postgresql://admin:password123@postgres:5432/trading_platform
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/trading_db
       - REDIS_URL=redis://redis:6379
       - SECRET_KEY=${SECRET_KEY}
       - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
     depends_on:
-      - postgres
+      - db
       - redis
     networks:
       - trading-network
 
   # PostgreSQL database
-  postgres:
-    image: postgres:15
-    container_name: trading-db
-    restart: unless-stopped
+  db:
+    image: postgres:15-alpine
+    container_name: quantum_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=${DB_NAME:-trading_db}
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: trading_platform
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password123
-    networks:
-      - trading-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - trading-network
 
   # Redis for caching and task queue
   redis:
     image: redis:7-alpine
-    container_name: trading-redis
-    restart: unless-stopped
+    container_name: quantum_redis
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - trading-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - trading-network
 
   # Web interface
   frontend:
@@ -166,6 +163,30 @@ services:
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quantum_celery_worker
+    command: celery -A api.worker worker --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-trading_db}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - AUTH_SECRET_KEY=${AUTH_SECRET_KEY:-a_very_secret_key}
+    depends_on:
+      - api
+      - redis
+      - db
+    networks:
+      - trading-network
 
 volumes:
   postgres_data:

@@ -555,3 +555,23 @@ Q4: Scale Phase
 
 © 2023 Quantum Trading Matrix. All Rights Reserved.
 For more information, contact: info@quantumtradingmatrix.com 
+
+# Project Root
+
+## New: src/ Directory for Core Python Code
+
+To improve modularity and maintainability, please place all core reusable Python modules in a top-level `src/` directory. If you refactor or add new core logic, use `src/` as the main location. 
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the required values. Use [python-dotenv](https://github.com/theskumar/python-dotenv) to load environment variables in local development. 
+
+## Makefile
+
+Use the provided `Makefile` for common development tasks:
+- `make install` — Install all dependencies
+- `make lint` — Run code quality checks
+- `make format` — Auto-format code
+- `make coverage` — Run tests with coverage
+- `make test` — Run tests
+- `make frontend` — Build the Next.js frontend 
