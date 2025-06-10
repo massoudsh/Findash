@@ -1,0 +1,91 @@
+groups:
+  - name: trading-platform-alerts
+    rules:
+      # High API response time
+      - alert: HighAPIResponseTime
+        expr: histogram_quantile(0.95, rate(trading_platform_api_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API response time detected"
+          description: "API response time 95th percentile is {{ $value }}s for the last 5 minutes"
+      
+      # Low portfolio value (potential loss)
+      - alert: PortfolioValueDrop
+        expr: (trading_platform_portfolio_value_usd - trading_platform_portfolio_value_usd offset 1h) / trading_platform_portfolio_value_usd offset 1h < -0.1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Portfolio {{ $labels.portfolio_name }} value dropped significantly"
+          description: "Portfolio {{ $labels.portfolio_name }} value dropped by more than 10% in the last hour"
+      
+      # High trade failure rate
+      - alert: HighTradeFailureRate
+        expr: rate(trading_platform_trades_total{status="failed"}[5m]) / rate(trading_platform_trades_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High trade failure rate detected"
+          description: "Trade failure rate is {{ $value | humanizePercentage }} for symbol {{ $labels.symbol }}"
+      
+      # Market data feed latency
+      - alert: HighMarketDataLatency
+        expr: histogram_quantile(0.95, rate(trading_platform_market_data_latency_seconds_bucket[5m])) > 1
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High market data latency"
+          description: "Market data latency is {{ $value }}s for feed {{ $labels.feed_source }}"
+      
+      # Low model accuracy
+      - alert: LowModelAccuracy
+        expr: trading_platform_model_accuracy_percent < 70
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "ML model accuracy is low"
+          description: "Model {{ $labels.model_id }} ({{ $labels.model_type }}) accuracy is {{ $value }}%"
+      
+      # Risk metric threshold exceeded
+      - alert: HighRiskMetric
+        expr: trading_platform_risk_metrics{metric_type="var"} > 50000
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High VaR detected"
+          description: "Value at Risk for portfolio {{ $labels.portfolio_id }} is ${{ $value }}"
+      
+      # No active connections
+      - alert: NoActiveConnections
+        expr: trading_platform_active_connections == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No active WebSocket connections"
+          description: "No active WebSocket connections detected for 5 minutes"
+      
+      # System resource alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value }}% on instance {{ $labels.instance }}"
+      
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value }}% on instance {{ $labels.instance }}" 

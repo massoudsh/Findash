@@ -25,7 +25,7 @@ services:
       - ENVIRONMENT=development
       - PYTHONPATH=/app
 
-  db:
+  postgres:
     environment:
       - POSTGRES_DB=trading_db
       - POSTGRES_USER=postgres

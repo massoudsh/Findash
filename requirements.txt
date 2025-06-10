@@ -1,5 +1,6 @@
 # ========================================
 # QUANTUM TRADING MATRIX™ - PRODUCTION REQUIREMENTS
+# Using Direct PostgreSQL with psycopg2
 # ========================================
 
 # Core FastAPI and Web Framework
@@ -8,10 +9,9 @@ uvicorn[standard]>=0.24.0
 gunicorn>=21.2.0
 starlette>=0.27.0
 
-# Database and ORM
-sqlalchemy>=2.0.23
+# Direct PostgreSQL Connection (instead of SQLAlchemy)
 psycopg2-binary>=2.9.9
-alembic>=1.12.1
+psycopg2[pool]>=2.9.9
 
 # Authentication and Security
 passlib[bcrypt]>=1.7.4
@@ -103,16 +103,6 @@ tensorflow>=2.12.0
 keras>=2.12.0
 # ultralytics==8.0.145  # Temporarily commented due to dependency conflicts
 
-# Django and REST framework
-Django>=4.2.0
-djangorestframework>=3.14.0
-django-cors-headers>=4.0.0
-django-filter>=23.0
-django-redis>=5.4.0
-django-celery-beat>=2.5.0
-django-celery-results>=2.5.0
-drf-yasg>=1.21.0
-
 # Background tasks
 flower>=2.0.0
 
@@ -124,13 +114,11 @@ loguru>=0.7.0
 # Testing
 pytest-cov>=4.1.0
 pytest-mock>=3.11.0
-pytest-django>=4.7.0
 
 # Security
 passlib>=1.7.4
 python-jose>=3.3.0
 python-multipart>=0.0.6
-django-allauth>=0.57.0
 
 # Utilities
 tqdm>=4.66.0
@@ -139,4 +127,7 @@ click>=8.1.0
 requests>=2.31.0
 beautifulsoup4>=4.12.0
 pymdown-extensions>=10.0
-pillow>=10.0.0 
+pillow>=10.0.0
+
+# Prometheus
+prometheus-fastapi-instrumentator==6.1.0 

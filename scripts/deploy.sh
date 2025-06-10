@@ -304,7 +304,7 @@ deploy_application() {
 
 # Initialize database
 initialize_database() {
-    print_info "Initializing database..."
+    print_info "Initializing PostgreSQL database..."
     
     if [[ "$DRY_RUN" == false ]]; then
         # Wait for database to be ready
@@ -312,20 +312,27 @@ initialize_database() {
             if docker exec qtm-postgres pg_isready -U qtm_user >/dev/null 2>&1; then
                 break
             fi
-            print_info "Waiting for database... (attempt $i/30)"
+            print_info "Waiting for PostgreSQL database... (attempt $i/30)"
             sleep 2
         done
         
-        # Run database initialization
-        docker exec qtm-api python database/init_db.py || {
-            print_error "Database initialization failed"
+        # Run database initialization using new PostgreSQL script
+        print_info "Running PostgreSQL database initialization..."
+        docker exec qtm-api python database/postgres_init.py || {
+            print_error "PostgreSQL database initialization failed"
             exit 1
         }
+        
+        # Verify database setup
+        print_info "Verifying database setup..."
+        docker exec qtm-api python database/postgres_init.py --verify || {
+            print_warning "Database verification failed, but continuing..."
+        }
     else
-        print_info "[DRY RUN] Would initialize database"
+        print_info "[DRY RUN] Would initialize PostgreSQL database"
     fi
     
-    print_success "Database initialized"
+    print_success "PostgreSQL database initialized"
 }
 
 # Run post-deployment checks
@@ -352,6 +359,21 @@ post_deployment_checks() {
                 print_warning "Endpoint $endpoint is not responding"
             fi
         done
+        
+        # Check PostgreSQL connection
+        if docker exec qtm-postgres pg_isready -U qtm_user >/dev/null 2>&1; then
+            print_success "PostgreSQL database is ready"
+        else
+            print_warning "PostgreSQL database is not responding"
+        fi
+        
+        # Check database tables
+        TABLE_COUNT=$(docker exec qtm-postgres psql -U qtm_user -d qtm_prod -t -c "SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public';" 2>/dev/null | tr -d ' ')
+        if [[ "$TABLE_COUNT" -gt 0 ]]; then
+            print_success "Database tables verified ($TABLE_COUNT tables found)"
+        else
+            print_warning "No database tables found"
+        fi
         
         # Check logs for errors
         if docker logs qtm-api 2>&1 | grep -i error | head -5; then
@@ -401,6 +423,7 @@ cleanup() {
 main() {
     print_info "Starting Quantum Trading Matrix™ deployment..."
     print_info "Environment: $ENVIRONMENT"
+    print_info "Database: PostgreSQL (Direct Connection)"
     print_info "Timestamp: $TIMESTAMP"
     
     # Create log directory
@@ -436,6 +459,7 @@ main() {
     print_info "Application is available at: http://localhost"
     print_info "API documentation: http://localhost/docs"
     print_info "Monitoring dashboard: http://localhost:3000"
+    print_info "Database: PostgreSQL with direct connection"
     print_info "Deployment log: $LOG_FILE"
 }
 
