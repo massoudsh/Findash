@@ -134,6 +134,10 @@ tmp/
 temp/
 .tmp/
 
+# Archive and deprecated modules
+archive_old_modules/
+archive/
+
 # Node.js (for frontend)
 node_modules/
 npm-debug.log*

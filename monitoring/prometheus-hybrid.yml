@@ -1,0 +1,176 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'octopus-trading-platform'
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+scrape_configs:
+  # ==========================================
+  # APPLICATION SERVICES
+  # ==========================================
+
+  # FastAPI service - High performance endpoints
+  - job_name: 'trading-fastapi'
+    static_configs:
+      - targets: ['fastapi:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 5s  # High frequency for real-time monitoring
+    scrape_timeout: 4s
+    params:
+      format: ['prometheus']
+
+  # Django service - Business logic
+  - job_name: 'trading-django'
+    static_configs:
+      - targets: ['django:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 8s
+    params:
+      format: ['prometheus']
+
+  # API Gateway - Request routing
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # NGINX status directly
+  - job_name: 'nginx-status'
+    static_configs:
+      - targets: ['gateway:80']
+    metrics_path: '/nginx_status'
+    scrape_interval: 15s
+
+  # ==========================================
+  # INFRASTRUCTURE SERVICES
+  # ==========================================
+
+  # PostgreSQL + TimescaleDB
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 10s
+    scrape_timeout: 8s
+
+  # Redis cache and message broker
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # ==========================================
+  # SYSTEM MONITORING
+  # ==========================================
+
+  # System metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+    scrape_timeout: 10s
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 15s
+
+  # ==========================================
+  # CONTAINER MONITORING
+  # ==========================================
+
+  # Docker containers (if cAdvisor is added)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 10s
+    scrape_timeout: 8s
+    metrics_path: '/metrics'
+
+  # ==========================================
+  # APPLICATION-SPECIFIC METRICS
+  # ==========================================
+
+  # Celery workers monitoring
+  - job_name: 'celery-workers'
+    static_configs:
+      - targets: ['celery-worker:9540']  # Assuming flower or custom exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+
+  # ==========================================
+  # BUSINESS METRICS
+  # ==========================================
+
+  # Custom business metrics from Django
+  - job_name: 'business-metrics'
+    static_configs:
+      - targets: ['django:8000']
+    metrics_path: '/metrics/business'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+
+  # Trading performance metrics from FastAPI
+  - job_name: 'trading-metrics'
+    static_configs:
+      - targets: ['fastapi:8000']
+    metrics_path: '/metrics/trading'
+    scrape_interval: 5s
+    scrape_timeout: 4s
+
+  # ==========================================
+  # HEALTH CHECKS
+  # ==========================================
+
+  # Service health monitoring
+  - job_name: 'health-checks'
+    static_configs:
+      - targets: ['gateway:80']
+    metrics_path: '/health'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # FastAPI health
+  - job_name: 'fastapi-health'
+    static_configs:
+      - targets: ['gateway:80']
+    metrics_path: '/health/fastapi'
+    scrape_interval: 30s
+    scrape_timeout: 5s
+
+  # Django health
+  - job_name: 'django-health'
+    static_configs:
+      - targets: ['gateway:80']
+    metrics_path: '/health/django'
+    scrape_interval: 30s
+    scrape_timeout: 5s
+
+  # ==========================================
+  # EXTERNAL SERVICES (Optional)
+  # ==========================================
+
+  # Market data provider APIs health
+  - job_name: 'external-apis'
+    static_configs:
+      - targets: ['fastapi:8000']
+    metrics_path: '/metrics/external'
+    scrape_interval: 60s
+    scrape_timeout: 30s
+
+# ==========================================
+# RECORDING RULES (Optional)
+# ========================================== 

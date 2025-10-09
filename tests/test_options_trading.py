@@ -10,13 +10,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 # Import your modules
-from main import app
-from options_risk_integration import (
+from src.main import app
+from src.options_risk_integration import (
     OptionsPortfolio, OptionPosition, BlackScholesCalculator, 
     CorrelationAnalyzer, RiskReportGenerator, Greeks
 )
-from database.models import Base, User, Portfolio, OptionPosition as DBOptionPosition
-from database.init_db import init_database
+from src.database.models import Base, User, Portfolio, OptionPosition as DBOptionPosition
+from src.database.init_db import init_database
 
 # Test database setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

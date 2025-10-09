@@ -3,10 +3,50 @@ apiVersion: 1
 providers:
   - name: 'default'
     orgId: 1
-    folder: ''
+    folder: 'Trading Platform'
     type: file
     disableDeletion: false
-    editable: true
     updateIntervalSeconds: 10
+    allowUiUpdates: true
     options:
-      path: /etc/grafana/provisioning/dashboards 
+      path: /etc/grafana/provisioning/dashboards
+
+  - name: 'executive'
+    orgId: 1
+    folder: 'Executive'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/01-executive-overview.json
+
+  - name: 'trading-operations'
+    orgId: 1
+    folder: 'Trading'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/02-trading-operations.json
+
+  - name: 'risk-management'
+    orgId: 1
+    folder: 'Risk Management'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/03-risk-management.json
+
+  - name: 'system-infrastructure'
+    orgId: 1
+    folder: 'Infrastructure'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/04-system-infrastructure.json 
