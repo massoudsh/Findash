@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🐙 Octopus Trading Platform
 
 A comprehensive, enterprise-grade algorithmic trading platform built with FastAPI, React, and modern microservices architecture. This platform provides institutional-quality trading capabilities with advanced AI/ML integration, real-time market data processing, and professional risk management.
@@ -268,3 +269,6 @@ Proprietary - Octopus Trading Platform™
 **Built with ❤️ for professional traders and quantitative analysts**
 
 > **Security Notice**: This platform implements enterprise-grade security measures including end-to-end encryption, comprehensive audit logging, and real-time threat detection. All secrets must be cryptographically generated with 32+ characters. 
+=======
+# octopus
+>>>>>>> 1195999be9ef84d9a9da8b5520a8205b0915d718
