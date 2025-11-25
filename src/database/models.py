@@ -149,4 +149,132 @@ class AlertRule(Base):
     enabled = Column(Boolean, default=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
-    user = relationship('User', backref='alert_rules') 
+    user = relationship('User', backref='alert_rules')
+
+# Phase 3: Agent Monitoring Models
+class AgentStatus(Base):
+    __tablename__ = 'agent_status'
+    id = Column(String(32), primary_key=True)  # e.g., 'M1', 'M2'
+    name = Column(String(128), nullable=False)
+    status = Column(String(20), default='idle')  # active, idle, error, training
+    uptime = Column(Integer, default=0)  # seconds
+    tasks_completed = Column(Integer, default=0)
+    success_rate = Column(Float, default=0.0)
+    avg_execution_time = Column(Float, default=0.0)  # milliseconds
+    current_task = Column(Text, nullable=True)
+    last_activity = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+class AgentLog(Base):
+    __tablename__ = 'agent_logs'
+    id = Column(String(64), primary_key=True)
+    agent_id = Column(String(32), ForeignKey('agent_status.id'), nullable=False)
+    level = Column(String(20), nullable=False)  # info, warning, error, success
+    message = Column(Text, nullable=False)
+    context = Column(JSON, nullable=True)
+    execution_time = Column(Float, nullable=True)  # milliseconds
+    timestamp = Column(TIMESTAMP, server_default=func.now(), index=True)
+    agent = relationship('AgentStatus', backref='logs')
+
+class AgentDecision(Base):
+    __tablename__ = 'agent_decisions'
+    id = Column(String(64), primary_key=True)
+    agent_id = Column(String(32), ForeignKey('agent_status.id'), nullable=False)
+    symbol = Column(String(32), nullable=False)
+    action = Column(String(10), nullable=False)  # buy, sell, hold
+    confidence = Column(Float, nullable=False)
+    reasoning = Column(JSON, nullable=False)  # List of strings
+    executed = Column(Boolean, default=False)
+    result = Column(JSON, nullable=True)  # {price, pnl, status}
+    timestamp = Column(TIMESTAMP, server_default=func.now(), index=True)
+    agent = relationship('AgentStatus', backref='decisions')
+
+# Phase 3: Wallet & Funding Models
+class WalletBalance(Base):
+    __tablename__ = 'wallet_balances'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    currency = Column(String(10), nullable=False)  # USD, BTC, ETH
+    balance = Column(Numeric(20, 8), default=0.0)
+    available = Column(Numeric(20, 8), default=0.0)
+    locked = Column(Numeric(20, 8), default=0.0)
+    pending = Column(Numeric(20, 8), default=0.0)
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    user = relationship('User', backref='wallet_balances')
+    __table_args__ = (UniqueConstraint('user_id', 'currency', name='unique_user_currency'),)
+
+class WalletTransaction(Base):
+    __tablename__ = 'wallet_transactions'
+    id = Column(String(64), primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    type = Column(String(20), nullable=False)  # deposit, withdrawal, transfer, fee
+    amount = Column(Numeric(20, 8), nullable=False)
+    currency = Column(String(10), nullable=False)
+    status = Column(String(20), default='pending')  # pending, completed, failed, cancelled
+    method = Column(String(20), nullable=False)  # bank, crypto, card, wire
+    description = Column(Text, nullable=True)
+    reference = Column(String(128), nullable=True, unique=True)
+    fees = Column(Numeric(10, 2), nullable=True)
+    bank_account_id = Column(Integer, ForeignKey('bank_accounts.id'), nullable=True)
+    timestamp = Column(TIMESTAMP, server_default=func.now(), index=True)
+    user = relationship('User', backref='wallet_transactions')
+    bank_account = relationship('BankAccount', backref='transactions')
+
+class BankAccount(Base):
+    __tablename__ = 'bank_accounts'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    name = Column(String(128), nullable=False)
+    account_number_hash = Column(String(256), nullable=False)  # Hashed for security
+    account_number_last4 = Column(String(4), nullable=False)
+    routing_number = Column(String(32), nullable=False)
+    bank_name = Column(String(128), nullable=False)
+    type = Column(String(20), nullable=False)  # checking, savings
+    verified = Column(Boolean, default=False)
+    last_used = Column(TIMESTAMP, nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    user = relationship('User', backref='bank_accounts')
+
+# Phase 3: Security Models
+class APIKey(Base):
+    __tablename__ = 'api_keys'
+    id = Column(String(64), primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    name = Column(String(128), nullable=False)
+    key_hash = Column(String(256), nullable=False)  # Hashed API key
+    key_preview = Column(String(64), nullable=False)  # e.g., 'sk_live_***xyz789'
+    permissions = Column(JSON, nullable=False)  # List of permissions
+    ip_whitelist = Column(JSON, nullable=True)  # List of IPs
+    status = Column(String(20), default='active')  # active, revoked, expired
+    last_used = Column(TIMESTAMP, nullable=True)
+    expires_at = Column(TIMESTAMP, nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    user = relationship('User', backref='api_keys')
+
+class UserSession(Base):
+    __tablename__ = 'user_sessions'
+    id = Column(String(64), primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    device = Column(String(128), nullable=False)
+    browser = Column(String(128), nullable=False)
+    location = Column(String(128), nullable=True)
+    ip_address = Column(String(45), nullable=False)  # IPv6 support
+    user_agent = Column(Text, nullable=True)
+    status = Column(String(20), default='active')  # active, expired, revoked
+    login_time = Column(TIMESTAMP, server_default=func.now())
+    last_activity = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    expires_at = Column(TIMESTAMP, nullable=True)
+    user = relationship('User', backref='sessions')
+
+class TradingPermission(Base):
+    __tablename__ = 'trading_permissions'
+    id = Column(String(64), primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    name = Column(String(128), nullable=False)
+    description = Column(Text, nullable=True)
+    enabled = Column(Boolean, default=False)
+    restrictions = Column(JSON, nullable=True)  # {max_order_size, allowed_symbols, etc.}
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    user = relationship('User', backref='trading_permissions') 

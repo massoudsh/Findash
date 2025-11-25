@@ -114,9 +114,18 @@ class OctopusStartupManager:
         # Check Database
         try:
             from sqlalchemy import create_engine
-            engine = create_engine(self.settings.database.url)
+            db_url = self.settings.database.url
+            # Also check environment variable directly
+            env_db_url = os.getenv("DATABASE_URL")
+            logger.info(f"🔍 Database URL from settings: {db_url}")
+            if env_db_url and env_db_url != db_url:
+                logger.warning(f"⚠️ DATABASE_URL env var differs: {env_db_url}")
+                # Use environment variable if it's different
+                db_url = env_db_url
+            from sqlalchemy import text
+            engine = create_engine(db_url)
             with engine.connect() as conn:
-                conn.execute("SELECT 1")
+                conn.execute(text("SELECT 1"))
             logger.info("✅ Database connection successful")
         except Exception as e:
             logger.error(f"❌ Database connection failed: {e}")

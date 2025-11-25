@@ -16,17 +16,18 @@ from dataclasses import dataclass, field
 
 class DatabaseSettings(BaseSettings):
     """Database configuration settings"""
-    url: str = Field("postgresql://postgres:postgres@localhost:5432/trading_db", env="DATABASE_URL")
-    host: str = Field("localhost", env="DB_HOST")
-    port: int = Field(5432, env="DB_PORT")
-    name: str = Field("trading_db", env="DB_NAME")
-    user: str = Field("postgres", env="DB_USER")
-    password: str = Field("postgres", env="DB_PASSWORD")
-    pool_size: int = Field(20, env="DB_POOL_SIZE")
-    max_overflow: int = Field(30, env="DB_MAX_OVERFLOW")
+    url: str = Field(default="postgresql://postgres:postgres@localhost:5432/trading_db", env="DATABASE_URL")
+    host: str = Field(default="localhost", env="DB_HOST")
+    port: int = Field(default=5432, env="DB_PORT")
+    name: str = Field(default="trading_db", env="DB_NAME")
+    user: str = Field(default="postgres", env="DB_USER")
+    password: str = Field(default="postgres", env="DB_PASSWORD")
+    pool_size: int = Field(default=20, env="DB_POOL_SIZE")
+    max_overflow: int = Field(default=30, env="DB_MAX_OVERFLOW")
     
     class Config:
         env_prefix = "DB_"
+        case_sensitive = False
 
 
 class RedisSettings(BaseSettings):

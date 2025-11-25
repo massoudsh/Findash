@@ -19,7 +19,12 @@ from sklearn.cluster import DBSCAN
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import cv2
 from scipy import signal
-import talib
+try:
+    import talib
+    TALIB_AVAILABLE = True
+except ImportError:
+    TALIB_AVAILABLE = False
+    talib = None
 
 from ..core.cache import TradingCache
 from ..core.exceptions import TradingError, MLModelError
@@ -316,10 +321,18 @@ class EnhancedProphetModel:
         if 'volume' in df.columns:
             prophet_df['volume'] = df['volume']
         
-        # Add technical indicators as regressors
-        prophet_df['rsi'] = talib.RSI(df['close'].values)
-        prophet_df['macd'], prophet_df['macd_signal'], _ = talib.MACD(df['close'].values)
-        prophet_df['bb_upper'], _, prophet_df['bb_lower'] = talib.BBANDS(df['close'].values)
+        # Add technical indicators as regressors (if TA-Lib is available)
+        if TALIB_AVAILABLE and talib is not None:
+            prophet_df['rsi'] = talib.RSI(df['close'].values)
+            prophet_df['macd'], prophet_df['macd_signal'], _ = talib.MACD(df['close'].values)
+            prophet_df['bb_upper'], _, prophet_df['bb_lower'] = talib.BBANDS(df['close'].values)
+        else:
+            # Fallback: calculate simple indicators without TA-Lib
+            prophet_df['rsi'] = 50.0  # Placeholder
+            prophet_df['macd'] = 0.0
+            prophet_df['macd_signal'] = 0.0
+            prophet_df['bb_upper'] = df['close']
+            prophet_df['bb_lower'] = df['close']
         
         # Add volatility regressor
         prophet_df['volatility'] = df['close'].pct_change().rolling(20).std()

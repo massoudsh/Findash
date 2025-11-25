@@ -106,7 +106,7 @@ torchaudio>=2.0.1
 
 # Enhanced Financial Analysis
 prophet>=1.1.4
-talib-binary>=0.4.26
+# talib-binary>=0.4.26  # Not available for ARM64, install manually if needed
 
 # NLP and Sentiment Analysis
 nltk>=3.8.1
@@ -155,4 +155,4 @@ praw>=7.7.1              # Reddit API for social data
 newspaper3k>=0.2.8       # News article extraction and processing
 feedparser>=6.0.10       # RSS feed parsing (already included above)
 geocoder>=1.38.1         # Location-based data analysis
-satellite-image>=0.1.2   # Satellite imagery analysis (optional)
+satellite-image>=0.1.1   # Satellite imagery analysis (optional, max version 0.1.1 available)

@@ -43,6 +43,11 @@ from src.api.endpoints.simple_real_data import simple_data_router
 from src.api.endpoints.macro_data import router as macro_router
 from src.api.endpoints.onchain_data import router as onchain_router
 from src.api.endpoints.social_data import router as social_router
+from src.api.endpoints.agents import router as agents_router
+from src.api.endpoints.wallet import router as wallet_router
+from src.api.endpoints.security import router as security_router
+from src.api.endpoints.scenarios import router as scenarios_router
+from src.api.endpoints.websocket_realtime import router as ws_realtime_router, set_websocket_manager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -64,6 +69,10 @@ async def lifespan(app: FastAPI):
     # Initialize system components
     system_initializer = SystemInitializer()
     await system_initializer.initialize_performance_components()
+    
+    # Initialize WebSocket manager for real-time updates
+    await websocket_manager.initialize()
+    set_websocket_manager(websocket_manager)
     
     # Start background tasks for real-time processing
     asyncio.create_task(system_initializer.start_market_data_streams())
@@ -137,6 +146,13 @@ app.include_router(simple_data_router, prefix="/api", tags=["Real Market Data"])
 app.include_router(macro_router, prefix="/api", tags=["Real Macro Data"])
 app.include_router(onchain_router, prefix="/api", tags=["Real On-Chain Data"])
 app.include_router(social_router, prefix="/api", tags=["Real Social Data"])
+
+# Phase 3: Backend Integration APIs
+app.include_router(agents_router, tags=["Agent Monitoring"])
+app.include_router(wallet_router, tags=["Wallet & Funding"])
+app.include_router(security_router, tags=["Security & Access Control"])
+app.include_router(scenarios_router, tags=["Market Scenarios"])
+app.include_router(ws_realtime_router, tags=["WebSocket Real-time"])
 
 # WebSocket endpoint for real-time data streaming
 @app.websocket("/ws")
