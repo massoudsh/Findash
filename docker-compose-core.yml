@@ -13,7 +13,7 @@ services:
     container_name: octopus-api
     restart: unless-stopped
     ports:
-      - "8001:8000"
+      - "8010:8000"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -46,7 +46,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8001
+      - NEXT_PUBLIC_API_URL=http://localhost:8010
       - NODE_ENV=development
       - NEXTAUTH_SECRET=${SECRET_KEY:-dev-secret-key}
       - NEXTAUTH_URL=http://localhost:3000
@@ -72,7 +72,7 @@ services:
       - POSTGRES_DB=${DB_NAME:-trading_db}
       - TIMESCALE_TELEMETRY=off
     ports:
-      - "5434:5432"
+      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -108,7 +108,7 @@ services:
     image: octopus-trading-celery:latest
     container_name: octopus-celery-worker
     restart: unless-stopped
-    command: celery -A src.core.celery_app worker -l info -Q default,data-processing,prediction,backtesting,portfolio
+    command: celery -A src.core.celery_app worker -l info -Q default,data_processing,market_data,ml_training,prediction,backtesting,portfolio,risk,strategies,analytics,generative,llm
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -169,13 +169,13 @@ services:
     container_name: octopus-grafana
     restart: unless-stopped
     ports:
-      - "3003:3000"
+      - "3001:3000"
     volumes:
       - grafana_data:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
-      - GF_SERVER_ROOT_URL=http://localhost:3003
+      - GF_SERVER_ROOT_URL=http://localhost:3001
     depends_on:
       - prometheus
     networks:

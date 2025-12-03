@@ -20,7 +20,7 @@ from src.core.cache import CacheManager, CacheNamespace
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
-router = APIRouter(prefix="/api/agents", tags=["Agent Monitoring"])
+router = APIRouter(prefix="/api/agents/v2", tags=["Agent Monitoring V2"])
 
 # Initialize cache
 cache_manager = CacheManager()

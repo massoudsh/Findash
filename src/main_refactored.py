@@ -48,6 +48,7 @@ from src.api.endpoints.wallet import router as wallet_router
 from src.api.endpoints.security import router as security_router
 from src.api.endpoints.scenarios import router as scenarios_router
 from src.api.endpoints.websocket_realtime import router as ws_realtime_router, set_websocket_manager
+from src.api.endpoints.market_data_workflow import router as market_data_workflow_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -153,6 +154,9 @@ app.include_router(wallet_router, tags=["Wallet & Funding"])
 app.include_router(security_router, tags=["Security & Access Control"])
 app.include_router(scenarios_router, tags=["Market Scenarios"])
 app.include_router(ws_realtime_router, tags=["WebSocket Real-time"])
+
+# Market Data Workflow API
+app.include_router(market_data_workflow_router, tags=["Market Data Workflow"])
 
 # WebSocket endpoint for real-time data streaming
 @app.websocket("/ws")
