@@ -50,6 +50,13 @@ class SystemInitializer:
             if hasattr(self.websocket_manager, 'initialize'):
                 await self.websocket_manager.initialize()
             
+            # Initialize Unified Pub/Sub system
+            logger.info("📡 Initializing Unified Pub/Sub system...")
+            from src.realtime.unified_pubsub import get_unified_pubsub
+            from src.realtime.websocket_bridge import get_websocket_bridge
+            self.pubsub = await get_unified_pubsub()
+            self.websocket_bridge = await get_websocket_bridge()
+            
             # Initialize Intelligence Orchestrator for ML/AI operations
             logger.info("🧠 Initializing Intelligence Orchestrator...")
             self.intelligence_orchestrator = IntelligenceOrchestrator(self.cache)
