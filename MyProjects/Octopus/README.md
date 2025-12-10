@@ -1,0 +1,330 @@
+# 🐙 Octopus Trading Platform
+
+<div align="center">
+
+![Octopus Logo](Modules/frontend-nextjs/public/octopus-logo.png)
+
+**Advanced AI-Powered Trading Platform with Real-Time Analytics**
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+
+[Features](#-features) • [Demo](#-live-demo) • [Installation](#-installation) • [Documentation](#-documentation) • [Contributing](#-contributing)
+
+</div>
+
+---
+
+## 🎯 Overview
+
+Octopus Trading Platform is a comprehensive, AI-powered trading system designed for professional traders and institutions. It combines real-time market data, advanced analytics, machine learning models, and automated trading capabilities in a unified, modern interface.
+
+### Key Highlights
+
+- 🤖 **AI-Powered**: Machine learning models for market prediction and strategy optimization
+- 📊 **Real-Time Analytics**: Live market data, orderbook, and sentiment analysis
+- 🎯 **Multi-Asset Trading**: Stocks, options, crypto, and derivatives
+- 🔒 **Risk Management**: Advanced risk assessment and portfolio optimization
+- 🚀 **Automated Trading**: Bot framework with backtesting and paper trading
+- 📈 **Advanced Visualization**: Interactive charts and data visualization tools
+
+---
+
+## ✨ Features
+
+### Core Trading Features
+
+- **📊 Dashboard**: Comprehensive trading overview with portfolio analytics
+- **💹 Real-Time Market Data**: Live price feeds, orderbook, and tick data
+- **🎯 Options Trading**: Advanced options chain analysis and strategies
+- **🤖 Trading Bots**: Automated trading with customizable rules and strategies
+- **📈 Portfolio Management**: Multi-asset portfolio tracking and optimization
+- **🔍 Market Analysis**: Technical, fundamental, and on-chain analysis tools
+
+### AI & Machine Learning
+
+- **🧠 AI Models**: Pre-trained models for price prediction and sentiment analysis
+- **📊 ML Training**: Custom model training with your data
+- **🎯 Strategy Optimization**: AI-powered strategy backtesting and optimization
+- **💡 Insights Generation**: Automated market insights and recommendations
+
+### Risk & Analytics
+
+- **🛡️ Risk Assessment**: VaR, stress testing, and portfolio risk analysis
+- **📈 Backtesting**: Historical strategy performance testing
+- **📊 Reports**: Comprehensive trading reports and analytics
+- **🔍 Data Explorer**: Advanced data querying and exploration tools
+
+### Developer Tools
+
+- **🔌 API Playground**: Interactive API testing and documentation
+- **📡 WebSocket Support**: Real-time data streaming
+- **🔐 Security**: API key management and session control
+- **📝 Audit Logs**: Comprehensive activity logging
+
+---
+
+## 🚀 Live Demo
+
+### Access the Platform
+
+Visit our live demo to explore the platform:
+
+**🔗 Demo URL**: `http://localhost:3002` (when running locally)
+
+### Demo Features Showcase
+
+#### 1. **Dashboard** (`/`)
+- Real-time portfolio overview
+- Market watchlists
+- Quick actions and shortcuts
+- Performance metrics and charts
+
+#### 2. **Real-Time Market Data** (`/realtime`)
+- Live price feeds
+- Orderbook visualization
+- Streaming sentiment analysis
+- AI-powered predictions
+
+#### 3. **Trading Center** (`/trades`)
+- Order entry and management
+- Open orders tracking
+- Trade history
+- Position management
+
+#### 4. **Portfolio Analytics** (`/portfolio`)
+- Multi-asset portfolio tracking
+- Performance analytics
+- Allocation charts
+- Portfolio optimizer
+
+#### 5. **Trading Bots** (`/trading-bots`)
+- Bot creation and management
+- Strategy rules configuration
+- Performance monitoring
+- Automated execution
+
+#### 6. **AI Models** (`/ai-models`)
+- Model marketplace
+- Custom model training
+- Prediction insights
+- Model performance metrics
+
+#### 7. **Risk Management** (`/risk`)
+- Portfolio risk analysis
+- VaR calculations
+- Stress testing scenarios
+- Risk metrics dashboard
+
+#### 8. **Backtesting** (`/backtesting`)
+- Strategy backtesting
+- Historical performance analysis
+- Parameter optimization
+- Results visualization
+
+---
+
+## 📸 Screenshots
+
+### Dashboard
+![Dashboard](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Dashboard+View)
+
+### Trading Interface
+![Trading](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Trading+Center)
+
+### Portfolio Analytics
+![Portfolio](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Portfolio+Analytics)
+
+### AI Models
+![AI Models](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=AI+Models+Dashboard)
+
+---
+
+## 🛠️ Installation
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- Python 3.10+
+- PostgreSQL 14+
+- Redis (optional, for caching)
+
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/octopus-trading-platform.git
+   cd octopus-trading-platform
+   ```
+
+2. **Backend Setup**
+   ```bash
+   cd Modules
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Frontend Setup**
+   ```bash
+   cd frontend-nextjs
+   npm install
+   ```
+
+4. **Environment Configuration**
+   ```bash
+   # Copy example env files
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+5. **Database Setup**
+   ```bash
+   # Run migrations
+   cd Modules
+   alembic upgrade head
+   ```
+
+6. **Start the Application**
+   ```bash
+   # Terminal 1: Start backend
+   cd Modules
+   uvicorn src.main_refactored:app --reload
+
+   # Terminal 2: Start frontend
+   cd Modules/frontend-nextjs
+   npm run dev
+   ```
+
+7. **Access the Platform**
+   - Frontend: http://localhost:3002
+   - Backend API: http://localhost:8000
+   - API Docs: http://localhost:8000/docs
+
+---
+
+## 📚 Documentation
+
+### API Documentation
+
+- **Swagger UI**: `http://localhost:8000/docs`
+- **ReDoc**: `http://localhost:8000/redoc`
+
+### Key Endpoints
+
+- `/api/market-data` - Market data endpoints
+- `/api/trades` - Trading operations
+- `/api/portfolio` - Portfolio management
+- `/api/risk` - Risk analysis
+- `/api/ai-models` - AI model endpoints
+- `/api/websocket` - WebSocket connections
+
+### Architecture
+
+```
+Octopus Trading Platform
+├── Frontend (Next.js 15)
+│   ├── Dashboard & Analytics
+│   ├── Trading Interface
+│   ├── Portfolio Management
+│   └── AI/ML Integration
+│
+├── Backend (FastAPI)
+│   ├── Market Data Service
+│   ├── Trading Engine
+│   ├── Risk Management
+│   ├── AI/ML Services
+│   └── WebSocket Server
+│
+└── Database (PostgreSQL)
+    ├── Market Data
+    ├── User Data
+    ├── Trading History
+    └── ML Models
+```
+
+---
+
+## 🎨 Tech Stack
+
+### Frontend
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Shadcn UI, Radix UI
+- **Charts**: Recharts, TradingView Charts
+- **State Management**: React Query, Zustand
+
+### Backend
+- **Framework**: FastAPI
+- **Language**: Python 3.10+
+- **Database**: PostgreSQL (TimescaleDB)
+- **Caching**: Redis
+- **ML/AI**: PyTorch, TensorFlow, scikit-learn
+- **WebSockets**: FastAPI WebSockets
+
+### Infrastructure
+- **Containerization**: Docker
+- **Deployment**: Vercel (Frontend), Railway/Heroku (Backend)
+- **Monitoring**: Prometheus, Grafana
+- **Logging**: Structured logging with Python logging
+
+---
+
+## 🔐 Security
+
+- 🔒 API key authentication
+- 🛡️ Session management
+- 🔐 Two-factor authentication support
+- 📝 Comprehensive audit logging
+- 🚫 IP whitelisting
+- 🔒 Encrypted data storage
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- Powered by [FastAPI](https://fastapi.tiangolo.com/)
+- UI components from [Shadcn UI](https://ui.shadcn.com/)
+- Charts by [TradingView](https://www.tradingview.com/)
+
+---
+
+## 📞 Support
+
+- 📧 Email: support@octopus-trading.com
+- 💬 Discord: [Join our community](https://discord.gg/octopus-trading)
+- 📖 Documentation: [docs.octopus-trading.com](https://docs.octopus-trading.com)
+- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/octopus-trading-platform/issues)
+
+---
+
+<div align="center">
+
+**Made with ❤️ by the Octopus Trading Team**
+
+[⭐ Star us on GitHub](https://github.com/yourusername/octopus-trading-platform) • [📖 Read the Docs](https://docs.octopus-trading.com) • [🐛 Report Bug](https://github.com/yourusername/octopus-trading-platform/issues)
+
+</div>
