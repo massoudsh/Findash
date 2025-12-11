@@ -12,7 +12,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-[Features](#-features) • [Demo](#-live-demo) • [Installation](#-installation) • [Documentation](#-documentation) • [Contributing](#-contributing)
+[Features](#-features) • [Demo](#-live-demo) • [Workflow](#-system-architecture--workflow) • [Installation](#-installation) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
 </div>
 
@@ -254,13 +254,52 @@ graph TB
 
 ## 🚀 Live Demo
 
-### Access the Platform
+<div align="center">
 
-Visit our live demo to explore the platform:
+### 🎬 Interactive Product Demo
 
-**🔗 Demo URL**: `http://localhost:3002` (when running locally)
+[![Try Demo](https://img.shields.io/badge/🚀_Try_Demo-Localhost:3002-3b82f6?style=for-the-badge)](http://localhost:3002)
+[![API Docs](https://img.shields.io/badge/📚_API_Docs-Swagger-10b981?style=for-the-badge)](http://localhost:8000/docs)
+[![Demo Guide](https://img.shields.io/badge/📖_Demo_Guide-View_Here-8b5cf6?style=for-the-badge)](docs/demo-showcase.md)
 
-### Demo Features Showcase
+</div>
+
+### 🎯 Quick Demo Overview
+
+```mermaid
+graph LR
+    A[👤 User] -->|Access| B[🌐 Frontend<br/>localhost:3002]
+    B -->|API Calls| C[⚡ Backend<br/>localhost:8000]
+    C -->|WebSocket| D[📡 Real-time Data]
+    C -->|Query| E[🗄️ Database]
+    C -->|Process| F[🧠 AI Models]
+    
+    style B fill:#3b82f6,stroke:#1e40af,color:#fff
+    style C fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style D fill:#10b981,stroke:#059669,color:#fff
+    style F fill:#ec4899,stroke:#be185d,color:#fff
+```
+
+### 🚀 Start the Demo
+
+```bash
+# Terminal 1: Start Backend
+cd Modules
+uvicorn src.main_refactored:app --reload
+
+# Terminal 2: Start Frontend  
+cd Modules/frontend-nextjs
+npm run dev
+
+# Access:
+# Frontend: http://localhost:3002
+# API Docs: http://localhost:8000/docs
+# WebSocket: ws://localhost:8000/ws
+```
+
+### 📊 Demo Features Showcase
+
+> 💡 **Full Demo Guide**: See [Interactive Demo Showcase](docs/demo-showcase.md) for detailed examples and code snippets
 
 #### 1. **Dashboard** (`/`)
 - Real-time portfolio overview
