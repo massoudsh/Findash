@@ -207,6 +207,57 @@ graph TB
 
 > 📖 **For more detailed workflow diagrams**, see [Complete Workflow Infographic Documentation](docs/workflow-infographic.md)
 
+### 🏗️ Orchestrator & Agents Architecture
+
+```mermaid
+graph TB
+    subgraph "🧠 Intelligence Orchestrator"
+        IO[IntelligenceOrchestrator<br/>Coordinates 11 AI Agents]
+    end
+    
+    subgraph "📡 Kafka & Redis Pub/Sub"
+        KP[Kafka Producer] -->|Publish| KT[Kafka Topic]
+        KT -->|Consume| KC[Kafka Consumer]
+        KC -->|Cache| RC[Redis Cache]
+        KC -->|Publish| RP[Redis Pub/Sub<br/>tasks:market_data:*]
+        RP -->|Allocate| CA[CeleryPubSubAllocator]
+    end
+    
+    subgraph "🔄 Celery Workers"
+        CA -->|Route| CW1[Worker 1<br/>data_processing]
+        CA -->|Route| CW2[Worker 2<br/>ml_training]
+        CA -->|Route| CW3[Worker 3<br/>prediction]
+    end
+    
+    subgraph "🗄️ Data Storage"
+        CW1 -->|Write| PG[(PostgreSQL<br/>TimescaleDB)]
+        CW2 -->|Write| PG
+        CW3 -->|Write| PG
+        CW1 -->|Cache| RC
+        CW2 -->|Cache| RC
+        CW3 -->|Cache| RC
+    end
+    
+    subgraph "📊 Monitoring"
+        CW1 -->|Metrics| F[Flower<br/>Port 5555]
+        CW2 -->|Metrics| F
+        CW3 -->|Metrics| F
+        CW1 -->|Export| P[Prometheus<br/>Port 9540]
+        P -->|Visualize| G[Grafana<br/>Port 3001]
+    end
+    
+    IO -->|Submit Tasks| RP
+    IO -->|Read Results| RC
+    
+    style IO fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style RP fill:#ef4444,stroke:#dc2626,color:#fff
+    style CW1 fill:#f59e0b,stroke:#d97706,color:#fff
+    style PG fill:#3b82f6,stroke:#1e40af,color:#fff
+    style F fill:#10b981,stroke:#059669,color:#fff
+```
+
+> 🏗️ **For complete orchestrator architecture details**, see [Orchestrator & Agents Architecture Documentation](docs/orchestrator-architecture.md)
+
 ### Key Highlights
 
 - 🤖 **AI-Powered**: Machine learning models for market prediction and strategy optimization
