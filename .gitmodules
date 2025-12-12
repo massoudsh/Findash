@@ -1,0 +1,4 @@
+[submodule "frontend-nextjs"]
+	path = frontend-nextjs
+	url = https://github.com/massoudsh/crystall-rainbow.git
+	branch = main
