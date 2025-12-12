@@ -103,10 +103,34 @@ scrape_configs:
   # APPLICATION-SPECIFIC METRICS
   # ==========================================
 
-  # Celery workers monitoring
+  # Celery workers monitoring with pub/sub metrics
   - job_name: 'celery-workers'
     static_configs:
-      - targets: ['celery-worker:9540']  # Assuming flower or custom exporter
+      - targets: ['celery-metrics:9540']
+    scrape_interval: 10s
+    scrape_timeout: 8s
+    metrics_path: '/metrics'
+    
+  # Market Data Streaming Service (Kafka + Redis integration)
+  - job_name: 'market-data-stream'
+    static_configs:
+      - targets: ['market-data-producer:8001']
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    metrics_path: '/metrics'
+    
+  # BTC Real-time Price Tracker
+  - job_name: 'btc-price-tracker'
+    static_configs:
+      - targets: ['btc-metrics:8003']
+    scrape_interval: 5s
+    scrape_timeout: 4s
+    metrics_path: '/metrics'
+    
+  # Celery Flower monitoring (if enabled)
+  - job_name: 'celery-flower'
+    static_configs:
+      - targets: ['flower:5555']
     scrape_interval: 15s
     scrape_timeout: 10s
     metrics_path: '/metrics'

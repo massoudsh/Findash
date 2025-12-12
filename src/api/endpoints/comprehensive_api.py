@@ -647,9 +647,28 @@ async def refresh_funding_rate(symbol: str):
         else:
             raise HTTPException(status_code=404, detail="No funding data found")
             
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Error refreshing funding rate for {symbol}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to refresh funding rate: {str(e)}")
+        error_msg = str(e)
+        logger.error(f"Error refreshing funding rate for {symbol}: {e}", exc_info=True)
+        
+        # Provide more helpful error messages
+        if "404" in error_msg or "not found" in error_msg.lower():
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Symbol {symbol} not found on Binance. Please check the symbol format (e.g., BTCUSDT)."
+            )
+        elif "timeout" in error_msg.lower() or "connection" in error_msg.lower():
+            raise HTTPException(
+                status_code=503,
+                detail="Unable to connect to Binance API. Please try again later."
+            )
+        else:
+            raise HTTPException(
+                status_code=500, 
+                detail=f"Failed to refresh funding rate: {error_msg}"
+            )
 
 
 @router.get("/funding-rate/{symbol}/analysis")

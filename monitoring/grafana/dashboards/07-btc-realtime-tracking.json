@@ -1,0 +1,229 @@
+{
+  "dashboard": {
+    "title": "BTC Real-time Price Tracking",
+    "tags": ["btc", "bitcoin", "realtime", "api", "price"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "5s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "BTC Current Price (USD)",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 8, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "btc_price_current_usd",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "currencyUSD",
+            "decimals": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 50000, "color": "yellow"},
+                {"value": 100000, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "title": "BTC 24h Change (%)",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 0},
+        "targets": [
+          {
+            "expr": "btc_price_change_24h_percent",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percent",
+            "decimals": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": -100, "color": "red"},
+                {"value": 0, "color": "yellow"},
+                {"value": 100, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "title": "API Call Rate",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 6},
+        "targets": [
+          {
+            "expr": "rate(btc_api_calls_total[1m])",
+            "legendFormat": "{{status}} - {{source}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "ops", "label": "Calls/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 4,
+        "title": "API Latency",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 6},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(btc_api_latency_seconds_bucket[1m]))",
+            "legendFormat": "{{source}} - p95",
+            "refId": "A"
+          },
+          {
+            "expr": "histogram_quantile(0.50, rate(btc_api_latency_seconds_bucket[1m]))",
+            "legendFormat": "{{source}} - p50",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "s", "label": "Latency"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Price History (Last 5 Minutes)",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 16, "x": 0, "y": 14},
+        "targets": [
+          {
+            "expr": "btc_price_current_usd",
+            "legendFormat": "{{source}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          {"format": "currencyUSD", "label": "Price (USD)"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Cache Performance",
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 22},
+        "targets": [
+          {
+            "expr": "rate(btc_api_cache_hits_total[1m])",
+            "legendFormat": "{{cache_type}} - Hits",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(btc_api_cache_misses_total[1m])",
+            "legendFormat": "{{cache_type}} - Misses",
+            "refId": "B"
+          }
+        ],
+        "yaxes": [
+          {"format": "ops", "label": "Cache Ops/sec"},
+          {"format": "short"}
+        ]
+      },
+      {
+        "id": 7,
+        "title": "API Success Rate",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 22},
+        "targets": [
+          {
+            "expr": "rate(btc_api_calls_total{status=\"success\"}[5m]) / rate(btc_api_calls_total[5m])",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "percentunit",
+            "decimals": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.95, "color": "yellow"},
+                {"value": 0.99, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 8,
+        "title": "Data Flow Pipeline",
+        "type": "stat",
+        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0},
+        "targets": [
+          {
+            "expr": "rate(btc_api_calls_total[5m])",
+            "refId": "A",
+            "format": "table"
+          },
+          {
+            "expr": "rate(celery_task_succeeded_total{task_name=\"fetch_btc_price_realtime\"}[5m])",
+            "refId": "B"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ops",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {"value": 0, "color": "red"},
+                {"value": 0.1, "color": "yellow"},
+                {"value": 0.2, "color": "green"}
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 9,
+        "title": "Task Execution (Flower)",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 16, "x": 0, "y": 30},
+        "targets": [
+          {
+            "expr": "rate(celery_task_started_total{task_name=\"fetch_btc_price_realtime\"}[5m])",
+            "format": "table",
+            "refId": "A"
+          },
+          {
+            "expr": "rate(celery_task_succeeded_total{task_name=\"fetch_btc_price_realtime\"}[5m])",
+            "format": "table",
+            "refId": "B"
+          },
+          {
+            "expr": "histogram_quantile(0.95, rate(celery_task_duration_seconds_bucket{task_name=\"fetch_btc_price_realtime\"}[5m]))",
+            "format": "table",
+            "refId": "C"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-5m",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": ["5s", "10s", "30s", "1m"]
+    }
+  }
+}
+

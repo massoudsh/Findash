@@ -50,3 +50,33 @@ providers:
     allowUiUpdates: true
     options:
       path: /etc/grafana/provisioning/dashboards/04-system-infrastructure.json 
+
+  - name: 'celery-monitoring'
+    orgId: 1
+    folder: 'Infrastructure'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/05-celery-monitoring.json
+
+  - name: 'kafka-redis-integration'
+    orgId: 1
+    folder: 'Infrastructure'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/06-kafka-redis-integration.json
+
+  - name: 'btc-realtime-tracking'
+    orgId: 1
+    folder: 'Trading'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/provisioning/dashboards/07-btc-realtime-tracking.json 

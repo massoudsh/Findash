@@ -102,7 +102,7 @@ groups:
 
       # API error rate
       - alert: HighAPIErrorRate
-        expr: sum(rate(trading_platform_api_request_duration_seconds_count{status_code=~\"5..\"}[5m])) / sum(rate(trading_platform_api_request_duration_seconds_count[5m])) > 0.05
+        expr: sum(rate(trading_platform_api_request_duration_seconds_count{status_code=~"5.."}[5m])) / sum(rate(trading_platform_api_request_duration_seconds_count[5m])) > 0.05
         for: 5m
         labels:
           severity: warning
