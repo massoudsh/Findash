@@ -212,51 +212,106 @@ graph TB
 ```mermaid
 graph TB
     subgraph "🧠 Intelligence Orchestrator"
-        IO[IntelligenceOrchestrator<br/>Coordinates 11 AI Agents]
+        IO[IntelligenceOrchestrator<br/>Coordinates 11 AI Agents<br/>submit_task, coordinate_pipeline]
+        A1[M1: Data Collector]
+        A2[M2: Data Warehouse]
+        A3[M3: Real-time Processor]
+        A4[M4: Strategy Agent]
+        A5[M5: ML Models]
+        IO -->|Routes Tasks| A1
+        IO -->|Routes Tasks| A2
+        IO -->|Routes Tasks| A3
+        IO -->|Routes Tasks| A4
+        IO -->|Routes Tasks| A5
     end
     
-    subgraph "📡 Kafka & Redis Pub/Sub"
-        KP[Kafka Producer] -->|Publish| KT[Kafka Topic]
-        KT -->|Consume| KC[Kafka Consumer]
-        KC -->|Cache| RC[Redis Cache]
-        KC -->|Publish| RP[Redis Pub/Sub<br/>tasks:market_data:*]
-        RP -->|Allocate| CA[CeleryPubSubAllocator]
+    subgraph "📡 Kafka Streaming"
+        KP[Kafka Producer<br/>publish, start_producing] -->|Publish| KT[Kafka Topic<br/>market-data-stream]
+        KT -->|Consume| KC[Kafka Consumer<br/>process_message, trigger_celery_task]
+    end
+    
+    subgraph "⚡ Redis Pub/Sub"
+        KC -->|Cache| RC[Redis Cache<br/>market_data:{symbol}:latest]
+        KC -->|Publish| RP[Redis Pub/Sub<br/>tasks:market_data:*, worker:*]
+        RP -->|Allocate| CA[CeleryPubSubAllocator<br/>register_worker, publish_task, allocate_task]
     end
     
     subgraph "🔄 Celery Workers"
-        CA -->|Route| CW1[Worker 1<br/>data_processing]
-        CA -->|Route| CW2[Worker 2<br/>ml_training]
-        CA -->|Route| CW3[Worker 3<br/>prediction]
+        CA -->|Route| CW1[Worker 1<br/>Queues: data_processing, portfolio<br/>Tasks: update_market_data]
+        CA -->|Route| CW2[Worker 2<br/>Queues: ml_training, prediction<br/>Tasks: train_model, predict_price]
+        CA -->|Route| CW3[Worker 3<br/>Queues: risk, strategies<br/>Tasks: calculate_var, execute_strategy]
     end
     
     subgraph "🗄️ Data Storage"
-        CW1 -->|Write| PG[(PostgreSQL<br/>TimescaleDB)]
+        CW1 -->|Write| PG[(PostgreSQL + TimescaleDB<br/>market_data, portfolio, trades)]
         CW2 -->|Write| PG
         CW3 -->|Write| PG
-        CW1 -->|Cache| RC
-        CW2 -->|Cache| RC
-        CW3 -->|Cache| RC
+        CW1 -->|Read/Write| RC
+        CW2 -->|Read/Write| RC
+        CW3 -->|Read/Write| RC
     end
     
-    subgraph "📊 Monitoring"
-        CW1 -->|Metrics| F[Flower<br/>Port 5555]
-        CW2 -->|Metrics| F
-        CW3 -->|Metrics| F
-        CW1 -->|Export| P[Prometheus<br/>Port 9540]
-        P -->|Visualize| G[Grafana<br/>Port 3001]
+    subgraph "📊 Monitoring Stack"
+        CW1 -->|Status| F[Flower<br/>Port 5555<br/>Task Monitoring]
+        CW2 -->|Status| F
+        CW3 -->|Status| F
+        CW1 -->|Metrics| CE[Celery Metrics Exporter<br/>Port 9540]
+        CW2 -->|Metrics| CE
+        CW3 -->|Metrics| CE
+        CE -->|Export| P[Prometheus<br/>Port 9090]
+        P -->|Visualize| G[Grafana<br/>Port 3001<br/>Dashboards]
     end
     
     IO -->|Submit Tasks| RP
     IO -->|Read Results| RC
     
-    style IO fill:#8b5cf6,stroke:#6d28d9,color:#fff
+    style IO fill:#8b5cf6,stroke:#6d28d9,color:#fff,stroke-width:3px
+    style KP fill:#10b981,stroke:#059669,color:#fff
     style RP fill:#ef4444,stroke:#dc2626,color:#fff
-    style CW1 fill:#f59e0b,stroke:#d97706,color:#fff
+    style CA fill:#f59e0b,stroke:#d97706,color:#fff
+    style CW1 fill:#3b82f6,stroke:#1e40af,color:#fff
+    style CW2 fill:#3b82f6,stroke:#1e40af,color:#fff
+    style CW3 fill:#3b82f6,stroke:#1e40af,color:#fff
     style PG fill:#3b82f6,stroke:#1e40af,color:#fff
+    style RC fill:#ef4444,stroke:#dc2626,color:#fff
     style F fill:#10b981,stroke:#059669,color:#fff
 ```
 
-> 🏗️ **For complete orchestrator architecture details**, see [Orchestrator & Agents Architecture Documentation](docs/orchestrator-architecture.md)
+### Complete Data Flow Sequence
+
+```mermaid
+sequenceDiagram
+    participant MD as Market Data
+    participant KP as Kafka Producer
+    participant KC as Kafka Consumer
+    participant IO as Orchestrator
+    participant RP as Redis Pub/Sub
+    participant CA as CeleryPubSubAllocator
+    participant CW as Celery Worker
+    participant RC as Redis Cache
+    participant PG as PostgreSQL
+    participant F as Flower
+    
+    MD->>KP: Market Data Event
+    KP->>KC: Consume Message
+    KC->>RC: Cache Latest (SETEX, TTL: 300s)
+    KC->>RP: PUBLISH tasks:market_data:AAPL
+    
+    RP->>IO: Notify Orchestrator
+    IO->>RP: Submit Task (priority: 1)
+    RP->>CA: Allocate Task
+    CA->>RP: Route to Worker (PUBLISH worker:worker-1)
+    RP->>CW: Worker Receives Task
+    
+    CW->>RC: Read Cache (GET)
+    CW->>CW: Execute Task (update_market_data)
+    CW->>PG: Write Data (INSERT INTO market_data)
+    CW->>RC: Update Cache (SETEX)
+    CW->>RP: Publish Result
+    CW->>F: Update Status (completed, duration)
+```
+
+> 🏗️ **For complete orchestrator architecture with all functions and details**, see [Detailed Orchestrator Architecture](docs/orchestrator-architecture-detailed.md) | [Quick Reference](docs/orchestrator-architecture.md)
 
 ### Key Highlights
 
