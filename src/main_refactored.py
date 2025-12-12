@@ -141,12 +141,12 @@ app.include_router(portfolios.router, prefix="/portfolios", tags=["Portfolio Man
 app.include_router(comprehensive_router, prefix="/api", tags=["Comprehensive API"])
 app.include_router(risk_router, tags=["Skfolio Risk Management"])
 app.include_router(llm_router, prefix="/llm", tags=["LLM & AI Analytics"])
-app.include_router(simple_data_router, prefix="/api", tags=["Real Market Data"])
+app.include_router(simple_data_router, prefix="/api/simple", tags=["Real Market Data"])
 
 # New real data source APIs
-app.include_router(macro_router, prefix="/api", tags=["Real Macro Data"])
-app.include_router(onchain_router, prefix="/api", tags=["Real On-Chain Data"])
-app.include_router(social_router, prefix="/api", tags=["Real Social Data"])
+app.include_router(macro_router, prefix="/api/macro", tags=["Real Macro Data"])
+app.include_router(onchain_router, prefix="/api/onchain", tags=["Real On-Chain Data"])
+app.include_router(social_router, prefix="/api/social", tags=["Real Social Data"])
 
 # Phase 3: Backend Integration APIs
 app.include_router(agents_router, tags=["Agent Monitoring"])
