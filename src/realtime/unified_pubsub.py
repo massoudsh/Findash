@@ -1,5 +1,5 @@
 """
-Unified Pub/Sub System - Bridges Redis, Kafka, and WebSockets
+Unified Pub/Sub System - Bridges Redis and WebSockets
 Provides seamless real-time communication across all platform modules
 """
 
@@ -90,7 +90,7 @@ class PubSubMessage:
 
 class UnifiedPubSubManager:
     """
-    Unified Pub/Sub Manager that bridges Redis, Kafka, and WebSockets
+    Unified Pub/Sub Manager that bridges Redis and WebSockets
     Provides a single interface for all real-time communication
     """
     

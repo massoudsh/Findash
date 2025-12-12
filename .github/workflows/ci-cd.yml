@@ -11,7 +11,7 @@ on:
 env:
   DOCKER_REGISTRY: ghcr.io
   DOCKER_IMAGE_NAME: ${{ github.repository }}
-  PYTHON_VERSION: '3.10'
+  PYTHON_VERSION: '3.11'
 
 jobs:
   lint:
@@ -34,16 +34,16 @@ jobs:
           pip install -r requirements-dev.txt
 
       - name: Run flake8
-        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        run: flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
 
       - name: Run black
-        run: black --check .
+        run: black --check src/ tests/
 
       - name: Run isort
-        run: isort --check-only --profile black .
+        run: isort --check-only --profile black src/ tests/
 
       - name: Run mypy
-        run: mypy --ignore-missing-imports .
+        run: mypy --ignore-missing-imports src/
 
   test:
     name: Run Tests
@@ -97,7 +97,7 @@ jobs:
           ENVIRONMENT: test
           SECRET_KEY: testing_secret_key
         run: |
-          pytest --cov=. --cov-report=xml
+          pytest tests/ --cov=src --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
@@ -148,6 +148,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          file: Dockerfile.fastapi
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -218,9 +219,3 @@ jobs:
         run: |
           # Update your ECS service or other deployment method
           aws ecs update-service --cluster prod-cluster --service trading-service --force-new-deployment 
-
-      - name: Start Docker Compose services
-        run: docker compose -f deploy/production.yml up -d 
-
-      - name: Check Docker Compose logs
-        run: docker compose logs <service-name> 

@@ -170,10 +170,19 @@ class FundingRateStrategy(BaseStrategy):
                 
                 premium_data = response.json()
                 if not premium_data:
+                    logger.warning(f"No data returned from Binance for {symbol}")
                     return None
                 
-                current_rate = float(premium_data[0].get('lastFundingRate', 0))
-                next_funding_time = int(premium_data[0].get('nextFundingTime', 0))
+                # Binance premiumIndex returns a single object, not an array
+                if isinstance(premium_data, list):
+                    premium_data = premium_data[0] if premium_data else None
+                
+                if not premium_data:
+                    logger.warning(f"Empty premium data for {symbol}")
+                    return None
+                
+                current_rate = float(premium_data.get('lastFundingRate', 0))
+                next_funding_time = int(premium_data.get('nextFundingTime', 0))
                 
                 funding_data = FundingRateData(
                     symbol=symbol,

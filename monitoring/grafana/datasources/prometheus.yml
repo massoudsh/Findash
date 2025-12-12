@@ -23,7 +23,7 @@ datasources:
   - name: PostgreSQL
     type: postgres
     access: proxy
-    url: trading_postgres:5432
+    url: db:5432
     database: trading_db
     user: postgres
     basicAuth: false
@@ -41,7 +41,7 @@ datasources:
   - name: Redis
     type: redis-datasource
     access: proxy
-    url: redis://trading_redis:6379
+    url: redis://redis:6379
     isDefault: false
     jsonData:
       client: standalone

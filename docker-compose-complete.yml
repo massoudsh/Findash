@@ -39,8 +39,8 @@ services:
     restart: unless-stopped
     volumes:
       - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
-    depends_on:
-      - etcd
+    # depends_on:
+    #   - etcd  # Not needed in standalone mode
     ports:
       - "9080:9080"  # API Gateway
       - "9091:9091"  # Admin API
@@ -50,21 +50,21 @@ services:
     environment:
       APISIX_STAND_ALONE: "true"
 
-  # etcd for APISIX configuration
-  etcd:
-    image: bitnami/etcd:3.5.9
-    container_name: octopus-etcd
-    restart: unless-stopped
-    environment:
-      ETCD_ENABLE_V2: "true"
-      ALLOW_NONE_AUTHENTICATION: "yes"
-      ETCD_ADVERTISE_CLIENT_URLS: "http://etcd:2379"
-      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
-    ports:
-      - "2389:2379"
-      - "2390:2380"
-    networks:
-      - octopus-network
+  # etcd for APISIX configuration (optional - APISIX can run standalone)
+  # etcd:
+  #   image: quay.io/coreos/etcd:v3.5.9
+  #   container_name: octopus-etcd
+  #   restart: unless-stopped
+  #   environment:
+  #     ETCD_ENABLE_V2: "true"
+  #     ALLOW_NONE_AUTHENTICATION: "yes"
+  #     ETCD_ADVERTISE_CLIENT_URLS: "http://etcd:2379"
+  #     ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+  #   ports:
+  #     - "2389:2379"
+  #     - "2390:2380"
+  #   networks:
+  #     - octopus-network
 
   # ============================================
   # SERVICE DISCOVERY & CONFIGURATION
@@ -87,79 +87,7 @@ services:
   # EVENT STREAMING INFRASTRUCTURE
   # ============================================
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    container_name: octopus-zookeeper
-    restart: unless-stopped
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    volumes:
-      - zookeeper_data:/var/lib/zookeeper/data
-      - zookeeper_logs:/var/lib/zookeeper/log
-    networks:
-      - octopus-network
-
-  kafka:
-    image: confluentinc/cp-kafka:7.5.0
-    container_name: octopus-kafka
-    restart: unless-stopped
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-      - "29092:29092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-    volumes:
-      - kafka_data:/var/lib/kafka/data
-    networks:
-      - octopus-network
-    healthcheck:
-      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  schema-registry:
-    image: confluentinc/cp-schema-registry:7.5.0
-    container_name: octopus-schema-registry
-    restart: unless-stopped
-    depends_on:
-      - kafka
-    ports:
-      - "8081:8081"
-    environment:
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:29092
-      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
-    networks:
-      - octopus-network
-
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    container_name: octopus-kafka-ui
-    restart: unless-stopped
-    ports:
-      - "8082:8080"
-    environment:
-      KAFKA_CLUSTERS_0_NAME: octopus-cluster
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
-    depends_on:
-      - kafka
-      - schema-registry
-    networks:
-      - octopus-network
+  # Redis Streams is used for event streaming.
 
   # ============================================
   # CORE APPLICATION SERVICES
@@ -173,7 +101,7 @@ services:
     container_name: octopus-api
     restart: unless-stopped
     ports:
-      - "8010:8000"  # Different port to avoid conflict with Kong
+      - "8011:8000"  # Changed to avoid port conflict
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -185,13 +113,11 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
       - CONSUL_HOST=consul
       - CONSUL_PORT=8500
     depends_on:
       - db
       - redis
-      - kafka
       - consul
     networks:
       - octopus-network
@@ -211,7 +137,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8010
+      - NEXT_PUBLIC_API_URL=http://localhost:8011
       - NODE_ENV=production
       - NEXTAUTH_SECRET=${SECRET_KEY}
       - NEXTAUTH_URL=http://localhost:3000
@@ -241,7 +167,7 @@ services:
       - POSTGRES_DB=${DB_NAME:-trading_db}
       - TIMESCALE_TELEMETRY=off
     ports:
-      - "5433:5432"
+      - "5434:5432"  # Changed to avoid conflict with local PostgreSQL
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -278,7 +204,7 @@ services:
     image: octopus-trading-celery:latest
     container_name: octopus-celery-worker
     restart: unless-stopped
-    command: celery -A src.core.celery_app worker -l info -Q default,data-processing,prediction,backtesting,portfolio
+    command: celery -A src.core.celery_app worker -l info -Q default,data_processing,market_data,ml_training,prediction,backtesting,portfolio,risk,strategies,analytics,generative,llm
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -288,11 +214,9 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
     depends_on:
       - db
       - redis
-      - kafka
     networks:
       - octopus-network
 
@@ -326,6 +250,83 @@ services:
       - FLOWER_PORT=5555
     depends_on:
       - redis
+    networks:
+      - octopus-network
+
+  celery-metrics:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    image: octopus-trading-celery:latest
+    container_name: octopus-celery-metrics
+    restart: unless-stopped
+    command: sh -c "PYTHONPATH=/app:/app/src python /app/src/monitoring/celery_exporter_service.py"
+    ports:
+      - "9540:9540"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - METRICS_PORT=9540
+      - METRICS_HOST=0.0.0.0
+      - PYTHONPATH=/app:/app/src
+    depends_on:
+      - redis
+    networks:
+      - octopus-network
+
+  market-data-producer:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    image: octopus-trading-celery:latest
+    container_name: octopus-market-data-producer
+    restart: unless-stopped
+    command: python -m src.infrastructure.market_data_producer_service
+    ports:
+      - "8001:8001"  # Prometheus metrics
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - UPDATE_INTERVAL=1.0
+      - PYTHONPATH=/app:/app/src
+    depends_on:
+      - redis
+    networks:
+      - octopus-network
+
+  market-data-consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    image: octopus-trading-celery:latest
+    container_name: octopus-market-data-consumer
+    restart: unless-stopped
+    command: python -m src.infrastructure.market_data_consumer_service
+    ports:
+      - "8002:8001"  # Prometheus metrics
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - PYTHONPATH=/app:/app/src
+    depends_on:
+      - redis
+      - celery-worker
+    networks:
+      - octopus-network
+
+  btc-metrics:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    image: octopus-trading-celery:latest
+    container_name: octopus-btc-metrics
+    restart: unless-stopped
+    command: python -m src.monitoring.btc_metrics_exporter
+    ports:
+      - "8003:8003"  # Prometheus metrics
+    environment:
+      - METRICS_PORT=8003
+      - METRICS_HOST=0.0.0.0
+      - PYTHONPATH=/app:/app/src
     networks:
       - octopus-network
 
@@ -496,9 +497,6 @@ volumes:
   postgres_data:
   redis_data:
   consul_data:
-  zookeeper_data:
-  zookeeper_logs:
-  kafka_data:
   prometheus_data:
   grafana_data:
   elasticsearch_data:
