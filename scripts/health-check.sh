@@ -22,7 +22,6 @@ DB_USER="${DB_USER:-octopus_app}"
 DB_NAME="${DB_NAME:-trading_db}"
 REDIS_HOST="${REDIS_HOST:-localhost}"
 REDIS_PORT="${REDIS_PORT:-6379}"
-KAFKA_BOOTSTRAP_SERVERS="${KAFKA_BOOTSTRAP_SERVERS:-localhost:9092}"
 KONG_ADMIN_URL="${KONG_ADMIN_URL:-http://localhost:8001}"
 KEYCLOAK_URL="${KEYCLOAK_URL:-http://localhost:8080}"
 GRAFANA_URL="${GRAFANA_URL:-http://localhost:3001}"
@@ -167,37 +166,21 @@ check_redis() {
     fi
 }
 
-# Function to check Kafka
-check_kafka() {
-    echo -e "${BLUE}🚀 Checking Kafka...${NC}"
-    
-    if command -v kafka-topics.sh > /dev/null 2>&1; then
-        local topic_count=$(kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP_SERVERS" --list 2>/dev/null | wc -l)
-        if [[ "$topic_count" -gt 0 ]]; then
-            add_result "Kafka" "PASS" "Broker accessible" "Topics: $topic_count"
-            
-            # Check specific trading topics
-            local trading_topics=("market-data.quotes" "orders.events" "portfolios.events")
-            local found_topics=0
-            for topic in "${trading_topics[@]}"; do
-                if kafka-topics.sh --bootstrap-server "$KAFKA_BOOTSTRAP_SERVERS" --describe --topic "$topic" > /dev/null 2>&1; then
-                    ((found_topics++))
-                fi
-            done
-            
-            if [[ "$found_topics" == "3" ]]; then
-                add_result "Kafka-Topics" "PASS" "Core topics present" "Found: $found_topics/3"
-            else
-                add_result "Kafka-Topics" "WARN" "Some core topics missing" "Found: $found_topics/3"
-            fi
+# Function to check Redis Streams
+check_redis_streams() {
+    echo -e "${BLUE}🧵 Checking Redis Streams...${NC}"
+    local stream_key="${REDIS_STREAM_KEY:-market-data-stream}"
+
+    if command -v redis-cli > /dev/null 2>&1; then
+        # Check stream existence (MKSTREAM will create it at runtime; warn if empty/missing)
+        if redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" XINFO STREAM "$stream_key" > /dev/null 2>&1; then
+            local length=$(redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" XLEN "$stream_key" 2>/dev/null | tr -d '\r')
+            add_result "Redis-Streams" "PASS" "Stream available" "Stream: $stream_key, length: ${length:-0}"
         else
-            add_result "Kafka" "FAIL" "No topics found or connection failed"
+            add_result "Redis-Streams" "WARN" "Stream not found (yet)" "Stream: $stream_key"
         fi
     else
-        add_result "Kafka" "WARN" "kafka-topics.sh not found, using TCP check"
-        local kafka_host=$(echo "$KAFKA_BOOTSTRAP_SERVERS" | cut -d: -f1)
-        local kafka_port=$(echo "$KAFKA_BOOTSTRAP_SERVERS" | cut -d: -f2)
-        check_tcp_port "Kafka-TCP" "$kafka_host" "$kafka_port"
+        add_result "Redis-Streams" "WARN" "redis-cli not found; cannot inspect streams"
     fi
 }
 
@@ -307,7 +290,7 @@ check_docker_containers() {
     if command -v docker > /dev/null 2>&1; then
         echo -e "${BLUE}🐳 Checking Docker Containers...${NC}"
         
-        local containers=("octopus-api" "octopus-frontend" "octopus-db" "octopus-redis" "octopus-kafka")
+        local containers=("octopus-api" "octopus-frontend" "octopus-db" "octopus-redis")
         
         for container in "${containers[@]}"; do
             if docker ps --format "table {{.Names}}" | grep -q "$container"; then
@@ -373,7 +356,7 @@ echo ""
 # Core Infrastructure
 check_postgresql
 check_redis
-check_kafka
+check_redis_streams
 
 # Application Services
 check_api_services

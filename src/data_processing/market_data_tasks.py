@@ -238,9 +238,9 @@ def cleanup_old_market_data(self: Task, days_to_keep: int = 30) -> Dict[str, Any
 @celery_app.task(name='data_processing.update_market_data', bind=True)
 def update_market_data(self, symbol: str, market_data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Process market data updates from Kafka
+    Process market data updates from Redis Streams
     Triggered via Redis pub/sub pattern
-    Integrates: Kafka -> Redis -> Celery -> Database
+    Integrates: Redis Streams -> Redis -> Celery -> Database
     """
     import time
     import json
@@ -251,7 +251,7 @@ def update_market_data(self, symbol: str, market_data: Dict[str, Any]) -> Dict[s
     start_time = time.time()
     
     try:
-        logger.info(f"Processing market data update for {symbol} from Kafka stream")
+        logger.info(f"Processing market data update for {symbol} from Redis Stream")
         
         price = market_data.get('price', 0)
         volume = market_data.get('volume', 0)

@@ -1,18 +1,18 @@
 """
-Real-time Market Data Streaming with Kafka, Redis, and Monitoring
-Demonstrates integration of Kafka, Redis, Prometheus, Grafana, and Flower
+Real-time Market Data Streaming with Redis Streams, Redis Cache/PubSub, and Monitoring
+
+The event stream is implemented with:
+- Redis Streams (XADD / consumer groups via XREADGROUP)
+- Redis cache (SETEX for latest values)
+- Optional Redis Pub/Sub fanout (channels: tasks:market_data:{symbol})
 """
 
-import asyncio
 import json
 import logging
 import time
 from datetime import datetime
 from typing import Dict, Any, Optional
-from decimal import Decimal
 
-from kafka import KafkaProducer, KafkaConsumer
-from kafka.errors import KafkaError
 import redis
 from prometheus_client import Counter, Histogram, Gauge, start_http_server
 from celery import current_app as celery_app
@@ -23,30 +23,30 @@ logger = logging.getLogger(__name__)
 # PROMETHEUS METRICS
 # ============================================
 
-# Kafka metrics
-kafka_messages_produced = Counter(
-    'kafka_messages_produced_total',
-    'Total number of messages produced to Kafka',
-    ['topic', 'symbol']
+# Redis Streams metrics
+redis_stream_messages_produced = Counter(
+    'redis_stream_messages_produced_total',
+    'Total number of messages produced to Redis Streams',
+    ['stream', 'symbol']
 )
 
-kafka_messages_consumed = Counter(
-    'kafka_messages_consumed_total',
-    'Total number of messages consumed from Kafka',
-    ['topic', 'symbol']
+redis_stream_messages_consumed = Counter(
+    'redis_stream_messages_consumed_total',
+    'Total number of messages consumed from Redis Streams',
+    ['stream', 'symbol']
 )
 
-kafka_produce_latency = Histogram(
-    'kafka_produce_latency_seconds',
-    'Latency of producing messages to Kafka',
-    ['topic'],
+redis_stream_produce_latency = Histogram(
+    'redis_stream_produce_latency_seconds',
+    'Latency of producing messages to Redis Streams',
+    ['stream'],
     buckets=[0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
 )
 
-kafka_consume_latency = Histogram(
-    'kafka_consume_latency_seconds',
-    'Latency of consuming messages from Kafka',
-    ['topic'],
+redis_stream_consume_latency = Histogram(
+    'redis_stream_consume_latency_seconds',
+    'Latency of consuming messages from Redis Streams',
+    ['stream'],
     buckets=[0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5]
 )
 
@@ -82,125 +82,74 @@ market_data_lag = Gauge(
     ['symbol']
 )
 
-# ============================================
-# KAFKA PRODUCER - Market Data Stream
-# ============================================
+class MarketDataStreamProducer:
+    """Produces market data events to a Redis Stream."""
 
-class MarketDataKafkaProducer:
-    """Produces market data events to Kafka topics"""
-    
-    def __init__(self, bootstrap_servers: str = 'localhost:9092'):
-        self.bootstrap_servers = bootstrap_servers
-        self.producer: Optional[KafkaProducer] = None
-        self.topic = 'market-data-stream'
-    
+    def __init__(self, redis_url: str = 'redis://localhost:6379/0', stream_key: str = 'market-data-stream'):
+        self.redis_url = redis_url
+        self.stream_key = stream_key
+        self.redis_client: Optional[redis.Redis] = None
+
     def connect(self):
-        """Connect to Kafka"""
-        if not KAFKA_AVAILABLE:
-            raise ImportError("kafka-python is not installed. Install with: pip install kafka-python")
-        
-        try:
-            self.producer = KafkaProducer(
-                bootstrap_servers=self.bootstrap_servers,
-                value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-                key_serializer=lambda k: k.encode('utf-8') if k else None,
-                acks='all',  # Wait for all replicas
-                retries=3,
-                max_in_flight_requests_per_connection=1,
-                enable_idempotence=True
-            )
-            logger.info(f"Connected to Kafka at {self.bootstrap_servers}")
-        except Exception as e:
-            logger.error(f"Failed to connect to Kafka: {e}")
-            raise
-    
-    def produce_market_data(self, symbol: str, price: float, volume: int, 
-                           exchange: str = 'NASDAQ') -> bool:
-        """Produce market data event to Kafka"""
-        if not self.producer:
+        self.redis_client = redis.from_url(self.redis_url, decode_responses=True)
+        # Basic connectivity check
+        self.redis_client.ping()
+        logger.info(f"Connected to Redis at {self.redis_url} (stream={self.stream_key})")
+
+    def produce_market_data(self, symbol: str, price: float, volume: int, exchange: str = 'NASDAQ') -> bool:
+        if not self.redis_client:
             self.connect()
-        
+
         start_time = time.time()
-        
         try:
             event = {
                 'symbol': symbol,
-                'price': float(price),
-                'volume': volume,
+                'price': str(float(price)),
+                'volume': str(int(volume)),
                 'exchange': exchange,
                 'timestamp': datetime.utcnow().isoformat(),
-                'event_type': 'price_update'
+                'event_type': 'price_update',
             }
-            
-            # Send to Kafka with symbol as key for partitioning
-            future = self.producer.send(
-                self.topic,
-                key=symbol,
-                value=event
-            )
-            
-            # Wait for confirmation
-            record_metadata = future.get(timeout=10)
-            
-            # Track metrics
+
+            # XADD expects field/value pairs; keep a bounded stream
+            self.redis_client.xadd(self.stream_key, event, maxlen=10000, approximate=True)
+
             latency = time.time() - start_time
-            kafka_produce_latency.labels(topic=self.topic).observe(latency)
-            kafka_messages_produced.labels(topic=self.topic, symbol=symbol).inc()
-            
-            logger.debug(
-                f"Produced market data for {symbol} to topic {record_metadata.topic} "
-                f"partition {record_metadata.partition} offset {record_metadata.offset}"
-            )
+            redis_stream_produce_latency.labels(stream=self.stream_key).observe(latency)
+            redis_stream_messages_produced.labels(stream=self.stream_key, symbol=symbol).inc()
             return True
-            
-        except KafkaError as e:
-            logger.error(f"Kafka error producing message: {e}")
-            return False
         except Exception as e:
-            logger.error(f"Error producing market data: {e}")
+            logger.error(f"Error producing market data to Redis Stream: {e}")
             return False
-    
-    def close(self):
-        """Close producer"""
-        if self.producer:
-            self.producer.close()
-            logger.info("Kafka producer closed")
 
-# ============================================
-# KAFKA CONSUMER - Process Market Data
-# ============================================
+class MarketDataStreamConsumer:
+    """Consumes market data from a Redis Stream (consumer group) and processes it."""
 
-class MarketDataKafkaConsumer:
-    """Consumes market data from Kafka and processes it"""
-    
-    def __init__(self, bootstrap_servers: str = 'localhost:9092', 
-                 redis_client: Optional[redis.Redis] = None):
-        self.bootstrap_servers = bootstrap_servers
-        self.consumer: Optional[KafkaConsumer] = None
-        self.topic = 'market-data-stream'
-        self.redis_client = redis_client
+    def __init__(
+        self,
+        redis_url: str = 'redis://localhost:6379/0',
+        stream_key: str = 'market-data-stream',
+        group_name: str = 'market-data-processors',
+        consumer_name: str = 'consumer-1',
+        redis_client: Optional[redis.Redis] = None,
+    ):
+        self.redis_url = redis_url
+        self.stream_key = stream_key
+        self.group_name = group_name
+        self.consumer_name = consumer_name
+        self.redis_client = redis_client or redis.from_url(redis_url, decode_responses=True)
         self.running = False
-    
+
     def connect(self):
-        """Connect to Kafka"""
-        if not KAFKA_AVAILABLE:
-            raise ImportError("kafka-python is not installed. Install with: pip install kafka-python")
-        
+        # Ensure stream + consumer group exist
         try:
-            self.consumer = KafkaConsumer(
-                self.topic,
-                bootstrap_servers=self.bootstrap_servers,
-                value_deserializer=lambda m: json.loads(m.decode('utf-8')),
-                key_deserializer=lambda k: k.decode('utf-8') if k else None,
-                group_id='market-data-processors',
-                auto_offset_reset='latest',
-                enable_auto_commit=True,
-                consumer_timeout_ms=1000
-            )
-            logger.info(f"Connected to Kafka consumer at {self.bootstrap_servers}")
+            self.redis_client.xgroup_create(self.stream_key, self.group_name, id='0-0', mkstream=True)
+            logger.info(f"Created consumer group {self.group_name} on stream {self.stream_key}")
         except Exception as e:
-            logger.error(f"Failed to connect to Kafka consumer: {e}")
-            raise
+            # BUSYGROUP means it already exists
+            if "BUSYGROUP" not in str(e):
+                raise
+        logger.info(f"Connected Redis Stream consumer (stream={self.stream_key}, group={self.group_name}, consumer={self.consumer_name})")
     
     def process_message(self, message: Dict[str, Any]) -> bool:
         """Process a market data message"""
@@ -244,8 +193,8 @@ class MarketDataKafkaConsumer:
             
             # Track metrics
             latency = time.time() - start_time
-            kafka_consume_latency.labels(topic=self.topic).observe(latency)
-            kafka_messages_consumed.labels(topic=self.topic, symbol=symbol).inc()
+            redis_stream_consume_latency.labels(stream=self.stream_key).observe(latency)
+            redis_stream_messages_consumed.labels(stream=self.stream_key, symbol=symbol).inc()
             market_data_updates.labels(symbol=symbol, exchange=message.get('exchange', 'UNKNOWN')).inc()
             
             logger.debug(f"Processed market data for {symbol}: ${price}")
@@ -272,35 +221,51 @@ class MarketDataKafkaConsumer:
             logger.error(f"Error triggering Celery task: {e}")
     
     def start_consuming(self):
-        """Start consuming messages from Kafka"""
-        if not self.consumer:
-            self.connect()
-        
+        """Start consuming messages from Redis Streams using a consumer group."""
+        self.connect()
         self.running = True
-        logger.info(f"Starting to consume from topic: {self.topic}")
-        
+        logger.info(f"Starting to consume from Redis Stream: {self.stream_key}")
+
         try:
-            for message in self.consumer:
-                if not self.running:
-                    break
-                
-                value = message.value
-                if value:
-                    self.process_message(value)
-                    
+            while self.running:
+                # Read new messages for this consumer group
+                resp = self.redis_client.xreadgroup(
+                    groupname=self.group_name,
+                    consumername=self.consumer_name,
+                    streams={self.stream_key: '>'},
+                    count=100,
+                    block=1000,
+                )
+
+                if not resp:
+                    continue
+
+                for _stream, messages in resp:
+                    for msg_id, fields in messages:
+                        # fields are already strings (decode_responses=True)
+                        parsed = {
+                            'symbol': fields.get('symbol'),
+                            'price': float(fields.get('price', 0) or 0),
+                            'volume': int(float(fields.get('volume', 0) or 0)),
+                            'exchange': fields.get('exchange', 'UNKNOWN'),
+                            'timestamp': fields.get('timestamp', datetime.utcnow().isoformat()),
+                            'event_type': fields.get('event_type', 'price_update'),
+                        }
+
+                        ok = self.process_message(parsed)
+                        if ok:
+                            self.redis_client.xack(self.stream_key, self.group_name, msg_id)
         except KeyboardInterrupt:
             logger.info("Consumer interrupted")
         except Exception as e:
-            logger.error(f"Error consuming messages: {e}")
+            logger.error(f"Error consuming Redis Stream messages: {e}")
         finally:
             self.stop()
     
     def stop(self):
         """Stop consuming"""
         self.running = False
-        if self.consumer:
-            self.consumer.close()
-            logger.info("Kafka consumer stopped")
+        logger.info("Redis Stream consumer stopped")
 
 # ============================================
 # INTEGRATED MARKET DATA SERVICE
@@ -308,16 +273,15 @@ class MarketDataKafkaConsumer:
 
 class IntegratedMarketDataService:
     """
-    Complete integration of Kafka, Redis, Prometheus, and Celery
+    Complete integration of Redis Streams, Redis Cache/PubSub, Prometheus, and Celery
     Demonstrates real-time market data pipeline
     """
     
     def __init__(self, 
-                 kafka_servers: str = 'localhost:9092',
                  redis_url: str = 'redis://localhost:6379/0'):
-        self.kafka_producer = MarketDataKafkaProducer(kafka_servers)
         self.redis_client = redis.from_url(redis_url, decode_responses=True)
-        self.consumer = MarketDataKafkaConsumer(kafka_servers, self.redis_client)
+        self.producer = MarketDataStreamProducer(redis_url=redis_url)
+        self.consumer = MarketDataStreamConsumer(redis_url=redis_url, redis_client=self.redis_client)
         self.metrics_port = 8001
     
     def start_metrics_server(self):
@@ -328,12 +292,12 @@ class IntegratedMarketDataService:
     def simulate_market_data_stream(self, symbols: list, duration: int = 60):
         """
         Simulate real-time market data stream
-        Produces to Kafka, consumed by consumer, cached in Redis,
+        Produces to Redis Streams, consumed by consumer, cached in Redis,
         triggers Celery tasks, and exposes metrics
         """
         logger.info(f"Starting market data simulation for {len(symbols)} symbols")
         
-        self.kafka_producer.connect()
+        self.producer.connect()
         self.start_metrics_server()
         
         # Start consumer in background
@@ -359,8 +323,8 @@ class IntegratedMarketDataService:
                 price = base_price * (1 + price_change)
                 volume = hash(f"{symbol}{time.time()}") % 10000
                 
-                # Produce to Kafka
-                self.kafka_producer.produce_market_data(
+                # Produce to Redis Stream
+                self.producer.produce_market_data(
                     symbol=symbol,
                     price=price,
                     volume=volume,
@@ -373,7 +337,6 @@ class IntegratedMarketDataService:
                 time.sleep(0.1)
         
         logger.info(f"Simulation complete. Produced {update_count} market data updates")
-        self.kafka_producer.close()
         self.consumer.stop()
 
 # ============================================
@@ -384,7 +347,7 @@ class IntegratedMarketDataService:
 def update_market_data_task(self, symbol: str, market_data: Dict[str, Any]):
     """
     Celery task to process market data updates
-    Triggered via Redis pub/sub from Kafka consumer
+    Triggered via Redis Streams consumer (and optional Redis pub/sub fanout)
     """
     from src.monitoring.celery_metrics import (
         track_task_execution,
@@ -444,7 +407,6 @@ def update_market_data_task(self, symbol: str, market_data: Dict[str, Any]):
 def run_integrated_example():
     """Run the complete integrated example"""
     service = IntegratedMarketDataService(
-        kafka_servers='localhost:9092',
         redis_url='redis://localhost:6379/0'
     )
     

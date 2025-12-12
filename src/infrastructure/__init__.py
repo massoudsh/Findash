@@ -1,5 +1,5 @@
 """
 Infrastructure components for the Octopus Trading Platform
-Includes Kafka, Redis, and monitoring integrations
+Includes Redis Streams, Redis cache/pubsub, and monitoring integrations
 """
 

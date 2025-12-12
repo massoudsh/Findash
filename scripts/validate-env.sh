@@ -300,10 +300,8 @@ check_optional_var "S3_BUCKET_NAME" "S3 bucket for file storage"
 echo ""
 echo -e "${BLUE}🚀 Validating Message Queue Configuration...${NC}"
 
-# Kafka configuration
-check_required_var "KAFKA_BOOTSTRAP_SERVERS" "Kafka bootstrap servers"
-check_optional_var "KAFKA_SECURITY_PROTOCOL" "Kafka security protocol"
-check_optional_var "KAFKA_SASL_MECHANISM" "Kafka SASL mechanism"
+# Redis Streams configuration (Kafka removed)
+check_optional_var "REDIS_STREAM_KEY" "Redis Streams key (default: market-data-stream)"
 
 echo ""
 echo -e "${BLUE}🔐 Validating Authentication Configuration...${NC}"

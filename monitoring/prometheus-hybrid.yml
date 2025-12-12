@@ -111,7 +111,7 @@ scrape_configs:
     scrape_timeout: 8s
     metrics_path: '/metrics'
     
-  # Market Data Streaming Service (Kafka + Redis integration)
+  # Market Data Streaming Service (Redis Streams + Redis cache/pubsub)
   - job_name: 'market-data-stream'
     static_configs:
       - targets: ['market-data-producer:8001']

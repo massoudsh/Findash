@@ -10,7 +10,7 @@
 # - Apache APISIX - Alternative high-performance API Gateway  
 # - PostgreSQL & TimescaleDB - Time-series database
 # - Redis - Caching and message broker
-# - Apache Kafka - Event streaming
+# - Redis Streams - Event streaming
 # - Prometheus & Grafana - Monitoring
 # - Elasticsearch & Kibana - Search and analytics
 # - Keycloak - Identity and access management
@@ -89,8 +89,6 @@ print_status "Starting core infrastructure services..."
 docker-compose -f $COMPOSE_FILE -p $PROJECT_NAME up -d \
     db \
     redis \
-    zookeeper \
-    kafka \
     etcd
 
 # Wait for core services to be ready
@@ -170,8 +168,7 @@ echo -e "${BLUE}Security & Auth (FREE):${NC}"
 echo "  • Keycloak:               http://localhost:8081 (admin/admin)"
 echo ""
 echo -e "${BLUE}Message Queue (FREE):${NC}"
-echo "  • Kafka:                  localhost:9092"
-echo "  • Zookeeper:              localhost:2181"
+echo "  • Redis Streams:          redis://localhost:6379/0 (stream key: market-data-stream)"
 
 echo -e "\n${GREEN}💰 COST SAVINGS: You're using 100% FREE alternatives!${NC}"
 echo -e "${GREEN}🚀 Total saved: Potentially $1000s/month vs commercial solutions${NC}"

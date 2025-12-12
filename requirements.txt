@@ -93,7 +93,6 @@ torch>=2.0.0
 
 # --- New packages ---
 redis>=5.0.0
-kafka-python>=2.0.2  # Kafka producer/consumer
 psutil>=5.9.0  # System and process utilities (required for LLM tasks)
 accelerate>=0.20.0  # For LLM training tasks (required for accelerate.accelerator)
 python-decouple>=3.8  # Configuration management (required for data_processing tasks)

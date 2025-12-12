@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Standalone Market Data Consumer Service
-Consumes from Kafka, processes with Redis, triggers Celery tasks
+Consumes from Redis Streams, processes with Redis, triggers Celery tasks
 Exposes Prometheus metrics for Grafana visualization
 """
 
@@ -19,11 +19,9 @@ logger = logging.getLogger(__name__)
 
 def main():
     """Main entry point for the consumer service"""
-    kafka_servers = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')
     redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
     
     service = IntegratedMarketDataService(
-        kafka_servers=kafka_servers,
         redis_url=redis_url
     )
     
@@ -32,7 +30,6 @@ def main():
     
     # Start consuming
     logger.info("Starting market data consumer service...")
-    logger.info(f"Kafka: {kafka_servers}")
     logger.info(f"Redis: {redis_url}")
     logger.info("Prometheus metrics available at http://localhost:8001/metrics")
     

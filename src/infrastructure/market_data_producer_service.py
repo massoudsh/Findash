@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Standalone Market Data Producer Service
-Produces market data events to Kafka for real-time streaming
+Produces market data events to Redis Streams for real-time streaming
 """
 
 import os
@@ -11,7 +11,7 @@ import signal
 import logging
 import random
 from datetime import datetime
-from src.infrastructure.market_data_stream import MarketDataKafkaProducer
+from src.infrastructure.market_data_stream import MarketDataStreamProducer
 
 logging.basicConfig(
     level=logging.INFO,
@@ -46,20 +46,19 @@ def generate_market_data(symbol: str) -> dict:
 
 def main():
     """Main entry point for the producer service"""
-    kafka_servers = os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092')
+    redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
     update_interval = float(os.getenv('UPDATE_INTERVAL', '1.0'))  # seconds
     
-    producer = MarketDataKafkaProducer(bootstrap_servers=kafka_servers)
+    producer = MarketDataStreamProducer(redis_url=redis_url)
     producer.connect()
     
     logger.info("Starting market data producer service...")
-    logger.info(f"Kafka: {kafka_servers}")
+    logger.info(f"Redis: {redis_url}")
     logger.info(f"Update interval: {update_interval}s")
     logger.info(f"Symbols: {', '.join(SYMBOLS)}")
     
     def signal_handler(sig, frame):
         logger.info("Shutting down producer service...")
-        producer.close()
         sys.exit(0)
     
     signal.signal(signal.SIGINT, signal_handler)

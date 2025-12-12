@@ -93,7 +93,6 @@ start_complete() {
     echo "  • Grafana: http://localhost:3001"
     echo "  • Prometheus: http://localhost:9090"
     echo "  • Keycloak: http://localhost:8080"
-    echo "  • Kafka UI: http://localhost:8082"
     echo "  • Jaeger: http://localhost:16686"
     echo "  • Elasticsearch: http://localhost:9200"
     echo "  • Kibana: http://localhost:5601"
