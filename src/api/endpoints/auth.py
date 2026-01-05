@@ -1,4 +1,15 @@
 """
+DEPRECATED: This file has been integrated into professional_auth.py
+
+This module is kept for backward compatibility only.
+All functionality is now available in:
+- src.api.endpoints.professional_auth
+
+Please update imports to use:
+    from src.api.endpoints.professional_auth import router as auth_router
+    
+This file will be removed in a future version.
+
 Authentication endpoints for Quantum Trading Matrix™
 Provides login, logout, token refresh, and user management
 """
@@ -21,7 +32,7 @@ from src.core.security import (
 from src.core.config import get_settings
 
 settings = get_settings()
-router = APIRouter(prefix="/auth", tags=["Authentication"])
+router = APIRouter(prefix="/auth", tags=["Authentication (Deprecated)"])
 
 
 # Pydantic models
@@ -142,49 +153,27 @@ async def login(
     _: bool = Depends(rate_limit_dependency)
 ):
     """
-    User login endpoint
-    
-    Returns JWT access and refresh tokens for authenticated users
+    DEPRECATED: Use /api/auth/credentials or /api/auth/login instead
+    Delegates to professional_auth endpoints
     """
-    # Find user (replace with database query in production)
-    user = mock_users.get(user_data.email)
-    if not user:
+    # Import here to avoid circular dependencies
+    from src.api.endpoints.professional_auth import authenticate_credentials, UserCredentials
+    
+    # Convert to professional_auth format
+    credentials = UserCredentials(email=user_data.email, password=user_data.password)
+    response = await authenticate_credentials(credentials, request)
+    
+    # Convert response format
+    if not response.success:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
+            detail=response.message
         )
-    
-    # Verify password
-    if not verify_password(user_data.password, user["password_hash"]):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password"
-        )
-    
-    # Check if user is active
-    if not user["is_active"]:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Account is disabled"
-        )
-    
-    # Create tokens
-    token_data = {
-        "sub": user["id"],
-        "email": user["email"],
-        "scopes": ["read", "write"]  # Add appropriate scopes
-    }
-    
-    access_token = create_access_token(token_data)
-    refresh_token = create_refresh_token({"sub": user["id"]})
-    
-    # Update last login (in production, update database)
-    user["last_login"] = "2024-01-01T00:00:00Z"
     
     return TokenResponse(
-        access_token=access_token,
-        refresh_token=refresh_token,
-        expires_in=settings.auth.jwt_access_token_expire_minutes * 60
+        access_token=response.access_token or response.token,
+        refresh_token=response.refresh_token or "",
+        expires_in=response.expires_in or (settings.auth.jwt_access_token_expire_minutes * 60)
     )
 
 
@@ -195,37 +184,28 @@ async def register(
     _: bool = Depends(rate_limit_dependency)
 ):
     """
-    User registration endpoint
-    
-    Creates a new user account
+    DEPRECATED: Use /api/auth/register instead
+    Delegates to professional_auth endpoint
     """
-    # Validate passwords match
-    user_data.validate_passwords_match()
+    from src.api.endpoints.professional_auth import register_user, UserRegistration
     
-    # Check if user already exists
-    if user_data.email in mock_users:
+    registration = UserRegistration(
+        email=user_data.email,
+        password=user_data.password,
+        first_name=user_data.first_name,
+        last_name=user_data.last_name,
+        confirm_password=user_data.confirm_password
+    )
+    response = await register_user(registration, request, _)
+    
+    if not response.success:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            detail=response.message
         )
     
-    # Create user (in production, save to database)
-    user_id = f"user-{len(mock_users) + 1}"
-    mock_users[user_data.email] = {
-        "id": user_id,
-        "email": user_data.email,
-        "password_hash": hash_password(user_data.password),
-        "first_name": user_data.first_name,
-        "last_name": user_data.last_name,
-        "is_active": True,
-        "is_verified": False,
-        "created_at": "2024-01-01T00:00:00Z",
-        "last_login": None
-    }
-    
     return {
-        "message": "User created successfully",
-        "user_id": user_id,
+        "message": response.message,
         "email": user_data.email
     }
 
@@ -236,52 +216,23 @@ async def refresh_token(
     _: bool = Depends(rate_limit_dependency)
 ):
     """
-    Token refresh endpoint
-    
-    Issues new access token using refresh token
+    DEPRECATED: Use /api/auth/refresh instead
+    Delegates to professional_auth endpoint
     """
-    # Verify refresh token
-    payload = verify_token(refresh_data.refresh_token, "refresh")
-    if not payload:
+    from src.api.endpoints.professional_auth import refresh_token_endpoint as professional_refresh
+    
+    response = await professional_refresh({"refresh_token": refresh_data.refresh_token}, _)
+    
+    if not response.success:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
+            detail=response.message
         )
-    
-    user_id = payload.get("sub")
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
-        )
-    
-    # Find user (replace with database query)
-    user = None
-    for u in mock_users.values():
-        if u["id"] == user_id:
-            user = u
-            break
-    
-    if not user or not user["is_active"]:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or disabled"
-        )
-    
-    # Create new access token
-    token_data = {
-        "sub": user["id"],
-        "email": user["email"],
-        "scopes": ["read", "write"]
-    }
-    
-    access_token = create_access_token(token_data)
-    new_refresh_token = create_refresh_token({"sub": user["id"]})
     
     return TokenResponse(
-        access_token=access_token,
-        refresh_token=new_refresh_token,
-        expires_in=settings.auth.jwt_access_token_expire_minutes * 60
+        access_token=response.access_token or "",
+        refresh_token=response.refresh_token or "",
+        expires_in=response.expires_in or (settings.auth.jwt_access_token_expire_minutes * 60)
     )
 
 
@@ -290,12 +241,11 @@ async def logout(
     current_user: dict = Depends(get_current_active_user)
 ):
     """
-    User logout endpoint
-    
-    In a full implementation, this would invalidate the token
+    DEPRECATED: Use /api/auth/logout instead
+    Delegates to professional_auth endpoint
     """
-    # In production, add token to blacklist or invalidate in database
-    return {"message": "Successfully logged out"}
+    from src.api.endpoints.professional_auth import logout as professional_logout
+    return await professional_logout(current_user)
 
 
 @router.get("/me", response_model=UserProfile)
@@ -303,30 +253,23 @@ async def get_current_user_profile(
     current_user: dict = Depends(get_current_active_user)
 ):
     """
-    Get current user profile
+    DEPRECATED: Use /api/auth/profile instead
+    Delegates to professional_auth endpoint
     """
-    # Find user details (replace with database query)
-    user = None
-    for u in mock_users.values():
-        if u["id"] == current_user["id"]:
-            user = u
-            break
+    from src.api.endpoints.professional_auth import get_user_profile, UserProfile as ProfessionalUserProfile
     
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
+    profile = await get_user_profile(current_user)
     
+    # Convert to legacy format
     return UserProfile(
-        id=user["id"],
-        email=user["email"],
-        first_name=user["first_name"],
-        last_name=user["last_name"],
-        is_active=user["is_active"],
-        is_verified=user["is_verified"],
-        created_at=user["created_at"],
-        last_login=user["last_login"]
+        id=profile.id,
+        email=profile.email,
+        first_name=profile.first_name,
+        last_name=profile.last_name,
+        is_active=profile.is_active,
+        is_verified=True,  # Professional auth doesn't track verification separately
+        created_at=profile.created_at,
+        last_login=profile.last_login
     )
 
 
@@ -336,35 +279,18 @@ async def change_password(
     current_user: dict = Depends(get_current_active_user)
 ):
     """
-    Change user password
+    DEPRECATED: Use /api/auth/change-password instead
+    Delegates to professional_auth endpoint
     """
-    # Validate passwords match
-    password_data.validate_passwords_match()
+    from src.api.endpoints.professional_auth import change_password as professional_change_password
     
-    # Find user
-    user = None
-    for u in mock_users.values():
-        if u["id"] == current_user["id"]:
-            user = u
-            break
+    password_dict = {
+        "current_password": password_data.current_password,
+        "new_password": password_data.new_password,
+        "confirm_password": password_data.confirm_new_password
+    }
     
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-    
-    # Verify current password
-    if not verify_password(password_data.current_password, user["password_hash"]):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Current password is incorrect"
-        )
-    
-    # Update password (in production, update database)
-    user["password_hash"] = hash_password(password_data.new_password)
-    
-    return {"message": "Password changed successfully"}
+    return await professional_change_password(password_dict, current_user)
 
 
 @router.post("/api-keys", response_model=APIKeyResponse)
@@ -373,21 +299,23 @@ async def create_api_key(
     current_user: dict = Depends(get_current_active_user)
 ):
     """
-    Create API key for user
+    DEPRECATED: Use /api/auth/api-keys instead
+    Delegates to professional_auth endpoint
     """
-    # Generate API key
-    api_key = api_key_manager.generate_api_key(current_user["id"], api_key_data.name)
+    from src.api.endpoints.professional_auth import create_api_key as professional_create_api_key
     
-    # In production, save to database with expiration
-    key_id = f"key-{current_user['id']}-{len(api_key_data.name)}"
+    result = await professional_create_api_key({
+        "name": api_key_data.name,
+        "description": api_key_data.description
+    }, current_user)
     
     return APIKeyResponse(
-        key_id=key_id,
-        api_key=api_key,
-        name=api_key_data.name,
+        key_id=result["key_id"],
+        api_key=result["api_key"],
+        name=result["name"],
         description=api_key_data.description,
-        created_at="2024-01-01T00:00:00Z",
-        expires_at=None  # Calculate based on expires_in_days
+        created_at=result["created_at"],
+        expires_at=None
     )
 
 
@@ -397,12 +325,12 @@ async def request_password_reset(
     _: bool = Depends(rate_limit_dependency)
 ):
     """
-    Request password reset
-    
-    Sends password reset email (if user exists)
+    DEPRECATED: Use /api/auth/password-reset-request instead
+    Delegates to professional_auth endpoint
     """
-    # Always return success to prevent email enumeration
-    return {"message": "If the email exists, a password reset link has been sent"}
+    from src.api.endpoints.professional_auth import request_password_reset as professional_reset_request
+    
+    return await professional_reset_request({"email": reset_data.email}, _)
 
 
 @router.post("/password-reset-confirm")
@@ -411,12 +339,15 @@ async def confirm_password_reset(
     _: bool = Depends(rate_limit_dependency)
 ):
     """
-    Confirm password reset with token
+    DEPRECATED: Use /api/auth/password-reset-confirm instead
+    Delegates to professional_auth endpoint
     """
-    # Validate passwords match
-    reset_data.validate_passwords_match()
+    from src.api.endpoints.professional_auth import confirm_password_reset as professional_reset_confirm
     
-    # Verify reset token (implement token verification logic)
-    # In production, verify token from database and update password
+    reset_dict = {
+        "token": reset_data.token,
+        "new_password": reset_data.new_password,
+        "confirm_password": reset_data.confirm_new_password
+    }
     
-    return {"message": "Password reset successfully"} 
+    return await professional_reset_confirm(reset_dict, _) 

@@ -13,6 +13,10 @@ import argparse
 from pathlib import Path
 from typing import Optional
 
+# Load environment variables from .env file first
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
 import uvicorn
 from src.core.config import get_settings
 from src.core.logging_config import setup_logging
@@ -101,6 +105,9 @@ class OctopusStartupManager:
         """Check if all required services are available"""
         logger.info("🔍 Checking dependencies...")
         
+        is_development = self.settings.environment == "development"
+        all_ok = True
+        
         # Check Redis
         try:
             import redis
@@ -110,6 +117,8 @@ class OctopusStartupManager:
         except Exception as e:
             logger.warning(f"⚠️ Redis connection failed: {e}")
             logger.warning("Some features may be limited without Redis")
+            if not is_development:
+                all_ok = False
             
         # Check Database
         try:
@@ -119,10 +128,15 @@ class OctopusStartupManager:
                 conn.execute("SELECT 1")
             logger.info("✅ Database connection successful")
         except Exception as e:
-            logger.error(f"❌ Database connection failed: {e}")
-            return False
+            if is_development:
+                logger.warning(f"⚠️ Database connection failed: {e}")
+                logger.warning("⚠️ Running in development mode - app will start but database features will be limited")
+                logger.warning("⚠️ To fix: Start PostgreSQL and Redis services")
+            else:
+                logger.error(f"❌ Database connection failed: {e}")
+                all_ok = False
             
-        return True
+        return all_ok
         
     def setup_signal_handlers(self):
         """Setup graceful shutdown signal handlers"""
@@ -173,9 +187,14 @@ class OctopusStartupManager:
             sys.exit(1)
             
         # Check dependencies
-        if not self.check_dependencies():
-            logger.error("❌ Dependency check failed")
-            sys.exit(1)
+        dependencies_ok = self.check_dependencies()
+        if not dependencies_ok:
+            if self.settings.environment == "development":
+                logger.warning("⚠️ Some dependencies are unavailable, but continuing in development mode")
+                logger.warning("⚠️ Please start PostgreSQL and Redis for full functionality")
+            else:
+                logger.error("❌ Dependency check failed")
+                sys.exit(1)
             
         # Setup signal handlers
         self.setup_signal_handlers()

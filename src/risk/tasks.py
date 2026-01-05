@@ -6,6 +6,7 @@ from typing import Dict, List
 
 from src.core.celery_app import celery_app
 from src.data_processing.time_series_data_fetcher import TimeSeriesDataFetcher
+from src.risk.risk_manager import calculate_var_helper, calculate_sharpe_ratio_helper
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -19,16 +20,9 @@ class PositionRiskInfo:
     var_95: float
 
 # --- Risk Calculation Logic ---
-def calculate_var(returns: pd.Series, confidence_level: float = 0.95) -> float:
-    if returns.empty:
-        return 0.0
-    return np.percentile(returns, 100 * (1 - confidence_level))
-
-def calculate_sharpe_ratio(returns: pd.Series, risk_free_rate: float = 0.02) -> float:
-    excess_returns = returns - (risk_free_rate / 252)
-    if excess_returns.std() == 0:
-        return 0.0
-    return np.sqrt(252) * excess_returns.mean() / excess_returns.std()
+# Use helper functions from unified RiskManager
+calculate_var = calculate_var_helper
+calculate_sharpe_ratio = calculate_sharpe_ratio_helper
 
 # --- Celery Task ---
 @celery_app.task(name="risk.evaluate_trade_risk")

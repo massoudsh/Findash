@@ -1,20 +1,34 @@
+"""
+DEPRECATED: This file has been integrated into portfolio_manager.py
+
+This module is kept for backward compatibility only.
+All functionality is now available in:
+- src.portfolio.portfolio_manager.optimize_portfolio_from_db
+- src.portfolio.portfolio_manager.load_multiple_assets_data
+- src.portfolio.portfolio_manager.PortfolioOptimizer.optimize_with_skfolio
+
+Please update imports to use:
+    from src.portfolio.portfolio_manager import optimize_portfolio_from_db, load_multiple_assets_data
+    
+This file will be removed in a future version.
+"""
+
 import pandas as pd
 import numpy as np
 from src.database.postgres_connection import get_db
 import logging
 
-# Try to import skfolio, fallback to custom implementation if not available
-try:
-    from skfolio import Portfolio
-    from skfolio.optimization import MeanVarianceOptimization, ObjectiveFunction
-    from skfolio.preprocessing import PricesPreprocessor
-    SKFOLIO_AVAILABLE = True
-except ImportError:
-    SKFOLIO_AVAILABLE = False
-    logger.warning("skfolio not available, using fallback implementation")
-
 logger = logging.getLogger(__name__)
+logger.warning("portfolio.optimization is deprecated. Use portfolio_manager instead.")
 
+# Re-export from unified module for backward compatibility
+from .portfolio_manager import (
+    optimize_portfolio_from_db,
+    load_multiple_assets_data,
+    SKFOLIO_AVAILABLE
+)
+
+# Re-export functions for backward compatibility
 def load_multiple_assets_data(symbols: list[str], start_date: str, end_date: str) -> pd.DataFrame:
     """
     Loads historical price data for multiple assets and pivots it into a single DataFrame.
@@ -45,26 +59,30 @@ def load_multiple_assets_data(symbols: list[str], start_date: str, end_date: str
     finally:
         db.close()
 
+# Re-export for backward compatibility - delegates to unified module
 def optimize_portfolio(symbols: list[str], start_date: str, end_date: str) -> dict:
     """
     Performs mean-variance portfolio optimization to find the portfolio with the max Sharpe ratio.
+    Delegates to unified portfolio_manager module.
     """
-    logger.info(f"Starting portfolio optimization for {symbols}")
-    
+    import asyncio
     try:
-        # 1. Load data
-        prices = load_multiple_assets_data(symbols, start_date, end_date)
-        
-        if SKFOLIO_AVAILABLE:
-            return _optimize_with_skfolio(prices, symbols)
+        # Use async function from unified module
+        loop = asyncio.get_event_loop()
+        if loop.is_running():
+            # If we're in an async context, create a new task
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, optimize_portfolio_from_db(symbols, start_date, end_date, use_skfolio=True))
+                return future.result()
         else:
-            return _optimize_with_fallback(prices, symbols)
-
+            return asyncio.run(optimize_portfolio_from_db(symbols, start_date, end_date, use_skfolio=True))
     except Exception as e:
         logger.error(f"An error occurred during portfolio optimization: {e}", exc_info=True)
         return {"status": "error", "message": str(e)}
 
 
+# These functions are now in portfolio_manager, but kept here for backward compatibility
 def _optimize_with_skfolio(prices: pd.DataFrame, symbols: list[str]) -> dict:
     """Optimize portfolio using skfolio library"""
     # 2. Preprocess prices to returns
@@ -104,6 +122,7 @@ def _optimize_with_skfolio(prices: pd.DataFrame, symbols: list[str]) -> dict:
     return results
 
 
+# Keep fallback function but delegate to unified module
 def _optimize_with_fallback(prices: pd.DataFrame, symbols: list[str]) -> dict:
     """Fallback portfolio optimization using scipy and basic mean-variance optimization"""
     from scipy.optimize import minimize

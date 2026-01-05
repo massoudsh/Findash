@@ -1,14 +1,22 @@
 """
-Portfolio Management System
+Unified Portfolio Management System
 Advanced Portfolio Optimization and Position Management
 
-This module handles:
-- Portfolio construction and optimization
+This unified service combines:
+- PortfolioManager: Core portfolio management functionality
+- PortfolioOptimizer (portfolio_manager): Basic optimization methods
+- PortfolioOptimizer (optimizer.py): Cvxpy-based advanced optimization
+- optimization.py: Skfolio-based optimization with database integration
+
+Handles:
+- Portfolio construction and optimization (Multiple methods: HRP, Mean-Variance, Risk Parity, Kelly, Black-Litterman)
 - Dynamic rebalancing
 - Position sizing and allocation
 - Performance attribution
 - Risk-adjusted returns
 - Real-time portfolio monitoring
+- Skfolio integration (when available)
+- Cvxpy-based optimization
 """
 
 import numpy as np
@@ -21,7 +29,32 @@ from enum import Enum
 import logging
 from scipy.optimize import minimize
 from scipy import stats
+from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.spatial.distance import squareform
 import json
+import warnings
+
+warnings.filterwarnings('ignore')
+
+# Try to import optional dependencies
+try:
+    import cvxpy as cp
+    CVXPY_AVAILABLE = True
+except ImportError:
+    CVXPY_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("cvxpy not available, some optimization methods will use fallbacks")
+
+try:
+    from skfolio import Portfolio
+    from skfolio.optimization import MeanVarianceOptimization, ObjectiveFunction
+    from skfolio.preprocessing import PricesPreprocessor
+    SKFOLIO_AVAILABLE = True
+except ImportError:
+    SKFOLIO_AVAILABLE = False
+    if 'logger' not in locals():
+        logger = logging.getLogger(__name__)
+    logger.warning("skfolio not available, will use fallback optimization methods")
 
 from ..core.cache import CacheManager
 from ..database.postgres_connection import get_db
@@ -29,7 +62,8 @@ from ..risk.risk_manager import RiskManager, PortfolioRisk
 from ..strategies.strategy_agent import StrategyAgent, TradingDecision
 from ..trading.execution_manager import ExecutionManager, OrderRequest, OrderType, OrderSide
 
-logger = logging.getLogger(__name__)
+if 'logger' not in locals():
+    logger = logging.getLogger(__name__)
 
 class AllocationMethod(Enum):
     EQUAL_WEIGHT = "equal_weight"
@@ -110,9 +144,17 @@ class PerformanceAttribution:
     portfolio_return: float
 
 class PortfolioOptimizer:
-    """Portfolio optimization engine"""
+    """
+    Unified Portfolio Optimization Engine
+    Combines methods from portfolio_manager, optimizer.py, and optimization.py
+    Supports: HRP, Mean-Variance, Risk Parity, Kelly, Black-Litterman, Skfolio
+    """
     
-    def __init__(self):
+    def __init__(self, risk_free_rate: float = 0.02, min_weight: float = 0.0, max_weight: float = 1.0):
+        self.risk_free_rate = risk_free_rate
+        self.min_weight = min_weight
+        self.max_weight = max_weight
+        
         self.optimization_methods = {
             AllocationMethod.EQUAL_WEIGHT: self._equal_weight,
             AllocationMethod.RISK_PARITY: self._risk_parity,
@@ -142,6 +184,47 @@ class PortfolioOptimizer:
         )
         
         return dict(zip(symbols, weights))
+    
+    def optimize_from_prices(
+        self,
+        prices_data: pd.DataFrame,
+        method: str = 'HRP',
+        objective: str = 'sharpe_ratio'
+    ) -> Dict[str, Any]:
+        """
+        Optimize portfolio from price DataFrame (from optimizer.py)
+        Supports: 'HRP', 'Mean-Variance', 'Equal-Weight'
+        """
+        returns = self._prices_to_returns(prices_data)
+        self.assets = returns.columns.tolist()
+        self.returns = returns
+        
+        if method == 'HRP':
+            return self._optimize_hrp()
+        elif method == 'Mean-Variance':
+            return self._optimize_mean_variance_cvxpy(objective)
+        elif method == 'Equal-Weight':
+            return self._optimize_equal_weight_format()
+        else:
+            raise ValueError(f"Optimization method '{method}' not supported.")
+    
+    def optimize_with_skfolio(
+        self,
+        prices: pd.DataFrame,
+        symbols: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Optimize portfolio using skfolio library (from optimization.py)
+        Falls back to scipy if skfolio not available
+        """
+        if SKFOLIO_AVAILABLE:
+            return self._optimize_with_skfolio(prices, symbols)
+        else:
+            return self._optimize_with_fallback(prices, symbols)
+    
+    def _prices_to_returns(self, prices: pd.DataFrame) -> pd.DataFrame:
+        """Convert prices to returns"""
+        return prices.pct_change().dropna()
     
     async def _equal_weight(
         self,
@@ -299,6 +382,327 @@ class PortfolioOptimizer:
             # Fallback to equal weights if matrix is singular
             logger.warning("Covariance matrix is singular, using equal weights")
             return np.ones(len(symbols)) / len(symbols)
+    
+    # ============================================
+    # CVXPY-BASED OPTIMIZATION METHODS (from optimizer.py)
+    # ============================================
+    
+    def _optimize_hrp(self) -> Dict:
+        """Performs Hierarchical Risk Parity optimization (simplified version)"""
+        if not hasattr(self, 'returns'):
+            raise ValueError("Must call optimize_from_prices first to set returns")
+        
+        # Calculate correlation matrix
+        corr_matrix = self.returns.corr()
+        
+        # For simplicity, use inverse volatility weighting as HRP proxy
+        volatilities = self.returns.std()
+        inv_vol_weights = (1 / volatilities) / (1 / volatilities).sum()
+        
+        weights = inv_vol_weights.values
+        
+        return self._format_results(weights)
+    
+    def _optimize_mean_variance_cvxpy(self, objective_str: str) -> Dict:
+        """Performs Mean-Variance optimization using cvxpy"""
+        if not hasattr(self, 'returns'):
+            raise ValueError("Must call optimize_from_prices first to set returns")
+        
+        if not CVXPY_AVAILABLE:
+            logger.warning("cvxpy not available, using scipy fallback")
+            return self._optimize_mean_variance_fallback(objective_str)
+        
+        n_assets = len(self.assets)
+        mean_returns = self.returns.mean().values
+        cov_matrix = self.returns.cov().values
+        
+        # Define variables
+        weights = cp.Variable(n_assets)
+        
+        # Define constraints
+        constraints = [
+            cp.sum(weights) == 1,
+            weights >= self.min_weight,
+            weights <= self.max_weight
+        ]
+        
+        if objective_str == 'sharpe_ratio':
+            # Maximize Sharpe ratio (approximate as maximize return - risk penalty)
+            portfolio_return = mean_returns.T @ weights
+            portfolio_risk = cp.quad_form(weights, cov_matrix)
+            objective = cp.Maximize(portfolio_return - 0.5 * portfolio_risk)
+            
+        elif objective_str == 'min_volatility':
+            # Minimize volatility
+            portfolio_risk = cp.quad_form(weights, cov_matrix)
+            objective = cp.Minimize(portfolio_risk)
+            
+        else:
+            raise ValueError(f"Objective '{objective_str}' not supported.")
+        
+        # Solve optimization problem
+        problem = cp.Problem(objective, constraints)
+        try:
+            problem.solve()
+            
+            if weights.value is not None:
+                return self._format_results(weights.value)
+            else:
+                logger.warning("Optimization failed, using equal weights")
+                return self._optimize_equal_weight_format()
+                
+        except Exception as e:
+            logger.error(f"Optimization error: {e}, using equal weights")
+            return self._optimize_equal_weight_format()
+    
+    def _optimize_mean_variance_fallback(self, objective_str: str) -> Dict:
+        """Fallback mean-variance optimization using scipy"""
+        if not hasattr(self, 'returns'):
+            raise ValueError("Must call optimize_from_prices first to set returns")
+        
+        mean_returns = self.returns.mean().values * 252  # Annualized
+        cov_matrix = self.returns.cov().values * 252  # Annualized
+        
+        n_assets = len(self.assets)
+        
+        def objective(weights):
+            portfolio_return = np.sum(mean_returns * weights)
+            portfolio_volatility = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+            
+            if objective_str == 'sharpe_ratio':
+                sharpe_ratio = (portfolio_return - self.risk_free_rate) / portfolio_volatility
+                return -sharpe_ratio  # Negative because we minimize
+            elif objective_str == 'min_volatility':
+                return portfolio_volatility
+            else:
+                return portfolio_volatility
+        
+        constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
+        bounds = tuple((self.min_weight, self.max_weight) for _ in range(n_assets))
+        initial_guess = np.array([1/n_assets] * n_assets)
+        
+        result = minimize(objective, initial_guess, method='SLSQP', 
+                         bounds=bounds, constraints=constraints)
+        
+        if result.success:
+            return self._format_results(result.x)
+        else:
+            logger.warning("Optimization failed, using equal weights")
+            return self._optimize_equal_weight_format()
+    
+    def _optimize_equal_weight_format(self) -> Dict:
+        """Equal weight optimization with formatted results"""
+        if not hasattr(self, 'assets'):
+            raise ValueError("Must call optimize_from_prices first to set assets")
+        
+        n_assets = len(self.assets)
+        weights = np.ones(n_assets) / n_assets
+        return self._format_results(weights)
+    
+    def _format_results(self, weights: np.ndarray) -> Dict:
+        """Formats the optimization results into a dictionary"""
+        if not hasattr(self, 'returns') or not hasattr(self, 'assets'):
+            # If called without returns, return basic weights dict
+            return {"weights": dict(zip(self.assets, weights / weights.sum()))}
+        
+        # Ensure weights sum to 1
+        weights = weights / weights.sum() if weights.sum() > 0 else weights
+        
+        # Calculate portfolio metrics
+        mean_returns = self.returns.mean().values
+        cov_matrix = self.returns.cov().values
+        
+        expected_return = np.dot(weights, mean_returns) * 252  # Annualized
+        portfolio_variance = np.dot(weights.T, np.dot(cov_matrix, weights))
+        volatility = np.sqrt(portfolio_variance) * np.sqrt(252)  # Annualized
+        
+        # Calculate Sharpe ratio
+        excess_return = expected_return - self.risk_free_rate
+        sharpe_ratio = excess_return / volatility if volatility > 0 else 0
+        
+        return {
+            "weights": dict(zip(self.assets, weights)),
+            "metrics": {
+                "expected_return": expected_return,
+                "volatility": volatility,
+                "sharpe_ratio": sharpe_ratio
+            }
+        }
+    
+    # ============================================
+    # SKFOLIO-BASED OPTIMIZATION (from optimization.py)
+    # ============================================
+    
+    def _optimize_with_skfolio(self, prices: pd.DataFrame, symbols: List[str]) -> Dict:
+        """Optimize portfolio using skfolio library"""
+        try:
+            # Preprocess prices to returns
+            preprocessor = PricesPreprocessor()
+            preprocessor.fit(prices)
+            
+            # Define the optimization model
+            model = MeanVarianceOptimization(
+                objective_function=ObjectiveFunction.MAXIMIZE_SHARPE_RATIO
+            )
+            
+            # Fit the model to the preprocessed data
+            model.fit(preprocessor)
+            
+            # Get results
+            weights = model.weights_
+            
+            portfolio = Portfolio(
+                returns=preprocessor.returns_,
+                weights=weights
+            )
+            
+            annual_return = portfolio.annualized_mean
+            annual_volatility = portfolio.annualized_std
+            sharpe_ratio = portfolio.sharpe_ratio
+            
+            results = {
+                "status": "success",
+                "symbols": symbols,
+                "optimal_weights": {symbol: float(weight) for symbol, weight in zip(symbols, weights)},
+                "expected_annual_return": float(annual_return),
+                "expected_annual_volatility": float(annual_volatility),
+                "sharpe_ratio": float(sharpe_ratio),
+                "method": "skfolio"
+            }
+            
+            return results
+            
+        except Exception as e:
+            logger.error(f"Skfolio optimization failed: {e}, falling back to scipy")
+            return self._optimize_with_fallback(prices, symbols)
+    
+    def _optimize_with_fallback(self, prices: pd.DataFrame, symbols: List[str]) -> Dict:
+        """Fallback portfolio optimization using scipy and basic mean-variance optimization"""
+        # Calculate returns
+        returns = prices.pct_change().dropna()
+        
+        # Calculate expected returns and covariance matrix
+        expected_returns = returns.mean() * 252  # Annualized
+        cov_matrix = returns.cov() * 252  # Annualized
+        
+        # Number of assets
+        n_assets = len(symbols)
+        
+        # Objective function: negative Sharpe ratio (to minimize)
+        def objective(weights):
+            portfolio_return = np.sum(expected_returns * weights)
+            portfolio_volatility = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+            
+            # Risk-free rate assumption
+            risk_free_rate = self.risk_free_rate
+            sharpe_ratio = (portfolio_return - risk_free_rate) / portfolio_volatility if portfolio_volatility > 0 else 0
+            return -sharpe_ratio  # Negative because we minimize
+        
+        # Constraints: weights sum to 1
+        constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
+        
+        # Bounds: weights between 0 and 1 (long-only)
+        bounds = tuple((0, 1) for _ in range(n_assets))
+        
+        # Initial guess: equal weights
+        initial_guess = np.array([1/n_assets] * n_assets)
+        
+        # Optimize
+        result = minimize(objective, initial_guess, method='SLSQP', 
+                         bounds=bounds, constraints=constraints)
+        
+        if result.success:
+            optimal_weights = result.x
+            portfolio_return = np.sum(expected_returns * optimal_weights)
+            portfolio_volatility = np.sqrt(np.dot(optimal_weights.T, np.dot(cov_matrix, optimal_weights)))
+            sharpe_ratio = (portfolio_return - self.risk_free_rate) / portfolio_volatility if portfolio_volatility > 0 else 0
+            
+            results = {
+                "status": "success",
+                "symbols": symbols,
+                "optimal_weights": {symbol: float(weight) for symbol, weight in zip(symbols, optimal_weights)},
+                "expected_annual_return": float(portfolio_return),
+                "expected_annual_volatility": float(portfolio_volatility),
+                "sharpe_ratio": float(sharpe_ratio),
+                "method": "scipy_fallback"
+            }
+            
+            logger.info(f"Portfolio optimization successful using fallback method")
+            return results
+        else:
+            raise Exception(f"Optimization failed: {result.message}")
+
+# ============================================
+# DATABASE HELPER FUNCTIONS (from optimization.py)
+# ============================================
+
+async def load_multiple_assets_data(
+    symbols: List[str], 
+    start_date: str, 
+    end_date: str,
+    db_session = None
+) -> pd.DataFrame:
+    """
+    Loads historical price data for multiple assets from database
+    Returns pivoted DataFrame with symbols as columns
+    """
+    logger.info(f"Loading data for symbols: {symbols} from {start_date} to {end_date}")
+    
+    # If async DB session provided, use it; otherwise use sync get_db
+    if db_session is None:
+        db = get_db()
+        try:
+            query = """
+                SELECT time, symbol, price 
+                FROM financial_time_series 
+                WHERE symbol = ANY(%s) AND time >= %s AND time <= %s
+                ORDER BY time;
+            """
+            data = db.execute_query(query, params=(symbols, start_date, end_date), fetch='all')
+            if not data:
+                raise ValueError("No data found for the given symbols in the specified date range.")
+            
+            df = pd.DataFrame(data, columns=['time', 'symbol', 'price'])
+            # Pivot the table to have symbols as columns and time as index
+            price_df = df.pivot(index='time', columns='symbol', values='price')
+            price_df.index = pd.to_datetime(price_df.index)
+            
+            # Forward-fill missing values
+            price_df = price_df.ffill()
+            
+            logger.info(f"Successfully loaded and pivoted data for {len(symbols)} assets.")
+            return price_df
+        finally:
+            db.close()
+    else:
+        # Async database session implementation
+        # This would need to be adapted based on your async DB setup
+        raise NotImplementedError("Async database loading not yet implemented")
+
+async def optimize_portfolio_from_db(
+    symbols: List[str],
+    start_date: str,
+    end_date: str,
+    use_skfolio: bool = True
+) -> Dict[str, Any]:
+    """
+    Optimize portfolio from database data (from optimization.py)
+    This function combines database loading with optimization
+    """
+    try:
+        # Load data
+        prices = await load_multiple_assets_data(symbols, start_date, end_date)
+        
+        # Optimize using skfolio or fallback
+        optimizer = PortfolioOptimizer()
+        if use_skfolio and SKFOLIO_AVAILABLE:
+            return optimizer.optimize_with_skfolio(prices, symbols)
+        else:
+            return optimizer.optimize_with_fallback(prices, symbols)
+            
+    except Exception as e:
+        logger.error(f"Error in portfolio optimization from database: {e}", exc_info=True)
+        return {"status": "error", "message": str(e)}
 
 class PortfolioManager:
     """Advanced Portfolio Management System"""

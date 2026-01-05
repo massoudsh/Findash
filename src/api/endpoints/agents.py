@@ -10,6 +10,8 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
+logger = logging.getLogger(__name__)
+
 from src.database.postgres_connection import get_db
 from src.database.models import AgentStatus, AgentLog, AgentDecision
 from src.core.config import get_settings
@@ -29,8 +31,6 @@ try:
 except ImportError:
     strategy_agent = None
     logger.warning("StrategyAgent not available")
-
-logger = logging.getLogger(__name__)
 settings = get_settings()
 router = APIRouter(prefix="/api/agents", tags=["Agent Monitoring"])
 
