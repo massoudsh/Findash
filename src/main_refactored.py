@@ -67,6 +67,10 @@ from src.api.endpoints.unified_websocket import router as unified_websocket_rout
 # DEPRECATED: Legacy WebSocket routers (kept for backward compatibility)
 from src.api.endpoints.websocket_realtime import router as ws_realtime_router
 
+# Trading Bots and Backtesting APIs
+from src.api.endpoints.trading_bots import router as trading_bots_router
+from src.api.endpoints.backtesting import router as backtesting_router
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -196,6 +200,10 @@ app.include_router(security_router, tags=["Security & Access Control"])
 app.include_router(scenarios_router, tags=["Market Scenarios"])
 # Unified WebSocket API (consolidates all WebSocket endpoints)
 app.include_router(unified_websocket_router, tags=["Unified WebSocket"])
+
+# Trading Bots and Backtesting APIs
+app.include_router(trading_bots_router, tags=["Trading Bots"])
+app.include_router(backtesting_router, tags=["Backtesting"])
 
 # DEPRECATED: Legacy WebSocket routers (kept for backward compatibility, will be removed in future)
 app.include_router(ws_realtime_router, tags=["WebSocket Real-time (Deprecated)"])
