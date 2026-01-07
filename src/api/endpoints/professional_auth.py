@@ -53,6 +53,10 @@ class AuthResponse(BaseModel):
     success: bool
     user: Optional[Dict[str, Any]] = None
     token: Optional[str] = None
+    access_token: Optional[str] = None
+    refresh_token: Optional[str] = None
+    token_type: str = "bearer"
+    expires_in: Optional[int] = None
     message: str
 
 class UserProfile(BaseModel):
@@ -190,8 +194,15 @@ async def authenticate_credentials(
         # Update last login
         user["last_login"] = datetime.utcnow().isoformat() + "Z"
         
-        # Create JWT token
+        # Create JWT tokens (access and refresh)
         token = create_jwt_token(user)
+        access_token = create_access_token({
+            "sub": user["id"],
+            "email": user["email"],
+            "role": user["role"],
+            "permissions": user["permissions"]
+        })
+        refresh_token = create_refresh_token({"sub": user["id"]})
         
         # Return user data for NextAuth.js
         user_profile = {
@@ -211,6 +222,9 @@ async def authenticate_credentials(
             success=True,
             user=user_profile,
             token=token,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=settings.auth.jwt_access_token_expire_minutes * 60,
             message="Authentication successful"
         )
         
@@ -329,6 +343,191 @@ async def get_user_profile(
         permissions=user["permissions"]
     )
 
+@router.post("/refresh", response_model=AuthResponse)
+async def refresh_token_endpoint(
+    refresh_token_data: Dict[str, str],
+    _: bool = Depends(auth_rate_limit)
+):
+    """
+    Token refresh endpoint - Issue new access token using refresh token
+    """
+    try:
+        refresh_token = refresh_token_data.get("refresh_token")
+        if not refresh_token:
+            return AuthResponse(
+                success=False,
+                message="Refresh token required"
+            )
+        
+        # Verify refresh token
+        payload = verify_token(refresh_token, token_type="refresh")
+        if not payload:
+            return AuthResponse(
+                success=False,
+                message="Invalid refresh token"
+            )
+        
+        user_id = payload.get("sub")
+        if not user_id:
+            return AuthResponse(
+                success=False,
+                message="Invalid refresh token"
+            )
+        
+        # Find user
+        user = None
+        for u in PROFESSIONAL_USERS.values():
+            if u["id"] == user_id:
+                user = u
+                break
+        
+        if not user or not user["is_active"]:
+            return AuthResponse(
+                success=False,
+                message="User not found or disabled"
+            )
+        
+        # Create new tokens
+        access_token = create_access_token({
+            "sub": user["id"],
+            "email": user["email"],
+            "role": user["role"],
+            "permissions": user["permissions"]
+        })
+        new_refresh_token = create_refresh_token({"sub": user["id"]})
+        
+        return AuthResponse(
+            success=True,
+            access_token=access_token,
+            refresh_token=new_refresh_token,
+            expires_in=settings.auth.jwt_access_token_expire_minutes * 60,
+            message="Token refreshed successfully"
+        )
+        
+    except Exception as e:
+        logger.error(f"Token refresh error: {e}")
+        return AuthResponse(
+            success=False,
+            message="Token refresh failed"
+        )
+
+@router.post("/logout")
+async def logout(
+    current_user: dict = Depends(get_current_active_user)
+):
+    """
+    User logout endpoint
+    In production, this would invalidate tokens
+    """
+    logger.info(f"User logged out: {current_user.get('email')}")
+    return {"message": "Successfully logged out"}
+
+@router.post("/change-password")
+async def change_password(
+    password_data: Dict[str, str],
+    current_user: dict = Depends(get_current_active_user)
+):
+    """
+    Change user password
+    """
+    try:
+        current_password = password_data.get("current_password")
+        new_password = password_data.get("new_password")
+        confirm_password = password_data.get("confirm_password")
+        
+        if not all([current_password, new_password, confirm_password]):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="All password fields required"
+            )
+        
+        if new_password != confirm_password:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="New passwords do not match"
+            )
+        
+        user = PROFESSIONAL_USERS.get(current_user["email"])
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Verify current password
+        if not verify_password(current_password, user["password_hash"]):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is incorrect"
+            )
+        
+        # Update password
+        user["password_hash"] = hash_password(new_password)
+        
+        logger.info(f"Password changed for user: {current_user.get('email')}")
+        return {"message": "Password changed successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Password change error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Password change failed"
+        )
+
+@router.post("/api-keys", dependencies=[Depends(get_current_active_user)])
+async def create_api_key(
+    api_key_data: Dict[str, str],
+    current_user: dict = Depends(get_current_active_user)
+):
+    """
+    Create API key for user
+    """
+    try:
+        name = api_key_data.get("name", "Default API Key")
+        
+        # Generate API key
+        api_key = api_key_manager.generate_api_key(current_user["id"], name)
+        
+        key_id = f"key_{current_user['id']}_{len(name)}"
+        
+        return {
+            "key_id": key_id,
+            "api_key": api_key,
+            "name": name,
+            "created_at": datetime.utcnow().isoformat() + "Z"
+        }
+        
+    except Exception as e:
+        logger.error(f"API key creation error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="API key creation failed"
+        )
+
+@router.post("/password-reset-request")
+async def request_password_reset(
+    reset_data: Dict[str, str],
+    _: bool = Depends(auth_rate_limit)
+):
+    """
+    Request password reset - Always returns success to prevent email enumeration
+    """
+    # In production, send password reset email if user exists
+    return {"message": "If the email exists, a password reset link has been sent"}
+
+@router.post("/password-reset-confirm")
+async def confirm_password_reset(
+    reset_data: Dict[str, str],
+    _: bool = Depends(auth_rate_limit)
+):
+    """
+    Confirm password reset with token
+    """
+    # In production, verify token and update password
+    return {"message": "Password reset successfully"}
+
 @router.get("/demo-accounts")
 async def get_demo_accounts():
     """
@@ -361,4 +560,18 @@ async def get_demo_accounts():
         ],
         "note": "These are demo accounts for testing. Passwords are environment-controlled. In production, use secure registration.",
         "environment": settings.environment
-    } 
+    }
+
+@router.post("/login", response_model=AuthResponse)
+async def login(
+    credentials: UserCredentials,
+    request: Request,
+    _: bool = Depends(auth_rate_limit)
+):
+    """
+    Alternative login endpoint (compatible with auth.py)
+    Returns standard token format with access_token and refresh_token
+    """
+    # Delegate to credentials endpoint
+    response = await authenticate_credentials(credentials, request)
+    return response 

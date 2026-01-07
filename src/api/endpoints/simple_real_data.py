@@ -1,4 +1,15 @@
 """
+DEPRECATED: This file has been integrated into unified_market_data.py
+
+This module is kept for backward compatibility only.
+All functionality is now available in:
+- src.api.endpoints.unified_market_data
+
+Please update imports to use:
+    from src.api.endpoints.unified_market_data import router as market_data_router
+    
+This file will be removed in a future version.
+
 Simple Real Market Data API Endpoints
 Provides real market data using basic requests without complex async imports
 """

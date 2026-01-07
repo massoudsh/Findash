@@ -360,6 +360,64 @@ class CacheManager:
         for i in range(items_to_remove):
             key, _ = sorted_items[i]
             del self.local_cache[key]
+    
+    def cache_response(
+        self,
+        namespace: CacheNamespace,
+        key_prefix: str = "",
+        ttl: int = 3600,
+        key_func: Optional[Callable] = None
+    ):
+        """
+        Decorator to cache function responses
+        
+        Args:
+            namespace: Cache namespace
+            key_prefix: Prefix for cache keys
+            ttl: Time to live in seconds
+            key_func: Optional function to generate cache key from arguments
+        """
+        def decorator(func: Callable[P, T]) -> Callable[P, T]:
+            @wraps(func)
+            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+                # Generate cache key
+                if key_func:
+                    cache_key = key_func(*args, **kwargs)
+                elif key_prefix:
+                    # Use key_prefix and function arguments
+                    key_parts = [key_prefix]
+                    # Extract symbol or other key parameters from kwargs
+                    if "symbol" in kwargs:
+                        key_parts.append(kwargs["symbol"])
+                    elif args:
+                        key_parts.append(str(args[0]))
+                    cache_key = ":".join(key_parts)
+                else:
+                    cache_key = f"{func.__name__}:{self._hash_key(*args, **kwargs)}"
+                
+                # Try to get from cache
+                cached_result = await self.get(namespace, cache_key)
+                if cached_result is not None:
+                    return cached_result
+                
+                # Execute function and cache result
+                result = await func(*args, **kwargs)
+                await self.set(namespace, cache_key, result, ttl)
+                return result
+            
+            @wraps(func)
+            def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
+                # For sync functions, we need to run in an event loop
+                loop = asyncio.get_event_loop()
+                return loop.run_until_complete(async_wrapper(*args, **kwargs))
+            
+            # Return appropriate wrapper based on function type
+            if asyncio.iscoroutinefunction(func):
+                return async_wrapper
+            else:
+                return sync_wrapper
+        
+        return decorator
 
 
 # Global cache manager instance

@@ -1,14 +1,21 @@
 """
-M6 | Risk Management Agent
+M6 | Unified Risk Management Service
 Advanced Portfolio Risk Management and Position Sizing
 
-This agent handles:
-- Value at Risk (VaR) calculations
+This unified service combines:
+- RiskManager (M6 Agent): VaR, position sizing, portfolio risk assessment
+- SkfolioRiskEngine: Comprehensive skfolio-inspired risk metrics and optimization
+- Risk Tasks: Celery task helpers for risk calculations
+
+Handles:
+- Value at Risk (VaR) and Conditional VaR (CVaR) calculations
 - Portfolio exposure monitoring
-- Position sizing algorithms
-- Correlation analysis
+- Position sizing algorithms (Kelly Criterion, risk budget)
+- Correlation analysis and diversification metrics
 - Tail risk assessment
 - Risk budget allocation
+- Skfolio-inspired comprehensive risk metrics
+- Portfolio optimization (Max Sharpe, Min Variance, Risk Parity)
 """
 
 import numpy as np
@@ -29,6 +36,23 @@ from ..core.assets_config import AssetsConfig
 from ..database.postgres_connection import get_db
 
 logger = logging.getLogger(__name__)
+
+# ============================================
+# HELPER FUNCTIONS (from tasks.py)
+# ============================================
+
+def calculate_var_helper(returns: pd.Series, confidence_level: float = 0.95) -> float:
+    """Helper function for VaR calculation (used by Celery tasks)"""
+    if returns.empty:
+        return 0.0
+    return abs(np.percentile(returns, 100 * (1 - confidence_level)))
+
+def calculate_sharpe_ratio_helper(returns: pd.Series, risk_free_rate: float = 0.02) -> float:
+    """Helper function for Sharpe ratio calculation (used by Celery tasks)"""
+    if returns.empty or returns.std() == 0:
+        return 0.0
+    excess_returns = returns - (risk_free_rate / 252)
+    return np.sqrt(252) * excess_returns.mean() / excess_returns.std()
 
 class RiskLevel(Enum):
     LOW = "low"
@@ -529,4 +553,284 @@ class RiskManager:
             
             stress_results[scenario_name] = portfolio_pnl
         
-        return stress_results 
+        return stress_results
+    
+    # ============================================
+    # SKFOLIO-INSPIRED COMPREHENSIVE METRICS
+    # ============================================
+    
+    def _build_returns_matrix(self, price_history: Dict[str, pd.DataFrame]) -> pd.DataFrame:
+        """Build returns matrix from price history"""
+        returns_data = {}
+        for symbol, prices in price_history.items():
+            if isinstance(prices, pd.DataFrame) and 'close' in prices.columns:
+                returns_data[symbol] = prices['close'].pct_change().dropna()
+            elif isinstance(prices, pd.Series):
+                returns_data[symbol] = prices.pct_change().dropna()
+        
+        if not returns_data:
+            return pd.DataFrame()
+        return pd.DataFrame(returns_data).dropna()
+    
+    def _normalize_weights(self, portfolio_data: Dict[str, float]) -> np.ndarray:
+        """Normalize portfolio weights"""
+        total_value = sum(portfolio_data.values())
+        if total_value == 0:
+            return np.array([])
+        return np.array([value / total_value for value in portfolio_data.values()])
+    
+    def _calculate_portfolio_returns(self, returns_matrix: pd.DataFrame, weights: np.ndarray) -> pd.Series:
+        """Calculate portfolio returns"""
+        if len(weights) == 0 or returns_matrix.empty:
+            return pd.Series()
+        return (returns_matrix * weights).sum(axis=1)
+    
+    def _calculate_cvar(self, returns: pd.Series, confidence: float) -> float:
+        """Calculate Conditional Value at Risk (Expected Shortfall)"""
+        if returns.empty:
+            return 0.0
+        var = self._calculate_var_for_skfolio(returns, confidence)
+        if var == 0:
+            return 0.0
+        tail_losses = returns[returns <= -var]
+        return -tail_losses.mean() if len(tail_losses) > 0 else abs(var)
+    
+    def _calculate_var_for_skfolio(self, returns: pd.Series, confidence: float) -> float:
+        """Calculate Value at Risk for Skfolio methods (single confidence level)"""
+        if returns.empty:
+            return 0.0
+        return abs(np.percentile(returns, (1 - confidence) * 100))
+    
+    def _calculate_sharpe_ratio_skfolio(self, returns: pd.Series, risk_free_rate: float = 0.02) -> float:
+        """Calculate Sharpe ratio (annualized)"""
+        if returns.empty or returns.std() == 0:
+            return 0.0
+        excess_returns = returns.mean() * 252 - risk_free_rate
+        return excess_returns / (returns.std() * np.sqrt(252))
+    
+    def _calculate_sortino_ratio_skfolio(self, returns: pd.Series, risk_free_rate: float = 0.02) -> float:
+        """Calculate Sortino ratio (annualized)"""
+        if returns.empty:
+            return 0.0
+        excess_returns = returns.mean() * 252 - risk_free_rate
+        downside_returns = returns[returns < 0]
+        downside_deviation = downside_returns.std() * np.sqrt(252) if len(downside_returns) > 0 else returns.std() * np.sqrt(252)
+        return excess_returns / downside_deviation if downside_deviation > 0 else 0.0
+    
+    def _calculate_calmar_ratio(self, returns: pd.Series) -> float:
+        """Calculate Calmar ratio"""
+        if returns.empty:
+            return 0.0
+        annual_return = returns.mean() * 252
+        max_dd = self._calculate_max_drawdown_skfolio(returns)
+        return annual_return / abs(max_dd) if max_dd != 0 else 0.0
+    
+    def _calculate_omega_ratio(self, returns: pd.Series, threshold: float = 0.0) -> float:
+        """Calculate Omega ratio"""
+        if returns.empty:
+            return 0.0
+        gains = returns[returns > threshold].sum()
+        losses = abs(returns[returns <= threshold].sum())
+        return gains / losses if losses > 0 else float('inf')
+    
+    def _calculate_max_drawdown_skfolio(self, returns: pd.Series) -> float:
+        """Calculate maximum drawdown"""
+        if returns.empty:
+            return 0.0
+        cumulative = (1 + returns).cumprod()
+        rolling_max = cumulative.expanding().max()
+        drawdown = (cumulative - rolling_max) / rolling_max
+        return drawdown.min()
+    
+    def _calculate_diversification_ratio_skfolio(self, returns_matrix: pd.DataFrame, weights: np.ndarray) -> float:
+        """Calculate diversification ratio using returns matrix"""
+        if len(weights) == 0 or returns_matrix.empty:
+            return 0.0
+        
+        individual_vols = returns_matrix.std() * np.sqrt(252)
+        weighted_avg_vol = (weights * individual_vols).sum()
+        
+        cov_matrix = returns_matrix.cov() * 252
+        portfolio_vol = np.sqrt(weights.T @ cov_matrix @ weights)
+        
+        return weighted_avg_vol / portfolio_vol if portfolio_vol > 0 else 0.0
+    
+    def _calculate_effective_number_assets(self, weights: np.ndarray) -> float:
+        """Calculate effective number of assets (inverse Herfindahl index)"""
+        if len(weights) == 0:
+            return 0.0
+        return 1 / (weights ** 2).sum()
+    
+    def _calculate_risk_contribution(self, returns_matrix: pd.DataFrame, weights: np.ndarray) -> Dict[str, float]:
+        """Calculate risk contribution for each asset"""
+        if len(weights) == 0 or returns_matrix.empty:
+            return {}
+            
+        cov_matrix = returns_matrix.cov() * 252
+        portfolio_var = weights.T @ cov_matrix @ weights
+        
+        if portfolio_var <= 0:
+            return {}
+        
+        marginal_contributions = 2 * cov_matrix @ weights
+        risk_contributions = weights * marginal_contributions / (2 * np.sqrt(portfolio_var))
+        
+        total_contrib = risk_contributions.sum()
+        if total_contrib == 0:
+            return {}
+        
+        return dict(zip(returns_matrix.columns, risk_contributions / total_contrib))
+    
+    def _calculate_tail_ratio(self, returns: pd.Series) -> float:
+        """Calculate tail ratio (95th percentile / 5th percentile)"""
+        if returns.empty:
+            return 0.0
+        top_5_pct = returns.quantile(0.95)
+        bottom_5_pct = returns.quantile(0.05)
+        return abs(top_5_pct / bottom_5_pct) if bottom_5_pct != 0 else 0.0
+    
+    def _calculate_gain_loss_ratio(self, returns: pd.Series) -> float:
+        """Calculate gain-to-loss ratio"""
+        if returns.empty:
+            return 0.0
+        gains = returns[returns > 0].mean() if len(returns[returns > 0]) > 0 else 0.0
+        losses = abs(returns[returns < 0].mean()) if len(returns[returns < 0]) > 0 else 0.0
+        return gains / losses if losses > 0 else 0.0
+    
+    def _calculate_pain_index(self, returns: pd.Series) -> float:
+        """Calculate pain index (average drawdown)"""
+        if returns.empty:
+            return 0.0
+        cumulative = (1 + returns).cumprod()
+        rolling_max = cumulative.expanding().max()
+        drawdowns = (rolling_max - cumulative) / rolling_max
+        return drawdowns.mean()
+    
+    def _calculate_ulcer_index(self, returns: pd.Series) -> float:
+        """Calculate Ulcer index (downside volatility)"""
+        if returns.empty:
+            return 0.0
+        cumulative = (1 + returns).cumprod()
+        rolling_max = cumulative.expanding().max()
+        drawdowns = (rolling_max - cumulative) / rolling_max
+        return np.sqrt((drawdowns ** 2).mean())
+    
+    async def calculate_comprehensive_metrics(
+        self, 
+        portfolio_data: Dict[str, float],
+        price_history: Dict[str, pd.DataFrame]
+    ) -> Dict[str, Any]:
+        """
+        Calculate comprehensive skfolio-inspired risk metrics
+        
+        Returns a dictionary with all risk metrics including:
+        - VaR/CVaR at multiple confidence levels
+        - Performance ratios (Sharpe, Sortino, Calmar, Omega)
+        - Risk-return metrics (volatility, max drawdown, skewness, kurtosis)
+        - Portfolio construction metrics (diversification, concentration, effective assets)
+        - Risk budgeting (risk contribution, marginal VaR, component VaR)
+        - Tail risk metrics
+        """
+        try:
+            portfolio_value = sum(portfolio_data.values())
+            
+            if not price_history or portfolio_value == 0:
+                return self._get_default_metrics(portfolio_value)
+            
+            returns_matrix = self._build_returns_matrix(price_history)
+            if returns_matrix.empty:
+                return self._get_default_metrics(portfolio_value)
+            
+            weights = self._normalize_weights(portfolio_data)
+            if len(weights) == 0:
+                return self._get_default_metrics(portfolio_value)
+            
+            portfolio_returns = self._calculate_portfolio_returns(returns_matrix, weights)
+            if portfolio_returns.empty:
+                return self._get_default_metrics(portfolio_value)
+            
+            # Basic risk metrics
+            var_95 = self._calculate_var_for_skfolio(portfolio_returns, 0.95) * portfolio_value
+            var_99 = self._calculate_var_for_skfolio(portfolio_returns, 0.99) * portfolio_value
+            cvar_95 = self._calculate_cvar(portfolio_returns, 0.95) * portfolio_value
+            cvar_99 = self._calculate_cvar(portfolio_returns, 0.99) * portfolio_value
+            
+            # Performance metrics
+            sharpe_ratio = self._calculate_sharpe_ratio_skfolio(portfolio_returns)
+            sortino_ratio = self._calculate_sortino_ratio_skfolio(portfolio_returns)
+            calmar_ratio = self._calculate_calmar_ratio(portfolio_returns)
+            omega_ratio = self._calculate_omega_ratio(portfolio_returns)
+            
+            # Risk-return metrics
+            max_drawdown = self._calculate_max_drawdown_skfolio(portfolio_returns)
+            volatility = np.std(portfolio_returns) * np.sqrt(252)
+            skewness = portfolio_returns.skew()
+            kurtosis = portfolio_returns.kurtosis()
+            
+            # Portfolio construction metrics
+            diversification_ratio = self._calculate_diversification_ratio_skfolio(returns_matrix, weights)
+            effective_number_assets = self._calculate_effective_number_assets(weights)
+            concentration_risk = weights.max() if len(weights) > 0 else 0.0
+            
+            # Risk budgeting
+            risk_contribution = self._calculate_risk_contribution(returns_matrix, weights)
+            
+            # Tail risk metrics
+            tail_ratio = self._calculate_tail_ratio(portfolio_returns)
+            gain_loss_ratio = self._calculate_gain_loss_ratio(portfolio_returns)
+            pain_index = self._calculate_pain_index(portfolio_returns)
+            ulcer_index = self._calculate_ulcer_index(portfolio_returns)
+            
+            return {
+                "portfolioValue": portfolio_value,
+                "var_95": var_95,
+                "var_99": var_99,
+                "cvar_95": cvar_95,
+                "cvar_99": cvar_99,
+                "sharpe_ratio": sharpe_ratio,
+                "sortino_ratio": sortino_ratio,
+                "calmar_ratio": calmar_ratio,
+                "omega_ratio": omega_ratio,
+                "max_drawdown": max_drawdown,
+                "volatility": volatility,
+                "skewness": skewness,
+                "kurtosis": kurtosis,
+                "diversification_ratio": diversification_ratio,
+                "effective_number_assets": effective_number_assets,
+                "concentration_risk": concentration_risk,
+                "risk_contribution": risk_contribution,
+                "tail_ratio": tail_ratio,
+                "gain_loss_ratio": gain_loss_ratio,
+                "pain_index": pain_index,
+                "ulcer_index": ulcer_index,
+            }
+            
+        except Exception as e:
+            logger.error(f"Error calculating comprehensive metrics: {e}")
+            return self._get_default_metrics(sum(portfolio_data.values()) if portfolio_data else 0.0)
+    
+    def _get_default_metrics(self, portfolio_value: float) -> Dict[str, Any]:
+        """Return default metrics when calculation fails"""
+        return {
+            "portfolioValue": portfolio_value,
+            "var_95": 0.0,
+            "var_99": 0.0,
+            "cvar_95": 0.0,
+            "cvar_99": 0.0,
+            "sharpe_ratio": 0.0,
+            "sortino_ratio": 0.0,
+            "calmar_ratio": 0.0,
+            "omega_ratio": 0.0,
+            "max_drawdown": 0.0,
+            "volatility": 0.0,
+            "skewness": 0.0,
+            "kurtosis": 0.0,
+            "diversification_ratio": 1.0,
+            "effective_number_assets": 0.0,
+            "concentration_risk": 0.0,
+            "risk_contribution": {},
+            "tail_ratio": 0.0,
+            "gain_loss_ratio": 0.0,
+            "pain_index": 0.0,
+            "ulcer_index": 0.0,
+        }

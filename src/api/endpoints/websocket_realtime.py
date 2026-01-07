@@ -1,4 +1,15 @@
 """
+DEPRECATED: This file has been integrated into unified_websocket.py
+
+This module is kept for backward compatibility only.
+All functionality is now available in:
+- src.api.endpoints.unified_websocket
+
+Please update imports to use:
+    from src.api.endpoints.unified_websocket import router as websocket_router
+    
+This file will be removed in a future version.
+
 WebSocket Endpoints for Real-time Updates
 Agent status and wallet transaction updates
 """
