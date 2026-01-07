@@ -26,7 +26,64 @@ Octopus Trading Platform is a comprehensive, AI-powered trading system designed 
 
 ### Visual Architecture Overview
 
-![System Architecture](docs/workflow-infographic.svg)
+```mermaid
+graph TB
+    subgraph UI["👤 User Interface Layer"]
+        Frontend[🌐 Next.js Frontend]
+        Dashboard[📊 Dashboard]
+        Trading[💹 Trading Center]
+        Analytics[📈 Analytics]
+        AI[🤖 AI Models]
+        Frontend --> Dashboard
+        Frontend --> Trading
+        Frontend --> Analytics
+        Frontend --> AI
+    end
+    
+    subgraph Gateway["🔒 API Gateway"]
+        API_GW[API Gateway<br/>Rate Limiting<br/>Authentication]
+    end
+    
+    subgraph Backend["⚡ Backend Services"]
+        FastAPI[FastAPI Backend]
+        WebSocket[WebSocket Server]
+        Celery[Celery Workers]
+        ML[ML/AI Services]
+    end
+    
+    subgraph Data["🗄️ Data Layer"]
+        Postgres[(PostgreSQL<br/>TimescaleDB)]
+        Redis[(Redis Cache)]
+        Queue[Message Queue]
+    end
+    
+    subgraph External["🌐 External Services"]
+        Market[📈 Market Data APIs]
+        Broker[🏦 Trading Brokers]
+        Cloud[☁️ Cloud Services]
+    end
+    
+    Dashboard --> API_GW
+    Trading --> API_GW
+    Analytics --> API_GW
+    AI --> API_GW
+    
+    API_GW --> FastAPI
+    API_GW --> WebSocket
+    
+    FastAPI --> Postgres
+    FastAPI --> Redis
+    FastAPI --> Celery
+    FastAPI --> ML
+    
+    WebSocket --> Redis
+    Celery --> Postgres
+    Celery --> Queue
+    
+    FastAPI --> Market
+    FastAPI --> Broker
+    ML --> Cloud
+```
 
 ### System Architecture Flow
 
@@ -205,7 +262,7 @@ graph TB
     style DI1 fill:#f59e0b,stroke:#d97706,color:#fff
 ```
 
-> 📖 **For more detailed workflow diagrams**, see [Complete Workflow Infographic Documentation](docs/workflow-infographic.md)
+> 📖 **For more detailed workflow diagrams**, see [Architecture Documentation](docs/archive/COMPREHENSIVE_ARCHITECTURE_DIAGRAM.md)
 
 ### 🏗️ Orchestrator & Agents Architecture
 
