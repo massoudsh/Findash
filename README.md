@@ -505,17 +505,103 @@ npm run dev
 
 ## 📸 Screenshots
 
-### Dashboard
-![Dashboard](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Dashboard+View)
+<div align="center">
 
-### Trading Interface
-![Trading](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Trading+Center)
+### 🎯 Platform Overview
 
-### Portfolio Analytics
-![Portfolio](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Portfolio+Analytics)
+<table>
+<tr>
+<td width="50%">
+  
+**📊 Dashboard**
+  
+![Dashboard](https://via.placeholder.com/600x350/1e293b/60a5fa?text=📊+Trading+Dashboard)
+  
+*Real-time portfolio overview with market data and analytics*
 
-### AI Models
-![AI Models](https://via.placeholder.com/800x400/1a1a1a/ffffff?text=AI+Models+Dashboard)
+</td>
+<td width="50%">
+  
+**💹 Trading Center**
+  
+![Trading](https://via.placeholder.com/600x350/1e293b/10b981?text=💹+Trading+Center)
+  
+*Advanced order entry and position management*
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+  
+**📈 Portfolio Analytics**
+  
+![Portfolio](https://via.placeholder.com/600x350/1e293b/f59e0b?text=📈+Portfolio+Analytics)
+  
+*Multi-asset portfolio tracking and optimization*
+
+</td>
+<td width="50%">
+  
+**🤖 Trading Bots**
+  
+![Trading Bots](https://via.placeholder.com/600x350/1e293b/8b5cf6?text=🤖+Trading+Bots)
+  
+*Automated trading bot management and monitoring*
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+  
+**📉 Backtesting**
+  
+![Backtesting](https://via.placeholder.com/600x350/1e293b/ec4899?text=📉+Strategy+Backtesting)
+  
+*Historical strategy performance testing*
+
+</td>
+<td width="50%">
+  
+**🧠 AI Models**
+  
+![AI Models](https://via.placeholder.com/600x350/1e293b/06b6d4?text=🧠+AI+Models+Dashboard)
+  
+*Machine learning models and predictions*
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+  
+**📊 Market Data**
+  
+![Market Data](https://via.placeholder.com/600x350/1e293b/14b8a6?text=📊+Real-time+Market+Data)
+  
+*Live price feeds and orderbook visualization*
+
+</td>
+<td width="50%">
+  
+**⚠️ Risk Management**
+  
+![Risk](https://via.placeholder.com/600x350/1e293b/ef4444?text=⚠️+Risk+Management)
+  
+*Portfolio risk analysis and VaR calculations*
+
+</td>
+</tr>
+</table>
+
+</div>
+
+### 🎬 Interactive Features
+
+- **Real-time Updates**: Live market data streaming via WebSocket
+- **Interactive Charts**: Advanced TradingView integration
+- **AI-Powered Insights**: Machine learning predictions and recommendations
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+
+> 💡 **Note**: Screenshots are placeholders. Replace with actual screenshots from your application for the best presentation.
 
 ---
 
