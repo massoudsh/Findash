@@ -211,8 +211,8 @@ graph TB
 
 ```mermaid
 graph TB
-    subgraph "🧠 Intelligence Orchestrator"
-        IO[IntelligenceOrchestrator<br/>Coordinates 11 AI Agents<br/>submit_task, coordinate_pipeline]
+    subgraph Orchestrator["🧠 Intelligence Orchestrator"]
+        IO[IntelligenceOrchestrator<br/>Coordinates 11 AI Agents]
         A1[M1: Data Collector]
         A2[M2: Data Warehouse]
         A3[M3: Real-time Processor]
@@ -225,25 +225,25 @@ graph TB
         IO -->|Routes Tasks| A5
     end
     
-    subgraph "📡 Kafka Streaming"
-        KP[Kafka Producer<br/>publish, start_producing] -->|Publish| KT[Kafka Topic<br/>market-data-stream]
-        KT -->|Consume| KC[Kafka Consumer<br/>process_message, trigger_celery_task]
+    subgraph Kafka["📡 Kafka Streaming"]
+        KP[Kafka Producer] -->|Publish| KT[Kafka Topic]
+        KT -->|Consume| KC[Kafka Consumer]
     end
     
-    subgraph "⚡ Redis Pub/Sub"
-        KC -->|Cache| RC[Redis Cache<br/>market_data:{symbol}:latest]
-        KC -->|Publish| RP[Redis Pub/Sub<br/>tasks:market_data:*, worker:*]
-        RP -->|Allocate| CA[CeleryPubSubAllocator<br/>register_worker, publish_task, allocate_task]
+    subgraph Redis["⚡ Redis Pub/Sub"]
+        KC -->|Cache| RC[Redis Cache]
+        KC -->|Publish| RP[Redis Pub/Sub]
+        RP -->|Allocate| CA[CeleryPubSubAllocator]
     end
     
-    subgraph "🔄 Celery Workers"
-        CA -->|Route| CW1[Worker 1<br/>Queues: data_processing, portfolio<br/>Tasks: update_market_data]
-        CA -->|Route| CW2[Worker 2<br/>Queues: ml_training, prediction<br/>Tasks: train_model, predict_price]
-        CA -->|Route| CW3[Worker 3<br/>Queues: risk, strategies<br/>Tasks: calculate_var, execute_strategy]
+    subgraph Workers["🔄 Celery Workers"]
+        CA -->|Route| CW1[Worker 1<br/>Data Processing]
+        CA -->|Route| CW2[Worker 2<br/>ML Training]
+        CA -->|Route| CW3[Worker 3<br/>Risk & Strategies]
     end
     
-    subgraph "🗄️ Data Storage"
-        CW1 -->|Write| PG[(PostgreSQL + TimescaleDB<br/>market_data, portfolio, trades)]
+    subgraph Storage["🗄️ Data Storage"]
+        CW1 -->|Write| PG[(PostgreSQL + TimescaleDB)]
         CW2 -->|Write| PG
         CW3 -->|Write| PG
         CW1 -->|Read/Write| RC
@@ -251,30 +251,19 @@ graph TB
         CW3 -->|Read/Write| RC
     end
     
-    subgraph "📊 Monitoring Stack"
-        CW1 -->|Status| F[Flower<br/>Port 5555<br/>Task Monitoring]
+    subgraph Monitoring["📊 Monitoring Stack"]
+        CW1 -->|Status| F[Flower<br/>Port 5555]
         CW2 -->|Status| F
         CW3 -->|Status| F
-        CW1 -->|Metrics| CE[Celery Metrics Exporter<br/>Port 9540]
+        CW1 -->|Metrics| CE[Celery Metrics Exporter]
         CW2 -->|Metrics| CE
         CW3 -->|Metrics| CE
         CE -->|Export| P[Prometheus<br/>Port 9090]
-        P -->|Visualize| G[Grafana<br/>Port 3001<br/>Dashboards]
+        P -->|Visualize| G[Grafana<br/>Port 3001]
     end
     
     IO -->|Submit Tasks| RP
     IO -->|Read Results| RC
-    
-    style IO fill:#8b5cf6,stroke:#6d28d9,color:#fff,stroke-width:3px
-    style KP fill:#10b981,stroke:#059669,color:#fff
-    style RP fill:#ef4444,stroke:#dc2626,color:#fff
-    style CA fill:#f59e0b,stroke:#d97706,color:#fff
-    style CW1 fill:#3b82f6,stroke:#1e40af,color:#fff
-    style CW2 fill:#3b82f6,stroke:#1e40af,color:#fff
-    style CW3 fill:#3b82f6,stroke:#1e40af,color:#fff
-    style PG fill:#3b82f6,stroke:#1e40af,color:#fff
-    style RC fill:#ef4444,stroke:#dc2626,color:#fff
-    style F fill:#10b981,stroke:#059669,color:#fff
 ```
 
 ### Complete Data Flow Sequence
