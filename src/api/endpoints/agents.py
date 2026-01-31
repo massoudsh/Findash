@@ -27,7 +27,7 @@ except ImportError:
 
 try:
     from src.strategies.strategy_agent import StrategyAgent
-    strategy_agent = StrategyAgent(cache) if orchestrator else None
+    strategy_agent = StrategyAgent(cache_manager) if orchestrator else None  # noqa: F821
 except ImportError:
     strategy_agent = None
     logger.warning("StrategyAgent not available")

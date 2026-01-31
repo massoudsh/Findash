@@ -65,10 +65,12 @@ def init_db_connection():
 
 def close_db():
     """Close database connection"""
-    global engine
+    global engine, SessionLocal
     
     if engine:
         engine.dispose()
+        engine = None  # Mark as closed
+        SessionLocal = None
         logger.info("Database connection closed")
 
 def get_db() -> Generator[Session, None, None]:

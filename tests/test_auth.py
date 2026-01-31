@@ -12,6 +12,7 @@ import json
 from src.main_refactored import app
 from src.core.security import (
     verify_token,
+    create_access_token,
     create_refresh_token,
     verify_password,
     hash_password,

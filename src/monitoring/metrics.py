@@ -3,10 +3,12 @@ Robust Prometheus Metrics for Octopus Trading Platform
 Comprehensive metrics collection for API, trading, system, and Celery operations
 """
 
+import os
 import time
 import logging
 from typing import Optional, Dict, Any
 from functools import wraps
+from fastapi import Request
 from prometheus_client import (
     Counter, Histogram, Gauge, Info, Summary,
     generate_latest, CONTENT_TYPE_LATEST,

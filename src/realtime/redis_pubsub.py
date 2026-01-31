@@ -2,7 +2,7 @@ import redis.asyncio as redis
 import asyncio
 import logging
 import json
-from typing import Callable, Awaitable
+from typing import Callable, Awaitable, Dict
 
 logger = logging.getLogger(__name__)
 

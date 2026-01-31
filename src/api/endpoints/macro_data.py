@@ -401,8 +401,8 @@ async def get_economic_calendar(days_ahead: int = Query(7, ge=1, le=30)):
                 "event": "FOMC Meeting Minutes",
                 "currency": "USD", 
                 "impact": "high",
-                "forecast": null,
-                "previous": null
+                "forecast": None,
+                "previous": None
             },
             {
                 "date": (datetime.now() + timedelta(days=5)).strftime('%Y-%m-%d'),

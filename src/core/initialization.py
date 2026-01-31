@@ -121,16 +121,26 @@ class SystemInitializer:
     async def _update_symbol_price(self, symbol: str):
         """Update symbol price in cache and broadcast via WebSocket"""
         try:
-            # In production, fetch real price data
-            # For now, simulate price update
+            # Run blocking yfinance call in thread pool to avoid blocking event loop
+            import concurrent.futures
             import yfinance as yf
-            ticker = yf.Ticker(symbol)
-            info = ticker.info
+            
+            def fetch_price():
+                try:
+                    ticker = yf.Ticker(symbol)
+                    info = ticker.info
+                    return info.get('currentPrice', 0)
+                except Exception:
+                    return 0
+            
+            loop = asyncio.get_event_loop()
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                price = await loop.run_in_executor(pool, fetch_price)
             
             price_data = {
                 "symbol": symbol,
-                "price": info.get('currentPrice', 0),
-                "timestamp": asyncio.get_event_loop().time()
+                "price": price,
+                "timestamp": loop.time()
             }
             
             # Cache the price data

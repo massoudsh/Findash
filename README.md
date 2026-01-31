@@ -24,6 +24,14 @@ Octopus Trading Platform is a comprehensive, AI-powered trading system designed 
 
 ## 📊 System Architecture & Workflow
 
+> **Full Architecture Documentation**: See [docs/ARCHITECTURE_DIAGRAMS.md](docs/ARCHITECTURE_DIAGRAMS.md) for comprehensive Mermaid diagrams including:
+> - High-level system overview
+> - Mid-level component architecture  
+> - Low-level flow diagrams
+> - Data lineage diagrams
+> - Class structure diagrams
+> - Sequence diagrams
+
 ### Visual Architecture Overview
 
 ```mermaid

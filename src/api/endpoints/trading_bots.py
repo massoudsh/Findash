@@ -53,7 +53,9 @@ async def get_trading_bots(
     # current_user: TokenData = Depends(get_current_active_user)  # Temporarily disabled for testing
 ):
     """Get all trading bots for the current user"""
-    user_bots = [bot for bot in bots_db.values() if bot.get("user_id") == current_user.user_id]
+    # Using default user_id since authentication is temporarily disabled
+    default_user_id = "default"
+    user_bots = [bot for bot in bots_db.values() if bot.get("user_id") == default_user_id]
     return user_bots
 
 
@@ -83,7 +85,7 @@ async def create_trading_bot(
     }
     
     bots_db[bot_id] = new_bot
-    logger.info(f"Created trading bot {bot_id} for user {current_user.user_id}")
+    logger.info(f"Created trading bot {bot_id} for user default")
     
     return new_bot
 

@@ -10,6 +10,7 @@ Notes:
 - Consumers use Redis consumer groups for scalable fanout
 """
 
+import asyncio
 import json
 import logging
 import uuid

@@ -14,7 +14,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import Dict, Any
 
-from fastapi import FastAPI, HTTPException, Depends, WebSocket, WebSocketDisconnect, Request
+from fastapi import FastAPI, HTTPException, Depends, WebSocket, WebSocketDisconnect, Request, Response
 from fastapi.responses import JSONResponse
 import uuid
 from fastapi.middleware.cors import CORSMiddleware
@@ -150,6 +150,17 @@ async def metrics():
 @app.get("/health")
 async def health_check():
     """Health check for monitoring and load balancers"""
+    # Simple health check without blocking operations
+    return {
+        "status": "healthy",
+        "service": "octopus-trading-platform",
+        "version": "3.0.0",
+        "environment": settings.environment,
+    }
+
+@app.get("/health/detailed")
+async def health_check_detailed():
+    """Detailed health check with component status"""
     try:
         component_status = await system_initializer.get_component_status() if system_initializer else {}
         return {
