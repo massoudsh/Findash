@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
+import { DashboardDonutChart, DashboardPieChart } from '@/components/dashboard/dashboard-charts';
 
 // Lazy load API to avoid webpack issues
 let apiLoaded = false;
@@ -374,6 +375,40 @@ export function DashboardContent() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
+          {/* Pie / Donut charts row */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <DashboardDonutChart
+              data={[
+                { name: 'Technology', value: 68.4, amount: 1948231 },
+                { name: 'Healthcare', value: 12.8, amount: 364446 },
+                { name: 'Financial', value: 9.2, amount: 261945 },
+                { name: 'Consumer', value: 6.1, amount: 173681 },
+                { name: 'Cash', value: 3.5, amount: 99653 },
+              ]}
+              title="Portfolio by sector"
+              subtitle="Allocation by sector"
+              centerLabel={formatCurrency(data.totalPortfolioValue)}
+              centerSublabel="Total value"
+              height={260}
+            />
+            <DashboardDonutChart
+              data={[
+                { name: 'Stocks', value: walletCards[0]?.balance ?? 510596.57 },
+                { name: 'Crypto', value: walletCards[1]?.balance ?? 234567.89 },
+                { name: 'Savings', value: walletCards[2]?.balance ?? 125000 },
+              ]}
+              title="Asset mix"
+              subtitle="Balance by account type"
+              centerLabel={formatCurrency((walletCards[0]?.balance ?? 0) + (walletCards[1]?.balance ?? 0) + (walletCards[2]?.balance ?? 0))}
+              centerSublabel="Total balance"
+              formatValue={(value, name) => {
+                const total = (walletCards[0]?.balance ?? 0) + (walletCards[1]?.balance ?? 0) + (walletCards[2]?.balance ?? 0);
+                const pct = total ? ((value / total) * 100).toFixed(1) : '0';
+                return `${formatCurrency(value)} (${pct}%)`;
+              }}
+              height={260}
+            />
+          </div>
           <div className="grid gap-6 md:grid-cols-2">
             {/* Activity Graph - Modern Style */}
             <GlassCard>
@@ -456,7 +491,7 @@ export function DashboardContent() {
         </TabsContent>
 
         <TabsContent value="positions" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <ElevatedCard>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -499,36 +534,36 @@ export function DashboardContent() {
             <ElevatedCard>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Portfolio Distribution
+                  <PieChart className="h-5 w-5" />
+                  Portfolio distribution
                 </CardTitle>
+                <p className="text-sm text-muted-foreground">By sector</p>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { name: 'Technology', percentage: 68.4, color: 'bg-blue-500', amount: 1948231 },
-                    { name: 'Healthcare', percentage: 12.8, color: 'bg-green-500', amount: 364446 },
-                    { name: 'Financial', percentage: 9.2, color: 'bg-purple-500', amount: 261945 },
-                    { name: 'Consumer', percentage: 6.1, color: 'bg-orange-500', amount: 173681 },
-                    { name: 'Cash', percentage: 3.5, color: 'bg-gray-500', amount: 99653 }
-                  ].map((sector, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-3 h-3 rounded ${sector.color}`} />
-                          <span>{sector.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{sector.percentage}%</span>
-                          <span className="text-muted-foreground text-xs">{formatCurrency(sector.amount)}</span>
-                        </div>
-                      </div>
-                      <Progress value={sector.percentage} className="h-2" />
-                    </div>
-                  ))}
-                </div>
+                <DashboardPieChart
+                  data={[
+                    { name: 'Technology', value: 68.4, amount: 1948231 },
+                    { name: 'Healthcare', value: 12.8, amount: 364446 },
+                    { name: 'Financial', value: 9.2, amount: 261945 },
+                    { name: 'Consumer', value: 6.1, amount: 173681 },
+                    { name: 'Cash', value: 3.5, amount: 99653 },
+                  ]}
+                  title=""
+                  height={240}
+                  className="border-0 shadow-none p-0 bg-transparent"
+                />
               </CardContent>
             </ElevatedCard>
+
+            <DashboardDonutChart
+              data={positions.map((p) => ({ name: p.symbol, value: p.marketValue, amount: p.marketValue }))}
+              title="Top positions by value"
+              subtitle="Holdings weight"
+              centerLabel={formatCurrency(positions.reduce((s, p) => s + p.marketValue, 0))}
+              centerSublabel="Total"
+              height={260}
+              showLegend={true}
+            />
           </div>
         </TabsContent>
 
@@ -635,6 +670,32 @@ export function DashboardContent() {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 mb-6">
+            <DashboardDonutChart
+              data={[
+                { name: 'Wins', value: data.winRate, amount: Math.round((data.winRate / 100) * data.activeTrades) },
+                { name: 'Losses', value: 100 - data.winRate, amount: data.activeTrades - Math.round((data.winRate / 100) * data.activeTrades) },
+              ]}
+              title="Win / Loss ratio"
+              subtitle="Trade outcomes"
+              centerLabel={`${data.winRate.toFixed(0)}%`}
+              centerSublabel="Win rate"
+              height={220}
+              formatValue={(value) => `${value.toFixed(1)}%`}
+            />
+            <DashboardDonutChart
+              data={[
+                { name: 'Profit', value: data.profitLoss > 0 ? data.profitLoss : 0.01 },
+                { name: 'Loss', value: data.profitLoss < 0 ? Math.abs(data.profitLoss) : 0.01 },
+              ]}
+              title="P&L breakdown"
+              subtitle="Realized this period"
+              centerLabel={formatCurrency(data.profitLoss)}
+              centerSublabel="Net P&L"
+              height={220}
+              formatValue={(value) => formatCurrency(value)}
+            />
+          </div>
           <div className="grid gap-4 md:grid-cols-4">
             <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
               <CardHeader className="pb-2">
