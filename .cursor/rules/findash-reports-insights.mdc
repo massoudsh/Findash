@@ -1,0 +1,29 @@
+---
+description: Rules for Findash M11 Visualizer and report/insight generation (charts, dashboards, insights).
+globs: src/analytics/**/*.py, src/generative/**/*.py, frontend-nextjs/src/components/dashboard/**/*.tsx, frontend-nextjs/src/components/charts/**/*.tsx
+alwaysApply: false
+---
+
+# Findash M11: Visualizer / Reports & Insights
+
+Code in these paths implements or consumes **reporting and insights**: charts, dashboard updates, generated reports, and analytics (M11 Visualizer and related analytics).
+
+## Backend (Python)
+
+- **Analytics**: `src/analytics/` – sentiment, warehouse, service layer. Keep metrics and aggregations consistent with what the frontend and reports expect.
+- **Generative**: `src/generative/` – report generation, summaries, or LLM-backed insights. Use project LLM/embedding config; do not hardcode model names or keys.
+- **API**: Report and insight endpoints should return structured JSON (e.g. time range, series, summary text) suitable for charts and UI. Document response shape in OpenAPI/schemas.
+
+## Frontend (Next.js / React)
+
+- **Charts**: Use the project’s chart library (e.g. Recharts); keep axes and tooltips consistent with backend series (e.g. timestamp, value, symbol).
+- **Dashboard**: Prefer server components or stable data fetching; use real-time hooks (e.g. `useRealtimeData`, WebSocket) only where live updates are required.
+- **Insights**: Display insight text or summaries from the API; avoid duplicating heavy logic in the frontend. Use loading and error states for async report fetches.
+
+## Conventions
+
+- **Idempotency**: Report generation should be repeatable for the same inputs (symbol, date range, strategy) so caching and refresh behave correctly.
+- **Performance**: For large ranges or many symbols, support pagination or sampling; avoid unbounded queries in report endpoints.
+- **Security**: Do not expose raw internal errors or secrets in report payloads; sanitize or log details server-side only.
+
+When adding a **new report or insight type**, use the skill “Add a new report or insight” (if available) so API, backend logic, and frontend stay aligned.

@@ -1,0 +1,29 @@
+---
+description: Rules for Findash M1 Data Collector: scrapers, price/data ingestion, API clients.
+globs: src/data_processing/**/*.py, src/infrastructure/market_data*.py, src/services/market_data*.py
+alwaysApply: false
+---
+
+# Findash M1: Data Collector Agent
+
+Code in these paths implements or feeds the **Data Collector Agent** (M1): scraping prices and news, fetching from market data APIs, and ingesting into the platform.
+
+## Conventions
+
+- **Scraping**: Use `requests` with a reasonable `timeout` (e.g. 10–30s). Prefer `BeautifulSoup` for HTML; keep selectors stable and handle missing elements. Log URL and count of items fetched.
+- **Rate limiting**: Do not hammer external sites; add delays or use a rate limiter when scraping or calling free APIs. Respect `Retry-After` and 429 responses.
+- **API keys**: Read from env or config (e.g. `os.getenv("ALPHA_VANTAGE_API_KEY")`); never commit keys. Use the project’s API key config if present (`api_keys_config.py` / env.example).
+- **Validation**: Validate and normalize symbols, timestamps, and numeric fields before storing or passing to other agents (M2, M3). Use schemas or dataclasses for structured output.
+- **Errors**: Catch `requests.RequestException` and log; return empty list/dict or raise a known project exception so the orchestrator can handle failures.
+- **Async**: If the caller is async (orchestrator, Celery), prefer `aiohttp` or async-capable clients for concurrent fetches; keep sync scrapers in thread pool if needed.
+- **Idempotency**: Where possible, design fetches so re-runs do not duplicate data (e.g. use `created_at` or external IDs for deduplication).
+
+## File Roles
+
+- `src/data_processing/scraping/` – Web scrapers (e.g. news, dashboard data).
+- `src/data_processing/ingestion/` – Ingestion pipelines and parsing.
+- `src/data_processing/collection_tasks.py` – Celery/sync tasks for scheduled collection.
+- `src/infrastructure/market_data_*.py` – Producers/consumers for market data streams.
+- `src/services/market_data_service.py` – Service layer used by API or orchestrator.
+
+When adding a **new price or data source**, use the skill “Add a new price/data source” (if available) so the orchestrator and APIs stay in sync.
