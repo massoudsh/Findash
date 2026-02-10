@@ -8,7 +8,12 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
-import { DashboardDonutChart, DashboardPieChart } from '@/components/dashboard/dashboard-charts';
+import {
+  DashboardBarChart,
+  DashboardWaterfallChart,
+  DashboardPieChart,
+  DashboardLineChart,
+} from '@/components/dashboard/dashboard-charts';
 
 // Lazy load API to avoid webpack issues
 let apiLoaded = false;
@@ -375,9 +380,35 @@ export function DashboardContent() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          {/* Pie / Donut charts row */}
+          {/* One of each: Bar, Waterfall, Pie, Line */}
           <div className="grid gap-6 md:grid-cols-2">
-            <DashboardDonutChart
+            <DashboardBarChart
+              data={[
+                { name: 'Jan', value: 125000 },
+                { name: 'Feb', value: 142000 },
+                { name: 'Mar', value: 138500 },
+                { name: 'Apr', value: 165200 },
+                { name: 'May', value: 158900 },
+                { name: 'Jun', value: 184200 },
+              ]}
+              title="Monthly P&L"
+              subtitle="Realized profit by month"
+              height={260}
+              barColor="#3b82f6"
+            />
+            <DashboardWaterfallChart
+              data={[
+                { name: 'Opening', start: 0, delta: 2700000 },
+                { name: 'Trades', start: 2700000, delta: 87458 },
+                { name: 'Dividends', start: 2787458, delta: 12450 },
+                { name: 'Fees', start: 2799908, delta: -1200 },
+                { name: 'Closing', start: 2798708, delta: 0 },
+              ]}
+              title="Cash flow waterfall"
+              subtitle="Portfolio value build-up"
+              height={260}
+            />
+            <DashboardPieChart
               data={[
                 { name: 'Technology', value: 68.4, amount: 1948231 },
                 { name: 'Healthcare', value: 12.8, amount: 364446 },
@@ -386,185 +417,65 @@ export function DashboardContent() {
                 { name: 'Cash', value: 3.5, amount: 99653 },
               ]}
               title="Portfolio by sector"
-              subtitle="Allocation by sector"
-              centerLabel={formatCurrency(data.totalPortfolioValue)}
-              centerSublabel="Total value"
+              subtitle="Allocation"
               height={260}
             />
-            <DashboardDonutChart
+            <DashboardLineChart
               data={[
-                { name: 'Stocks', value: walletCards[0]?.balance ?? 510596.57 },
-                { name: 'Crypto', value: walletCards[1]?.balance ?? 234567.89 },
-                { name: 'Savings', value: walletCards[2]?.balance ?? 125000 },
+                { name: 'W1', value: 2680000 },
+                { name: 'W2', value: 2715000 },
+                { name: 'W3', value: 2692000 },
+                { name: 'W4', value: 2758000 },
+                { name: 'W5', value: 2784000 },
+                { name: 'W6', value: 2847232 },
               ]}
-              title="Asset mix"
-              subtitle="Balance by account type"
-              centerLabel={formatCurrency((walletCards[0]?.balance ?? 0) + (walletCards[1]?.balance ?? 0) + (walletCards[2]?.balance ?? 0))}
-              centerSublabel="Total balance"
-              formatValue={(value, name) => {
-                const total = (walletCards[0]?.balance ?? 0) + (walletCards[1]?.balance ?? 0) + (walletCards[2]?.balance ?? 0);
-                const pct = total ? ((value / total) * 100).toFixed(1) : '0';
-                return `${formatCurrency(value)} (${pct}%)`;
-              }}
+              title="Portfolio value over time"
+              subtitle="Last 6 weeks"
               height={260}
+              strokeColor="#8b5cf6"
             />
-          </div>
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* Activity Graph - Modern Style */}
-            <GlassCard>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="h-4 w-4 text-white" />
-                    </div>
-                    Activity Graph
-                  </CardTitle>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs bg-primary/10 border-primary/20">
-                      {formatCurrency(data.totalEarnings)}
-                    </Badge>
-                    <Button variant="ghost" size="sm" className="hover:bg-primary/10">
-                      <Calendar className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground font-medium">Between Sep 5 - 27</p>
-              </CardHeader>
-              <CardContent>
-                <div className="h-48 flex items-end gap-1.5 mb-4">
-                  {[15, 25, 35, 28, 42, 38, 55, 48, 62, 58, 45, 52, 38, 65, 48, 35, 42, 28, 38, 32, 45].map((height, i) => (
-                    <div 
-                      key={i}
-                      className="flex-1 bg-gradient-to-t from-blue-500 via-cyan-400 to-blue-300 rounded-t-lg opacity-80 hover:opacity-100 transition-all duration-300 hover:scale-105 shadow-lg shadow-blue-500/20"
-                      style={{ height: `${height}%` }}
-                    />
-                  ))}
-                </div>
-                <div className="flex justify-between text-xs text-muted-foreground font-medium">
-                  <span>Sep 5</span>
-                  <span>Sep 15</span>
-                  <span>Sep 27</span>
-                </div>
-              </CardContent>
-            </GlassCard>
-
-            {/* Transaction History - Modern Style */}
-            <GlassCard>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Recent Transactions</CardTitle>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" className="text-xs">History</Button>
-                    <Button variant="ghost" size="sm" className="text-xs">Upcoming</Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { type: 'transfer', to: 'Trading Account', amount: -510100, icon: '↗️', time: '10 Sep, 2024 at 1:30 PM', category: 'Personal' },
-                    { type: 'investment', to: 'Tech Portfolio', amount: 550400, icon: '📈', time: '9 Sep, 2024 at 1:30 PM', category: 'Investment' },
-                    { type: 'withdrawal', to: 'Cash Account', amount: -510100, icon: '💰', time: '8 Sep, 2024 at 3:30 PM', category: 'Personal' },
-                    { type: 'spending', to: 'Market Research', amount: -2340, icon: '📊', time: '7 Sep, 2024 at 2:30 PM', category: 'Work' }
-                  ].map((transaction, index) => (
-                    <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                      <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center text-lg">
-                        {transaction.icon}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">{transaction.to}</span>
-                          <Badge variant="outline" className="text-xs">{transaction.category}</Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{transaction.time}</p>
-                      </div>
-                      <div className={`text-right font-medium ${transaction.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {transaction.amount > 0 ? '+' : ''}{formatCurrency(Math.abs(transaction.amount))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </GlassCard>
           </div>
         </TabsContent>
 
         <TabsContent value="positions" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <ElevatedCard>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                    <PieChart className="h-4 w-4 text-white" />
-                  </div>
-                  Top Holdings
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {positions.map((position) => (
-                    <div key={position.symbol} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-muted/70 hover:to-muted/50 transition-all duration-300 border border-border/50 hover:border-primary/20 hover:shadow-md">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-xl shadow-sm">
-                          {position.icon}
-                        </div>
-                        <div>
-                          <div className="font-semibold text-base">{position.symbol}</div>
-                          <div className="text-sm text-muted-foreground font-medium">{position.sector}</div>
-                        </div>
+          <ElevatedCard>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                  <PieChart className="h-4 w-4 text-white" />
+                </div>
+                Top Holdings
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {positions.map((position) => (
+                  <div key={position.symbol} className="flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-muted/50 to-muted/30 hover:from-muted/70 hover:to-muted/50 transition-all duration-300 border border-border/50 hover:border-primary/20 hover:shadow-md">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center text-xl shadow-sm">
+                        {position.icon}
                       </div>
-                      <div className="text-right">
-                        <div className="font-bold text-base">{formatCurrency(position.marketValue)}</div>
-                        <div className={`text-sm flex items-center gap-1 font-semibold ${position.unrealizedPL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {position.unrealizedPL >= 0 ? (
-                            <ArrowUpRight className="h-3 w-3" />
-                          ) : (
-                            <ArrowDownRight className="h-3 w-3" />
-                          )}
-                          {position.unrealizedPL >= 0 ? '+' : ''}{formatPercentage(position.unrealizedPLPercent)}
-                        </div>
+                      <div>
+                        <div className="font-semibold text-base">{position.symbol}</div>
+                        <div className="text-sm text-muted-foreground font-medium">{position.sector}</div>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </ElevatedCard>
-
-            <ElevatedCard>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <PieChart className="h-5 w-5" />
-                  Portfolio distribution
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">By sector</p>
-              </CardHeader>
-              <CardContent>
-                <DashboardPieChart
-                  data={[
-                    { name: 'Technology', value: 68.4, amount: 1948231 },
-                    { name: 'Healthcare', value: 12.8, amount: 364446 },
-                    { name: 'Financial', value: 9.2, amount: 261945 },
-                    { name: 'Consumer', value: 6.1, amount: 173681 },
-                    { name: 'Cash', value: 3.5, amount: 99653 },
-                  ]}
-                  title=""
-                  height={240}
-                  className="border-0 shadow-none p-0 bg-transparent"
-                />
-              </CardContent>
-            </ElevatedCard>
-
-            <DashboardDonutChart
-              data={positions.map((p) => ({ name: p.symbol, value: p.marketValue, amount: p.marketValue }))}
-              title="Top positions by value"
-              subtitle="Holdings weight"
-              centerLabel={formatCurrency(positions.reduce((s, p) => s + p.marketValue, 0))}
-              centerSublabel="Total"
-              height={260}
-              showLegend={true}
-            />
-          </div>
+                    <div className="text-right">
+                      <div className="font-bold text-base">{formatCurrency(position.marketValue)}</div>
+                      <div className={`text-sm flex items-center gap-1 font-semibold ${position.unrealizedPL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {position.unrealizedPL >= 0 ? (
+                          <ArrowUpRight className="h-3 w-3" />
+                        ) : (
+                          <ArrowDownRight className="h-3 w-3" />
+                        )}
+                        {position.unrealizedPL >= 0 ? '+' : ''}{formatPercentage(position.unrealizedPLPercent)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </ElevatedCard>
         </TabsContent>
 
         <TabsContent value="market" className="space-y-4">
@@ -670,32 +581,6 @@ export function DashboardContent() {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 mb-6">
-            <DashboardDonutChart
-              data={[
-                { name: 'Wins', value: data.winRate, amount: Math.round((data.winRate / 100) * data.activeTrades) },
-                { name: 'Losses', value: 100 - data.winRate, amount: data.activeTrades - Math.round((data.winRate / 100) * data.activeTrades) },
-              ]}
-              title="Win / Loss ratio"
-              subtitle="Trade outcomes"
-              centerLabel={`${data.winRate.toFixed(0)}%`}
-              centerSublabel="Win rate"
-              height={220}
-              formatValue={(value) => `${value.toFixed(1)}%`}
-            />
-            <DashboardDonutChart
-              data={[
-                { name: 'Profit', value: data.profitLoss > 0 ? data.profitLoss : 0.01 },
-                { name: 'Loss', value: data.profitLoss < 0 ? Math.abs(data.profitLoss) : 0.01 },
-              ]}
-              title="P&L breakdown"
-              subtitle="Realized this period"
-              centerLabel={formatCurrency(data.profitLoss)}
-              centerSublabel="Net P&L"
-              height={220}
-              formatValue={(value) => formatCurrency(value)}
-            />
-          </div>
           <div className="grid gap-4 md:grid-cols-4">
             <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
               <CardHeader className="pb-2">

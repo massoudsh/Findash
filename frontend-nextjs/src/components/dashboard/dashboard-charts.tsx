@@ -7,6 +7,13 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  LineChart,
+  Line,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
@@ -186,6 +193,184 @@ export function DashboardPieChart({
                 formatter={(value) => <span className="text-muted-foreground text-xs">{value}</span>}
               />
             </RechartsPie>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Bar chart (one per dashboard) ---
+interface BarDataPoint {
+  name: string;
+  value: number;
+  amount?: number;
+}
+
+interface DashboardBarChartProps {
+  data: BarDataPoint[];
+  title: string;
+  subtitle?: string;
+  height?: number;
+  dataKey?: string;
+  barColor?: string;
+  formatTick?: (value: number) => string;
+  className?: string;
+}
+
+export function DashboardBarChart({
+  data,
+  title,
+  subtitle,
+  height = 280,
+  dataKey = 'value',
+  barColor = '#3b82f6',
+  formatTick = (v) => formatCurrency(v),
+  className = '',
+}: DashboardBarChartProps) {
+  const showHeader = title || subtitle;
+  return (
+    <Card className={`overflow-hidden ${className}`}>
+      {showHeader && (
+        <CardHeader className="pb-2">
+          {title && <CardTitle className="text-base font-semibold">{title}</CardTitle>}
+          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+        </CardHeader>
+      )}
+      <CardContent className={showHeader ? 'pt-0' : ''}>
+        <div style={{ height }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => (v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}k` : String(v))} />
+              <Tooltip
+                contentStyle={{ borderRadius: '12px', border: '1px solid hsl(var(--border))', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                formatter={(value: number) => [formatTick(value), '']}
+                labelFormatter={(name) => name}
+              />
+              <Bar dataKey={dataKey} fill={barColor} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Waterfall chart (one per dashboard) ---
+interface WaterfallPoint {
+  name: string;
+  start: number;
+  delta: number;
+}
+
+interface DashboardWaterfallChartProps {
+  data: WaterfallPoint[];
+  title: string;
+  subtitle?: string;
+  height?: number;
+  className?: string;
+}
+
+export function DashboardWaterfallChart({
+  data,
+  title,
+  subtitle,
+  height = 280,
+  className = '',
+}: DashboardWaterfallChartProps) {
+  const showHeader = title || subtitle;
+  const maxVal = Math.max(...data.map((d) => d.start + Math.max(0, d.delta)), 1);
+  const minVal = Math.min(...data.map((d) => d.start + Math.min(0, d.delta)), 0);
+  return (
+    <Card className={`overflow-hidden ${className}`}>
+      {showHeader && (
+        <CardHeader className="pb-2">
+          {title && <CardTitle className="text-base font-semibold">{title}</CardTitle>}
+          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+        </CardHeader>
+      )}
+      <CardContent className={showHeader ? 'pt-0' : ''}>
+        <div style={{ height }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => (v >= 1e6 ? `$${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v / 1e3).toFixed(0)}k` : `$${v}`)} domain={[minVal, maxVal]} />
+              <Tooltip
+                contentStyle={{ borderRadius: '12px', border: '1px solid hsl(var(--border))', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                formatter={(value: number) => [value >= 0 ? `+${formatCurrency(value)}` : formatCurrency(value), 'Delta']}
+                labelFormatter={(name) => name}
+              />
+              <Bar dataKey="start" stackId="wf" fill="transparent" />
+              <Bar dataKey="delta" stackId="wf" radius={[4, 4, 0, 0]}>
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`wf-${index}`}
+                    fill={entry.delta > 0 ? '#22c55e' : entry.delta < 0 ? '#ef4444' : '#94a3b8'}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// --- Line chart (one per dashboard) ---
+interface LineDataPoint {
+  name: string;
+  value: number;
+  [key: string]: string | number;
+}
+
+interface DashboardLineChartProps {
+  data: LineDataPoint[];
+  title: string;
+  subtitle?: string;
+  height?: number;
+  dataKey?: string;
+  strokeColor?: string;
+  formatTick?: (value: number) => string;
+  className?: string;
+}
+
+export function DashboardLineChart({
+  data,
+  title,
+  subtitle,
+  height = 280,
+  dataKey = 'value',
+  strokeColor = '#3b82f6',
+  formatTick = (v) => formatCurrency(v),
+  className = '',
+}: DashboardLineChartProps) {
+  const showHeader = title || subtitle;
+  return (
+    <Card className={`overflow-hidden ${className}`}>
+      {showHeader && (
+        <CardHeader className="pb-2">
+          {title && <CardTitle className="text-base font-semibold">{title}</CardTitle>}
+          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+        </CardHeader>
+      )}
+      <CardContent className={showHeader ? 'pt-0' : ''}>
+        <div style={{ height }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => (v >= 1e6 ? `${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}k` : String(v))} />
+              <Tooltip
+                contentStyle={{ borderRadius: '12px', border: '1px solid hsl(var(--border))', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                formatter={(value: number) => [formatTick(value), '']}
+                labelFormatter={(name) => name}
+              />
+              <Line type="monotone" dataKey={dataKey} stroke={strokeColor} strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </CardContent>
