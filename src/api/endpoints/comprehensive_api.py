@@ -801,6 +801,29 @@ async def get_supported_funding_symbols():
         raise HTTPException(status_code=500, detail=f"Failed to get supported symbols: {str(e)}")
 
 
+@router.get("/funding-rate/{symbol}/history")
+async def get_funding_history(symbol: str, limit: int = 100):
+    """Get historical funding rates for chart (time series)"""
+    try:
+        from src.strategies.funding_rate_strategy import FundingRateStrategy
+
+        funding_strategy = FundingRateStrategy(cache)
+        historical = await funding_strategy._fetch_historical_funding_rates(symbol, limit=limit)
+
+        series = [
+            {
+                "timestamp": h.timestamp.isoformat() if hasattr(h.timestamp, "isoformat") else str(h.timestamp),
+                "funding_rate": h.funding_rate,
+                "funding_rate_annualized_pct": round(h.funding_rate * 365 * 3 * 100, 4),
+            }
+            for h in (historical or [])
+        ]
+        return {"symbol": symbol, "series": series, "count": len(series)}
+    except Exception as e:
+        logger.error(f"Error fetching funding history for {symbol}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch funding history: {str(e)}")
+
+
 # ============================================================================
 # UTILITY FUNCTIONS
 # ============================================================================
