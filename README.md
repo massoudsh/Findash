@@ -12,7 +12,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-[Features](#-features) • [Demo](#-live-demo) • [Workflow](#-system-architecture--workflow) • [Installation](#-installation) • [Documentation](#-documentation) • [Contributing](#-contributing)
+[Features](#-features) • [Demo](#-live-demo) • [Workflow](#-system-architecture--workflow) • [Agents](#-ai-agents-how-subagents-tasks--skills-work-together) • [Installation](#-installation) • [Documentation](#-documentation) • [Contributing](#-contributing)
 
 </div>
 
@@ -199,6 +199,136 @@ sequenceDiagram
     B-->>F: Trade Executed
     F-->>U: Notification
 ```
+
+### 🧠 AI Agents: How Subagents, Tasks & Skills Work Together
+
+The platform uses **11 orchestrated AI agents** (M1–M11) coordinated by the **Intelligence Orchestrator**. Tasks are submitted via `submit_task(agent_name, task_type, data, priority)` and pipelines are run via `coordinate_pipeline(symbol, analysis_type)`. For development, **Cursor rules**, **subagents**, and **skills** align with these agents so the AI assistant behaves like a specialist per area.
+
+#### Backend: 11 agents & pipeline flow
+
+```mermaid
+flowchart TB
+    subgraph Orchestrator["🧠 Intelligence Orchestrator"]
+        IO[IntelligenceOrchestrator]
+        TQ[Task Queue]
+        submit["submit_task(agent, task_type, data, priority)"]
+        pipeline["coordinate_pipeline(symbol, analysis_type)"]
+        IO --> submit
+        IO --> pipeline
+        submit --> TQ
+    end
+
+    subgraph Stage1["Stage 1 – Data & real-time"]
+        M1[M1 Data Collector<br/>fetch_market_data]
+        M3[M3 Real-time Processor<br/>process_realtime]
+        M9[M9 Sentiment Analyzer<br/>analyze_sentiment]
+    end
+
+    subgraph Stage2["Stage 2 – ML & prediction"]
+        M5[M5 ML Models<br/>generate_prediction]
+        M7[M7 Price Predictor<br/>predict_price]
+    end
+
+    subgraph Stage3["Stage 3 – Risk & strategy"]
+        M6[M6 Risk Manager<br/>assess_risk]
+        M4[M4 Strategy Agent<br/>generate_signals]
+    end
+
+    subgraph Stage4["Stage 4 – Full analysis only"]
+        M10[M10 Backtester<br/>run_backtest]
+        M11[M11 Visualizer<br/>generate_charts]
+    end
+
+    TQ --> M1
+    TQ --> M3
+    TQ --> M9
+    M1 --> M5
+    M1 --> M7
+    M5 --> M6
+    M7 --> M6
+    M6 --> M4
+    M4 --> M10
+    M4 --> M11
+```
+
+| Agent | Name | Capabilities |
+|-------|------|--------------|
+| M1 | Data Collector | web_scraping, api_fetching, market_data |
+| M2 | Data Warehouse | data_storage, retrieval, validation |
+| M3 | Real-time Processor | stream_processing, real_time_analysis, alerts |
+| M4 | Strategy Agent | strategy_execution, signal_generation, backtesting |
+| M5 | ML Models | prediction, classification, deep_learning |
+| M6 | Risk Manager | risk_assessment, portfolio_optimization, compliance |
+| M7 | Price Predictor | time_series_forecasting, prophet, neural_networks |
+| M8 | Paper Trader | simulated_trading, execution_simulation |
+| M9 | Sentiment Analyzer | sentiment_analysis, news_analysis, social_media_monitoring |
+| M10 | Backtester | historical_testing, performance_analysis |
+| M11 | Visualizer | chart_generation, dashboard_updates, reporting |
+
+#### Development: Subagents, rules & skills (Cursor / repo)
+
+Rules (`.cursor/rules/*.mdc`), **subagents**, and **skills** (`.cursor/skills/*.SKILL.md`) map to the 11 agents so that when you ask to add a data source, fix sentiment, or add an agent, the right context and procedures apply.
+
+```mermaid
+flowchart LR
+    subgraph Task["Your task"]
+        T1[Add price source]
+        T2[Add report/chart]
+        T3[Add/change agent]
+        T4[Fix sentiment]
+        T5[Strategy/signals]
+    end
+
+    subgraph Rules["Rules (by file path)"]
+        R1[findash-data-collector]
+        R2[findash-reports-insights]
+        R3[findash-agents]
+    end
+
+    subgraph Skills["Skills (how-to)"]
+        S1[add-price-source.SKILL]
+        S2[add-report-insight.SKILL]
+        S3[orchestrator-agent.SKILL]
+    end
+
+    subgraph Subagents["Subagents (optional)"]
+        SA1[Data Collector]
+        SA2[Reports & insights]
+        SA3[Orchestrator]
+        SA4[Sentiment & alternative data]
+        SA5[Strategy & signals]
+    end
+
+    T1 --> R1
+    T1 --> S1
+    T1 --> SA1
+
+    T2 --> R2
+    T2 --> S2
+    T2 --> SA2
+
+    T3 --> R3
+    T3 --> S3
+    T3 --> SA3
+
+    T4 --> R3
+    T4 --> SA4
+
+    T5 --> R3
+    T5 --> SA5
+```
+
+| Goal | Rule | Skill | Subagent |
+|------|------|-------|----------|
+| Add price/data source | findash-data-collector | add-price-source | Data Collector |
+| Add report/insight/chart | findash-reports-insights | add-report-insight | Reports & insights |
+| Add or change orchestrator agent | findash-agents | orchestrator-agent | Orchestrator |
+| Sentiment / alternative data | findash-agents | — | Sentiment & alternative data |
+| Strategy / signals | findash-agents | — | Strategy & signals |
+
+Details: [.cursor/docs/findash-subagents-and-skills.md](.cursor/docs/findash-subagents-and-skills.md) · Agent code map: [.cursor/rules/findash-agents.mdc](.cursor/rules/findash-agents.mdc)
+
+---
 
 ### Data Processing Pipeline
 
