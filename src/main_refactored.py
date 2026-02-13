@@ -70,6 +70,7 @@ from src.api.endpoints.websocket_realtime import router as ws_realtime_router
 # Trading Bots and Backtesting APIs
 from src.api.endpoints.trading_bots import router as trading_bots_router
 from src.api.endpoints.backtesting import router as backtesting_router
+from src.api.endpoints.strategies_crud import router as strategies_crud_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -215,6 +216,7 @@ app.include_router(unified_websocket_router, tags=["Unified WebSocket"])
 # Trading Bots and Backtesting APIs
 app.include_router(trading_bots_router, tags=["Trading Bots"])
 app.include_router(backtesting_router, tags=["Backtesting"])
+app.include_router(strategies_crud_router, tags=["Strategies CRUD"])
 
 # DEPRECATED: Legacy WebSocket routers (kept for backward compatibility, will be removed in future)
 app.include_router(ws_realtime_router, tags=["WebSocket Real-time (Deprecated)"])

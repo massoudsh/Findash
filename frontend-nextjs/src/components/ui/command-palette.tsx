@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from '@/lib/i18n/locale-context';
 import {
   Command,
   CommandDialog,
@@ -84,6 +85,7 @@ interface CommandPaletteProps {
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const t = useTranslations();
 
   // Navigation actions
   const navigationActions: CommandAction[] = [
@@ -457,7 +459,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput 
-        placeholder="Type a command or search..." 
+        placeholder={t('common.searchPlaceholder')}
         value={search}
         onValueChange={setSearch}
       />
@@ -526,14 +528,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
 // Helper component for showing command palette trigger
 export function CommandPaletteTrigger({ onOpen }: { onOpen: () => void }) {
+  const t = useTranslations();
   return (
     <Button
       variant="outline"
       className="relative h-8 w-full justify-start bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
       onClick={onOpen}
     >
-      <span className="hidden lg:inline-flex">Search commands...</span>
-      <span className="inline-flex lg:hidden">Search...</span>
+      <span className="hidden lg:inline-flex">{t('common.search')}</span>
+      <span className="inline-flex lg:hidden">{t('common.searchShort')}</span>
       <div className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
         <span className="text-xs">⌘</span>K
       </div>

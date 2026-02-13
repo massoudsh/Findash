@@ -13,8 +13,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/toast';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
-import { getStrategies, getStrategyPerformance, Strategy } from '@/lib/services/strategies_api';
-import { Plus, Play, TrendingUp, Settings, DollarSign, Target, Clock, AlertTriangle, Info, BarChart3, Activity, Shield, Zap, TrendingDown, Layers } from 'lucide-react';
+import { getStrategies, createStrategy } from '@/lib/services/api';
+import { getStrategyPerformance, type Strategy } from '@/lib/services/strategies_api';
+import { StrategyMiniChart } from '@/components/strategies/strategy-mini-chart';
+import { Plus, Play, TrendingUp, Settings, DollarSign, Target, Clock, AlertTriangle, Info, BarChart3, Activity, Shield, Zap, TrendingDown, Layers, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
 
 interface NewStrategyForm {
   name: string;
@@ -186,21 +189,14 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
         is_active: form.active,
       };
 
-      // TODO: Replace with actual API call when backend endpoint is ready
-      const response = await fetch('/api/strategies', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(strategyData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create strategy');
-      }
+      await createStrategy(strategyData);
 
       toast({
         title: 'Strategy Created',
         description: `${form.name} has been created successfully.`,
       });
+
+      onSuccess?.();
 
       // Reset form
       setForm({
@@ -863,10 +859,14 @@ export function StrategiesContent() {
     fetchStrategies();
   }, []);
 
-  function handleNewStrategySuccess() {
+  async function handleNewStrategySuccess() {
     setShowNewStrategyModal(false);
-    // Refresh strategies list
-    window.location.reload();
+    try {
+      const { data } = await getStrategies();
+      setStrategies(Array.isArray(data) ? data : []);
+    } catch (e) {
+      console.error('Error refetching strategies:', e);
+    }
   }
 
   function handleViewDetails(strategy: Strategy) {
@@ -892,17 +892,25 @@ export function StrategiesContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h2 className="text-lg font-semibold">Active Strategies</h2>
           <p className="text-sm text-muted-foreground">
             Manage and monitor your trading strategies
           </p>
         </div>
-        <Button onClick={() => setShowNewStrategyModal(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          New Strategy
-        </Button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/options?tab=strategies" className="flex items-center gap-1">
+              <Activity className="h-4 w-4" />
+              Options Strategies
+            </Link>
+          </Button>
+          <Button onClick={() => setShowNewStrategyModal(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            New Strategy
+          </Button>
+        </div>
       </div>
 
       {/* New Strategy Modal */}
@@ -967,31 +975,40 @@ export function StrategiesContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <p className="text-sm text-gray-300">
+                  <StrategyMiniChart strategyType={strategy.strategy_type} height={72} className="rounded" />
+                  <p className="text-sm text-gray-300 line-clamp-2">
                     {strategy.description}
                   </p>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Type:</span>
-                    <span className="font-medium capitalize text-gray-200">{strategy.strategy_type}</span>
+                    <span className="font-medium capitalize text-gray-200">{strategy.strategy_type.replace('_', ' ')}</span>
                   </div>
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex flex-wrap gap-2 pt-2">
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="flex-1"
+                      className="flex-1 min-w-0"
                       onClick={() => handleBacktest(strategy)}
                     >
-                      <Play className="h-3 w-3 mr-1" />
+                      <Play className="h-3 w-3 mr-1 shrink-0" />
                       Backtest
                     </Button>
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      className="flex-1"
+                      className="flex-1 min-w-0"
                       onClick={() => handleViewDetails(strategy)}
                     >
                       View Details
                     </Button>
+                    {strategy.strategy_type === 'volatility_spread' && (
+                      <Button size="sm" variant="outline" className="w-full" asChild>
+                        <Link href="/options?tab=strategies">
+                          <ExternalLink className="h-3 w-3 mr-1 shrink-0" />
+                          Open in Options
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>

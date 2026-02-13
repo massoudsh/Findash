@@ -492,6 +492,21 @@ class TradingCache:
     """Specialized caching for trading data"""
     
     @staticmethod
+    async def get(key: str) -> Optional[Any]:
+        """Generic get method for backwards compatibility"""
+        return await cache_manager.get(CacheNamespace.MARKET_DATA, key)
+    
+    @staticmethod
+    async def set(key: str, value: Any, ttl: int = 300) -> None:
+        """Generic set method for backwards compatibility"""
+        await cache_manager.set(CacheNamespace.MARKET_DATA, key, value, ttl)
+    
+    @staticmethod
+    async def delete(key: str) -> None:
+        """Generic delete method for backwards compatibility"""
+        await cache_manager.delete(CacheNamespace.MARKET_DATA, key)
+    
+    @staticmethod
     async def cache_market_data(symbol: str, data: Dict[str, Any], ttl: int = 60):
         """Cache market data for a symbol"""
         await cache_manager.set(

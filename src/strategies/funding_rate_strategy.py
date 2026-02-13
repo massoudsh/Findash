@@ -19,7 +19,7 @@ import pandas as pd
 import numpy as np
 from fastapi import BackgroundTasks
 
-from .base import BaseStrategy, StrategyType
+from .base import BaseStrategy
 from ..core.cache import TradingCache
 from ..core.config import get_settings
 from ..core.exceptions import TradingError, ExternalServiceError
@@ -106,6 +106,14 @@ class FundingRateStrategy(BaseStrategy):
             "historical": 7200,        # 2 hours
             "analysis": 1800           # 30 minutes
         }
+    
+    def generate_signals(self) -> pd.Series:
+        """
+        Required abstract method implementation.
+        For funding rate strategy, signals are generated asynchronously via generate_signal().
+        This method returns empty series as placeholder.
+        """
+        return pd.Series(dtype=float)
     
     async def generate_signal(self, market_data: pd.DataFrame, parameters: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """

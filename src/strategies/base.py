@@ -2,12 +2,20 @@ import pandas as pd
 import numpy as np
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Dict, Any, TYPE_CHECKING
 
-from src.portfolio.optimizer import PortfolioOptimizer
-from src.portfolio.metrics import PortfolioMetricsCalculator
+# Lazy import to avoid potential circular dependencies
+if TYPE_CHECKING:
+    from src.portfolio.optimizer import PortfolioOptimizer
+    from src.portfolio.metrics import PortfolioMetricsCalculator
 
 logger = logging.getLogger(__name__)
+
+
+def _get_metrics_calculator():
+    """Lazy import of PortfolioMetricsCalculator"""
+    from src.portfolio.metrics import PortfolioMetricsCalculator
+    return PortfolioMetricsCalculator
 
 class BaseStrategy(ABC):
     """
@@ -45,7 +53,8 @@ class BaseStrategy(ABC):
         cumulative_returns = (1 + portfolio_returns).cumprod()
         
         # Calculate full portfolio metrics
-        metrics = PortfolioMetricsCalculator.calculate_all_metrics(
+        MetricsCalculator = _get_metrics_calculator()
+        metrics = MetricsCalculator.calculate_all_metrics(
             returns=aligned_returns,
             weights=weights.values, # This is an approximation; weights change
             risk_free_rate=self.risk_free_rate

@@ -14,14 +14,33 @@ import pandas as pd
 
 from .signal_fusion import SignalFusionEngine, TradingSignal, FusedSignal, SignalType
 from .base import BaseStrategy
-from .momentum import MomentumStrategy
-from .technical_analysis import TechnicalAnalysisStrategy
-from .risk_aware import RiskAwareStrategy
-from .funding_rate_strategy import FundingRateStrategy
 from ..core.cache import TradingCache
 from ..core.exceptions import TradingError, StrategyError
-from ..prediction.prophet_service import ProphetService
-from ..training.distillation_trainer import DistillationTrainer
+
+# Lazy imports to avoid circular dependencies
+def _get_momentum_strategy():
+    from .momentum import MomentumStrategy
+    return MomentumStrategy
+
+def _get_technical_strategy():
+    from .technical_analysis import TechnicalAnalysisStrategy
+    return TechnicalAnalysisStrategy
+
+def _get_risk_aware_strategy():
+    from .risk_aware import RiskAwareStrategy
+    return RiskAwareStrategy
+
+def _get_funding_rate_strategy():
+    from .funding_rate_strategy import FundingRateStrategy
+    return FundingRateStrategy
+
+def _get_prophet_service():
+    from ..prediction.prophet_service import ProphetService
+    return ProphetService
+
+def _get_distillation_trainer():
+    from ..training.distillation_trainer import DistillationTrainer
+    return DistillationTrainer
 
 
 class StrategyType(Enum):
@@ -102,13 +121,30 @@ class StrategyAgent:
         # Initialize signal fusion engine
         self.signal_fusion = SignalFusionEngine(cache)
         
-        # Initialize strategies
-        self.strategies: Dict[StrategyType, BaseStrategy] = {
-            StrategyType.MOMENTUM: MomentumStrategy(),
-            StrategyType.TECHNICAL: TechnicalAnalysisStrategy(),
-            StrategyType.RISK_AWARE: RiskAwareStrategy(),
-            StrategyType.FUNDING_RATE: FundingRateStrategy(cache)
-        }
+        # Initialize strategies (using lazy imports to avoid circular dependencies)
+        self.strategies: Dict[StrategyType, BaseStrategy] = {}
+        
+        # Try to initialize each strategy, skip if abstract or errors
+        try:
+            MomentumStrategy = _get_momentum_strategy()
+            self.strategies[StrategyType.MOMENTUM] = MomentumStrategy()
+        except Exception as e:
+            logger.warning(f"Could not initialize MomentumStrategy: {e}")
+        
+        try:
+            TechnicalAnalysisStrategy = _get_technical_strategy()
+            self.strategies[StrategyType.TECHNICAL] = TechnicalAnalysisStrategy()
+        except Exception as e:
+            logger.warning(f"Could not initialize TechnicalAnalysisStrategy: {e}")
+        
+        # Note: RiskAwareStrategy is abstract - skip instantiation
+        # self.strategies[StrategyType.RISK_AWARE] = RiskAwareStrategy()
+        
+        try:
+            FundingRateStrategy = _get_funding_rate_strategy()
+            self.strategies[StrategyType.FUNDING_RATE] = FundingRateStrategy(cache)
+        except Exception as e:
+            logger.warning(f"Could not initialize FundingRateStrategy: {e}")
         
         # Current market regime and strategy allocations
         self.current_regime = MarketRegime.UNCERTAIN

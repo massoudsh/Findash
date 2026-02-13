@@ -33,8 +33,10 @@ import { cn } from '@/lib/utils';
 import { UserMenu } from "@/components/navigation/user-menu";
 import { GlobalSearch } from "@/components/search/global-search";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { NotificationCenter } from "@/components/ui/notification-center";
 import { CommandPalette, CommandPaletteTrigger } from "@/components/ui/command-palette";
+import { useTranslations } from '@/lib/i18n/locale-context';
 
 interface NavigationWrapperProps {
   children: React.ReactNode;
@@ -87,13 +89,14 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const pathname = usePathname();
+  const t = useTranslations();
 
   type NavItem = { name: string; href: string; icon: React.ComponentType<{ className?: string }> };
   
   const NavigationGroup = ({ title, items }: { title: string; items: NavItem[] }) => (
     <div className="mb-6">
       <h3 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        {title}
+        {t(`nav.group.${title}`)}
       </h3>
       <nav className="space-y-1">
         {items.map((item) => {
@@ -110,8 +113,8 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
               )}
               onClick={() => setIsOpen(false)}
             >
-              <Icon className="h-4 w-4" />
-              <span>{item.name}</span>
+              <Icon className="h-4 w-4 shrink-0" />
+              <span>{t(`nav.item.${item.name}`)}</span>
             </Link>
           );
         })}
@@ -144,6 +147,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
           <div className="flex items-center gap-4">
             <CommandPaletteTrigger onOpen={() => setCommandOpen(true)} />
             <NotificationCenter />
+            <LanguageSwitcher />
             <ThemeSwitcher />
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
@@ -174,8 +178,9 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
             </div>
             <LeftNavigationContent />
             <div className="mt-auto">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between gap-2 mb-4">
                 <ThemeSwitcher showLabel />
+                <LanguageSwitcher />
               </div>
               <UserMenu />
             </div>
@@ -195,7 +200,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
         <div className="hidden lg:fixed lg:inset-y-0 lg:right-0 lg:z-40 lg:w-64 lg:flex lg:flex-col">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-l bg-card px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center justify-center">
-              <h2 className="text-lg font-semibold text-muted-foreground">Analysis & Tools</h2>
+              <h2 className="text-lg font-semibold text-muted-foreground">{t('nav.title.Analysis & Tools')}</h2>
             </div>
             <RightNavigationContent />
           </div>

@@ -42,7 +42,7 @@ def load_scenarios():
 _scenarios_cache = None
 _cache_timestamp = None
 
-def get_scenarios():
+def get_cached_scenarios():
     """Get scenarios with caching"""
     global _scenarios_cache, _cache_timestamp
     
@@ -100,7 +100,7 @@ async def get_scenarios(
     Get all scenarios with optional filtering
     """
     try:
-        scenarios = get_scenarios()
+        scenarios = get_cached_scenarios()
         
         # Apply filters
         if regime:
@@ -126,7 +126,7 @@ async def get_scenario(
     Get a specific scenario by ID
     """
     try:
-        scenarios = get_scenarios()
+        scenarios = get_cached_scenarios()
         scenario = next((s for s in scenarios if s.get('scenario_id') == scenario_id), None)
         
         if not scenario:
@@ -149,7 +149,7 @@ async def match_scenarios(
     Match current market conditions to scenarios
     """
     try:
-        scenarios = get_scenarios()
+        scenarios = get_cached_scenarios()
         matches = []
         
         for scenario in scenarios:
@@ -215,7 +215,7 @@ async def get_regimes(
     Get list of all unique regimes
     """
     try:
-        scenarios = get_scenarios()
+        scenarios = get_cached_scenarios()
         regimes = sorted(list(set(s.get('regime') for s in scenarios if s.get('regime'))))
         return {"regimes": regimes, "count": len(regimes)}
     except Exception as e:
@@ -230,7 +230,7 @@ async def get_scenario_stats(
     Get statistics about scenarios
     """
     try:
-        scenarios = get_scenarios()
+        scenarios = get_cached_scenarios()
         
         # Count by regime
         regime_counts = {}

@@ -95,7 +95,7 @@ const portfolioMetrics = {
 
 
 
-const strategyTemplates = [
+export const strategyTemplates = [
   // Basic Strategies
   {
     name: 'Long Call',

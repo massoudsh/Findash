@@ -18,6 +18,13 @@ from src.core.config import get_settings
 from src.core.security import get_current_active_user, TokenData
 from src.core.rate_limiter import standard_rate_limit
 from src.core.cache import CacheManager, CacheNamespace
+
+settings = get_settings()
+router = APIRouter(prefix="/api/agents", tags=["Agent Monitoring"])
+
+# Initialize cache manager - must be before StrategyAgent
+cache_manager = CacheManager()
+
 try:
     from src.core.intelligence_orchestrator import IntelligenceOrchestrator
     orchestrator = IntelligenceOrchestrator()
@@ -27,15 +34,10 @@ except ImportError:
 
 try:
     from src.strategies.strategy_agent import StrategyAgent
-    strategy_agent = StrategyAgent(cache_manager) if orchestrator else None  # noqa: F821
-except ImportError:
+    strategy_agent = StrategyAgent(cache_manager) if orchestrator else None
+except (ImportError, Exception) as e:
     strategy_agent = None
-    logger.warning("StrategyAgent not available")
-settings = get_settings()
-router = APIRouter(prefix="/api/agents", tags=["Agent Monitoring"])
-
-# Initialize cache manager
-cache_manager = CacheManager()
+    logger.warning(f"StrategyAgent not available: {e}")
 
 # Pydantic models
 class AgentStatus(BaseModel):

@@ -1,12 +1,29 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+} from '@/components/ui/dropdown-menu';
+import { toast } from '@/components/ui/toast';
 import {
   Star,
   ChevronDown,
@@ -18,6 +35,8 @@ import {
   ExternalLink,
   Gift,
   Info,
+  Target,
+  Calculator,
 } from 'lucide-react';
 
 // Mock order book
@@ -78,7 +97,19 @@ interface ChartPoint {
   funding_rate_annualized_pct: number;
 }
 
-export function OptionTradingTerminal() {
+export interface OptionTradingTerminalStrategy {
+  name: string;
+  description?: string;
+  category?: string;
+}
+
+interface OptionTradingTerminalProps {
+  selectedStrategy?: OptionTradingTerminalStrategy | null;
+  strategyPnl?: number;
+  onClearStrategy?: () => void;
+}
+
+export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onClearStrategy }: OptionTradingTerminalProps = {}) {
   const [symbol, setSymbol] = useState('ETHUSDC');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1D');
   const [orderType, setOrderType] = useState<'market' | 'limit'>('market');
@@ -96,9 +127,39 @@ export function OptionTradingTerminal() {
   const [chartSeries, setChartSeries] = useState<ChartPoint[]>([]);
   const [chartLoading, setChartLoading] = useState(false);
   const [symbolPickerOpen, setSymbolPickerOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const [selectedExpiry, setSelectedExpiry] = useState({ label: '25 days', matures: '27 Feb 2026' });
+  const [chartType, setChartType] = useState<'line' | 'area'>('line');
+  const [chartSettingsOpen, setChartSettingsOpen] = useState(false);
+  const [orderbookSpread, setOrderbookSpread] = useState('0.1%');
+  const [orderbookDepth, setOrderbookDepth] = useState(10);
+  const [incentivizedRange, setIncentivizedRange] = useState(false);
+  const [placingOrder, setPlacingOrder] = useState(false);
 
-  const timeframes = ['5m', '1H', '1D', '1W'];
+  const timeframes = ['5m', '1H', '4H', '1D', '1W'];
+  const expiryOptions = [
+    { label: '7 days', matures: '6 Feb 2026' },
+    { label: '14 days', matures: '13 Feb 2026' },
+    { label: '25 days', matures: '27 Feb 2026' },
+    { label: '30 days', matures: '2 Mar 2026' },
+  ];
+  const spreadOptions = ['0.05%', '0.1%', '0.25%', '0.5%'];
+  const depthOptions = [10, 25, 50];
   const backendSymbol = toBackendSymbol(symbol);
+
+  // Mock available balance (ETH)
+  const MOCK_AVAILABLE_ETH = 10;
+  const notionalEth = notionalSize[0];
+  const marginRequiredEth =
+    leverage === 'Cross'
+      ? notionalEth // Cross: position size = margin used (fully backed by shared balance)
+      : leverage === '2x'
+        ? notionalEth / 2 // 2x: 50% margin
+        : notionalEth; // One-way: 1x, full notional as margin
+  const canOpen = notionalEth > 0 && marginRequiredEth <= MOCK_AVAILABLE_ETH;
+  const estFundingPer8h =
+    notionalEth > 0 ? (notionalEth * (metrics.impliedApr / 100) * (8 / (365 * 24))) : 0;
 
   // Supported symbols (display as USDC for UX)
   useEffect(() => {
@@ -176,6 +237,63 @@ export function OptionTradingTerminal() {
     return () => document.removeEventListener('click', onClose);
   }, [symbolPickerOpen]);
 
+  // Persist favorite by symbol
+  useEffect(() => {
+    try {
+      const key = 'findash-options-favorites';
+      const raw = localStorage.getItem(key);
+      const favs: string[] = raw ? JSON.parse(raw) : [];
+      setIsFavorite(favs.includes(symbol));
+    } catch {
+      setIsFavorite(false);
+    }
+  }, [symbol]);
+
+  const toggleFavorite = () => {
+    try {
+      const key = 'findash-options-favorites';
+      const raw = localStorage.getItem(key);
+      const favs: string[] = raw ? JSON.parse(raw) : [];
+      const next = favs.includes(symbol) ? favs.filter((s) => s !== symbol) : [...favs, symbol];
+      localStorage.setItem(key, JSON.stringify(next));
+      setIsFavorite(next.includes(symbol));
+      toast({ title: next.includes(symbol) ? 'Added to favorites' : 'Removed from favorites', type: 'success' });
+    } catch {
+      toast({ title: 'Could not update favorites', type: 'error' });
+    }
+  };
+
+  const refetchChart = useCallback(() => {
+    setChartLoading(true);
+    fetch(`/api/funding/history/${encodeURIComponent(backendSymbol)}?limit=100`, { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data: { series?: ChartPoint[] }) => {
+        setChartSeries(Array.isArray(data?.series) ? data.series : []);
+      })
+      .catch(() => setChartSeries([]))
+      .finally(() => setChartLoading(false));
+  }, [backendSymbol]);
+
+  const handlePlaceOrder = () => {
+    if (notionalEth <= 0) {
+      toast({ title: 'Enter notional size', type: 'warning' });
+      return;
+    }
+    if (!canOpen) {
+      toast({ title: 'Insufficient balance', type: 'error' });
+      return;
+    }
+    setPlacingOrder(true);
+    setTimeout(() => {
+      setPlacingOrder(false);
+      toast({
+        title: 'Order placed (simulated)',
+        description: `${tradeDirection === 'long' ? 'Long' : 'Short'} ${notionalEth} ETH @ ${metrics.impliedApr.toFixed(2)}% APR`,
+        type: 'success',
+      });
+    }, 800);
+  };
+
   // Build chart path from series (annualized %) — viewBox 0 0 500 280
   const chartPath = (() => {
     if (!chartSeries.length) return null;
@@ -193,10 +311,38 @@ export function OptionTradingTerminal() {
 
   return (
     <div className="flex flex-col h-full min-h-[calc(100vh-8rem)] bg-background text-foreground">
-      {/* Asset bar */}
-      <div className="flex items-center justify-between py-3 px-4 border-b">
-        <div className="flex items-center gap-3">
-          <Star className="h-4 w-4 text-muted-foreground hover:text-yellow-500 cursor-pointer" />
+      {selectedStrategy && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-2 px-4 bg-primary/10 border-b text-sm flex-wrap">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <Target className="h-4 w-4 shrink-0 text-primary" />
+            <span className="font-medium truncate">Trading with strategy: {selectedStrategy.name}</span>
+            {selectedStrategy.description && (
+              <span className="text-muted-foreground truncate hidden sm:inline">— {selectedStrategy.description}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className={`font-semibold tabular-nums ${strategyPnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              Strategy PnL: {strategyPnl >= 0 ? '+' : ''}${strategyPnl.toFixed(2)}
+            </span>
+            {onClearStrategy && (
+              <Button variant="ghost" size="sm" className="shrink-0" onClick={onClearStrategy}>
+                Clear
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+      {/* Asset bar — responsive: stack on small screens */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-3 px-4 border-b">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={toggleFavorite}
+            className="p-1 rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
+            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground hover:text-yellow-500'}`} />
+          </button>
           <div className="relative">
             <button
               type="button"
@@ -235,13 +381,21 @@ export function OptionTradingTerminal() {
               </div>
             )}
           </div>
-          <Info className="h-4 w-4 text-muted-foreground" />
+          <button
+            type="button"
+            onClick={() => setInfoOpen(true)}
+            className="p-1 rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
+            aria-label="Pair info"
+          >
+            <Info className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+          </button>
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 shrink-0"
             onClick={() => fetchFunding()}
             disabled={loadingFunding}
+            aria-label="Refresh funding"
           >
             <RefreshCw className={`h-4 w-4 ${loadingFunding ? 'animate-spin' : ''}`} />
           </Button>
@@ -251,15 +405,63 @@ export function OptionTradingTerminal() {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold">25 days</span>
-          <span className="text-sm text-muted-foreground">(Matures 27 Feb 2026)</span>
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+        <div className="flex items-center gap-2 shrink-0">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-muted text-left focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <span className="text-lg font-semibold">{selectedExpiry.label}</span>
+                <span className="text-sm text-muted-foreground">(Matures {selectedExpiry.matures})</span>
+                <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {expiryOptions.map((opt) => (
+                <DropdownMenuItem
+                  key={opt.label}
+                  onClick={() => setSelectedExpiry(opt)}
+                >
+                  {opt.label} (Matures {opt.matures})
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
-      {/* Metrics row */}
-      <div className="flex items-center gap-8 py-4 px-4 border-b flex-wrap">
+      {/* Pair info dialog */}
+      <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{symbol} — Funding rate option</DialogTitle>
+            <DialogDescription>
+              Perpetual funding rate option. Implied APR reflects the fixed rate; underlying APR is the floating reference.
+              Settlement every 8h. Long = pay fixed, receive floating; Short = pay floating, receive fixed.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Chart settings dialog */}
+      <Dialog open={chartSettingsOpen} onOpenChange={setChartSettingsOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Chart settings</DialogTitle>
+            <DialogDescription>
+              Display options for the APR chart. More indicators can be added when connected to a full charting library.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            <p>Chart type: <span className="text-foreground font-medium">{chartType}</span></p>
+            <p>Timeframe: <span className="text-foreground font-medium">{selectedTimeframe}</span></p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Metrics row — wrap by view size */}
+      <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 py-4 px-4 border-b">
         <div>
           <div className="text-3xl font-bold text-green-500">
             {loadingFunding ? '…' : `${metrics.impliedApr.toFixed(2)}%`}
@@ -292,13 +494,13 @@ export function OptionTradingTerminal() {
         </div>
       </div>
 
-      {/* Main: Chart | Order book | Order entry */}
-      <div className="grid grid-cols-12 gap-4 flex-1 p-4 min-h-0">
+      {/* Main: Chart | Order book | Order entry — responsive grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 p-4 min-h-0">
         {/* Left — Chart */}
-        <div className="col-span-6 flex flex-col min-h-0">
+        <div className="lg:col-span-6 flex flex-col min-h-[280px] lg:min-h-0">
           <Card className="flex-1 flex flex-col min-h-0 border rounded-lg">
             <CardContent className="p-4 flex flex-col flex-1 min-h-0">
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-3">
                 <Button
                   variant={chartTab === 'apr' ? 'default' : 'ghost'}
                   size="sm"
@@ -380,10 +582,11 @@ export function OptionTradingTerminal() {
                     {metrics.underlyingApr.toFixed(2)}%
                   </text>
                 </svg>
-                <div className="absolute top-2 right-2 flex items-center gap-2">
+                <div className="absolute top-2 right-2 flex flex-wrap items-center justify-end gap-1">
                   {timeframes.map((tf) => (
                     <button
                       key={tf}
+                      type="button"
                       onClick={() => setSelectedTimeframe(tf)}
                       className={`px-2 py-1 text-xs rounded ${
                         selectedTimeframe === tf
@@ -394,14 +597,39 @@ export function OptionTradingTerminal() {
                       {tf}
                     </button>
                   ))}
-                  <button className="p-1 text-muted-foreground hover:text-foreground">
-                    <BarChart3 className="h-4 w-4" />
-                  </button>
-                  <button className="p-1 text-muted-foreground hover:text-foreground">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        type="button"
+                        className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        aria-label="Chart type"
+                      >
+                        <BarChart3 className="h-4 w-4" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuRadioGroup value={chartType} onValueChange={(v) => setChartType(v as 'line' | 'area')}>
+                        <DropdownMenuRadioItem value="line">Line</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="area">Area</DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <button
+                    type="button"
+                    onClick={() => setChartSettingsOpen(true)}
+                    className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    aria-label="Chart settings"
+                  >
                     <Settings className="h-4 w-4" />
                   </button>
-                  <button className="p-1 text-muted-foreground hover:text-foreground">
-                    <RefreshCw className="h-4 w-4" />
+                  <button
+                    type="button"
+                    onClick={() => refetchChart()}
+                    disabled={chartLoading}
+                    className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/50 disabled:opacity-50"
+                    aria-label="Refresh chart"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${chartLoading ? 'animate-spin' : ''}`} />
                   </button>
                 </div>
               </div>
@@ -410,17 +638,19 @@ export function OptionTradingTerminal() {
         </div>
 
         {/* Center — Order book */}
-        <div className="col-span-3 flex flex-col min-h-0">
+        <div className="lg:col-span-3 flex flex-col min-h-0 min-h-[240px]">
           <Card className="flex-1 flex flex-col min-h-0 border rounded-lg">
             <CardHeader className="pb-2">
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <button
+                  type="button"
                   className={`text-sm pb-1 border-b-2 ${orderbookTab === 'orderbook' ? 'border-primary font-medium' : 'border-transparent text-muted-foreground'}`}
                   onClick={() => setOrderbookTab('orderbook')}
                 >
                   Orderbook
                 </button>
                 <button
+                  type="button"
                   className={`text-sm pb-1 border-b-2 ${orderbookTab === 'trades' ? 'border-primary font-medium' : 'border-transparent text-muted-foreground'}`}
                   onClick={() => setOrderbookTab('trades')}
                 >
@@ -429,17 +659,56 @@ export function OptionTradingTerminal() {
               </div>
             </CardHeader>
             <CardContent className="p-4 flex-1 overflow-auto">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-muted-foreground">0.1%</span>
-                <ChevronDown className="h-3 w-3 text-muted-foreground" />
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      {orderbookSpread}
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {spreadOptions.map((s) => (
+                      <DropdownMenuItem key={s} onClick={() => setOrderbookSpread(s)}>
+                        {s}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="flex items-center gap-1 p-1 rounded hover:bg-muted text-muted-foreground"
+                      aria-label="Order book depth"
+                    >
+                      {orderbookDepth} levels
+                      <ChevronDown className="h-3 w-3" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {depthOptions.map((d) => (
+                      <DropdownMenuItem key={d} onClick={() => setOrderbookDepth(d)}>
+                        {d} levels
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 rounded bg-muted" />
-                  <div className="w-4 h-4 rounded bg-muted" />
-                  <div className="w-4 h-4 rounded bg-muted" />
+                  <div className="w-4 h-4 rounded bg-muted" title="View toggle" />
+                  <div className="w-4 h-4 rounded bg-muted" title="View toggle" />
                 </div>
                 <div className="flex items-center gap-1">
-                  <Checkbox id="inc-range" className="h-3 w-3" />
-                  <label htmlFor="inc-range" className="text-xs text-muted-foreground">
+                  <Checkbox
+                    id="inc-range"
+                    className="h-3 w-3"
+                    checked={incentivizedRange}
+                    onCheckedChange={(c) => setIncentivizedRange(c === true)}
+                  />
+                  <label htmlFor="inc-range" className="text-xs text-muted-foreground cursor-pointer">
                     Incentivized Range
                   </label>
                 </div>
@@ -464,7 +733,7 @@ export function OptionTradingTerminal() {
                 </div>
               </div>
               <div className="flex justify-between text-xs py-2 border-y my-2">
-                <span className="text-muted-foreground">0.1% Spread</span>
+                <span className="text-muted-foreground">{orderbookSpread} Spread</span>
                 <span className="text-cyan-500">Incent. Range: 5.16% - 5.62%</span>
               </div>
               <div>
@@ -491,14 +760,14 @@ export function OptionTradingTerminal() {
         </div>
 
         {/* Right — Order entry */}
-        <div className="col-span-3 flex flex-col min-h-0">
+        <div className="lg:col-span-3 flex flex-col min-h-0">
           <Card className="flex-1 flex flex-col min-h-0 border rounded-lg">
             <CardContent className="p-4 flex flex-col">
               <div className="bg-amber-500/20 border border-amber-500/30 rounded-lg p-3 mb-4 flex items-center gap-2">
                 <Gift className="h-4 w-4 text-amber-400" />
                 <span className="text-sm text-amber-200">Maker Order Rewards Live!</span>
               </div>
-              <div className="grid grid-cols-3 gap-2 mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
                 {['Cross', '2x', 'One-way'].map((lev) => (
                   <Button
                     key={lev}
@@ -526,7 +795,7 @@ export function OptionTradingTerminal() {
                   Limit
                 </Button>
               </div>
-              <div className="grid grid-cols-2 gap-2 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
                 <Button
                   onClick={() => setTradeDirection('long')}
                   className={`flex items-center gap-2 ${tradeDirection === 'long' ? 'bg-green-600 hover:bg-green-700' : ''}`}
@@ -555,24 +824,26 @@ export function OptionTradingTerminal() {
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">My Notional Size</span>
-                  <span className="text-cyan-500">0 YU</span>
+                  <span className="text-cyan-500">{notionalEth} ETH</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Available to Trade</span>
-                  <span>0 ETH</span>
+                  <span>{MOCK_AVAILABLE_ETH} ETH</span>
                 </div>
               </div>
               <div className="mb-4">
-                <Label className="text-sm text-muted-foreground">Notional Size</Label>
+                <Label className="text-sm text-muted-foreground">Notional Size (ETH)</Label>
                 <div className="flex items-center gap-2 mt-1">
                   <Input
                     type="number"
+                    min={0}
+                    max={100}
                     value={notionalSize[0]}
-                    onChange={(e) => setNotionalSize([parseInt(e.target.value, 10) || 0])}
+                    onChange={(e) => setNotionalSize([Math.max(0, Math.min(100, parseInt(e.target.value, 10) || 0))])}
                     className="bg-muted/50"
-                    placeholder="YU"
+                    placeholder="ETH"
                   />
-                  <span className="text-xs text-muted-foreground">0 ETH</span>
+                  <span className="text-xs text-muted-foreground">ETH</span>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
                   <Slider
@@ -582,7 +853,62 @@ export function OptionTradingTerminal() {
                     step={1}
                     className="flex-1"
                   />
-                  <span className="text-xs w-8">{notionalSize[0]} %</span>
+                  <span className="text-xs w-10 tabular-nums">{notionalSize[0]} ETH</span>
+                </div>
+              </div>
+              {/* Order calculation preview — user sees what happens when toggling */}
+              <div className="mb-4 rounded-lg border bg-muted/30 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Calculator className="h-4 w-4 text-primary" />
+                  Order preview
+                </div>
+                <div className="text-xs space-y-1.5">
+                  <p>
+                    <span className="text-muted-foreground">Margin mode:</span>{' '}
+                    <span className="font-medium">
+                      {leverage === 'Cross'
+                        ? 'Cross — your full balance backs this position (shared collateral).'
+                        : leverage === '2x'
+                          ? '2x — isolated margin, 50% of notional required.'
+                          : 'One-way — isolated, full notional as margin (1x).'}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Direction:</span>{' '}
+                    <span className="font-medium">
+                      {tradeDirection === 'long'
+                        ? 'Long — you pay fixed rate (~' + metrics.impliedApr.toFixed(2) + '% APR), receive floating (underlying).'
+                        : 'Short — you pay floating (underlying), receive fixed rate.'}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="text-muted-foreground">Notional:</span>{' '}
+                    <span className="font-medium">{notionalEth} ETH</span>
+                    {notionalEth > 0 && (
+                      <>
+                        {' • '}
+                        <span className="text-muted-foreground">Margin required:</span>{' '}
+                        <span className={canOpen ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                          {marginRequiredEth.toFixed(2)} ETH
+                        </span>
+                      </>
+                    )}
+                  </p>
+                  {notionalEth > 0 && (
+                    <p>
+                      <span className="text-muted-foreground">Est. funding per 8h:</span>{' '}
+                      <span className="font-medium">
+                        {tradeDirection === 'long' ? '−' : '+'}{estFundingPer8h.toFixed(4)} ETH
+                      </span>
+                      {' (you '}
+                      {tradeDirection === 'long' ? 'pay' : 'receive'} fixed)
+                    </p>
+                  )}
+                  {notionalEth > 0 && !canOpen && (
+                    <p className="text-red-600 dark:text-red-400 font-medium">
+                      Insufficient balance. Need {marginRequiredEth.toFixed(2)} ETH, have {MOCK_AVAILABLE_ETH} ETH.
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2 mb-4">
@@ -591,10 +917,18 @@ export function OptionTradingTerminal() {
                   checked={reduceOnly}
                   onCheckedChange={(c) => setReduceOnly(c === true)}
                 />
-                <Label htmlFor="reduce-only" className="text-sm text-muted-foreground">
+                <Label htmlFor="reduce-only" className="text-sm text-muted-foreground cursor-pointer">
                   Reduce Only
                 </Label>
               </div>
+              <Button
+                className="w-full mb-4"
+                size="lg"
+                onClick={handlePlaceOrder}
+                disabled={notionalEth <= 0 || !canOpen || placingOrder}
+              >
+                {placingOrder ? 'Placing…' : orderType === 'market' ? 'Place Market Order' : 'Place Limit Order'}
+              </Button>
               <div className="space-y-2 text-sm border-t pt-4 mt-auto">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Liquidation Implied APR</span>
@@ -618,21 +952,21 @@ export function OptionTradingTerminal() {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between px-4 py-2 border-t text-xs text-muted-foreground">
-        <div className="flex items-center gap-4">
+      {/* Footer — responsive wrap */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-2 border-t text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
             <span>Online</span>
           </div>
           <span>Gas: $0.02</span>
         </div>
-        <div className="flex items-center gap-4">
-          <a href="#" className="hover:text-foreground">Docs</a>
-          <a href="#" className="hover:text-foreground">Support</a>
-          <a href="#" className="hover:text-foreground">Terms</a>
-          <a href="#" className="hover:text-foreground">Policy</a>
-          <a href="#" className="hover:text-cyan-500">Help & Support</a>
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+          <Link href="/docs" className="hover:text-foreground">Docs</Link>
+          <Link href="/support" className="hover:text-foreground">Support</Link>
+          <Link href="/terms" className="hover:text-foreground">Terms</Link>
+          <Link href="/policy" className="hover:text-foreground">Policy</Link>
+          <a href="https://docs.findash.example/help" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-500">Help & Support</a>
         </div>
       </div>
     </div>
