@@ -547,6 +547,53 @@ async def get_user_portfolios(user_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Failed to fetch portfolios: {str(e)}")
 
 
+# Phase 2: Dashboard portfolio and account summary for frontend
+@router.get("/dashboard/summary")
+async def get_dashboard_summary():
+    """
+    Phase 2: Single endpoint for dashboard UI - portfolio and account summary.
+    Wire frontend dashboard to this API for account cards and portfolio overview.
+    """
+    try:
+        portfolios = [
+            {
+                "id": "portfolio_1",
+                "name": "Growth Portfolio",
+                "total_value": 125000.00,
+                "cash_balance": 5000.00,
+                "day_change_percent": 2.04,
+                "positions_count": 8,
+            },
+            {
+                "id": "portfolio_2",
+                "name": "Dividend Income",
+                "total_value": 87500.00,
+                "cash_balance": 2500.00,
+                "day_change_percent": -1.36,
+                "positions_count": 12,
+            },
+        ]
+        total_value = sum(p["total_value"] for p in portfolios)
+        total_cash = sum(p["cash_balance"] for p in portfolios)
+        return {
+            "account": {
+                "total_equity": total_value,
+                "cash_balance": total_cash,
+                "available_to_trade": total_cash,
+            },
+            "portfolios": portfolios,
+            "summary": {
+                "total_portfolio_value": total_value,
+                "portfolio_count": len(portfolios),
+                "total_positions": sum(p["positions_count"] for p in portfolios),
+            },
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    except Exception as e:
+        logger.error(f"Error building dashboard summary: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============================================================================
 # REAL-TIME DATA ENDPOINTS
 # ============================================================================

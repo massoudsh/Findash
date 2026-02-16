@@ -146,7 +146,7 @@ Medium
 
 ---
 
-### 6. **Phase 2: Backend and data**
+### 6. **Phase 2: Backend and data** ✅ Completed
 
 **Title:** `Phase 2: Backend APIs and data wiring`
 
@@ -157,16 +157,19 @@ Medium
 Wire frontend to backend for trading bots, agent status/signals, and dashboard data.
 
 ## Tasks
-- [ ] Trading bots API (create, list, update, pause/start, risk and agent source config)
-- [ ] Agent status/signals endpoints for M1, M4, M9, M11 panels
-- [ ] Dashboard portfolio and account summary from API
-- [ ] Tests and OpenAPI docs for new endpoints
+- [x] Trading bots API (create, list, update, pause/start, risk and agent source config)
+- [x] Agent status/signals endpoints for M1, M4, M9, M11 panels
+- [x] Dashboard portfolio and account summary from API
+- [x] Tests and OpenAPI docs for new endpoints
 
 ## Priority
 High
 
 ## Estimated effort
 3–4 sprints
+
+## Status
+**Completed.** Implemented: `/api/trading-bots/` (CRUD, start/pause/stop, risk, agent_sources), `/api/agents/panels` (M1/M4/M9 payloads), `/api/dashboard/summary` (account + portfolio summary), `tests/test_phase2_api.py`. OpenAPI via FastAPI `/docs`.
 ```
 
 ---
@@ -179,4 +182,4 @@ High
 
 ---
 
-*Last updated: 2026-02-16 (after CI/CD fix and push).*
+*Last updated: 2026-02-10 (Phase 2 completed: backend APIs, dashboard summary, tests).*

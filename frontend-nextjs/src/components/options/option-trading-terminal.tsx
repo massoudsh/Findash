@@ -97,6 +97,19 @@ interface ChartPoint {
   funding_rate_annualized_pct: number;
 }
 
+/** Open funding-rate position (from place order). */
+export interface FundingPosition {
+  id: string;
+  symbol: string;
+  direction: 'long' | 'short';
+  notionalEth: number;
+  entryApr: number;
+  currentApr: number;
+  marginMode: string;
+  openTime: string;
+  reduceOnly: boolean;
+}
+
 export interface OptionTradingTerminalStrategy {
   name: string;
   description?: string;
@@ -136,6 +149,33 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
   const [orderbookDepth, setOrderbookDepth] = useState(10);
   const [incentivizedRange, setIncentivizedRange] = useState(false);
   const [placingOrder, setPlacingOrder] = useState(false);
+  const [positions, setPositions] = useState<FundingPosition[]>([
+    {
+      id: 'pos-1',
+      symbol: 'ETHUSDC',
+      direction: 'long',
+      notionalEth: 2.5,
+      entryApr: 5.12,
+      currentApr: 5.34,
+      marginMode: 'Cross',
+      openTime: new Date(Date.now() - 86400 * 2 * 1000).toISOString(),
+      reduceOnly: false,
+    },
+    {
+      id: 'pos-2',
+      symbol: 'BTCUSDC',
+      direction: 'short',
+      notionalEth: 0.15,
+      entryApr: 4.85,
+      currentApr: 5.1,
+      marginMode: 'One-way',
+      openTime: new Date(Date.now() - 3600 * 12 * 1000).toISOString(),
+      reduceOnly: false,
+    },
+  ]);
+  const [selectedPosition, setSelectedPosition] = useState<FundingPosition | null>(null);
+  const [orderbookCompact, setOrderbookCompact] = useState(false);
+  const [makerRewardsBannerDismissed, setMakerRewardsBannerDismissed] = useState(false);
 
   const timeframes = ['5m', '1H', '4H', '1D', '1W'];
   const expiryOptions = [
@@ -208,18 +248,21 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
     fetchFunding();
   }, [fetchFunding]);
 
-  // Chart: fetch history
+  // Chart: fetch history — limit by timeframe for functional chart
+  const chartLimitByTimeframe: Record<string, number> = { '5m': 96, '1H': 168, '4H': 42, '1D': 24, '1W': 7 };
+  const chartLimit = chartLimitByTimeframe[selectedTimeframe] ?? 100;
+
   useEffect(() => {
     if (chartTab !== 'apr') return;
     setChartLoading(true);
-    fetch(`/api/funding/history/${encodeURIComponent(backendSymbol)}?limit=100`, { cache: 'no-store' })
+    fetch(`/api/funding/history/${encodeURIComponent(backendSymbol)}?limit=${chartLimit}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data: { series?: ChartPoint[] }) => {
         setChartSeries(Array.isArray(data?.series) ? data.series : []);
       })
       .catch(() => setChartSeries([]))
       .finally(() => setChartLoading(false));
-  }, [backendSymbol, chartTab]);
+  }, [backendSymbol, chartTab, chartLimit]);
 
   // Countdown ticker
   useEffect(() => {
@@ -265,14 +308,15 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
 
   const refetchChart = useCallback(() => {
     setChartLoading(true);
-    fetch(`/api/funding/history/${encodeURIComponent(backendSymbol)}?limit=100`, { cache: 'no-store' })
+    const limit = chartLimitByTimeframe[selectedTimeframe] ?? 100;
+    fetch(`/api/funding/history/${encodeURIComponent(backendSymbol)}?limit=${limit}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data: { series?: ChartPoint[] }) => {
         setChartSeries(Array.isArray(data?.series) ? data.series : []);
       })
       .catch(() => setChartSeries([]))
       .finally(() => setChartLoading(false));
-  }, [backendSymbol]);
+  }, [backendSymbol, selectedTimeframe]);
 
   const handlePlaceOrder = () => {
     if (notionalEth <= 0) {
@@ -285,6 +329,18 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
     }
     setPlacingOrder(true);
     setTimeout(() => {
+      const newPos: FundingPosition = {
+        id: `pos-${Date.now()}`,
+        symbol,
+        direction: tradeDirection,
+        notionalEth,
+        entryApr: metrics.impliedApr,
+        currentApr: metrics.impliedApr,
+        marginMode: leverage,
+        openTime: new Date().toISOString(),
+        reduceOnly,
+      };
+      setPositions((prev) => [newPos, ...prev]);
       setPlacingOrder(false);
       toast({
         title: 'Order placed (simulated)',
@@ -294,9 +350,15 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
     }, 800);
   };
 
-  // Build chart path from series (annualized %) — viewBox 0 0 500 280
-  const chartPath = (() => {
-    if (!chartSeries.length) return null;
+  const closePosition = (pos: FundingPosition) => {
+    setPositions((prev) => prev.filter((p) => p.id !== pos.id));
+    setSelectedPosition(null);
+    toast({ title: 'Position closed (simulated)', description: `${pos.symbol} ${pos.direction}`, type: 'success' });
+  };
+
+  // Build chart path from series (annualized %) — viewBox 0 0 500 280; area = line + close to bottom
+  const chartPaths = (() => {
+    if (!chartSeries.length) return { line: null, area: null };
     const pts = chartSeries.map((p) => p.funding_rate_annualized_pct);
     const min = Math.min(...pts);
     const max = Math.max(...pts);
@@ -305,8 +367,11 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
     const w = 500;
     const x = (i: number) => (pts.length > 1 ? (i / (pts.length - 1)) * w : 0);
     const y = (v: number) => h - ((v - min) / range) * (h - 20);
-    const d = pts.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(v)}`).join(' ');
-    return d;
+    const linePath = pts.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(v)}`).join(' ');
+    const areaPath = linePath
+      ? `${linePath} L ${x(pts.length - 1)} ${h} L ${x(0)} ${h} Z`
+      : null;
+    return { line: linePath, area: areaPath };
   })();
 
   return (
@@ -460,6 +525,74 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
         </DialogContent>
       </Dialog>
 
+      {/* Position detail dialog — full detail when user clicks a position */}
+      <Dialog open={!!selectedPosition} onOpenChange={(open) => !open && setSelectedPosition(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {selectedPosition?.direction === 'long' ? (
+                <TrendingUp className="h-5 w-5 text-green-500" />
+              ) : (
+                <TrendingDown className="h-5 w-5 text-red-500" />
+              )}
+              Position — {selectedPosition?.symbol} {selectedPosition?.direction.toUpperCase()}
+            </DialogTitle>
+            <DialogDescription>Full position details. Close position to realize PnL (simulated).</DialogDescription>
+          </DialogHeader>
+          {selectedPosition && (
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="col-span-2 flex justify-between border-b pb-2">
+                <span className="text-muted-foreground">Symbol</span>
+                <span className="font-semibold">{selectedPosition.symbol}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Direction</span>
+                <span className={selectedPosition.direction === 'long' ? 'text-green-600' : 'text-red-600'}>{selectedPosition.direction.toUpperCase()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Notional</span>
+                <span className="tabular-nums">{selectedPosition.notionalEth} ETH</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Entry APR</span>
+                <span className="tabular-nums">{selectedPosition.entryApr.toFixed(2)}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Current APR</span>
+                <span className="tabular-nums">{selectedPosition.currentApr.toFixed(2)}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Margin mode</span>
+                <span>{selectedPosition.marginMode}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Reduce only</span>
+                <span>{selectedPosition.reduceOnly ? 'Yes' : 'No'}</span>
+              </div>
+              <div className="col-span-2 flex justify-between border-t pt-2">
+                <span className="text-muted-foreground">Opened</span>
+                <span className="tabular-nums">{new Date(selectedPosition.openTime).toLocaleString()}</span>
+              </div>
+              <div className="col-span-2 flex justify-between">
+                <span className="text-muted-foreground">Est. unrealized (per 8h)</span>
+                <span className={selectedPosition.direction === 'long' ? 'text-red-500' : 'text-green-500'}>
+                  {selectedPosition.direction === 'long'
+                    ? (selectedPosition.notionalEth * (selectedPosition.currentApr - selectedPosition.entryApr) / 100 * (8 / (365 * 24))).toFixed(4)
+                    : (selectedPosition.notionalEth * (selectedPosition.entryApr - selectedPosition.currentApr) / 100 * (8 / (365 * 24))).toFixed(4)}{' '}
+                  ETH
+                </span>
+              </div>
+            </div>
+          )}
+          {selectedPosition && (
+            <div className="flex gap-2 justify-end pt-2 border-t">
+              <Button variant="outline" onClick={() => setSelectedPosition(null)}>Done</Button>
+              <Button variant="destructive" onClick={() => closePosition(selectedPosition)}>Close position</Button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Metrics row — wrap by view size */}
       <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 py-4 px-4 border-b">
         <div>
@@ -530,22 +663,28 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   </div>
                 </>
               )}
-              <div className="relative flex-1 min-h-[240px] bg-muted/30 rounded-lg overflow-hidden">
+              <div className="relative flex-1 min-h-[240px] bg-muted/30 rounded-lg overflow-hidden transition-opacity duration-200">
                 {chartLoading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-muted/20 z-10">
                     <span className="text-sm text-muted-foreground">Loading chart…</span>
                   </div>
                 )}
-                <div className="absolute right-2 top-0 bottom-0 flex flex-col justify-between text-xs text-muted-foreground py-4">
-                  <span>4%</span>
-                  <span>0%</span>
-                  <span>-4%</span>
-                  <span>-8%</span>
-                  <span>-12%</span>
-                  <span>-20%</span>
-                  <span>-28%</span>
+                <div className="absolute left-2 top-0 bottom-0 flex flex-col justify-between text-[10px] text-muted-foreground py-4">
+                  {chartSeries.length > 0 ? (
+                    <>
+                      <span>{Math.max(...chartSeries.map((p) => p.funding_rate_annualized_pct)).toFixed(1)}%</span>
+                      <span>0%</span>
+                      <span>{Math.min(...chartSeries.map((p) => p.funding_rate_annualized_pct)).toFixed(1)}%</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>4%</span>
+                      <span>0%</span>
+                      <span>-4%</span>
+                    </>
+                  )}
                 </div>
-                <svg className="w-full h-full" viewBox="0 0 500 280" preserveAspectRatio="none">
+                <svg className="w-full h-full min-h-[200px]" viewBox="0 0 500 280" preserveAspectRatio="none" style={{ transition: 'opacity 0.2s ease' }}>
                   {[0, 35, 70, 105, 140, 175, 210, 245, 280].map((y, i) => (
                     <line
                       key={i}
@@ -558,12 +697,22 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                       strokeWidth="0.5"
                     />
                   ))}
-                  {chartPath ? (
+                  {chartPaths.area && chartType === 'area' && (
                     <path
-                      d={chartPath}
+                      d={chartPaths.area}
+                      fill="rgb(59, 130, 246)"
+                      fillOpacity="0.2"
+                      stroke="none"
+                    />
+                  )}
+                  {chartPaths.line ? (
+                    <path
+                      d={chartPaths.line}
                       fill="none"
                       stroke="rgb(59, 130, 246)"
                       strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   ) : (
                     <path
@@ -698,8 +847,22 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 rounded bg-muted" title="View toggle" />
-                  <div className="w-4 h-4 rounded bg-muted" title="View toggle" />
+                  <button
+                    type="button"
+                    title="Full orderbook view"
+                    className={`w-8 h-6 rounded text-[10px] font-medium transition-colors ${!orderbookCompact ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                    onClick={() => setOrderbookCompact(false)}
+                  >
+                    Full
+                  </button>
+                  <button
+                    type="button"
+                    title="Compact orderbook view"
+                    className={`w-8 h-6 rounded text-[10px] font-medium transition-colors ${orderbookCompact ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
+                    onClick={() => setOrderbookCompact(true)}
+                  >
+                    Compact
+                  </button>
                 </div>
                 <div className="flex items-center gap-1">
                   <Checkbox
@@ -719,8 +882,8 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   <span>Implied APR (%)</span>
                   <span>Size (ETH YU)</span>
                 </div>
-                <div className="space-y-1">
-                  {SHORT_RATE_ORDERS.map((order, i) => (
+                <div className={`space-y-1 ${orderbookCompact ? 'space-y-0' : ''}`}>
+                  {(orderbookCompact ? SHORT_RATE_ORDERS.slice(0, 5) : SHORT_RATE_ORDERS).map((order, i) => (
                     <div key={i} className="flex justify-between text-xs relative py-0.5">
                       <div
                         className="absolute left-0 top-0 bottom-0 bg-red-500/20 rounded"
@@ -742,8 +905,8 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   <span>Implied APR (%)</span>
                   <span>Size (ETH YU)</span>
                 </div>
-                <div className="space-y-1">
-                  {LONG_RATE_ORDERS.map((order, i) => (
+                <div className={`space-y-1 ${orderbookCompact ? 'space-y-0' : ''}`}>
+                  {(orderbookCompact ? LONG_RATE_ORDERS.slice(0, 5) : LONG_RATE_ORDERS).map((order, i) => (
                     <div key={i} className="flex justify-between text-xs relative py-0.5">
                       <div
                         className="absolute left-0 top-0 bottom-0 bg-green-500/20 rounded"
@@ -763,10 +926,26 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
         <div className="lg:col-span-3 flex flex-col min-h-0">
           <Card className="flex-1 flex flex-col min-h-0 border rounded-lg">
             <CardContent className="p-4 flex flex-col">
-              <div className="bg-amber-500/20 border border-amber-500/30 rounded-lg p-3 mb-4 flex items-center gap-2">
-                <Gift className="h-4 w-4 text-amber-400" />
-                <span className="text-sm text-amber-200">Maker Order Rewards Live!</span>
-              </div>
+              {!makerRewardsBannerDismissed && (
+                <div className="bg-amber-500/20 border border-amber-500/30 rounded-lg p-3 mb-4 flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="flex-1 flex items-center gap-2 text-left hover:opacity-90 transition-opacity"
+                    onClick={() => toast({ title: 'Opening Maker Rewards…', description: 'Rewards program details coming soon.', type: 'success' })}
+                  >
+                    <Gift className="h-4 w-4 text-amber-400 shrink-0" />
+                    <span className="text-sm text-amber-200">Maker Order Rewards Live!</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Dismiss"
+                    className="p-1 rounded hover:bg-amber-500/30 text-amber-200"
+                    onClick={() => setMakerRewardsBannerDismissed(true)}
+                  >
+                    <span className="text-sm leading-none">×</span>
+                  </button>
+                </div>
+              )}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
                 {['Cross', '2x', 'One-way'].map((lev) => (
                   <Button
@@ -952,6 +1131,50 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
         </div>
       </div>
 
+      {/* Open Positions — click row for full detail */}
+      {positions.length > 0 && (
+        <div className="px-4 py-3 border-t">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Open Positions</h3>
+          <div className="rounded-lg border bg-card overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/30">
+                    <th className="text-left py-2 px-3 font-medium">Symbol</th>
+                    <th className="text-left py-2 px-3 font-medium">Side</th>
+                    <th className="text-right py-2 px-3 font-medium">Size</th>
+                    <th className="text-right py-2 px-3 font-medium">Entry APR</th>
+                    <th className="text-right py-2 px-3 font-medium">Current APR</th>
+                    <th className="text-left py-2 px-3 font-medium">Margin</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {positions.map((pos) => (
+                    <tr
+                      key={pos.id}
+                      onClick={() => setSelectedPosition(pos)}
+                      className="border-b last:border-0 hover:bg-muted/50 cursor-pointer transition-colors"
+                    >
+                      <td className="py-2.5 px-3 font-medium">{pos.symbol}</td>
+                      <td className="py-2.5 px-3">
+                        <span className={pos.direction === 'long' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                          {pos.direction.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-right tabular-nums">{pos.notionalEth} ETH</td>
+                      <td className="py-2.5 px-3 text-right tabular-nums">{pos.entryApr.toFixed(2)}%</td>
+                      <td className="py-2.5 px-3 text-right tabular-nums">{pos.currentApr.toFixed(2)}%</td>
+                      <td className="py-2.5 px-3 text-muted-foreground">{pos.marginMode}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-muted-foreground px-3 py-2 border-t">Click a row to view full details</p>
+          </div>
+        </div>
+      )}
+
       {/* Footer — responsive wrap */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 py-2 border-t text-xs text-muted-foreground">
         <div className="flex flex-wrap items-center gap-4">
@@ -962,10 +1185,18 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
           <span>Gas: $0.02</span>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-          <Link href="/docs" className="hover:text-foreground">Docs</Link>
-          <Link href="/support" className="hover:text-foreground">Support</Link>
-          <Link href="/terms" className="hover:text-foreground">Terms</Link>
-          <Link href="/policy" className="hover:text-foreground">Policy</Link>
+          <button type="button" onClick={() => toast({ title: 'Docs', description: 'Documentation coming soon.', type: 'info' })} className="hover:text-foreground">
+            Docs
+          </button>
+          <button type="button" onClick={() => toast({ title: 'Support', description: 'Support page coming soon.', type: 'info' })} className="hover:text-foreground">
+            Support
+          </button>
+          <button type="button" onClick={() => toast({ title: 'Terms', description: 'Terms of service coming soon.', type: 'info' })} className="hover:text-foreground">
+            Terms
+          </button>
+          <button type="button" onClick={() => toast({ title: 'Policy', description: 'Privacy policy coming soon.', type: 'info' })} className="hover:text-foreground">
+            Policy
+          </button>
           <a href="https://docs.findash.example/help" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-500">Help & Support</a>
         </div>
       </div>
