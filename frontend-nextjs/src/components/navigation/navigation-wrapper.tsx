@@ -42,14 +42,12 @@ interface NavigationWrapperProps {
   children: React.ReactNode;
 }
 
-// Left Sidebar - Trading & Portfolio Management
+// Left Sidebar - Trading & Portfolio Management (Market + Live Trading + Bots integrated in Trading Center)
 const leftSidebarItems = {
   'Trading': [
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
-    { name: 'Market', href: '/realtime', icon: Activity },
+    { name: 'Trading Center', href: '/trading', icon: TrendingUp },
     { name: 'Options', href: '/options', icon: DollarSign },
-    { name: 'Trading Center', href: '/trades', icon: TrendingUp },
-    { name: 'Trading Bots', href: '/trading-bots', icon: Brain },
     { name: 'Paper Trading & Backtesting', href: '/backtesting', icon: FlaskConical },
   ],
   'Portfolio': [
@@ -92,6 +90,13 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
   const t = useTranslations();
 
   type NavItem = { name: string; href: string; icon: React.ComponentType<{ className?: string }> };
+
+  const isActive = (item: NavItem) => {
+    if (pathname === item.href) return true;
+    // Trading Center: active when on /trading (any tab)
+    if (item.href === '/trading') return pathname === '/trading';
+    return false;
+  };
   
   const NavigationGroup = ({ title, items }: { title: string; items: NavItem[] }) => (
     <div className="mb-6">
@@ -107,7 +112,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
               href={item.href}
               className={cn(
                 'flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                pathname === item.href
+                isActive(item)
                   ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               )}

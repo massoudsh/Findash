@@ -3,6 +3,15 @@ const nextConfig = {
   // Performance optimizations
   reactStrictMode: true,
   compress: true,
+
+  // Trading Center: Market, Live Trading, and Bots in one page
+  async redirects() {
+    return [
+      { source: '/realtime', destination: '/trading?tab=market', permanent: false },
+      { source: '/trades', destination: '/trading?tab=center', permanent: false },
+      { source: '/trading-bots', destination: '/trading?tab=bots', permanent: false },
+    ];
+  },
   
   // Output configuration
   output: 'standalone',
