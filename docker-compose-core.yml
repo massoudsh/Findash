@@ -23,6 +23,9 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-jwt-secret}
+      - FALCON_TGI_URL=${FALCON_TGI_URL:-}
+      - FINGPT_LOCAL_URL=${FINGPT_LOCAL_URL:-}
+      - HF_TOKEN=${HF_TOKEN:-}
     depends_on:
       - db
       - redis
@@ -88,7 +91,7 @@ services:
     container_name: octopus-redis
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "${REDIS_HOST_PORT:-6380}:6379"  # 6380 to avoid conflict with local Redis on 6379
     volumes:
       - redis_data:/data
     healthcheck:
@@ -185,11 +188,65 @@ services:
     networks:
       - octopus-network
 
+  # ============================================
+  # LLM REPORT GENERATION (Falcon + FinGPT)
+  # Optional: use --profile llm to start (TGI is x86_64 only, not ARM/Mac)
+  # ============================================
+
+  tgi-falcon:
+    profiles:
+      - llm
+    image: ghcr.io/huggingface/text-generation-inference:2.0.1
+    container_name: octopus-tgi-falcon
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - MODEL_ID=tiiuae/falcon-7b-instruct
+      - MAX_BATCH_SIZE=4
+      - MAX_TOTAL_TOKENS=2048
+    volumes:
+      - llm_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:80/health || curl -sf http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+    networks:
+      - octopus-network
+
+  fingpt-inference:
+    profiles:
+      - llm
+    build:
+      context: .
+      dockerfile: Dockerfile.fingpt-inference
+    image: findash-fingpt-inference:latest
+    container_name: octopus-fingpt
+    restart: unless-stopped
+    ports:
+      - "8081:8000"
+    environment:
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HF_FINGPT_MODEL=${HF_FINGPT_MODEL:-distilgpt2}
+    volumes:
+      - llm_data:/app/cache
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+    networks:
+      - octopus-network
+
 volumes:
   postgres_data:
   redis_data:
   prometheus_data:
   grafana_data:
+  llm_data:
 
 networks:
   octopus-network:

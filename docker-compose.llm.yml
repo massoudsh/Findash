@@ -1,0 +1,67 @@
+# Optional LLM stack for report generation: TII Falcon (TGI) and FinGPT-style inference.
+# Run: docker compose -f docker-compose.llm.yml up -d
+# Then set FALCON_TGI_URL=http://localhost:8080 in the API env (or HF_TOKEN for FinGPT only).
+
+services:
+  # TII Falcon 7B Instruct via Hugging Face Text Generation Inference (OpenAI-compatible)
+  tgi-falcon:
+    image: ghcr.io/huggingface/text-generation-inference:2.0.1
+    container_name: findash-tgi-falcon
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - MODEL_ID=tiiuae/falcon-7b-instruct
+      - MAX_BATCH_SIZE=4
+      - MAX_TOTAL_TOKENS=2048
+    # GPU (recommended for 7B): uncomment below and use nvidia-docker
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    # CPU-only: use a smaller model, e.g. MODEL_ID=tiiuae/falcon-7b-instruct with low memory
+    volumes:
+      - llm_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:80/health || curl -sf http://localhost:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+
+  # Optional: FinGPT-style inference server (lightweight, uses HuggingFace pipeline).
+  # Requires HF_TOKEN if pulling gated models. For local-only, set HF_TOKEN= or use a public model.
+  fingpt-inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.fingpt-inference
+    image: findash-fingpt-inference:latest
+    container_name: findash-fingpt
+    restart: unless-stopped
+    ports:
+      - "8081:8000"
+    environment:
+      - HF_TOKEN=${HF_TOKEN:-}
+      - HF_FINGPT_MODEL=${HF_FINGPT_MODEL:-FinGPT/fingpt-sentiment_llama2-13b_lora}
+    volumes:
+      - llm_data:/app/cache
+    # GPU recommended for 13B
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+
+volumes:
+  llm_data:

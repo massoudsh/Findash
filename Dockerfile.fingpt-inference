@@ -1,0 +1,21 @@
+# FinGPT-style inference server for report generation.
+# Optional: run when you want local FinGPT instead of HuggingFace API.
+# For smaller footprint use HF_TOKEN + HF API and omit this service.
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-llm.txt /app/requirements-llm.txt
+RUN pip install --no-cache-dir -r requirements-llm.txt
+
+COPY src/llm/fingpt_inference_server.py /app/fingpt_inference_server.py
+
+ENV HF_HOME=/app/cache
+EXPOSE 8000
+
+CMD ["uvicorn", "fingpt_inference_server:app", "--host", "0.0.0.0", "--port", "8000"]

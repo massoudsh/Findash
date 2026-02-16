@@ -1,17 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RealtimeContent } from '@/components/realtime/realtime-content';
 import TradingCenterPage from '@/app/trades/page';
-import TradingBotsPage from '@/app/trading-bots/page';
+import { TradingBotsContent } from '@/components/trading/trading-bots-content';
 import { AnalysisAgentInsightsPanel } from '@/components/trading/analysis-agent-insights';
+import { DataCollectorAgentPanel } from '@/components/trading/data-collector-agent-panel';
+import { StrategyAgentPanel } from '@/components/trading/strategy-agent-panel';
+import { SentimentAgentPanel } from '@/components/trading/sentiment-agent-panel';
 import { Activity, TrendingUp, Brain } from 'lucide-react';
 
 type TradingTab = 'market' | 'center' | 'bots';
 
-export default function TradingCenterUnifiedPage() {
+function TradingCenterContent() {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState<TradingTab>(() => {
@@ -59,8 +62,16 @@ export default function TradingCenterUnifiedPage() {
             <div className="min-w-0">
               <RealtimeContent />
             </div>
-            <aside className="h-[calc(100vh-14rem)] min-h-[420px] xl:sticky xl:top-6 max-xl:mt-4 max-xl:max-h-[420px]">
-              <AnalysisAgentInsightsPanel />
+            <aside className="h-[calc(100vh-14rem)] min-h-[420px] xl:sticky xl:top-6 max-xl:mt-4 max-xl:max-h-[420px] flex flex-col gap-4 overflow-y-auto">
+              <div className="min-h-[280px]">
+                <AnalysisAgentInsightsPanel />
+              </div>
+              <div className="min-h-[200px]">
+                <DataCollectorAgentPanel />
+              </div>
+              <div className="min-h-[200px]">
+                <SentimentAgentPanel />
+              </div>
             </aside>
           </div>
         </TabsContent>
@@ -77,14 +88,27 @@ export default function TradingCenterUnifiedPage() {
         <TabsContent value="bots" className="mt-6">
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4 min-h-[480px]">
             <div className="min-w-0 -mx-4 xl:mx-0">
-              <TradingBotsPage />
+              <TradingBotsContent />
             </div>
-            <aside className="h-[calc(100vh-14rem)] min-h-[420px] xl:sticky xl:top-6 max-xl:mt-4 max-xl:max-h-[420px]">
-              <AnalysisAgentInsightsPanel />
+            <aside className="h-[calc(100vh-14rem)] min-h-[420px] xl:sticky xl:top-6 max-xl:mt-4 max-xl:max-h-[420px] flex flex-col gap-4 overflow-y-auto">
+              <div className="min-h-[280px]">
+                <AnalysisAgentInsightsPanel />
+              </div>
+              <div className="min-h-[220px]">
+                <StrategyAgentPanel />
+              </div>
             </aside>
           </div>
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+export default function TradingPage() {
+  return (
+    <Suspense fallback={<div className="p-6 text-muted-foreground">Loading Trading Center…</div>}>
+      <TradingCenterContent />
+    </Suspense>
   );
 }

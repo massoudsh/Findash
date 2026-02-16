@@ -46,17 +46,13 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Dot,
-  Wallet,
   CreditCard,
   Star,
-  Eye,
-  Plus,
-  Minus,
-  MoreHorizontal,
   Calendar,
   Building,
   Banknote
 } from 'lucide-react';
+import { AccountCard } from '@/components/dashboard/account-card';
 
 interface DashboardData {
   totalPortfolioValue: number;
@@ -217,64 +213,40 @@ export function DashboardContent() {
   }
 
   return (
-    <div className="space-y-6">
-      {hasError && (
-        <Alert className="border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription className="flex items-center gap-2">
-            {errorMessage}
-          </AlertDescription>
-        </Alert>
-      )}
+    <>
+    <div className="relative min-h-screen rounded-2xl overflow-hidden">
+      {/* Greeny fintech modern background */}
+      <div
+        className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-50/90 via-green-50/70 to-teal-50/90 dark:from-emerald-950/40 dark:via-green-950/30 dark:to-teal-950/40"
+        aria-hidden
+      />
+      <div
+        className="absolute inset-0 -z-10 opacity-[0.4] dark:opacity-[0.25]"
+        style={{
+          backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.25), transparent), radial-gradient(ellipse 60% 40% at 100% 50%, rgba(20, 184, 166, 0.15), transparent), radial-gradient(ellipse 50% 30% at 0% 80%, rgba(5, 150, 105, 0.15), transparent)',
+        }}
+        aria-hidden
+      />
 
-      {/* Wallet Cards Section - Modern Style */}
-      <div className="grid gap-6 md:grid-cols-3">
-        {walletCards.map((wallet) => (
-          <Card 
-            key={wallet.id} 
-            variant="elevated"
-            className={`bg-gradient-to-br ${wallet.gradient} text-white border-0 overflow-hidden relative group hover:scale-[1.02] transition-all duration-300 shadow-2xl`}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <CardContent className="p-6 relative z-10">
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <p className="text-white/80 text-sm mb-1 font-semibold">{wallet.name}</p>
-                  <p className="text-white/60 text-xs font-mono tracking-wider">{wallet.number}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all">
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-white/70 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <div className="text-3xl font-bold drop-shadow-lg">{formatCurrency(wallet.balance)}</div>
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all font-medium">
-                    <Plus className="h-4 w-4 mr-1" />
-                    Deposit
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/20 backdrop-blur-sm transition-all font-medium">
-                    <Minus className="h-4 w-4 mr-1" />
-                    Withdraw
-                  </Button>
-                </div>
-              </div>
-              {/* Modern decorative elements */}
-              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-xl group-hover:bg-white/15 transition-colors" />
-              <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
-              <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <div className="space-y-6 relative">
+        {hasError && (
+          <Alert className="border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription className="flex items-center gap-2">
+              {errorMessage}
+            </AlertDescription>
+          </Alert>
+        )}
 
-      {/* Financial Summary Cards - Modern Style */}
-      <div className="grid gap-4 md:grid-cols-4">
+        {/* Account / Wallet Cards — glassy, greeny fintech */}
+        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+          {walletCards.map((wallet) => (
+            <AccountCard key={wallet.id} account={wallet} className="h-full" />
+          ))}
+        </div>
+
+        {/* Financial Summary Cards - Modern Style */}
+        <div className="grid gap-4 md:grid-cols-4">
         <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <CardContent className="p-6 relative">
@@ -352,10 +324,10 @@ export function DashboardContent() {
             </div>
           </CardContent>
         </ElevatedCard>
-      </div>
+        </div>
 
-      {/* Enhanced Tabbed Interface */}
-      <Tabs defaultValue="overview" className="space-y-4">
+        {/* Enhanced Tabbed Interface */}
+        <Tabs defaultValue="overview" className="space-y-4">
         <TabsList className="grid w-full grid-cols-5 bg-muted/50">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
@@ -648,7 +620,9 @@ export function DashboardContent() {
           </div>
         </TabsContent>
       </Tabs>
+      </div>
     </div>
+    </>
   );
 }
 
