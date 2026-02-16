@@ -71,6 +71,7 @@ from src.api.endpoints.websocket_realtime import router as ws_realtime_router
 from src.api.endpoints.trading_bots import router as trading_bots_router
 from src.api.endpoints.backtesting import router as backtesting_router
 from src.api.endpoints.strategies_crud import router as strategies_crud_router
+from src.api.endpoints.search import router as search_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -155,7 +156,7 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "octopus-trading-platform",
-        "version": "3.0.0",
+        "version": "3.4.0",
         "environment": settings.environment,
     }
 
@@ -167,7 +168,7 @@ async def health_check_detailed():
         return {
             "status": "healthy",
             "service": "octopus-trading-platform",
-            "version": "3.0.0",
+            "version": "3.4.0",
             "environment": settings.environment,
             "components": component_status
         }
@@ -217,6 +218,7 @@ app.include_router(unified_websocket_router, tags=["Unified WebSocket"])
 app.include_router(trading_bots_router, tags=["Trading Bots"])
 app.include_router(backtesting_router, tags=["Backtesting"])
 app.include_router(strategies_crud_router, tags=["Strategies CRUD"])
+app.include_router(search_router, tags=["Search"])
 
 # DEPRECATED: Legacy WebSocket routers (kept for backward compatibility, will be removed in future)
 app.include_router(ws_realtime_router, tags=["WebSocket Real-time (Deprecated)"])
@@ -252,7 +254,7 @@ async def root():
     """Root endpoint with platform information"""
     return {
         "message": "🐙 Octopus Trading Platform - Production Ready",
-        "version": "3.0.0",
+        "version": "3.4.0",
         "status": "operational",
         "docs": "/docs",
         "health": "/health",

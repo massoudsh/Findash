@@ -46,6 +46,7 @@ export function DataCollectorAgentPanel() {
       title="Data Collector (M1)"
       subtitle="Pipeline status and ingestion health"
       icon={<Database className="h-4 w-4 text-primary" />}
+      agentId="M1"
     >
       <ul className="space-y-2 pr-2">
         {sources.map((src) => (

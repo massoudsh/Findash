@@ -308,31 +308,31 @@ export default function UnifiedTradingPage() {
         </div>
       </div>
 
-      {/* Account Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-        <Card className="glass-card">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-blue-500/20">
-                <DollarSign className="h-6 w-6 text-blue-400" />
+      {/* Account Overview — responsive like dashboard/options */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-5 lg:gap-6 mb-6 sm:mb-8">
+        <Card className="glass-card min-w-0">
+          <CardContent className="p-4 sm:p-5 md:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 rounded-lg bg-blue-500/20 shrink-0">
+                <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Total Value</p>
-                <p className="text-2xl font-bold text-blue-400">{formatCurrency(accountInfo.totalValue)}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground">Total Value</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-blue-400 truncate">{formatCurrency(accountInfo.totalValue)}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="glass-card">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-green-500/20">
-                <TrendingUp className="h-6 w-6 text-green-400" />
+        <Card className="glass-card min-w-0">
+          <CardContent className="p-4 sm:p-5 md:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 rounded-lg bg-green-500/20 shrink-0">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Day P&L</p>
-                <p className={`text-2xl font-bold ${accountInfo.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground">Day P&L</p>
+                <p className={`text-lg sm:text-xl md:text-2xl font-bold truncate ${accountInfo.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {formatCurrency(accountInfo.dayPnL)}
                 </p>
               </div>
@@ -340,43 +340,43 @@ export default function UnifiedTradingPage() {
           </CardContent>
         </Card>
 
-        <Card className="glass-card">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-purple-500/20">
-                <BarChart3 className="h-6 w-6 text-purple-400" />
+        <Card className="glass-card min-w-0">
+          <CardContent className="p-4 sm:p-5 md:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 rounded-lg bg-purple-500/20 shrink-0">
+                <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Buying Power</p>
-                <p className="text-2xl font-bold text-purple-400">{formatCurrency(accountInfo.buyingPower)}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-card">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-yellow-500/20">
-                <PieChart className="h-6 w-6 text-yellow-400" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">Positions</p>
-                <p className="text-2xl font-bold text-yellow-400">{positions.length}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground">Buying Power</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-purple-400 truncate">{formatCurrency(accountInfo.buyingPower)}</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="glass-card">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-red-500/20">
-                <Activity className="h-6 w-6 text-red-400" />
+        <Card className="glass-card min-w-0">
+          <CardContent className="p-4 sm:p-5 md:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 rounded-lg bg-yellow-500/20 shrink-0">
+                <PieChart className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
               </div>
-              <div>
-                <p className="text-sm text-gray-400">Open Orders</p>
-                <p className="text-2xl font-bold text-red-400">{liveOrders.length}</p>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground">Positions</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-yellow-400">{positions.length}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card min-w-0">
+          <CardContent className="p-4 sm:p-5 md:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 rounded-lg bg-red-500/20 shrink-0">
+                <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-red-400" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs sm:text-sm text-muted-foreground">Open Orders</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold text-red-400">{liveOrders.length}</p>
               </div>
             </div>
           </CardContent>
@@ -384,28 +384,28 @@ export default function UnifiedTradingPage() {
       </div>
 
       {/* Main Trading Interface */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 glass-card">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="order-entry">Order Entry</TabsTrigger>
-          <TabsTrigger value="positions">Positions</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
-          <TabsTrigger value="funding-rates">Funding Rates</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1 glass-card p-1 overflow-x-auto">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm whitespace-nowrap">Overview</TabsTrigger>
+          <TabsTrigger value="order-entry" className="text-xs sm:text-sm whitespace-nowrap">Order Entry</TabsTrigger>
+          <TabsTrigger value="positions" className="text-xs sm:text-sm whitespace-nowrap">Positions</TabsTrigger>
+          <TabsTrigger value="orders" className="text-xs sm:text-sm whitespace-nowrap">Orders</TabsTrigger>
+          <TabsTrigger value="history" className="text-xs sm:text-sm whitespace-nowrap">History</TabsTrigger>
+          <TabsTrigger value="funding-rates" className="text-xs sm:text-sm whitespace-nowrap">Funding Rates</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Quick Order Entry */}
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-yellow-400" />
+            <Card className="glass-card min-w-0">
+              <CardHeader className="p-4 sm:p-6 pb-2">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Zap className="h-5 w-5 text-yellow-400 shrink-0" />
                   Quick Order
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
                 <div>
                   <Label>Symbol</Label>
                   <Input
@@ -456,14 +456,14 @@ export default function UnifiedTradingPage() {
             </Card>
 
             {/* Active Positions Summary */}
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-blue-400" />
+            <Card className="glass-card min-w-0">
+              <CardHeader className="p-4 sm:p-6 pb-2">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Target className="h-5 w-5 text-blue-400 shrink-0" />
                   Active Positions
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6 pt-0">
                 <div className="space-y-3">
                   {positions.slice(0, 3).map((position) => (
                     <div key={position.id} className="flex items-center justify-between p-3 border border-gray-700 rounded-lg">
@@ -484,14 +484,14 @@ export default function UnifiedTradingPage() {
             </Card>
 
             {/* Recent Activity */}
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <History className="h-5 w-5 text-purple-400" />
+            <Card className="glass-card min-w-0">
+              <CardHeader className="p-4 sm:p-6 pb-2">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <History className="h-5 w-5 text-purple-400 shrink-0" />
                   Recent Activity
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6 pt-0">
                 <div className="space-y-3">
                   {tradeHistory.slice(0, 3).map((trade) => (
                     <div key={trade.id} className="flex items-center justify-between p-3 border border-gray-700 rounded-lg">
@@ -515,13 +515,13 @@ export default function UnifiedTradingPage() {
 
         {/* Order Entry Tab */}
         <TabsContent value="order-entry" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Advanced Order Entry</CardTitle>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
+            <Card className="glass-card min-w-0">
+              <CardHeader className="p-4 sm:p-6 pb-2">
+                <CardTitle className="text-base sm:text-lg">Advanced Order Entry</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+              <CardContent className="space-y-6 p-4 sm:p-6 pt-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label>Symbol</Label>
                     <Input
@@ -650,9 +650,9 @@ export default function UnifiedTradingPage() {
               </CardContent>
             </Card>
 
-            <Card className="glass-card">
-              <CardHeader>
-                <CardTitle>Order Preview & Settings</CardTitle>
+            <Card className="glass-card min-w-0">
+              <CardHeader className="p-4 sm:p-6 pb-2">
+                <CardTitle className="text-base sm:text-lg">Order Preview & Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="p-4 border border-gray-700 rounded-lg space-y-2">
@@ -723,9 +723,9 @@ export default function UnifiedTradingPage() {
         </TabsContent>
 
         {/* Positions Tab */}
-        <TabsContent value="positions" className="space-y-6">
-          <Card className="glass-card">
-            <CardHeader>
+        <TabsContent value="positions" className="space-y-4 sm:space-y-6">
+          <Card className="glass-card min-w-0 overflow-hidden">
+            <CardHeader className="p-4 sm:p-6 pb-2">
               <CardTitle className="flex items-center justify-between">
                 <span>Active Positions</span>
                 <Button variant="outline" size="sm">
@@ -786,10 +786,10 @@ export default function UnifiedTradingPage() {
         </TabsContent>
 
         {/* Orders Tab */}
-        <TabsContent value="orders" className="space-y-6">
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+        <TabsContent value="orders" className="space-y-4 sm:space-y-6">
+          <Card className="glass-card min-w-0 overflow-hidden">
+            <CardHeader className="p-4 sm:p-6 pb-2">
+              <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base sm:text-lg">
                 <span>Open Orders</span>
                 <Button variant="outline" size="sm">
                   <RefreshCw className="h-4 w-4 mr-2" />
@@ -997,10 +997,10 @@ function FundingRatesPanel() {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Left Panel - Chart */}
-        <div className="col-span-6">
-          <Card className="glass-card h-full">
+        <div className="lg:col-span-6 min-w-0">
+          <Card className="glass-card h-full min-w-0">
             <CardContent className="p-4">
               {/* Chart Tabs */}
               <div className="flex items-center gap-4 mb-4">
@@ -1070,8 +1070,8 @@ function FundingRatesPanel() {
         </div>
 
         {/* Center Panel - Order Book */}
-        <div className="col-span-3">
-          <Card className="glass-card h-full">
+        <div className="lg:col-span-3 min-w-0">
+          <Card className="glass-card h-full min-w-0">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-4">
                 <button className="text-sm font-medium border-b-2 border-primary pb-1">Orderbook</button>
@@ -1131,8 +1131,8 @@ function FundingRatesPanel() {
         </div>
 
         {/* Right Panel - Trading Form */}
-        <div className="col-span-3">
-          <Card className="glass-card h-full">
+        <div className="lg:col-span-3 min-w-0">
+          <Card className="glass-card h-full min-w-0">
             <CardContent className="p-4">
               {/* Maker Rewards Banner */}
               <div className="bg-amber-500/20 border border-amber-500/30 rounded-lg p-3 mb-4 flex items-center gap-2">

@@ -4,15 +4,20 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AgentCharacter } from '@/components/agents/agent-character';
+import type { AgentId } from '@/lib/agent-characters';
 
 /**
  * Reusable agent panel for platform agents (M1 Data Collector, M4 Strategy, M9 Sentiment, M11 Analysis).
  * Keeps UI and behavior consistent across Trading Center and other sections.
+ * When agentId is set, the panel header shows the agent character (avatar + name + tagline).
  */
 interface AgentPanelProps {
   title: string;
   subtitle: string;
   icon: React.ReactNode;
+  /** When set, header shows agent character (avatar + shortName + tagline) instead of generic icon + title */
+  agentId?: AgentId;
   children: React.ReactNode;
   className?: string;
   defaultCollapsed?: boolean;
@@ -22,6 +27,7 @@ export function AgentPanel({
   title,
   subtitle,
   icon,
+  agentId,
   children,
   className,
   defaultCollapsed = false,
@@ -32,9 +38,15 @@ export function AgentPanel({
     <Card className={cn('flex flex-col h-full min-h-0 border bg-card/95', className)}>
       <CardHeader className="shrink-0 py-3 px-4 border-b">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            {icon}
-            {title}
+          <CardTitle className="text-sm font-semibold flex items-center gap-2 min-w-0">
+            {agentId ? (
+              <AgentCharacter agentId={agentId} variant="inline" size="sm" />
+            ) : (
+              <>
+                {icon}
+                {title}
+              </>
+            )}
           </CardTitle>
           <button
             type="button"

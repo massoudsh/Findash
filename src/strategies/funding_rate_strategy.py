@@ -335,37 +335,40 @@ class FundingRateStrategy(BaseStrategy):
             return "stable"
     
     def _calculate_signal_strength(self, current_rate: float, avg_rate: float, volatility: float) -> float:
-        """Calculate signal strength based on deviation from average"""
+        """Signal strength from deviation from average. In high volatility (e.g. crypto),
+        historical average is down-weighted so past data has less influence."""
         if volatility == 0:
             return 0.0
         
-        # Z-score based strength
         z_score = abs(current_rate - avg_rate) / volatility
-        
-        # Normalize to 0-1 range
-        strength = min(z_score / 3.0, 1.0)  # 3 standard deviations = max strength
-        
-        return strength
+        strength = min(z_score / 3.0, 1.0)
+
+        # Down-weight reliance on historical average when volatility is high
+        vol_scale = min(volatility * 80, 1.2)
+        dampen = 1.0 / (1.0 + 0.5 * max(0.0, vol_scale - 0.5))
+        strength = strength * dampen
+        return min(max(strength, 0.0), 1.0)
     
     def _calculate_confidence(self, current: FundingRateData, historical: List[FundingRateData], 
                             volatility: float) -> float:
-        """Calculate confidence in the signal"""
+        """Confidence in the signal. Historical data is weighted less so that in
+        volatile markets (e.g. crypto) we don't over-rely on past averages."""
         base_confidence = 0.5
-        
-        # Higher confidence with more data
-        data_factor = min(len(historical) / 100, 1.0)  # Max confidence with 100+ data points
-        
+
+        # Historical data contributes less: require more points for same boost, cap lower
+        data_factor = min(len(historical) / 200, 0.65)  # was /100 and 1.0
+
         # Lower confidence with high volatility
-        volatility_factor = max(0.3, 1.0 - (volatility * 100))  # Adjust for volatility scale
-        
+        volatility_factor = max(0.3, 1.0 - (volatility * 100))
+
         # Time-based confidence (higher closer to funding time)
         time_factor = 1.0
         if current.next_funding_time:
             time_to_funding = self._calculate_time_to_next_funding(current.next_funding_time)
-            time_factor = max(0.5, 1.0 - (time_to_funding / 480))  # Lower confidence if >8h away
-        
-        confidence = base_confidence * data_factor * volatility_factor * time_factor
-        return min(confidence, 0.95)  # Cap at 95%
+            time_factor = max(0.5, 1.0 - (time_to_funding / 480))
+
+        confidence = base_confidence * (0.5 + data_factor) * volatility_factor * time_factor
+        return min(confidence, 0.95)
     
     def _calculate_time_to_next_funding(self, next_funding_time: Optional[int]) -> int:
         """Calculate minutes until next funding"""

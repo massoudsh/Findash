@@ -91,6 +91,38 @@ class AgentDecisionsResponse(BaseModel):
     page: int
     page_size: int
 
+
+# Phase 2: Panel payloads for Trading UI (M1, M4, M9)
+class DataSourcePanelItem(BaseModel):
+    id: str
+    name: str
+    type: str
+    status: str  # 'active', 'degraded', 'error'
+    last_sync: str
+    records_today: int
+
+
+class StrategySignalPanelItem(BaseModel):
+    id: str
+    strategy: str
+    symbol: str
+    side: str  # 'long', 'short'
+    strength: float
+    timestamp: str
+
+
+class SentimentPanelItem(BaseModel):
+    symbol: str
+    sentiment: str  # 'positive', 'negative', 'neutral'
+    score: float
+    source: str
+
+
+class AgentPanelsResponse(BaseModel):
+    data_collector: List[DataSourcePanelItem]
+    strategy_signals: List[StrategySignalPanelItem]
+    sentiment: List[SentimentPanelItem]
+
 # Agent name mapping
 AGENT_NAMES = {
     'M1': 'Market Data Agent',
@@ -105,6 +137,41 @@ AGENT_NAMES = {
     'M10': 'Backtesting Agent',
     'M11': 'Optimization Agent'
 }
+
+# Phase 2: Panel data for Trading Center (M1 data sources, M4 signals, M9 sentiment)
+MOCK_DATA_SOURCES = [
+    {"id": "market", "name": "Market Data", "type": "market_data", "status": "active", "last_sync": "12s ago", "records_today": 15420},
+    {"id": "news", "name": "News Feed", "type": "news", "status": "active", "last_sync": "1m ago", "records_today": 2847},
+    {"id": "social", "name": "Social Sentiment", "type": "social", "status": "degraded", "last_sync": "5m ago", "records_today": 892},
+    {"id": "fundamental", "name": "Fundamental", "type": "fundamental", "status": "active", "last_sync": "2m ago", "records_today": 1205},
+    {"id": "onchain", "name": "On-chain", "type": "on_chain", "status": "active", "last_sync": "45s ago", "records_today": 3421},
+]
+MOCK_STRATEGY_SIGNALS = [
+    {"id": "1", "strategy": "momentum", "symbol": "NVDA", "side": "long", "strength": 0.82, "timestamp": "2m ago"},
+    {"id": "2", "strategy": "mean_reversion", "symbol": "SPY", "side": "long", "strength": 0.61, "timestamp": "5m ago"},
+    {"id": "3", "strategy": "trend_following", "symbol": "ETH-USD", "side": "short", "strength": 0.55, "timestamp": "8m ago"},
+    {"id": "4", "strategy": "momentum", "symbol": "AAPL", "side": "long", "strength": 0.71, "timestamp": "12m ago"},
+]
+MOCK_SENTIMENT = [
+    {"symbol": "BTC-USD", "sentiment": "positive", "score": 0.72, "source": "social"},
+    {"symbol": "NVDA", "sentiment": "positive", "score": 0.68, "source": "news"},
+    {"symbol": "TSLA", "sentiment": "neutral", "score": 0.48, "source": "social"},
+    {"symbol": "AAPL", "sentiment": "positive", "score": 0.61, "source": "news"},
+]
+
+
+@router.get("/panels", response_model=AgentPanelsResponse)
+async def get_agent_panels():
+    """
+    Phase 2: Return panel payloads for Trading Center (M1 data sources, M4 signals, M9 sentiment).
+    No auth required for now so the trading UI can fetch without login.
+    """
+    return AgentPanelsResponse(
+        data_collector=[DataSourcePanelItem(**s) for s in MOCK_DATA_SOURCES],
+        strategy_signals=[StrategySignalPanelItem(**s) for s in MOCK_STRATEGY_SIGNALS],
+        sentiment=[SentimentPanelItem(**s) for s in MOCK_SENTIMENT],
+    )
+
 
 @router.get("/status", response_model=AgentStatusResponse)
 async def get_agent_status(

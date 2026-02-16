@@ -10,11 +10,11 @@ import {
   Database,
   MessageSquare,
   Cpu,
-  Sparkles,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AgentCharacter } from '@/components/agents/agent-character';
 
 type InsightSource =
   | 'technical'
@@ -94,9 +94,8 @@ export function AnalysisAgentInsightsPanel() {
     <Card className="flex flex-col h-full min-h-0 border-l bg-card/95">
       <CardHeader className="shrink-0 py-3 px-4 border-b">
         <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
-            Analysis Agent
+          <CardTitle className="text-sm font-semibold flex items-center gap-2 min-w-0">
+            <AgentCharacter agentId="M11" variant="inline" size="sm" />
           </CardTitle>
           <button
             type="button"

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TrendingUp, TrendingDown, Activity, DollarSign, BarChart3 } from 'lucide-react';
+import { DataCollectorAgentPanel } from '@/components/trading/data-collector-agent-panel';
 
 interface MarketDataItem {
   symbol: string;
@@ -100,7 +101,8 @@ export default function MarketDataPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
+      <div className="min-w-0 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Market Data</h1>
         <p className="text-muted-foreground">
@@ -260,6 +262,10 @@ export default function MarketDataPage() {
           )}
         </CardContent>
       </Card>
+      </div>
+      <aside className="hidden xl:block min-h-[360px]">
+        <DataCollectorAgentPanel />
+      </aside>
     </div>
   );
 } 

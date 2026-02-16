@@ -99,8 +99,17 @@ export function AccountCard({
         {/* Top row: icon + label + actions */}
         <div className="flex items-start justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/20 dark:bg-emerald-500/25 border border-emerald-400/20 backdrop-blur-sm">
-              <Icon className="h-5 w-5 text-emerald-700 dark:text-emerald-300" />
+            <div
+              className={cn(
+                'flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl',
+                'bg-gradient-to-br from-emerald-500/25 via-emerald-500/15 to-teal-600/20',
+                'dark:from-emerald-400/20 dark:via-emerald-500/10 dark:to-teal-500/25',
+                'ring-1 ring-white/20 dark:ring-white/10',
+                'shadow-[0_2px_12px_rgba(16,185,129,0.15)] dark:shadow-[0_2px_12px_rgba(16,185,129,0.2)]',
+                'backdrop-blur-md'
+              )}
+            >
+              <Icon className="h-5 w-5 text-emerald-700 dark:text-emerald-200" />
             </div>
             <span className="text-xs font-semibold tracking-widest uppercase text-muted-foreground">
               {config.label}

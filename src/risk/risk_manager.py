@@ -220,31 +220,39 @@ class RiskManager:
         )
     
     def _calculate_var(self, returns: pd.Series, horizon: int, confidence: float) -> float:
-        """Calculate Value at Risk using historical simulation"""
-        if len(returns) < 30:  # Insufficient data
-            return 0.05  # Conservative 5% VaR
-        
-        # Scale for time horizon
-        scaled_returns = returns * np.sqrt(horizon)
-        
-        # Historical VaR
+        """Value at Risk via historical simulation. Recent returns are weighted more
+        than older ones (exponential decay) so high-volatility markets (e.g. crypto)
+        are not dominated by stale history."""
+        if len(returns) < 30:
+            return 0.05
+
+        # Exponential decay: recent returns matter more (half-life ~1/3 of sample)
+        n = len(returns)
+        decay = np.exp(-np.arange(n)[::-1] / max(n / 3, 1))
+        decay = decay / decay.sum()
+        weighted_returns = (returns.values * decay)
+        scaled = weighted_returns * np.sqrt(horizon)
+
         var_percentile = (1 - confidence) * 100
-        var = np.percentile(scaled_returns, var_percentile)
-        
-        return abs(var)
+        var = np.percentile(scaled, var_percentile)
+        return abs(float(var))
     
     def _calculate_expected_shortfall(self, returns: pd.Series, confidence: float) -> float:
-        """Calculate Expected Shortfall (Conditional VaR)"""
+        """Expected Shortfall (Conditional VaR). Uses same recency weighting as VaR
+        so historical extremes don't dominate in volatile markets."""
         if len(returns) < 30:
-            return 0.07  # Conservative ES
-        
-        var_threshold = np.percentile(returns, (1 - confidence) * 100)
-        tail_losses = returns[returns <= var_threshold]
-        
-        if len(tail_losses) == 0:
-            return abs(var_threshold)
-        
-        return abs(tail_losses.mean())
+            return 0.07
+
+        n = len(returns)
+        decay = np.exp(-np.arange(n)[::-1] / max(n / 3, 1))
+        decay = decay / decay.sum()
+        weighted = returns.values * decay
+        var_threshold = np.percentile(weighted, (1 - confidence) * 100)
+        tail_mask = weighted <= var_threshold
+        if not np.any(tail_mask):
+            return abs(float(var_threshold))
+        tail_losses = weighted[tail_mask]
+        return abs(float(tail_losses.mean()))
     
     async def _calculate_beta(self, symbol: str, returns: pd.Series) -> float:
         """Calculate beta vs market benchmark"""

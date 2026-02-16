@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { BacktestRunner } from '@/components/backtesting/backtest-runner';
+import { BacktestAgentPanel } from '@/components/agents/backtest-agent-panel';
 
 export default function BacktestingPage() {
   return (
@@ -10,9 +11,16 @@ export default function BacktestingPage() {
           Test your trading strategies against historical data.
         </p>
       </div>
-      <Suspense fallback={<div>Loading backtesting interface...</div>}>
-        <BacktestRunner />
-      </Suspense>
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
+        <div className="min-w-0">
+          <Suspense fallback={<div>Loading backtesting interface...</div>}>
+            <BacktestRunner />
+          </Suspense>
+        </div>
+        <aside className="hidden xl:block min-h-[360px]">
+          <BacktestAgentPanel />
+        </aside>
+      </div>
     </div>
   );
 } 

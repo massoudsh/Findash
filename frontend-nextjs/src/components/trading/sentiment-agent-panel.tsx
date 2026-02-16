@@ -28,6 +28,7 @@ export function SentimentAgentPanel() {
       title="Sentiment Agent (M9)"
       subtitle="News and social sentiment by asset"
       icon={<MessageSquare className="h-4 w-4 text-primary" />}
+      agentId="M9"
     >
       <ul className="space-y-2 pr-2">
         {items.map((item, i) => (

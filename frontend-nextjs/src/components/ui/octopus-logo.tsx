@@ -17,11 +17,13 @@ export function OctopusLogo({
   textSize = 'md' 
 }: OctopusLogoProps) {
   const textSizeClasses = {
-    sm: 'text-sm',
-    md: 'text-lg',
-    lg: 'text-xl',
-    xl: 'text-3xl font-bold'
+    sm: 'text-sm font-semibold tracking-tight',
+    md: 'text-lg font-semibold tracking-tight',
+    lg: 'text-xl font-semibold tracking-tight',
+    xl: 'text-2xl font-semibold tracking-tight'
   };
+
+  const subtitleClass = 'text-[11px] tracking-tight text-muted-foreground/90 font-medium leading-none';
 
   const LogoSVG = () => (
     <svg 
@@ -105,11 +107,11 @@ export function OctopusLogo({
       <div className={`inline-flex items-center space-x-3 ${className}`}>
         <LogoImage />
         {showText && (
-          <div className="flex flex-col">
-            <span className={`font-bold text-foreground ${textSizeClasses[textSize]}`}>
+          <div className="flex flex-col items-start justify-center gap-0.5 min-w-0">
+            <span className={`text-foreground leading-tight ${textSizeClasses[textSize]}`}>
               Octopus
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className={subtitleClass}>
               Trading Platform
             </span>
           </div>
@@ -122,11 +124,11 @@ export function OctopusLogo({
     <div className={`inline-flex items-center space-x-3 ${className}`}>
       <LogoSVG />
       {showText && (
-        <div className="flex flex-col">
-          <span className={`font-bold text-foreground ${textSizeClasses[textSize]}`}>
+        <div className="flex flex-col items-start justify-center gap-0.5 min-w-0">
+          <span className={`text-foreground leading-tight ${textSizeClasses[textSize]}`}>
             Octopus
           </span>
-          <span className="text-xs text-muted-foreground">
+          <span className={subtitleClass}>
             Trading Platform
           </span>
         </div>

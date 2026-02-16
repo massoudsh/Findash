@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { MLModelsAgentPanel } from '@/components/agents/ml-models-agent-panel';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -408,6 +409,8 @@ export default function AIModelsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-8">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
+        <div className="min-w-0">
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -1094,6 +1097,11 @@ export default function AIModelsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+        </div>
+        <aside className="hidden xl:block min-h-[360px]">
+          <MLModelsAgentPanel />
+        </aside>
+      </div>
     </div>
   );
 } 

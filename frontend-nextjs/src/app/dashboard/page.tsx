@@ -31,12 +31,12 @@ export default function DashboardPage() {
       <div className="border-b bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                Trading Dashboard
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-foreground antialiased">
+                Command center
               </h1>
-              <p className="text-muted-foreground mt-1">
-                Real-time portfolio analytics and market intelligence
+              <p className="text-sm text-muted-foreground mt-1.5 tracking-normal">
+                Portfolio at a glance · live data
               </p>
             </div>
             <div className="flex items-center gap-3">

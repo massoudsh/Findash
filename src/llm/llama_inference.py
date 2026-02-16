@@ -169,17 +169,22 @@ class FinancialLlamaAnalyzer:
 
 async def run_llama_inference(text: str) -> str:
     """
-    Enhanced Llama inference with financial analysis capabilities.
+    Financial report inference: uses real open-source models when configured
+    (Falcon via TGI, FinGPT via HuggingFace), otherwise simulated response.
     """
     try:
-        # Initialize the financial analyzer
-        analyzer = FinancialLlamaAnalyzer()
-        
-        # Simulate advanced AI processing
+        from src.llm.report_llm_client import generate_report_text
+
         start_time = time.time()
+        real_response = await generate_report_text(text, max_new_tokens=1024)
+        if real_response:
+            logger.info("Report generated via Falcon/FinGPT in %.2fs", time.time() - start_time)
+            return real_response
+
+        # Fallback: simulated response when no model endpoint is configured
+        analyzer = FinancialLlamaAnalyzer()
         await asyncio.sleep(0.8)  # Simulate model inference time
-        
-        # Generate sophisticated financial analysis response
+
         if "market data" in text.lower() and "analyze" in text.lower():
             response = f"""
             FINANCIAL AI ANALYSIS REPORT

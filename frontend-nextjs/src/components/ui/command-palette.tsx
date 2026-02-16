@@ -82,10 +82,40 @@ interface CommandPaletteProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface PlatformSearchResult {
+  id: string;
+  title: string;
+  path: string;
+  type: string;
+}
+
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const router = useRouter();
   const [search, setSearch] = useState('');
+  const [platformResults, setPlatformResults] = useState<PlatformSearchResult[]>([]);
   const t = useTranslations();
+
+  // Platform search (Elasticsearch-backed when available)
+  useEffect(() => {
+    if (!search || search.length < 2) {
+      setPlatformResults([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(search)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setPlatformResults(data.results || []);
+        } else {
+          setPlatformResults([]);
+        }
+      } catch {
+        setPlatformResults([]);
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   // Navigation actions
   const navigationActions: CommandAction[] = [
@@ -456,6 +486,14 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
     command.action();
   }, [onOpenChange]);
 
+  const runPlatformResult = useCallback(
+    (result: PlatformSearchResult) => {
+      onOpenChange(false);
+      router.push(result.path);
+    },
+    [onOpenChange, router]
+  );
+
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput 
@@ -465,6 +503,28 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
+
+        {platformResults.length > 0 && (
+          <>
+            <CommandGroup heading="Platform">
+              {platformResults.map((result) => (
+                <CommandItem
+                  key={result.id}
+                  value={`${result.title} ${result.path}`}
+                  onSelect={() => runPlatformResult(result)}
+                  className="flex items-center gap-3 py-3"
+                >
+                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <div className="font-medium">{result.title}</div>
+                    <div className="text-xs text-muted-foreground">{result.path}</div>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandSeparator />
+          </>
+        )}
         
         {Object.entries(groupedActions).map(([category, actions]) => (
           <CommandGroup key={category} heading={category}>

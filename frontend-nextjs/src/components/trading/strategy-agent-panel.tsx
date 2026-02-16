@@ -31,6 +31,7 @@ export function StrategyAgentPanel() {
       title="Strategy Agent (M4)"
       subtitle="Active signals and execution feed"
       icon={<Target className="h-4 w-4 text-primary" />}
+      agentId="M4"
     >
       <ul className="space-y-2 pr-2">
         {signals.map((s) => (

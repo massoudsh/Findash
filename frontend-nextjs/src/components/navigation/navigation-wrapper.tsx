@@ -176,7 +176,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
         <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-64 lg:flex lg:flex-col">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r bg-card px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
-              <OctopusLogo size={56} showText={true} textSize="xl" />
+              <OctopusLogo size={40} showText={true} textSize="xl" />
             </div>
             <div className="px-2">
               <CommandPaletteTrigger onOpen={() => setCommandOpen(true)} />

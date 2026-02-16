@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { VisualizationContent } from '@/components/visualization/visualization-content';
 import { ChartShowcase } from '@/components/ui/chart-showcase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AnalysisAgentInsightsPanel } from '@/components/trading/analysis-agent-insights';
 
 export default function VisualizationPage() {
   return (
@@ -12,11 +13,17 @@ export default function VisualizationPage() {
           Interactive charts and visual analytics for your trading data
         </p>
       </div>
-      
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
+        <div className="min-w-0">
       <Suspense fallback={<div className="text-center text-gray-400">Loading visualizations...</div>}>
         <ChartShowcase />
         <VisualizationContent />
       </Suspense>
+        </div>
+        <aside className="hidden xl:block min-h-[360px]">
+          <AnalysisAgentInsightsPanel />
+        </aside>
+      </div>
 
       {/* Trading Analytics Section */}
       <Card className="bg-gray-900 border-gray-800">
