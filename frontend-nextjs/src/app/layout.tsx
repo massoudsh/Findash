@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import './globals.css';
 import { NavigationWrapper } from '@/components/navigation/navigation-wrapper';
 import { SessionProviderWrapper } from '@/components/auth/session-provider-wrapper';
@@ -39,9 +40,11 @@ export default function RootLayout({
           <ChunkErrorHandler />
           <LocaleProvider>
             <SessionProviderWrapper>
-              <NavigationWrapper>
-                {children}
-              </NavigationWrapper>
+              <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading…</div>}>
+                <NavigationWrapper>
+                  {children}
+                </NavigationWrapper>
+              </Suspense>
               <Toaster />
             </SessionProviderWrapper>
           </LocaleProvider>

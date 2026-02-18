@@ -22,6 +22,56 @@
 
 The **Octopus Trading Platform (Findash)** is a comprehensive, AI-powered trading system designed for professional traders and institutions. It combines real-time market data, advanced analytics, machine learning models, and automated trading capabilities in a unified, modern interface.
 
+### Platform at a Glance (High-Level Flow)
+
+```mermaid
+flowchart LR
+    subgraph Users
+        U[👤 Trader]
+    end
+    subgraph Frontend
+        D[📊 Dashboard]
+        T[💹 Trading]
+        P[📈 Portfolio]
+    end
+    subgraph Backend
+        API[🔒 API Gateway]
+        FAST[⚡ FastAPI]
+        ORCH[🧠 11 AI Agents]
+    end
+    subgraph Data
+        DB[(🗄️ PostgreSQL)]
+        REDIS[(⚡ Redis)]
+    end
+    subgraph External
+        MKT[📈 Market Data]
+        NEWS[📰 News/Social]
+    end
+    U --> D & T & P
+    D & T & P --> API --> FAST --> ORCH
+    ORCH --> DB & REDIS
+    ORCH --> MKT & NEWS
+```
+
+### User Journey Through the Platform
+
+```mermaid
+flowchart TD
+    A[Landing / Login] --> B[Dashboard]
+    B --> C{User Action}
+    C -->|View portfolio| D[Portfolio & Positions]
+    C -->|Trade| E[Command Center]
+    C -->|Analyze| F[Market Data & Charts]
+    C -->|Automate| G[Trading Bots]
+    C -->|Risk| H[Risk & Analytics]
+    D --> I[Real-time prices & PnL]
+    E --> J[Order entry → Execution]
+    F --> K[Technical + Sentiment]
+    G --> L[Bot config → Signals]
+    H --> M[VaR, Stress, Reports]
+    I & J & K & L & M --> B
+```
+
 ### Key Highlights
 
 - **AI-Powered**: 11 specialized AI agents orchestrated through an intelligent coordination layer
@@ -30,6 +80,24 @@ The **Octopus Trading Platform (Findash)** is a comprehensive, AI-powered tradin
 - **Risk Management**: Advanced risk assessment with VaR, stress testing, and portfolio optimization
 - **Automated Trading**: Bot framework with backtesting and paper trading
 - **Modern UI**: Beautiful glassmorphism design with responsive layouts
+
+---
+
+## Diagrams in This Wiki
+
+The wiki uses **Mermaid** and **ASCII** diagrams so you can see how the platform fits together:
+
+| Page | What you'll see |
+|------|------------------|
+| [[Home]] | Platform flow, user journey, tech stack |
+| [[Architecture]] | Layers, data flow, trading flow, scaling, auth, monitoring |
+| [[AI Agents]] | Agent collaboration flow, quick reference table, message flow |
+| [[Getting Started]] | Installation methods, access flow |
+| [[Database]] | Schema flow, entity-relationship diagram |
+| [[API Reference]] | Request lifecycle |
+| [[Frontend]] | App structure, page flow |
+| [[Deployment]] | Deployment pipeline |
+| [[Configuration]] | Config sources |
 
 ---
 
@@ -73,7 +141,32 @@ The **Octopus Trading Platform (Findash)** is a comprehensive, AI-powered tradin
 
 ---
 
-## Technology Stack
+## Technology Stack (Overview)
+
+```mermaid
+flowchart TB
+    subgraph Frontend["🖥️ Frontend"]
+        N[Next.js 14]
+        TS[TypeScript]
+        TW[Tailwind]
+        SH[Shadcn UI]
+        RC[Recharts]
+    end
+    subgraph Backend["⚙️ Backend"]
+        FA[FastAPI]
+        PY[Python 3.10+]
+        CE[Celery]
+    end
+    subgraph Data["🗄️ Data & Infra"]
+        PG[(PostgreSQL)]
+        TDB[TimescaleDB]
+        RD[(Redis)]
+        DOCK[Docker]
+    end
+    N --> FA
+    FA --> PG & TDB & RD
+    CE --> PG & RD
+```
 
 ### Frontend
 | Technology | Purpose |

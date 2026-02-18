@@ -72,7 +72,7 @@ export function RealtimeContent() {
   useEffect(() => {
     if (!isStreaming) return;
     fetchStreamData();
-    const interval = setInterval(fetchStreamData, 10000); // 10s
+    const interval = setInterval(fetchStreamData, 5000); // 5s for near real-time
     return () => clearInterval(interval);
   }, [isStreaming]);
 

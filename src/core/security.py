@@ -28,6 +28,7 @@ settings = get_settings()
 # Security configuration
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
+security_optional = HTTPBearer(auto_error=False)
 
 # Redis for rate limiting and session management
 try:
@@ -41,7 +42,10 @@ except Exception as e:
 # ==============================================================================
 
 def hash_password(password: str) -> str:
-    """Securely hash a password using bcrypt"""
+    """Securely hash a password using bcrypt (bcrypt limits input to 72 bytes)."""
+    pwd_bytes = password.encode("utf-8")
+    if len(pwd_bytes) > 72:
+        password = pwd_bytes[:72].decode("utf-8", errors="replace")
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -154,6 +158,15 @@ async def get_current_active_user(current_user: TokenData = Depends(get_current_
     """Dependency to ensure user is active"""
     # Add additional checks here (user status, account expiry, etc.)
     return current_user
+
+
+async def get_optional_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security_optional),
+) -> Optional[TokenData]:
+    """Dependency that returns TokenData if valid Bearer token present, else None. Use for endpoints that allow anonymous access with default user."""
+    if not credentials:
+        return None
+    return verify_token(credentials.credentials)
 
 def require_permissions(required_permissions: List[str]):
     """Decorator to require specific permissions"""

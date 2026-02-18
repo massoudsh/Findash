@@ -9,6 +9,23 @@ Complete documentation for the Octopus Trading Platform REST API.
 - **Format**: JSON
 - **Rate Limit**: 100 requests/minute
 
+### API Request Lifecycle
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant G as Gateway
+    participant A as FastAPI
+    participant DB as Database / Cache
+    C->>G: HTTP Request + JWT
+    G->>G: Rate Limit
+    G->>A: Forward
+    A->>A: Validate JWT
+    A->>DB: Query / Cache
+    DB-->>A: Data
+    A-->>C: JSON Response
+```
+
 ## Interactive Documentation
 
 - **Swagger UI**: `http://localhost:8000/docs`

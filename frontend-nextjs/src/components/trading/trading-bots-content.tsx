@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -118,8 +118,75 @@ const MOCK_BOTS: BotConfig[] = [
   },
 ];
 
+const API_BASE = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL || '' : '';
+
+function mapApiBotToConfig(b: {
+  id: string;
+  name: string;
+  strategy: string;
+  status: string;
+  execution_mode?: string;
+  symbols?: string[];
+  agent_sources?: string[];
+  risk?: Record<string, number>;
+  performance?: { total_trades?: number; win_rate?: number; total_pnl?: number };
+  last_signal_at?: string | null;
+  created_at?: string;
+}): BotConfig {
+  const risk = b.risk || {};
+  return {
+    id: b.id,
+    name: b.name,
+    strategy: b.strategy,
+    status: (b.status === 'active' || b.status === 'paused' || b.status === 'stopped' ? b.status : 'stopped') as BotConfig['status'],
+    executionMode: (b.execution_mode === 'live' ? 'live' : 'paper') as 'paper' | 'live',
+    symbols: Array.isArray(b.symbols) ? b.symbols : [],
+    agentSources: Array.isArray(b.agent_sources) ? b.agent_sources : [],
+    risk: {
+      maxPositionPct: risk.max_position_pct ?? DEFAULT_RISK.maxPositionPct,
+      stopLossPct: risk.stop_loss_pct ?? DEFAULT_RISK.stopLossPct,
+      takeProfitPct: risk.take_profit_pct ?? DEFAULT_RISK.takeProfitPct,
+      maxDailyLossPct: risk.max_daily_loss_pct ?? DEFAULT_RISK.maxDailyLossPct,
+      maxDrawdownPct: risk.max_drawdown_pct ?? DEFAULT_RISK.maxDrawdownPct,
+    },
+    performance: {
+      total_trades: b.performance?.total_trades ?? 0,
+      win_rate: b.performance?.win_rate ?? 0,
+      total_pnl: b.performance?.total_pnl ?? 0,
+    },
+    lastSignalAt: b.last_signal_at ?? undefined,
+    created_at: b.created_at ?? new Date().toISOString(),
+  };
+}
+
 export function TradingBotsContent() {
   const [bots, setBots] = useState<BotConfig[]>(MOCK_BOTS);
+  const [botsLoading, setBotsLoading] = useState(true);
+  const [botsError, setBotsError] = useState<string | null>(null);
+
+  const fetchBots = useCallback(async () => {
+    if (!API_BASE) {
+      setBotsLoading(false);
+      return;
+    }
+    setBotsLoading(true);
+    setBotsError(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/trading-bots/`, { credentials: 'include' });
+      if (!res.ok) throw new Error(res.statusText);
+      const data = await res.json();
+      setBots(Array.isArray(data) ? data.map(mapApiBotToConfig) : MOCK_BOTS);
+    } catch (e) {
+      setBotsError(e instanceof Error ? e.message : 'Failed to load bots');
+      setBots(MOCK_BOTS);
+    } finally {
+      setBotsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBots();
+  }, [fetchBots]);
   const [createOpen, setCreateOpen] = useState(false);
   const [newBot, setNewBot] = useState<NewBotForm>({
     name: '',
@@ -130,8 +197,40 @@ export function TradingBotsContent() {
     risk: { ...DEFAULT_RISK },
   });
 
-  const createBot = () => {
+  const createBot = async () => {
     if (!newBot.name.trim()) return;
+    const payload = {
+      name: newBot.name.trim(),
+      strategy: newBot.strategy,
+      executionMode: newBot.executionMode,
+      symbols: newBot.symbols.split(/,\s*/).filter(Boolean),
+      agentSources: newBot.agentSources,
+      risk: {
+        max_position_pct: newBot.risk.maxPositionPct,
+        stop_loss_pct: newBot.risk.stopLossPct,
+        take_profit_pct: newBot.risk.takeProfitPct,
+        max_daily_loss_pct: newBot.risk.maxDailyLossPct,
+        max_drawdown_pct: newBot.risk.maxDrawdownPct,
+      },
+    };
+    if (API_BASE) {
+      try {
+        const res = await fetch(`${API_BASE}/api/trading-bots/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+          await fetchBots();
+          setNewBot({ name: '', strategy: 'momentum', executionMode: 'paper', symbols: 'NVDA, AAPL', agentSources: ['m4', 'm11'], risk: { ...DEFAULT_RISK } });
+          setCreateOpen(false);
+          return;
+        }
+      } catch {
+        // fallback to local state below
+      }
+    }
     setBots((prev) => [
       ...prev,
       {
@@ -151,8 +250,23 @@ export function TradingBotsContent() {
     setCreateOpen(false);
   };
 
-  const toggleStatus = (id: string, current: string) => {
+  const toggleStatus = async (id: string, current: string) => {
     const next = current === 'active' ? 'paused' : current === 'paused' ? 'active' : 'stopped';
+    if (API_BASE) {
+      const path = next === 'active' ? 'start' : next === 'paused' ? 'pause' : 'stop';
+      try {
+        const res = await fetch(`${API_BASE}/api/trading-bots/${id}/${path}`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+        if (res.ok) {
+          await fetchBots();
+          return;
+        }
+      } catch {
+        // fallback to local state
+      }
+    }
     setBots((prev) => prev.map((b) => (b.id === id ? { ...b, status: next as BotConfig['status'] } : b)));
   };
 
@@ -165,7 +279,7 @@ export function TradingBotsContent() {
             Trading Bots
           </h1>
           <p className="text-muted-foreground mt-1">
-            Automated strategies with risk controls; executed on the platform via Trading Center
+            Automated strategies with risk controls; executed on the platform via Command Center
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
@@ -173,6 +287,16 @@ export function TradingBotsContent() {
           Create Bot
         </Button>
       </div>
+
+      {botsError && (
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardContent className="py-3 px-4 flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
+            <span className="text-sm">{botsError}. Showing fallback data.</span>
+            <Button variant="outline" size="sm" onClick={() => fetchBots()}>Retry</Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Best-practice notice */}
       <Card className="border-amber-500/30 bg-amber-500/5">
@@ -189,6 +313,9 @@ export function TradingBotsContent() {
         </CardContent>
       </Card>
 
+      {botsLoading ? (
+        <div className="text-muted-foreground text-sm py-8 text-center">Loading bots…</div>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {bots.map((bot) => (
           <Card key={bot.id} className="flex flex-col">
@@ -269,6 +396,7 @@ export function TradingBotsContent() {
           </Card>
         ))}
       </div>
+      )}
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-lg">

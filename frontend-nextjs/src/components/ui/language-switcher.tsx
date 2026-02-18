@@ -25,6 +25,10 @@ export function LanguageSwitcher() {
           {t('common.english')}
           {locale === 'en' && ' ✓'}
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setLocale('es')}>
+          {t('common.spanish')}
+          {locale === 'es' && ' ✓'}
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setLocale('fa')}>
           {t('common.persian')}
           {locale === 'fa' && ' ✓'}

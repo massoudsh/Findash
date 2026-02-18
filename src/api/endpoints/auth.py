@@ -130,20 +130,26 @@ class UserProfile(BaseModel):
     last_login: Optional[str]
 
 
-# Mock user database (replace with real database in production)
-mock_users = {
-    "demo@quantumtrading.com": {
-        "id": "demo-user-123",
-        "email": "demo@quantumtrading.com",
-        "password_hash": hash_password("demo123"),
-        "first_name": "Demo",
-        "last_name": "User",
-        "is_active": True,
-        "is_verified": True,
-        "created_at": "2024-01-01T00:00:00Z",
-        "last_login": None
-    }
-}
+# Mock user database (lazy init to avoid bcrypt at import)
+_mock_users_cache = None
+
+def get_mock_users():
+    global _mock_users_cache
+    if _mock_users_cache is None:
+        _mock_users_cache = {
+            "demo@quantumtrading.com": {
+                "id": "demo-user-123",
+                "email": "demo@quantumtrading.com",
+                "password_hash": hash_password("demo123"),
+                "first_name": "Demo",
+                "last_name": "User",
+                "is_active": True,
+                "is_verified": True,
+                "created_at": "2024-01-01T00:00:00Z",
+                "last_login": None
+            }
+        }
+    return _mock_users_cache
 
 
 @router.post("/login", response_model=TokenResponse)

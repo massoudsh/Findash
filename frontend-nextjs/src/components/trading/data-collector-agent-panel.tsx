@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AgentPanel } from './agent-panel';
-import { Database, Wifi, WifiOff, CheckCircle, XCircle } from 'lucide-react';
+import { Database, Wifi, WifiOff, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /** M1 Data Collector agent: data sources status and pipeline health (aligned with findash-data-collector). */
@@ -23,11 +23,32 @@ const MOCK_SOURCES: DataSource[] = [
   { id: 'onchain', name: 'On-chain', type: 'on_chain', status: 'active', lastSync: '45s ago', recordsToday: 3421 },
 ];
 
+const API_BASE = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL || '' : '';
+
 export function DataCollectorAgentPanel() {
   const [sources, setSources] = useState<DataSource[]>(MOCK_SOURCES);
 
+  const fetchSources = useCallback(async () => {
+    if (!API_BASE) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/agent-panels/data-collector`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.sources)) setSources(data.sources);
+      }
+    } catch {
+      // keep existing state or mock
+    }
+  }, []);
+
   useEffect(() => {
-    const t = setInterval(() => {
+    fetchSources();
+    const t = setInterval(fetchSources, 20000);
+    return () => clearInterval(t);
+  }, [fetchSources]);
+
+  useEffect(() => {
+    const tick = setInterval(() => {
       setSources((prev) =>
         prev.map((s) => ({
           ...s,
@@ -38,7 +59,7 @@ export function DataCollectorAgentPanel() {
         }))
       );
     }, 20000);
-    return () => clearInterval(t);
+    return () => clearInterval(tick);
   }, []);
 
   return (

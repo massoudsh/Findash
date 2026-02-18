@@ -77,49 +77,62 @@ from src.core.config import get_settings
 
 settings = get_settings()
 
-# Generate secure demo users from environment or use secure defaults
+# Generate secure demo users from environment or use secure defaults (lazy to avoid bcrypt at import)
 DEMO_ADMIN_PASSWORD = os.getenv("DEMO_ADMIN_PASSWORD", "SecureAdmin2025!")
 DEMO_TRADER_PASSWORD = os.getenv("DEMO_TRADER_PASSWORD", "TraderPro2025!")
 DEMO_USER_PASSWORD = os.getenv("DEMO_USER_PASSWORD", "DemoUser2025!")
 
-PROFESSIONAL_USERS = {
-    "admin@octopus.trading": {
-        "id": "usr_admin_001",
-        "email": "admin@octopus.trading",
-        "password_hash": bcrypt.hashpw(DEMO_ADMIN_PASSWORD.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
-        "first_name": "System",
-        "last_name": "Administrator",
-        "is_active": True,
-        "created_at": "2025-01-01T00:00:00Z",
-        "last_login": None,
-        "role": "admin",
-        "permissions": ["admin", "trade", "view_portfolio", "view_analytics", "manage_users"]
-    },
-    "trader@octopus.trading": {
-        "id": "usr_trader_001", 
-        "email": "trader@octopus.trading",
-        "password_hash": bcrypt.hashpw(DEMO_TRADER_PASSWORD.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
-        "first_name": "Professional",
-        "last_name": "Trader",
-        "is_active": True,
-        "created_at": "2025-01-01T00:00:00Z",
-        "last_login": None,
-        "role": "trader",
-        "permissions": ["trade", "view_portfolio", "view_analytics"]
-    },
-    "demo@octopus.trading": {
-        "id": "usr_demo_001",
-        "email": "demo@octopus.trading", 
-        "password_hash": bcrypt.hashpw(DEMO_USER_PASSWORD.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
-        "first_name": "Demo",
-        "last_name": "User",
-        "is_active": True,
-        "created_at": "2025-01-01T00:00:00Z",
-        "last_login": None,
-        "role": "demo",
-        "permissions": ["view_portfolio", "view_analytics"]
+_professional_users_cache: Optional[Dict[str, Any]] = None
+
+def _get_professional_users() -> Dict[str, Any]:
+    global _professional_users_cache
+    if _professional_users_cache is not None:
+        return _professional_users_cache
+    # Truncate to 72 bytes for bcrypt
+    def _pwd(p: str) -> str:
+        b = p.encode("utf-8")
+        if len(b) > 72:
+            p = b[:72].decode("utf-8", errors="replace")
+        return bcrypt.hashpw(p.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    _professional_users_cache = {
+        "admin@octopus.trading": {
+            "id": "usr_admin_001",
+            "email": "admin@octopus.trading",
+            "password_hash": _pwd(DEMO_ADMIN_PASSWORD),
+            "first_name": "System",
+            "last_name": "Administrator",
+            "is_active": True,
+            "created_at": "2025-01-01T00:00:00Z",
+            "last_login": None,
+            "role": "admin",
+            "permissions": ["admin", "trade", "view_portfolio", "view_analytics", "manage_users"]
+        },
+        "trader@octopus.trading": {
+            "id": "usr_trader_001",
+            "email": "trader@octopus.trading",
+            "password_hash": _pwd(DEMO_TRADER_PASSWORD),
+            "first_name": "Professional",
+            "last_name": "Trader",
+            "is_active": True,
+            "created_at": "2025-01-01T00:00:00Z",
+            "last_login": None,
+            "role": "trader",
+            "permissions": ["trade", "view_portfolio", "view_analytics"]
+        },
+        "demo@octopus.trading": {
+            "id": "usr_demo_001",
+            "email": "demo@octopus.trading",
+            "password_hash": _pwd(DEMO_USER_PASSWORD),
+            "first_name": "Demo",
+            "last_name": "User",
+            "is_active": True,
+            "created_at": "2025-01-01T00:00:00Z",
+            "last_login": None,
+            "role": "demo",
+            "permissions": ["view_portfolio", "view_analytics"]
+        }
     }
-}
+    return _professional_users_cache
 
 def create_jwt_token(user_data: dict) -> str:
     """Create JWT token for user"""
@@ -162,7 +175,7 @@ async def authenticate_credentials(
     
     try:
         # Find user in database
-        user = PROFESSIONAL_USERS.get(credentials.email)
+        user = _get_professional_users().get(credentials.email)
         if not user:
             logger.warning(f"Authentication attempt with non-existent email: {credentials.email}")
             rate_limiter.record_failed_login(client_id)
@@ -246,14 +259,14 @@ async def register_user(
     """
     try:
         # Check if user already exists
-        if registration.email in PROFESSIONAL_USERS:
+        if registration.email in _get_professional_users():
             return AuthResponse(
                 success=False,
                 message="Email already registered"
             )
         
         # Create new user
-        user_id = f"usr_{len(PROFESSIONAL_USERS) + 1:06d}"
+        user_id = f"usr_{len(_get_professional_users()) + 1:06d}"
         password_hash = bcrypt.hashpw(registration.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         
         new_user = {
@@ -270,7 +283,7 @@ async def register_user(
         }
         
         # Add to database
-        PROFESSIONAL_USERS[registration.email] = new_user
+        _get_professional_users()[registration.email] = new_user
         
         logger.info(f"New user registered: {registration.email}")
         
@@ -302,7 +315,7 @@ async def list_users(
     
     # Return user profiles
     profiles = []
-    for user in PROFESSIONAL_USERS.values():
+    for user in _get_professional_users().values():
         profiles.append(UserProfile(
             id=user["id"],
             email=user["email"],
@@ -324,7 +337,7 @@ async def get_user_profile(
     """
     Get current user profile
     """
-    user = PROFESSIONAL_USERS.get(current_user["email"])
+    user = _get_professional_users().get(current_user["email"])
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -376,7 +389,7 @@ async def refresh_token_endpoint(
         
         # Find user
         user = None
-        for u in PROFESSIONAL_USERS.values():
+        for u in _get_professional_users().values():
             if u["id"] == user_id:
                 user = u
                 break
@@ -447,7 +460,7 @@ async def change_password(
                 detail="New passwords do not match"
             )
         
-        user = PROFESSIONAL_USERS.get(current_user["email"])
+        user = _get_professional_users().get(current_user["email"])
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

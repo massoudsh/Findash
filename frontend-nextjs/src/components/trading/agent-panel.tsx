@@ -9,7 +9,7 @@ import type { AgentId } from '@/lib/agent-characters';
 
 /**
  * Reusable agent panel for platform agents (M1 Data Collector, M4 Strategy, M9 Sentiment, M11 Analysis).
- * Keeps UI and behavior consistent across Trading Center and other sections.
+ * Keeps UI and behavior consistent across Command Center and other sections.
  * When agentId is set, the panel header shows the agent character (avatar + name + tagline).
  */
 interface AgentPanelProps {

@@ -16,7 +16,9 @@ from dataclasses import dataclass, field
 
 class DatabaseSettings(BaseSettings):
     """Database configuration settings"""
-    url: str = Field(default="postgresql://postgres:postgres@localhost:5432/trading_db", env="DATABASE_URL")
+    url: str = Field(
+        default_factory=lambda: os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/trading_db")
+    )
     host: str = Field(default="localhost", env="DB_HOST")
     port: int = Field(default=5432, env="DB_PORT")
     name: str = Field(default="trading_db", env="DB_NAME")
@@ -77,6 +79,9 @@ class AuthSettings(BaseSettings):
     def validate_secret_keys(cls, v):
         if len(v) < 32:
             raise ValueError("Secret keys must be at least 32 characters for security")
+        # bcrypt has a 72-byte limit; truncate to avoid passlib/bcrypt errors when used for hashing
+        if len(v.encode("utf-8")) > 72:
+            v = v.encode("utf-8")[:72].decode("utf-8", errors="replace")
         return v
     
     class Config:

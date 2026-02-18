@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || 'http://localhost:8000';
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const res: T[][] = [];
@@ -11,10 +11,10 @@ function chunkArray<T>(arr: T[], size: number): T[][] {
 }
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const symbols = searchParams.get('symbols') || 'AAPL,TSLA,MSFT,GOOGL,NVDA,BTC-USD,ETH-USD';
+  const symbolList = symbols.split(',').map(s => s.trim()).filter(Boolean);
   try {
-    const { searchParams } = new URL(request.url);
-    const symbols = searchParams.get('symbols') || 'AAPL,TSLA,MSFT,GOOGL,NVDA,BTC-USD,ETH-USD';
-    const symbolList = symbols.split(',').map(s => s.trim()).filter(Boolean);
     const batches = chunkArray(symbolList, 10);
     let allData: Record<string, any> = {};
     let anySuccess = false;
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       const batchSymbols = batch.join(',');
       try {
         const backendResponse = await fetch(
-          `${BACKEND_URL}/api/simple-market-data/real-time?symbols=${batchSymbols}`,
+          `${BACKEND_URL}/api/simple/simple-market-data/real-time?symbols=${batchSymbols}`,
           {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -60,11 +60,17 @@ export async function GET(request: NextRequest) {
         },
         'BTC-USD': {
           symbol: 'BTC-USD', price: 107850.00, open: 108100.00, high: 108300.00, low: 107600.00, volume: 3400, change: -250.00, change_percent: -0.23, timestamp: new Date().toISOString(), source: 'mock_fallback'
+        },
+        'ETH-USD': {
+          symbol: 'ETH-USD', price: 3650.50, open: 3620.00, high: 3680.00, low: 3610.00, volume: 125000, change: 30.50, change_percent: 0.84, timestamp: new Date().toISOString(), source: 'mock_fallback'
+        },
+        'QQQ': {
+          symbol: 'QQQ', price: 485.20, open: 483.50, high: 486.00, low: 482.80, volume: 42000000, change: 1.70, change_percent: 0.35, timestamp: new Date().toISOString(), source: 'mock_fallback'
         }
       },
       timestamp: new Date().toISOString(),
       symbols_requested: symbolList.length,
-      symbols_returned: 2,
+      symbols_returned: 4,
       note: 'Fallback mock data due to backend error'
     };
     return NextResponse.json(mockData);
@@ -79,11 +85,17 @@ export async function GET(request: NextRequest) {
         },
         'BTC-USD': {
           symbol: 'BTC-USD', price: 107850.00, open: 108100.00, high: 108300.00, low: 107600.00, volume: 3400, change: -250.00, change_percent: -0.23, timestamp: new Date().toISOString(), source: 'mock_fallback'
+        },
+        'ETH-USD': {
+          symbol: 'ETH-USD', price: 3650.50, open: 3620.00, high: 3680.00, low: 3610.00, volume: 125000, change: 30.50, change_percent: 0.84, timestamp: new Date().toISOString(), source: 'mock_fallback'
+        },
+        'QQQ': {
+          symbol: 'QQQ', price: 485.20, open: 483.50, high: 486.00, low: 482.80, volume: 42000000, change: 1.70, change_percent: 0.35, timestamp: new Date().toISOString(), source: 'mock_fallback'
         }
       },
       timestamp: new Date().toISOString(),
-      symbols_requested: 2,
-      symbols_returned: 2,
+      symbols_requested: symbolList.length,
+      symbols_returned: 4,
       error: 'Backend connection failed, using fallback data'
     };
     return NextResponse.json(mockData);

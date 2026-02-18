@@ -2,31 +2,27 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { OctopusLogo } from '@/components/ui/octopus-logo';
 import { 
   BarChart3, 
-  Briefcase, 
   Menu, 
   Target, 
   TrendingUp,
   Activity,
   Brain,
-  Shield,
   MessageSquare,
   PieChart,
   FileText,
   User,
   Settings as SettingsIcon,
-  FlaskConical,
   Bell,
   ServerCog,
   BookOpen,
   ListChecks,
   Database,
-  DollarSign,
   Percent
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -42,24 +38,13 @@ interface NavigationWrapperProps {
   children: React.ReactNode;
 }
 
-// Left Sidebar - Trading & Portfolio Management (Market + Live Trading + Bots integrated in Trading Center)
+// Left Sidebar - Trading + Analysis & Research (aligned with right)
 const leftSidebarItems = {
   'Trading': [
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
-    { name: 'Trading Center', href: '/trading', icon: TrendingUp },
-    { name: 'Options', href: '/options', icon: DollarSign },
-    { name: 'Paper Trading & Backtesting', href: '/backtesting', icon: FlaskConical },
+    { name: 'Command Center', href: '/trading', icon: TrendingUp },
   ],
-  'Portfolio': [
-    { name: 'Portfolio', href: '/portfolio', icon: Briefcase },
-    { name: 'Strategies', href: '/strategies', icon: Target },
-    { name: 'Risk Assessment', href: '/risk', icon: Shield },
-  ],
-};
-
-// Right Sidebar - Analysis & Tools
-const rightSidebarItems = {
-  'Analysis': [
+  'Analysis & Research': [
     { name: 'Technical', href: '/technical', icon: Target },
     { name: 'Fundamental Research', href: '/fundamental-data', icon: Brain },
     { name: 'Macro', href: '/macro', icon: TrendingUp },
@@ -67,18 +52,17 @@ const rightSidebarItems = {
     { name: 'Social Signals', href: '/social', icon: MessageSquare },
     { name: 'AI Models', href: '/ai-models', icon: Brain },
   ],
-  'Tools & Data': [
-    { name: 'Data Explorer', href: '/data-explorer', icon: Database },
-    { name: 'Visualization', href: '/visualization', icon: PieChart },
+};
+
+// Right Sidebar - Tools & System (merged: Data & Charts, Account, Admin includes Audit)
+const rightSidebarItems = {
+  'Tools & System': [
+    { name: 'Data & Charts', href: '/data', icon: Database },
     { name: 'Reports', href: '/reports', icon: FileText },
     { name: 'API Playground', href: '/api-playground', icon: Activity },
-  ],
-  'System': [
     { name: 'Notifications', href: '/notifications', icon: Bell },
-    { name: 'Admin Panel', href: '/admin', icon: ServerCog },
-    { name: 'Audit Log', href: '/audit-log', icon: ListChecks },
-    { name: 'Profile', href: '/profile', icon: User },
-    { name: 'Settings', href: '/settings', icon: SettingsIcon },
+    { name: 'Admin', href: '/admin', icon: ServerCog },
+    { name: 'Account', href: '/account', icon: User },
     { name: 'Help', href: '/help', icon: BookOpen },
   ],
 };
@@ -87,14 +71,17 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const t = useTranslations();
 
   type NavItem = { name: string; href: string; icon: React.ComponentType<{ className?: string }> };
 
   const isActive = (item: NavItem) => {
     if (pathname === item.href) return true;
-    // Trading Center: active when on /trading (any tab)
+    // Command Center: active when on /trading (any tab)
     if (item.href === '/trading') return pathname === '/trading';
+    // Dashboard: active when on /dashboard (any tab)
+    if (item.href === '/dashboard') return pathname === '/dashboard';
     return false;
   };
   
@@ -174,7 +161,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
       <div className="lg:flex">
         {/* Left Desktop Sidebar - Trading & Portfolio */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-64 lg:flex lg:flex-col">
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r bg-card px-6 pb-4">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-white/30 dark:border-white/20 bg-card px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
               <OctopusLogo size={40} showText={true} textSize="xl" />
             </div>
@@ -203,9 +190,9 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
 
         {/* Right Desktop Sidebar - Analysis & Tools */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:right-0 lg:z-40 lg:w-64 lg:flex lg:flex-col">
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-l bg-card px-6 pb-4">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-l border-white/30 dark:border-white/20 bg-card px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center justify-center">
-              <h2 className="text-lg font-semibold text-muted-foreground">{t('nav.title.Analysis & Tools')}</h2>
+              <h2 className="text-lg font-semibold text-muted-foreground">{t('nav.title.Tools & System')}</h2>
             </div>
             <RightNavigationContent />
           </div>

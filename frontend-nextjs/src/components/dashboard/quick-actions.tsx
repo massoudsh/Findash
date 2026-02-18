@@ -68,7 +68,7 @@ export function QuickActions() {
       title: 'Run Backtest',
       description: 'Test strategy performance',
       icon: <Calculator className="w-5 h-5" />,
-      action: () => router.push('/backtesting?action=new'),
+      action: () => router.push('/strategies?tab=backtesting&action=new'),
       category: 'analysis'
     },
     {

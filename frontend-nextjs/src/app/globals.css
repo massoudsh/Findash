@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dana font (Persian) — put files in public/fonts/ (e.g. Dana.woff2, Dana.woff) */
+@font-face {
+  font-family: 'Dana';
+  src: url('/fonts/Dana.woff2') format('woff2'), url('/fonts/Dana.woff') format('woff');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 222.2 84% 4.9%;
@@ -78,6 +87,15 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
+  /* Use Dana when language is Persian */
+  html[lang='fa'] body {
+    font-family: 'Dana', ui-sans-serif, system-ui, sans-serif;
+  }
+}
+
+/* Use Dana anywhere: add class font-dana */
+.font-dana {
+  font-family: 'Dana', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Professional Fintech Glassmorphism */
@@ -448,6 +466,20 @@
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.3);
   }
+}
+
+/* Portal positioning: clear incorrect top/left (e.g. top: 2468.51px) so portal positions correctly */
+nextjs-portal {
+  position: fixed !important;
+  top: unset !important;
+  left: unset !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  pointer-events: none;
+  z-index: 9999;
+}
+nextjs-portal > * {
+  pointer-events: auto;
 }
 
 /* Reduced motion support */

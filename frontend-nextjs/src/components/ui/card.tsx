@@ -11,7 +11,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", hover = true, ...props }, ref) => {
     const variants = {
       default: "rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm shadow-lg shadow-black/5 dark:shadow-black/20",
-      glass: "rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-xl shadow-black/10 dark:bg-black/20 dark:border-white/5",
+      glass: "rounded-xl border border-white/30 dark:border-white/20 bg-white/5 backdrop-blur-xl shadow-xl shadow-black/10 dark:bg-black/20",
       gradient: "rounded-xl border-0 bg-gradient-to-br from-card via-card to-card/80 backdrop-blur-sm shadow-xl shadow-primary/5",
       elevated: "rounded-2xl border border-border/40 bg-card shadow-2xl shadow-black/10 dark:shadow-black/30",
       bordered: "rounded-xl border-2 border-border bg-card/80 backdrop-blur-sm shadow-lg shadow-black/5",

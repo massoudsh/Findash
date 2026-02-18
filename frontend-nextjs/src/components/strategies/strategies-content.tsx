@@ -875,15 +875,15 @@ export function StrategiesContent() {
   }
 
   function handleBacktest(strategy: Strategy) {
-    // Navigate to backtesting page with strategy pre-filled
-    const searchParams = new URLSearchParams({
+    // Navigate to Strategies > Backtesting tab with strategy pre-filled
+    const params = new URLSearchParams({
+      tab: 'backtesting',
       strategy_type: strategy.strategy_type,
       strategy_name: strategy.name,
       symbols: strategy.symbols?.join(',') || 'AAPL,TSLA,MSFT',
       initial_capital: strategy.initial_capital?.toString() || '100000'
     });
-    
-    router.push(`/backtesting?${searchParams.toString()}`);
+    router.push(`/strategies?${params.toString()}`);
   }
 
   if (isLoading) {

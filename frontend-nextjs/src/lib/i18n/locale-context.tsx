@@ -38,7 +38,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!mounted || typeof document === 'undefined') return;
     const dir = getDir(locale);
-    const lang = locale === 'fa' ? 'fa' : 'en';
+    const lang = locale === 'fa' ? 'fa' : locale === 'es' ? 'es' : 'en';
     document.documentElement.setAttribute('dir', dir);
     document.documentElement.setAttribute('lang', lang);
     document.documentElement.classList.toggle('rtl', dir === 'rtl');

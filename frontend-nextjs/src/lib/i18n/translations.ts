@@ -1,24 +1,23 @@
-export type Locale = 'en' | 'fa';
+export type Locale = 'en' | 'es' | 'fa';
 
 export const translations: Record<Locale, Record<string, string>> = {
   en: {
-    // Nav group names
     'nav.group.Trading': 'Trading',
     'nav.group.Portfolio': 'Portfolio',
     'nav.group.Analysis': 'Analysis',
     'nav.group.Tools & Data': 'Tools & Data',
     'nav.group.System': 'System',
-    // Nav items - Left
+    'nav.group.Analysis & Research': 'Analysis & Research',
+    'nav.group.Tools & System': 'Tools & System',
     'nav.item.Dashboard': 'Dashboard',
     'nav.item.Market': 'Market',
     'nav.item.Options': 'Options',
-    'nav.item.Trading Center': 'Trading Center',
+    'nav.item.Command Center': 'Command Center',
     'nav.item.Trading Bots': 'Trading Bots',
     'nav.item.Paper Trading & Backtesting': 'Paper Trading & Backtesting',
     'nav.item.Portfolio': 'Portfolio',
     'nav.item.Strategies': 'Strategies',
     'nav.item.Risk Assessment': 'Risk Assessment',
-    // Nav items - Right
     'nav.item.Technical': 'Technical',
     'nav.item.Fundamental Research': 'Fundamental Research',
     'nav.item.Macro': 'Macro',
@@ -26,6 +25,9 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.item.Social Signals': 'Social Signals',
     'nav.item.AI Models': 'AI Models',
     'nav.item.Data Explorer': 'Data Explorer',
+    'nav.item.Data & Charts': 'Data & Charts',
+    'nav.item.Admin': 'Admin',
+    'nav.item.Account': 'Account',
     'nav.item.Visualization': 'Visualization',
     'nav.item.Reports': 'Reports',
     'nav.item.API Playground': 'API Playground',
@@ -35,15 +37,63 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.item.Profile': 'Profile',
     'nav.item.Settings': 'Settings',
     'nav.item.Help': 'Help',
-    // Header
     'nav.title.Analysis & Tools': 'Analysis & Tools',
+    'nav.title.Tools & System': 'Tools & System',
     'common.search': 'Search anything here...',
     'common.searchShort': 'Search...',
     'common.searchPlaceholder': 'Search anything in the platform...',
     'common.language': 'Language',
     'common.english': 'English',
-    'common.persian': 'فارسی',
+    'common.spanish': 'Spanish',
+    'common.persian': 'Persian',
     'app.title': 'Octopus Trading Platform',
+  },
+  es: {
+    'nav.group.Trading': 'Trading',
+    'nav.group.Portfolio': 'Cartera',
+    'nav.group.Analysis': 'Análisis',
+    'nav.group.Tools & Data': 'Herramientas y datos',
+    'nav.group.System': 'Sistema',
+    'nav.group.Analysis & Research': 'Análisis e investigación',
+    'nav.group.Tools & System': 'Herramientas y sistema',
+    'nav.item.Dashboard': 'Panel',
+    'nav.item.Market': 'Mercado',
+    'nav.item.Options': 'Opciones',
+    'nav.item.Command Center': 'Centro de mando',
+    'nav.item.Trading Bots': 'Bots de trading',
+    'nav.item.Paper Trading & Backtesting': 'Trading papel y backtesting',
+    'nav.item.Portfolio': 'Cartera',
+    'nav.item.Strategies': 'Estrategias',
+    'nav.item.Risk Assessment': 'Evaluación de riesgos',
+    'nav.item.Technical': 'Técnico',
+    'nav.item.Fundamental Research': 'Análisis fundamental',
+    'nav.item.Macro': 'Macro',
+    'nav.item.On-chain': 'On-chain',
+    'nav.item.Social Signals': 'Señales sociales',
+    'nav.item.AI Models': 'Modelos IA',
+    'nav.item.Data Explorer': 'Explorador de datos',
+    'nav.item.Data & Charts': 'Datos y gráficos',
+    'nav.item.Admin': 'Administración',
+    'nav.item.Account': 'Cuenta',
+    'nav.item.Visualization': 'Visualización',
+    'nav.item.Reports': 'Informes',
+    'nav.item.API Playground': 'API Playground',
+    'nav.item.Notifications': 'Notificaciones',
+    'nav.item.Admin Panel': 'Panel de administración',
+    'nav.item.Audit Log': 'Registro de auditoría',
+    'nav.item.Profile': 'Perfil',
+    'nav.item.Settings': 'Ajustes',
+    'nav.item.Help': 'Ayuda',
+    'nav.title.Analysis & Tools': 'Análisis y herramientas',
+    'nav.title.Tools & System': 'Herramientas y sistema',
+    'common.search': 'Buscar aquí...',
+    'common.searchShort': 'Buscar...',
+    'common.searchPlaceholder': 'Buscar en la plataforma...',
+    'common.language': 'Idioma',
+    'common.english': 'Inglés',
+    'common.spanish': 'Español',
+    'common.persian': 'Persa',
+    'app.title': 'Plataforma de trading Octopus',
   },
   fa: {
     'nav.group.Trading': 'معاملات',
@@ -51,10 +101,12 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.group.Analysis': 'تحلیل',
     'nav.group.Tools & Data': 'ابزار و داده',
     'nav.group.System': 'سیستم',
+    'nav.group.Analysis & Research': 'تحلیل و پژوهش',
+    'nav.group.Tools & System': 'ابزار و سیستم',
     'nav.item.Dashboard': 'داشبورد',
     'nav.item.Market': 'بازار',
     'nav.item.Options': 'اختیار معامله',
-    'nav.item.Trading Center': 'مرکز معاملات',
+    'nav.item.Command Center': 'مرکز فرمان',
     'nav.item.Trading Bots': 'ربات‌های معاملاتی',
     'nav.item.Paper Trading & Backtesting': 'معاملات کاغذی و بک‌تست',
     'nav.item.Portfolio': 'پرتفوی',
@@ -67,6 +119,9 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.item.Social Signals': 'سیگنال‌های اجتماعی',
     'nav.item.AI Models': 'مدل‌های هوش مصنوعی',
     'nav.item.Data Explorer': 'کاوشگر داده',
+    'nav.item.Data & Charts': 'داده و نمودارها',
+    'nav.item.Admin': 'مدیریت',
+    'nav.item.Account': 'حساب',
     'nav.item.Visualization': 'نمایش داده',
     'nav.item.Reports': 'گزارش‌ها',
     'nav.item.API Playground': 'محیط API',
@@ -77,11 +132,13 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.item.Settings': 'تنظیمات',
     'nav.item.Help': 'راهنما',
     'nav.title.Analysis & Tools': 'تحلیل و ابزار',
+    'nav.title.Tools & System': 'ابزار و سیستم',
     'common.search': 'جستجو در پلتفرم...',
     'common.searchShort': 'جستجو...',
     'common.searchPlaceholder': 'هر چیزی در پلتفرم را جستجو کنید...',
     'common.language': 'زبان',
-    'common.english': 'English',
+    'common.english': 'انگلیسی',
+    'common.spanish': 'اسپانیایی',
     'common.persian': 'فارسی',
     'app.title': 'پلتفرم معاملاتی اکتپوس',
   },
@@ -92,7 +149,8 @@ const LOCALE_STORAGE_KEY = 'findash-locale';
 export function getStoredLocale(): Locale {
   if (typeof window === 'undefined') return 'en';
   const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-  return stored === 'fa' ? 'fa' : 'en';
+  if (stored === 'fa' || stored === 'es') return stored;
+  return 'en';
 }
 
 export function setStoredLocale(locale: Locale): void {
@@ -102,7 +160,7 @@ export function setStoredLocale(locale: Locale): void {
 
 export function t(locale: Locale, key: string): string {
   const dict = translations[locale];
-  return dict[key] ?? translations.en[key] ?? key;
+  return dict?.[key] ?? translations.en[key] ?? key;
 }
 
 export function getDir(locale: Locale): 'ltr' | 'rtl' {

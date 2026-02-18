@@ -2,6 +2,21 @@
 
 Complete guide for deploying the Octopus Trading Platform to production.
 
+## Deployment Flow Overview
+
+```mermaid
+flowchart TD
+    PREP[Server prep\nDocker, Compose] --> CLONE[Clone repo\nConfigure .env]
+    CLONE --> BUILD[Build images\nor use pre-built]
+    BUILD --> UP[Start stack\ndocker compose up]
+    UP --> LB[Load balancer / NGINX]
+    LB --> API[API containers]
+    LB --> FE[Frontend]
+    API --> DB[(PostgreSQL)]
+    API --> REDIS[(Redis)]
+    FE --> API
+```
+
 ## System Requirements
 
 ### Hardware

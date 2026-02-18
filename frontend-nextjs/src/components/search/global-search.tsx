@@ -26,11 +26,11 @@ interface SearchItem {
 const searchItems: SearchItem[] = [
   // Navigation
   { id: 'dashboard', title: 'Dashboard', description: 'Trading overview and analytics', icon: <BarChart3 className="w-4 h-4" />, url: '/dashboard', category: 'Navigation' },
-  { id: 'portfolio', title: 'Portfolio', description: 'View and manage your portfolio', icon: <DollarSign className="w-4 h-4" />, url: '/portfolio', category: 'Navigation' },
+  { id: 'portfolio', title: 'Portfolio', description: 'View and manage your portfolio', icon: <DollarSign className="w-4 h-4" />, url: '/dashboard?tab=portfolio', category: 'Navigation' },
   { id: 'trades', title: 'Trades', description: 'Trading history and orders', icon: <TrendingUp className="w-4 h-4" />, url: '/trades', category: 'Navigation' },
   { id: 'strategies', title: 'Strategies', description: 'Trading strategies and backtesting', icon: <Calculator className="w-4 h-4" />, url: '/strategies', category: 'Navigation' },
-  { id: 'risk', title: 'Risk Management', description: 'Portfolio risk analysis', icon: <BarChart3 className="w-4 h-4" />, url: '/risk', category: 'Navigation' },
-  { id: 'backtesting', title: 'Backtesting', description: 'Strategy backtesting tools', icon: <TrendingUp className="w-4 h-4" />, url: '/backtesting', category: 'Navigation' },
+  { id: 'risk', title: 'Risk Management', description: 'Portfolio risk analysis', icon: <BarChart3 className="w-4 h-4" />, url: '/trading?tab=risk', category: 'Navigation' },
+  { id: 'backtesting', title: 'Backtesting', description: 'Strategy backtesting tools', icon: <TrendingUp className="w-4 h-4" />, url: '/strategies?tab=backtesting', category: 'Navigation' },
   { id: 'models', title: 'AI Models', description: 'Machine learning models', icon: <Calculator className="w-4 h-4" />, url: '/models', category: 'Navigation' },
   { id: 'visualization', title: 'Visualization', description: 'Charts and data visualization', icon: <BarChart3 className="w-4 h-4" />, url: '/visualization', category: 'Navigation' },
   { id: 'realtime', title: 'Real-time Data', description: 'Live market data', icon: <TrendingUp className="w-4 h-4" />, url: '/realtime', category: 'Navigation' },
@@ -39,8 +39,8 @@ const searchItems: SearchItem[] = [
   // Quick Actions
   { id: 'new-trade', title: 'New Trade', description: 'Place a new trade order', icon: <DollarSign className="w-4 h-4" />, url: '/trades?action=new', category: 'Quick Actions' },
   { id: 'create-strategy', title: 'Create Strategy', description: 'Build a new trading strategy', icon: <Calculator className="w-4 h-4" />, url: '/strategies?action=create', category: 'Quick Actions' },
-  { id: 'run-backtest', title: 'Run Backtest', description: 'Test strategy performance', icon: <TrendingUp className="w-4 h-4" />, url: '/backtesting?action=new', category: 'Quick Actions' },
-  { id: 'portfolio-analysis', title: 'Portfolio Analysis', description: 'Analyze portfolio performance', icon: <BarChart3 className="w-4 h-4" />, url: '/portfolio?tab=analysis', category: 'Quick Actions' },
+  { id: 'run-backtest', title: 'Run Backtest', description: 'Test strategy performance', icon: <TrendingUp className="w-4 h-4" />, url: '/strategies?tab=backtesting&action=new', category: 'Quick Actions' },
+  { id: 'portfolio-analysis', title: 'Portfolio Analysis', description: 'Analyze portfolio performance', icon: <BarChart3 className="w-4 h-4" />, url: '/dashboard?tab=portfolio', category: 'Quick Actions' },
   
   // Settings
   { id: 'settings', title: 'Settings', description: 'Application settings', icon: <Settings className="w-4 h-4" />, url: '/settings', category: 'Settings' },

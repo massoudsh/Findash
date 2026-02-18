@@ -420,6 +420,45 @@ export default function HelpPage() {
             </CardContent>
           </Card>
 
+          <Card className="bg-gradient-to-br from-slate-50 to-blue-50/50 dark:from-slate-900/50 dark:to-blue-950/20 border-blue-200/50 dark:border-blue-800/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <span className="text-2xl" aria-hidden>🐙</span>
+                Did you know? Sea life & our mascot
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Why Octopus? Here are some fun facts about sea creatures (and the brain behind the logo).
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <ul className="space-y-2 list-none">
+                <li className="flex gap-2">
+                  <span className="text-blue-500 shrink-0">•</span>
+                  <span><strong>Octopuses have three hearts</strong> — two pump blood to the gills, one to the rest of the body. When they swim, the heart that feeds the body stops. No wonder they prefer crawling.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-blue-500 shrink-0">•</span>
+                  <span><strong>Two-thirds of an octopus’s neurons are in its arms</strong>, not its head. So each arm can “think” and react on its own. We like to think that’s why our platform can handle many strategies at once.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-blue-500 shrink-0">•</span>
+                  <span><strong>They can change color and texture in a flash</strong> — camouflage, mood, or communication. One minute you see them, the next you don’t. Kind of like market conditions.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-blue-500 shrink-0">•</span>
+                  <span><strong>Octopuses use tools</strong> — stacking rocks, carrying coconut shells. So we’re in good company building tools for trading.</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-blue-500 shrink-0">•</span>
+                  <span><strong>Bonus:</strong> A group of octopuses is called a “consortium.” We’re basically a consortium of agents working for your portfolio.</span>
+                </li>
+              </ul>
+              <p className="text-muted-foreground italic pt-2 border-t border-border/50">
+                Clownfish dads turn into moms when the breeding female dies. Dolphins sleep with one eye open. Sea cucumbers breathe through their butt. The ocean is weird. We just picked the smartest invertebrate for the logo.
+              </p>
+            </CardContent>
+          </Card>
+
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>

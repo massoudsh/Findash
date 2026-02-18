@@ -107,4 +107,4 @@ export function AgentBadge({ agentId, className }: { agentId: AgentId; className
 }
 
 export { AGENT_CHARACTERS, getAgentCharacter };
-export type { AgentId, AgentCharacter };
+export type { AgentId };

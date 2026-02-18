@@ -1,185 +1,54 @@
 # Findash GitHub Issues & Roadmap
 
-Use this doc to **close** the existing open issue and **create** new issues aligned with the current platform design and timeline.
+Single source of truth for issue status and development phases.
 
 ---
 
-## Close existing issue
+## Phase checklist
 
-**Issue #1: Phase 1: Core Features Development**
-
-- **Action:** Close as completed (or “Done for Phase 1”).
-- **Comment to add when closing (optional):**
-  ```
-  Phase 1 scope completed per current design: core app (FastAPI + Next.js), data models,
-  Trading Center (Market, Live Trading, Trading Bots), dashboard with account cards,
-  agent panels (M1/M4/M9/M11), and CI/CD workflow. Remaining work tracked in new issues below.
-  ```
+| Phase | Status | Description |
+|-------|--------|-------------|
+| **Phase 1** | ✅ Done | Core app (FastAPI + Next.js), Command Center, Dashboard, account cards, agent panels (M1/M4/M9/M11), CI/CD workflow |
+| **Phase 2** | In progress | Dashboard real data (#8); remaining bot/execution work (#10). [#3](https://github.com/massoudsh/Findash/issues/3) closed. |
+| **Phase 3** | TBD | Scale, observability, E2E tests, production hardening |
 
 ---
 
-## New issues to create (design + timeline)
+## Closed issues (summary)
 
-Create these in the Findash repo (e.g. **Issues → New issue**). Copy title and body as needed.
-
----
-
-### 1. **CI/CD: Harden and optional deploy**
-
-**Title:** `ci: Harden CI/CD and add optional deploy`
-
-**Body:**
-
-```markdown
-## Summary
-- CI/CD workflow was updated: backend lint (flake8, black, isort, mypy), frontend lint (Next.js), tests (pytest + Postgres/Redis), and Docker API build.
-- Deploy jobs are placeholders until AWS/ECS (or other target) secrets are set.
-
-## Tasks
-- [ ] Remove `|| true` from lint steps once codebase passes
-- [ ] Enable strict mypy (remove `continue-on-error`) when types are fixed
-- [ ] Add frontend build job (e.g. `npm run build`) to CI
-- [ ] Configure repo secrets for deploy (e.g. AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION) and replace deploy placeholder steps
-
-## Priority
-Medium
-
-## Timeline
-Next 1–2 sprints
-```
+- **#2** – ui: Dashboard account cards and green fintech theme → Closed. Account cards responsive/accessible, loading/error states, glass/green theme applied.
+- **#4** – ci: Harden CI/CD and add optional deploy → Closed. Frontend build in CI, workflow comments, deploy placeholders.
+- **#5** – docs/llm: Document open-source and free LLM usage → Closed. LLM docs + env.example; `GET /llm/status` and Reports page `LlmStatusBadge`.
+- **#6** – ops: Docker core stack and optional LLM profile → Closed. README core vs `--profile llm`, Redis 6380, `scripts/healthcheck-core.sh`, production override note.
+- **#3** – feat: Trading bots execution and agent panels integration → Closed. Bot CRUD/start/pause/stop with optional auth; stub API for M1/M4/M9/M11 panels; panels wired to backend with mock fallback; start response includes execution_mode (paper/live).
 
 ---
 
-### 2. **Dashboard: Polish and green fintech theme**
+## Open issues (current)
 
-**Title:** `ui: Dashboard account cards and green fintech theme`
-
-**Body:**
-
-```markdown
-## Summary
-Dashboard has glass-style account cards and a green/emerald fintech background. Remaining polish and consistency.
-
-## Tasks
-- [ ] Ensure account cards are responsive and accessible on small screens
-- [ ] Align remaining dashboard cards (e.g. Financial Summary) with glass/green theme if desired
-- [ ] Add loading/error states for account balances when wired to API
-
-## Priority
-Low
-
-## Timeline
-Backlog / when wiring real data
-```
+| # | Title | Priority |
+|---|--------|----------|
+| [8](https://github.com/massoudsh/Findash/issues/8) | ui: Dashboard real data wiring and API timeouts | Medium |
+| [9](https://github.com/massoudsh/Findash/issues/9) | feat: Technical page – wire Screener, Watchlist, Economic Calendar | Low |
+| [10](https://github.com/massoudsh/Findash/issues/10) | feat: Trading bots execution – wire backend and run on platform | High |
+| [11](https://github.com/massoudsh/Findash/issues/11) | docs: Development roadmap and phase checklist | Low |
 
 ---
 
-### 3. **Trading Center: Bots and agents**
+## Development roadmap (high level)
 
-**Title:** `feat: Trading bots execution and agent panels integration`
+1. **Now**
+   - Keep UI consistent (borderless tabs, lifted buttons, Command center, Options only in Command Center).
+   - Wire dashboard to real portfolio/account APIs where available (issue #8).
 
-**Body:**
+2. **Next 1–2 sprints**
+   - Trading Bots run-on-platform refinements (#10); agent panels wired (#3 done).
+   - Optional: Technical page Screener/Watchlist/Calendar (#9).
 
-```markdown
-## Summary
-Trading Bots UI (strategy types, risk params, agent sources M4/M9/M11/M6) and agent panels (Data Collector M1, Strategy M4, Sentiment M9, Analysis M11) are in place. Backend and execution still to be wired.
-
-## Tasks
-- [ ] Add or align API endpoints for bot CRUD and config (risk, execution mode, agent sources)
-- [ ] Wire Data Collector / Strategy / Sentiment panels to real or stub backend
-- [ ] Implement “run on platform” execution path (paper then live) for bots using agent signals
-
-## Priority
-High
-
-## Timeline
-Phase 2 – 2–3 sprints
-```
+3. **Later**
+   - Roadmap doc in repo root and labels/milestones (#11).
+   - Phase 3: E2E tests, observability, production deploy.
 
 ---
 
-### 4. **LLM: Open-source and free tier only**
-
-**Title:** `docs/llm: Document open-source and free LLM usage`
-
-**Body:**
-
-```markdown
-## Summary
-LLM report generation uses only open-source or free options (Falcon TGI, FinGPT local, HuggingFace free token). No paid API keys.
-
-## Tasks
-- [ ] Keep docs/llm-report-models.md and env.example in sync with any new LLM options
-- [ ] Optional: add a small “LLM status” indicator in UI when FALCON_TGI_URL / FINGPT_LOCAL_URL / HF_TOKEN are set
-
-## Priority
-Low
-
-## Timeline
-Backlog
-```
-
----
-
-### 5. **Docker: Core stack and optional LLM**
-
-**Title:** `ops: Docker core stack and optional LLM profile`
-
-**Body:**
-
-```markdown
-## Summary
-- docker-compose-core.yml: API, frontend, db, redis, celery-worker, celery-beat, prometheus, grafana. Redis host port 6380 by default to avoid conflict with local Redis.
-- LLM services (TGI Falcon, FinGPT inference) are under profile `llm` (optional).
-
-## Tasks
-- [ ] Document in README how to run core only vs with LLM profile
-- [ ] Add healthcheck or smoke test script for core stack
-- [ ] Consider adding docker-compose override example for production
-
-## Priority
-Medium
-
-## Timeline
-1 sprint
-```
-
----
-
-### 6. **Phase 2: Backend and data** ✅ Completed
-
-**Title:** `Phase 2: Backend APIs and data wiring`
-
-**Body:**
-
-```markdown
-## Overview
-Wire frontend to backend for trading bots, agent status/signals, and dashboard data.
-
-## Tasks
-- [x] Trading bots API (create, list, update, pause/start, risk and agent source config)
-- [x] Agent status/signals endpoints for M1, M4, M9, M11 panels
-- [x] Dashboard portfolio and account summary from API
-- [x] Tests and OpenAPI docs for new endpoints
-
-## Priority
-High
-
-## Estimated effort
-3–4 sprints
-
-## Status
-**Completed.** Implemented: `/api/trading-bots/` (CRUD, start/pause/stop, risk, agent_sources), `/api/agents/panels` (M1/M4/M9 payloads), `/api/dashboard/summary` (account + portfolio summary), `tests/test_phase2_api.py`. OpenAPI via FastAPI `/docs`.
-```
-
----
-
-## Suggested order
-
-1. **Close** issue #1 with the comment above.
-2. **Create** the 6 new issues (copy titles/bodies from this file).
-3. **Label** (e.g. `ci`, `ui`, `feat`, `docs`, `ops`, `phase-2`) and set milestone if you use them.
-
----
-
-*Last updated: 2026-02-10 (Phase 2 completed: backend APIs, dashboard summary, tests).*
+*Last updated: 2026-02-17. Closed #3 (trading bots execution + agent panels); updated Phase 2 and open issues.*

@@ -12,9 +12,11 @@ RUN npm ci --only=production && npm cache clean --force
 # Copy source code
 COPY . .
 
-# Set environment variables for build
+# Set environment variables for build (NEXT_PUBLIC_* baked at build time)
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_API_URL=http://localhost:8011
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 # Build the application
 RUN npm run build
@@ -25,6 +27,9 @@ FROM node:18-alpine AS runtime
 # Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+
+# Install curl for healthcheck
+RUN apk add --no-cache curl
 
 # Create a non-root user
 RUN addgroup --system --gid 1001 nodejs
@@ -45,9 +50,9 @@ USER nextjs
 # Expose port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/api/health || exit 1
+# Health check (Next.js may bind to hostname; use it so curl reaches the app)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD ["/bin/sh", "-c", "curl -f http://$(hostname):3000/ || exit 1"]
 
 # Start the application
 CMD ["node", "server.js"] 

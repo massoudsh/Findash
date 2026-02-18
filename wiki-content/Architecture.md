@@ -4,6 +4,53 @@ The Octopus Trading Platform is built on a modern, scalable microservices archit
 
 ## Architecture Overview
 
+### Layer Diagram (Mermaid)
+
+```mermaid
+flowchart TB
+    subgraph Client["👤 Client Layer"]
+        WEB[Web App - Next.js]
+        MOB[Mobile / API Clients]
+        WS[WebSocket Client]
+    end
+    subgraph Gateway["🔒 API Gateway"]
+        NGINX[NGINX / Kong]
+    end
+    subgraph App["⚡ Application Layer"]
+        MKT[Market Data API]
+        PORT[Portfolio API]
+        RISK[Risk API]
+        TRADE[Trading API]
+        AUTH[Auth Service]
+        WS_MGR[WebSocket Manager]
+    end
+    subgraph Intelligence["🧠 Intelligence Layer"]
+        ORCH[Orchestrator]
+        M1[M1 Data] 
+        M2[M2 Warehouse]
+        M3[M3 Realtime]
+        M4[M4 Strategy]
+        M5[M5 ML]
+        M6[M6 Risk]
+        M7[M7 Exec]
+        M8[M8 Portfolio]
+        M9[M9 Compliance]
+        M10[M10 Backtest]
+        M11[M11 Alt Data]
+    end
+    subgraph Data["🗄️ Data Layer"]
+        PG[(PostgreSQL / TimescaleDB)]
+        REDIS[(Redis)]
+        KAFKA[Kafka]
+    end
+    WEB & MOB & WS --> NGINX --> App
+    App --> ORCH
+    ORCH --> M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & M11
+    M1 & M2 & M3 & M4 & M5 & M6 & M7 & M8 & M9 & M10 & M11 --> PG & REDIS & KAFKA
+```
+
+### ASCII Layer Sketch (Reference)
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              CLIENT LAYER                                    │
@@ -138,6 +185,20 @@ See [[AI Agents]] for detailed documentation on the 11 AI agents.
 
 ### Market Data Pipeline
 
+```mermaid
+flowchart LR
+    EXT[External APIs] --> M1[M1 Data Collector]
+    M1 --> M2[M2 Data Warehouse]
+    M2 --> M3[M3 Real-time Processor]
+    M1 --> CACHE[Cache/Storage]
+    M2 --> HIST[Historical Analysis]
+    M3 --> LIVE[Live Streaming]
+    M2 --> M5[M5 ML Models]
+    M2 --> M4[M4 Strategy Agent]
+    M3 --> WS[WebSocket Clients]
+```
+
+*Text version:*
 ```
 External APIs → Data Collector (M1) → Data Warehouse (M2) → Real-time Processor (M3)
                      ↓                         ↓                        ↓
@@ -148,6 +209,21 @@ External APIs → Data Collector (M1) → Data Warehouse (M2) → Real-time Proc
 
 ### Trading Decision Flow
 
+```mermaid
+sequenceDiagram
+    participant MD as Market Data
+    participant M4 as Strategy Agent
+    participant M6 as Risk Manager
+    participant M7 as Execution
+    MD->>M4: Prices + Indicators
+    M4->>M4: Technical + Fundamental + Fusion
+    M4->>M6: Signals + Sizing
+    M6->>M6: VaR, Limits, Position Sizing
+    M6->>M7: Approved Order
+    M7->>M7: Order Routing (TWAP/VWAP)
+```
+
+*Text version:*
 ```
 Market Data → Strategy Agent (M4) → Signal Fusion → Risk Manager (M6) → Execution (M7)
       ↓              ↓                    ↓              ↓                    ↓
@@ -157,10 +233,13 @@ Market Data → Strategy Agent (M4) → Signal Fusion → Risk Manager (M6) → 
 
 ### Real-time Communication
 
-```
-Market Updates → Redis Pub/Sub → WebSocket Manager → Connected Clients
-                      ↓
-              Celery Workers → Background Processing
+```mermaid
+flowchart LR
+    MKT[Market Updates] --> REDIS[Redis Pub/Sub]
+    REDIS --> WS[WebSocket Manager]
+    WS --> CLIENTS[Connected Clients]
+    REDIS --> CELERY[Celery Workers]
+    CELERY --> BG[Background Processing]
 ```
 
 ---
@@ -169,6 +248,19 @@ Market Updates → Redis Pub/Sub → WebSocket Manager → Connected Clients
 
 ### Horizontal Scaling
 
+```mermaid
+flowchart TB
+    LB[Load Balancer]
+    LB --> API1[API-1]
+    LB --> API2[API-2]
+    LB --> API3[API-3]
+    API1 & API2 & API3 --> DB[(Database Primary)]
+    DB --> R1[Replica 1]
+    DB --> R2[Replica 2]
+    DB --> R3[Replica 3]
+```
+
+*ASCII reference:*
 ```
                     ┌──────────────┐
                     │ Load Balancer│
@@ -196,14 +288,13 @@ Market Updates → Redis Pub/Sub → WebSocket Manager → Connected Clients
 
 ### Caching Strategy
 
-```
-Request → Check Redis Cache → Cache Hit? → Return Cached
-                ↓                   No
-          Query Database
-                ↓
-          Update Cache
-                ↓
-          Return Response
+```mermaid
+flowchart LR
+    REQ[Request] --> REDIS{Check Redis}
+    REDIS -->|Hit| CACHED[Return Cached]
+    REDIS -->|Miss| DB[Query Database]
+    DB --> UPDATE[Update Cache]
+    UPDATE --> RESP[Return Response]
 ```
 
 ---
@@ -212,12 +303,18 @@ Request → Check Redis Cache → Cache Hit? → Return Cached
 
 ### Authentication Flow
 
-```
-Client → API Gateway → JWT Validation → FastAPI → Protected Resource
-              ↓
-         Rate Limit Check
-              ↓
-         IP Whitelist Check
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant G as API Gateway
+    participant F as FastAPI
+    participant R as Protected Resource
+    C->>G: Request
+    G->>G: Rate Limit Check
+    G->>G: IP Whitelist
+    G->>F: JWT Validation
+    F->>R: Access Resource
+    R-->>C: Response
 ```
 
 ### Security Layers
@@ -233,6 +330,18 @@ Client → API Gateway → JWT Validation → FastAPI → Protected Resource
 
 ## Monitoring Stack
 
+```mermaid
+flowchart TB
+    APP[Applications] --> PROM[Prometheus\nMetrics]
+    PROM --> GRAF[Grafana\nDashboards]
+    GRAF --> ALERT[Alertmanager\nAlerts]
+    APP --> LOGS[Structured Logs]
+    LOGS --> ELK[ELK Stack]
+    ELK --> KIB[Kibana]
+    ALERT --> PAGER[PagerDuty / Slack]
+```
+
+*ASCII:*
 ```
 Applications → Prometheus (Metrics) → Grafana (Dashboards) → Alertmanager (Alerts)
      ↓                                        ↓

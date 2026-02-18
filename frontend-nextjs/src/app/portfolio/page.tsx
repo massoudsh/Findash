@@ -1,18 +1,9 @@
-import { Suspense } from 'react';
-import { PortfolioContent } from '@/components/portfolio/portfolio-content';
+import { redirect } from 'next/navigation';
 
+/**
+ * Portfolio lives inside the Command center (Dashboard).
+ * Redirect so all "Portfolio" entry points land on the same view.
+ */
 export default function PortfolioPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Portfolio</h1>
-        <p className="text-muted-foreground">
-          Track your investments and asset allocation
-        </p>
-      </div>
-      <Suspense fallback={<div>Loading portfolio...</div>}>
-        <PortfolioContent />
-      </Suspense>
-    </div>
-  );
-} 
+  redirect('/dashboard?tab=portfolio');
+}

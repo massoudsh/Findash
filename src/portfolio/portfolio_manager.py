@@ -36,24 +36,22 @@ import warnings
 
 warnings.filterwarnings('ignore')
 
-# Try to import optional dependencies
+# Try to import optional dependencies (catch AttributeError for scipy/numpy compatibility)
+logger = logging.getLogger(__name__)
 try:
     import cvxpy as cp
     CVXPY_AVAILABLE = True
-except ImportError:
+except (ImportError, AttributeError) as e:
     CVXPY_AVAILABLE = False
-    logger = logging.getLogger(__name__)
-    logger.warning("cvxpy not available, some optimization methods will use fallbacks")
+    logger.warning("cvxpy not available, some optimization methods will use fallbacks: %s", e)
 
 try:
     from skfolio import Portfolio
     from skfolio.optimization import MeanVarianceOptimization, ObjectiveFunction
     from skfolio.preprocessing import PricesPreprocessor
     SKFOLIO_AVAILABLE = True
-except ImportError:
+except (ImportError, AttributeError) as e:
     SKFOLIO_AVAILABLE = False
-    if 'logger' not in locals():
-        logger = logging.getLogger(__name__)
     logger.warning("skfolio not available, will use fallback optimization methods")
 
 from ..core.cache import CacheManager

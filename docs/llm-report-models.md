@@ -95,3 +95,5 @@ HF_API_URL=https://api-inference.huggingface.co
 | `HF_TOKEN` | HuggingFace API token for FinGPT (and optional local FinGPT container) |
 | `HF_FINGPT_MODEL` | HF model id (e.g. `FinGPT/fingpt-sentiment_llama2-13b_lora`) |
 | `HF_API_URL` | HF Inference API base (default `https://api-inference.huggingface.co`) |
+
+See **env.example** in the repo root for a full list of LLM-related variables (commented with no real keys).

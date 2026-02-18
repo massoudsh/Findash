@@ -24,7 +24,9 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install dependencies with Celery optimization
+# Core deps first (required for src.core.config / celery_app to load)
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir "pydantic>=2.0" "pydantic-settings>=2.0" python-dotenv && \
     pip install --no-cache-dir -r requirements.txt || true && \
     pip install --no-cache-dir celery[redis] flower prometheus-client redis
 
@@ -44,10 +46,11 @@ RUN groupadd -r celery && useradd -r -g celery celery
 # Set working directory
 WORKDIR /app
 
-# Install runtime dependencies
+# Install runtime dependencies (procps for beat healthcheck: pgrep)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
+    procps \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

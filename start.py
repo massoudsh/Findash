@@ -122,10 +122,10 @@ class OctopusStartupManager:
             
         # Check Database
         try:
-            from sqlalchemy import create_engine
+            from sqlalchemy import create_engine, text
             engine = create_engine(self.settings.database.url)
             with engine.connect() as conn:
-                conn.execute("SELECT 1")
+                conn.execute(text("SELECT 1"))
             logger.info("✅ Database connection successful")
         except Exception as e:
             if is_development:

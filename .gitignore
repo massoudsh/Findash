@@ -28,6 +28,8 @@ dataset/
 models/
 logs/
 data/
+# Allow Next.js app route for Data & Charts page
+!frontend-nextjs/src/app/data/
 frontend-nextjs/.next/
 *.joblib
 *.pkl

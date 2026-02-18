@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Octopus Trading Platform — Stakeholder Presentation</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; }
+    .slide { min-height: 100vh; padding: 3rem 4rem; display: flex; flex-direction: column; justify-content: center; }
+    .slide h1 { font-size: 2.5rem; margin: 0 0 1rem; color: #f8fafc; }
+    .slide h2 { font-size: 1.5rem; margin: 1.5rem 0 0.5rem; color: #94a3b8; }
+    .slide p, .slide li { font-size: 1.125rem; line-height: 1.6; color: #cbd5e1; max-width: 720px; }
+    .slide ul { margin: 0.5rem 0; padding-left: 1.5rem; }
+    .slide a { color: #34d399; }
+    .slide table { border-collapse: collapse; margin-top: 0.5rem; }
+    .slide th, .slide td { padding: 0.5rem 1rem; text-align: left; border: 1px solid #334155; }
+    .slide th { background: #1e293b; color: #94a3b8; }
+    .title-slide { text-align: center; }
+    .title-slide h1 { font-size: 3rem; }
+    .title-slide p { margin: 0.25rem 0; }
+    .end-slide { text-align: center; }
+    nav { position: fixed; bottom: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 10; }
+    nav button { padding: 0.5rem 1rem; background: #1e293b; color: #e2e8f0; border: 1px solid #475569; border-radius: 6px; cursor: pointer; }
+    nav button:hover { background: #334155; }
+  </style>
+</head>
+<body>
+  <main id="slides">
+    <section class="slide title-slide">
+      <h1>Octopus Trading Platform</h1>
+      <p><em>AI-Powered Trading & Analytics</em></p>
+      <p style="margin-top: 2rem;">Findash</p>
+      <p>Confidential — Fundraising</p>
+    </section>
+    <section class="slide">
+      <h1>Problem</h1>
+      <ul>
+        <li>Retail and pro traders lack a <strong>single platform</strong> for real-time data, options analytics, AI signals, and execution.</li>
+        <li>Fragmented tools → multiple subscriptions, no unified view of portfolio and risk.</li>
+        <li>Growing demand for transparent, AI-augmented decision-making in options and multi-asset trading.</li>
+      </ul>
+    </section>
+    <section class="slide">
+      <h1>Solution</h1>
+      <p><strong>Octopus (Findash)</strong> — all-in-one AI trading platform:</p>
+      <ul>
+        <li><strong>Options-first Trading Center</strong> — IV, Greeks, expirations, strategy tools.</li>
+        <li><strong>11 orchestrated AI agents</strong> — Data, Strategy, Sentiment, Risk, Analytics.</li>
+        <li><strong>Unified dashboard</strong> — Portfolio, live data, bots, reports in one UI.</li>
+        <li><strong>Security & control</strong> — Paper trading first; optional live execution with risk limits.</li>
+      </ul>
+    </section>
+    <section class="slide">
+      <h1>Platform Overview</h1>
+      <table>
+        <tr><th>Area</th><th>Capability</th></tr>
+        <tr><td>Dashboard</td><td>Portfolio, account cards, market status</td></tr>
+        <tr><td>Trading Center</td><td>Options (landing), Market, Live trading, Bots</td></tr>
+        <tr><td>Options</td><td>Decision tools (IV, Greeks), strategies, terminal</td></tr>
+        <tr><td>Risk & Portfolio</td><td>VaR, stress tests, multi-asset</td></tr>
+        <tr><td>Reports</td><td>AI-generated reports (open-source LLM)</td></tr>
+        <tr><td>Search</td><td>⌘K — search across the platform</td></tr>
+      </table>
+    </section>
+    <section class="slide">
+      <h1>Demo — How to Access</h1>
+      <p><strong>Option A (recommended): Live demo</strong> — single URL, no install.</p>
+      <p>→ Share your deployed link (e.g. Vercel + backend on Render).</p>
+      <p><strong>Option B: One-command local (Docker)</strong></p>
+      <p>→ <code>git clone ... && docker compose -f docker-compose-core.yml up -d</code> → <a href="http://localhost:3000">http://localhost:3000</a></p>
+      <p><strong>Option C: Google Drive / repo</strong></p>
+      <p>→ Share <code>presentation/DEMO_GUIDE.md</code> or repo link.</p>
+    </section>
+    <section class="slide">
+      <h1>Tech Stack</h1>
+      <p>Frontend: Next.js 15, TypeScript, Tailwind, Shadcn UI.</p>
+      <p>Backend: FastAPI, Python 3.10+.</p>
+      <p>Data: PostgreSQL (TimescaleDB), Redis; Celery.</p>
+      <p>AI/LLM: Open-source options (Falcon TGI, FinGPT, HuggingFace).</p>
+      <p>DevOps: Docker, CI/CD.</p>
+    </section>
+    <section class="slide end-slide">
+      <h1>Thank You</h1>
+      <p><strong>Octopus Trading Platform — Findash</strong></p>
+      <p>Demo: [Your live URL]</p>
+      <p>Repo: <a href="https://github.com/massoudsh/Findash">github.com/massoudsh/Findash</a></p>
+      <p>Contact: [Your email]</p>
+      <p><em>Confidential.</em></p>
+    </section>
+  </main>
+  <nav>
+    <button onclick="prev()">Previous</button>
+    <button onclick="next()">Next</button>
+  </nav>
+  <script>
+    let index = 0;
+    const slides = document.querySelectorAll('.slide');
+    function go(i) {
+      index = Math.max(0, Math.min(i, slides.length - 1));
+      slides[index].scrollIntoView({ behavior: 'smooth' });
+    }
+    function next() { go(index + 1); }
+    function prev() { go(index - 1); }
+    document.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft') prev(); });
+  </script>
+</body>
+</html>

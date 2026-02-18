@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AgentPanel } from './agent-panel';
 import { MessageSquare, Smile, Frown, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -20,8 +20,29 @@ const MOCK_SENTIMENT: SentimentBucket[] = [
   { symbol: 'AAPL', sentiment: 'positive', score: 0.61, source: 'news' },
 ];
 
+const API_BASE = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL || '' : '';
+
 export function SentimentAgentPanel() {
-  const [items] = useState<SentimentBucket[]>(MOCK_SENTIMENT);
+  const [items, setItems] = useState<SentimentBucket[]>(MOCK_SENTIMENT);
+
+  const fetchSentiment = useCallback(async () => {
+    if (!API_BASE) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/agent-panels/sentiment`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.items)) setItems(data.items);
+      }
+    } catch {
+      // keep mock
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSentiment();
+    const t = setInterval(fetchSentiment, 30000);
+    return () => clearInterval(t);
+  }, [fetchSentiment]);
 
   return (
     <AgentPanel

@@ -1,6 +1,6 @@
 /**
  * Agent characters for the platform.
- * Each agent has a persona used across Trading Center, Risk, Portfolio, Backtesting, etc.
+ * Each agent has a persona used across Command Center, Risk, Portfolio, Backtesting, etc.
  * Aligned with backend: intelligence_orchestrator (M1–M11).
  */
 
@@ -36,7 +36,7 @@ export const AGENT_CHARACTERS: Record<AgentId, AgentCharacter> = {
     icon: 'Database',
     colorClass: 'ring-sky-500/40 bg-sky-500/10 text-sky-700 dark:text-sky-300',
     emoji: '📡',
-    responsibleFor: ['Market Data', 'Data Explorer', 'Trading Center (data pipeline)'],
+    responsibleFor: ['Market Data', 'Data Explorer', 'Command Center (data pipeline)'],
   },
   M2: {
     id: 'M2',
@@ -69,7 +69,7 @@ export const AGENT_CHARACTERS: Record<AgentId, AgentCharacter> = {
     icon: 'Target',
     colorClass: 'ring-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300',
     emoji: '🎯',
-    responsibleFor: ['Trading Center', 'Strategies', 'Trading Bots', 'Signals'],
+    responsibleFor: ['Command Center', 'Strategies', 'Trading Bots', 'Signals'],
   },
   M5: {
     id: 'M5',
@@ -124,7 +124,7 @@ export const AGENT_CHARACTERS: Record<AgentId, AgentCharacter> = {
     icon: 'MessageSquare',
     colorClass: 'ring-pink-500/40 bg-pink-500/10 text-pink-700 dark:text-pink-300',
     emoji: '💬',
-    responsibleFor: ['Social', 'Sentiment', 'Trading Center (sentiment panel)'],
+    responsibleFor: ['Social', 'Sentiment', 'Command Center (sentiment panel)'],
   },
   M10: {
     id: 'M10',
@@ -146,7 +146,7 @@ export const AGENT_CHARACTERS: Record<AgentId, AgentCharacter> = {
     icon: 'BarChart3',
     colorClass: 'ring-indigo-500/40 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300',
     emoji: '📊',
-    responsibleFor: ['Reports', 'Visualization', 'Trading Center (insights)', 'Dashboards'],
+    responsibleFor: ['Reports', 'Visualization', 'Command Center (insights)', 'Dashboards'],
   },
 };
 

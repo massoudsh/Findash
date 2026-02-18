@@ -46,7 +46,7 @@ const SOURCE_CONFIG: Record<
   'ai-models': { label: 'AI Models', icon: Cpu, color: 'text-cyan-500' },
 };
 
-// Mock real-time insights stream (replace with API/SSE later)
+// Mock real-time insights stream (fallback when API unavailable)
 const MOCK_INSIGHTS: Omit<Insight, 'id' | 'timestamp'>[] = [
   { source: 'technical', title: 'RSI divergence', summary: 'AAPL 4H RSI divergence suggests near-term pullback.', signal: 'bearish', symbol: 'AAPL' },
   { source: 'fundamental', title: 'Earnings beat', summary: 'NVDA forward P/E supportive; institutional flow positive.', signal: 'bullish', symbol: 'NVDA' },
@@ -71,18 +71,47 @@ function generateTimestamp(offsetSeconds: number): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
+const API_BASE = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL || '' : '';
+
 export function AnalysisAgentInsightsPanel() {
   const [insights, setInsights] = useState<Insight[]>([]);
   const [collapsed, setCollapsed] = useState(false);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    const base: Insight[] = MOCK_INSIGHTS.slice(0, 8).map((m, i) => ({
-      ...m,
-      id: `insight-${i}-${tick}`,
-      timestamp: generateTimestamp(i * 120 + tick * 30),
-    }));
-    setInsights(base);
+    async function fetchInsights() {
+      if (API_BASE) {
+        try {
+          const res = await fetch(`${API_BASE}/api/agent-panels/insights`, { credentials: 'include' });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data?.insights) && data.insights.length > 0) {
+              setInsights(
+                data.insights.map((x: Record<string, unknown>) => ({
+                  id: String(x.id ?? `insight-${tick}-${Math.random()}`),
+                  source: x.source as InsightSource,
+                  title: String(x.title ?? ''),
+                  summary: String(x.summary ?? ''),
+                  signal: (x.signal as 'bullish' | 'bearish' | 'neutral') ?? 'neutral',
+                  timestamp: String(x.timestamp ?? ''),
+                  symbol: x.symbol != null ? String(x.symbol) : undefined,
+                }))
+              );
+              return;
+            }
+          }
+        } catch {
+          // fallback below
+        }
+      }
+      const base: Insight[] = MOCK_INSIGHTS.slice(0, 8).map((m, i) => ({
+        ...m,
+        id: `insight-${i}-${tick}`,
+        timestamp: generateTimestamp(i * 120 + tick * 30),
+      }));
+      setInsights(base);
+    }
+    fetchInsights();
   }, [tick]);
 
   useEffect(() => {

@@ -133,7 +133,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       id: 'nav-portfolio',
       title: 'Portfolio',
       description: 'View your investment portfolio',
-      action: () => router.push('/portfolio'),
+      action: () => router.push('/dashboard?tab=portfolio'),
       icon: Briefcase,
       category: 'Navigation',
       keywords: ['portfolio', 'investments', 'assets']
@@ -187,7 +187,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       id: 'nav-risk',
       title: 'Risk Management',
       description: 'Risk analysis and stress testing',
-      action: () => router.push('/risk'),
+      action: () => router.push('/trading?tab=risk'),
       icon: Shield,
       category: 'Navigation',
       keywords: ['risk', 'analysis', 'var', 'stress']
@@ -283,7 +283,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       id: 'analysis-backtest',
       title: 'Backtest Strategy',
       description: 'Test strategy against historical data',
-      action: () => router.push('/backtesting'),
+      action: () => router.push('/strategies?tab=backtesting'),
       icon: FlaskConical,
       category: 'Analysis',
       keywords: ['backtest', 'strategy', 'historical', 'simulation']
@@ -292,7 +292,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       id: 'analysis-risk',
       title: 'Risk Assessment',
       description: 'Analyze portfolio risk metrics',
-      action: () => router.push('/risk'),
+      action: () => router.push('/trading?tab=risk'),
       icon: Shield,
       category: 'Analysis',
       keywords: ['risk', 'var', 'stress', 'assessment']

@@ -5,13 +5,13 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 /** Platform index for fast search when backend Elasticsearch is not available */
 const PLATFORM_INDEX: { title: string; path: string; keywords: string[]; type: string }[] = [
   { title: 'Dashboard', path: '/dashboard', keywords: ['home', 'overview', 'analytics'], type: 'page' },
-  { title: 'Trading Center', path: '/trading', keywords: ['trading', 'market', 'bots', 'live'], type: 'page' },
+  { title: 'Command Center', path: '/trading', keywords: ['trading', 'market', 'bots', 'options'], type: 'page' },
   { title: 'Options', path: '/options', keywords: ['options', 'greeks', 'derivatives'], type: 'page' },
   { title: 'Live Trading', path: '/trades', keywords: ['trades', 'orders', 'positions', 'live'], type: 'page' },
   { title: 'Portfolio', path: '/portfolio', keywords: ['portfolio', 'holdings', 'allocation'], type: 'page' },
   { title: 'Strategies', path: '/strategies', keywords: ['strategies', 'backtest', 'signals'], type: 'page' },
-  { title: 'Risk Assessment', path: '/risk', keywords: ['risk', 'var', 'compliance'], type: 'page' },
-  { title: 'Backtesting', path: '/backtesting', keywords: ['backtest', 'history', 'strategy'], type: 'page' },
+  { title: 'Risk Assessment', path: '/trading?tab=risk', keywords: ['risk', 'var', 'compliance'], type: 'page' },
+  { title: 'Backtesting', path: '/strategies?tab=backtesting', keywords: ['backtest', 'history', 'strategy'], type: 'page' },
   { title: 'Paper Trading', path: '/paper-trading', keywords: ['paper', 'simulate', 'practice'], type: 'page' },
   { title: 'Market Data', path: '/market-data', keywords: ['market', 'quotes', 'stocks', 'crypto'], type: 'page' },
   { title: 'Real-time', path: '/realtime', keywords: ['realtime', 'stream', 'live', 'alerts'], type: 'page' },

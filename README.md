@@ -24,36 +24,34 @@ Octopus is an AI-powered trading system that combines real-time market data, ana
 ## System architecture
 
 ```mermaid
-graph TB
-    subgraph UI["Frontend"]
-        F[Next.js]
-        F --> D[Dashboard]
-        F --> T[Trading Center]
-        F --> A[Analytics]
+flowchart LR
+    subgraph You["🖥️ You"]
+        UI[Next.js]
     end
-    
-    subgraph Backend["Backend"]
+
+    subgraph Octopus["🐙 Octopus"]
         API[FastAPI]
-        WS[WebSocket]
-        API --> M[Orchestrator & Agents]
+        Agents[11 Agents]
+        API --> Agents
     end
-    
-    subgraph Data["Data"]
-        PG[(PostgreSQL)]
-        R[(Redis)]
+
+    subgraph Store["💾 Store"]
+        DB[(PostgreSQL)]
+        Cache[(Redis)]
     end
-    
-    UI --> API
-    API --> PG
-    API --> R
-    M --> PG
+
+    UI <-->|REST · WS| API
+    Agents --> DB
+    Agents --> Cache
 ```
+
+*Data in → Agents think → You decide.*
 
 ---
 
 ## AI Agents
 
-The platform uses **11 orchestrated agents** (M1–M11) with distinct roles and personas. Each has a character name used across the UI (Trading Center, Risk, Reports, etc.).
+The platform uses **11 orchestrated agents** (M1–M11) with distinct roles and personas. Each has a character name used across the UI (Command Center, Risk, Reports, etc.).
 
 | ID  | Character | Role | Responsibility |
 |-----|-----------|------|----------------|
@@ -76,7 +74,7 @@ Pipeline flow: **Data (M1, M3, M9)** → **ML & prediction (M5, M7)** → **Risk
 ## Features
 
 - **Dashboard** – Portfolio overview, market watchlists, live data
-- **Trading Center** – Order entry, positions, bots, real-time data
+- **Command Center** – Order entry, positions, bots, options
 - **Options** – Options chain and strategies
 - **Portfolio & Risk** – Multi-asset tracking, VaR, stress tests
 - **Strategies & Backtesting** – Strategy builder and historical backtests
@@ -121,6 +119,35 @@ cd frontend-nextjs && npm run dev
 
 - **Frontend:** http://localhost:3000  
 - **API docs:** http://localhost:8000/docs  
+
+### Run with Docker (core stack)
+
+The core stack runs API, frontend, PostgreSQL, Redis, Celery worker/beat, Prometheus, and Grafana. **Redis is exposed on port 6380 by default** to avoid conflict with a local Redis on 6379.
+
+```bash
+# Core only (no LLM services)
+docker compose -f docker-compose-core.yml up -d
+
+# Optional: run a smoke test after bring-up
+./scripts/healthcheck-core.sh
+```
+
+- **API:** http://localhost:8011 (mapped from 8000 in container)  
+- **Frontend:** http://localhost:3000  
+- **Grafana:** http://localhost:3001  
+
+### Run with Docker + LLM profile (optional)
+
+LLM services (Falcon TGI, FinGPT inference) are under the `llm` profile. Use them for report generation; see [docs/llm-report-models.md](docs/llm-report-models.md).
+
+```bash
+# Core + LLM services (TGI Falcon, FinGPT inference)
+docker compose -f docker-compose-core.yml --profile llm up -d
+```
+
+Set in your env (or `.env`): `FALCON_TGI_URL=http://localhost:8080`, `FINGPT_LOCAL_URL=http://localhost:8081`, and optionally `HF_TOKEN` for HuggingFace. See **env.example** for all LLM variables.
+
+For production, use a `docker-compose.override.yml` (or env file) to set `ENVIRONMENT=production`, secure secrets, and correct database/Redis hosts.
 
 ---
 

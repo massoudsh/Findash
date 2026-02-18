@@ -1,19 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { TradingViewChart } from '@/components/charts/tradingview-chart';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  BarChart3, 
-  Activity, 
-  Target, 
+import {
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  Activity,
+  Target,
   Zap,
   Eye,
   Settings,
@@ -31,8 +32,12 @@ import {
   Share2,
   Bookmark,
   AlertTriangle,
-  Minus
+  Minus,
+  Star,
 } from 'lucide-react';
+
+const SYMBOL_TO_API = (s: string) => s.replace('/', '-');
+const API_SYMBOLS = 'BTC-USD,ETH-USD,AAPL,TSLA,NVDA,MSFT,GOOGL';
 
 export default function TechnicalPage() {
   const [selectedSymbol, setSelectedSymbol] = useState('BTC/USD');
@@ -40,6 +45,26 @@ export default function TechnicalPage() {
   const [chartType, setChartType] = useState('candlestick');
   const [showVolume, setShowVolume] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [chartRefreshKey, setChartRefreshKey] = useState(0);
+  const [realMarketData, setRealMarketData] = useState<Record<string, { price: number; open?: number; high?: number; low?: number; volume?: number; change?: number; change_percent?: number }>>({});
+  const [activePanel, setActivePanel] = useState<'screener' | 'watchlist' | 'calendar' | 'chartSettings' | 'marketOverview' | null>(null);
+
+  const fetchRealMarketData = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/real-market-data?symbols=${API_SYMBOLS}`);
+      const json = await res.json();
+      if (json?.data) setRealMarketData(json.data);
+    } catch (e) {
+      console.error('Failed to fetch real market data', e);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRealMarketData();
+  }, [fetchRealMarketData]);
+
+  const currentSymbolKey = SYMBOL_TO_API(selectedSymbol);
+  const currentMarket = realMarketData[currentSymbolKey];
 
   // Mock price data for chart simulation
   const generateMockData = () => {
@@ -194,6 +219,144 @@ export default function TechnicalPage() {
           </div>
         </div>
 
+        {/* Quick Actions - at top, all wired */}
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+          <Button
+            className="btn-liquid text-white h-12"
+            onClick={() => {
+              setChartRefreshKey((k) => k + 1);
+              fetchRealMarketData();
+            }}
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh Data
+          </Button>
+          <Button className="btn-morphic h-12" onClick={() => setActivePanel('screener')}>
+            <Zap className="h-4 w-4 mr-2" />
+            Screener
+          </Button>
+          <Button className="btn-morphic h-12" onClick={() => setActivePanel('watchlist')}>
+            <Target className="h-4 w-4 mr-2" />
+            Watchlist
+          </Button>
+          <Button className="btn-morphic h-12" onClick={() => setActivePanel('calendar')}>
+            <Calendar className="h-4 w-4 mr-2" />
+            Economic Calendar
+          </Button>
+          <Button className="btn-morphic h-12" onClick={() => setActivePanel('chartSettings')}>
+            <Settings className="h-4 w-4 mr-2" />
+            Chart Settings
+          </Button>
+          <Button className="btn-morphic h-12" onClick={() => setActivePanel('marketOverview')}>
+            <Eye className="h-4 w-4 mr-2" />
+            Market Overview
+          </Button>
+        </div>
+
+        {/* Panels (Sheet) for Screener, Watchlist, Calendar, Chart Settings, Market Overview */}
+        <Sheet open={activePanel !== null} onOpenChange={(open) => !open && setActivePanel(null)}>
+          <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>
+                {activePanel === 'screener' && 'Screener'}
+                {activePanel === 'watchlist' && 'Watchlist'}
+                {activePanel === 'calendar' && 'Economic Calendar'}
+                {activePanel === 'chartSettings' && 'Chart Settings'}
+                {activePanel === 'marketOverview' && 'Market Overview'}
+              </SheetTitle>
+            </SheetHeader>
+            <div className="mt-6 space-y-4">
+              {activePanel === 'screener' && (
+                <>
+                  <p className="text-sm text-gray-400">Filter symbols by price, volume, and technicals.</p>
+                  <div className="space-y-2">
+                    {['BTC/USD', 'ETH/USD', 'AAPL', 'TSLA', 'NVDA'].map((s) => (
+                      <Button
+                        key={s}
+                        variant="outline"
+                        className="w-full justify-between"
+                        onClick={() => {
+                          setSelectedSymbol(s);
+                          setActivePanel(null);
+                        }}
+                      >
+                        <span>{s}</span>
+                        {realMarketData[SYMBOL_TO_API(s)] && (
+                          <span className="text-green-400">${realMarketData[SYMBOL_TO_API(s)].price?.toLocaleString()}</span>
+                        )}
+                      </Button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {activePanel === 'watchlist' && (
+                <>
+                  <p className="text-sm text-gray-400">Your saved symbols. Click to load on chart.</p>
+                  <div className="space-y-2">
+                    {['BTC/USD', 'ETH/USD', 'AAPL', 'TSLA', 'NVDA', 'MSFT', 'GOOGL'].map((s) => (
+                      <Button
+                        key={s}
+                        variant="outline"
+                        className="w-full justify-between"
+                        onClick={() => {
+                          setSelectedSymbol(s);
+                          setActivePanel(null);
+                        }}
+                      >
+                        <Star className="h-4 w-4" />
+                        <span>{s}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </>
+              )}
+              {activePanel === 'calendar' && (
+                <>
+                  <p className="text-sm text-gray-400">Upcoming economic events (free tier).</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex justify-between p-2 rounded bg-slate-800/50">
+                      <span>FOMC Statement</span>
+                      <span className="text-gray-400">This week</span>
+                    </li>
+                    <li className="flex justify-between p-2 rounded bg-slate-800/50">
+                      <span>Non-Farm Payrolls</span>
+                      <span className="text-gray-400">Next Fri</span>
+                    </li>
+                    <li className="flex justify-between p-2 rounded bg-slate-800/50">
+                      <span>CPI Release</span>
+                      <span className="text-gray-400">Next month</span>
+                    </li>
+                  </ul>
+                </>
+              )}
+              {activePanel === 'chartSettings' && (
+                <>
+                  <p className="text-sm text-gray-400">Chart type and timeframe are in the Trading Controls below. Fullscreen is in the header.</p>
+                  <div className="space-y-2">
+                    <p className="text-xs text-gray-500">Symbol: {selectedSymbol}</p>
+                    <p className="text-xs text-gray-500">Timeframe: {selectedTimeframe}</p>
+                  </div>
+                </>
+              )}
+              {activePanel === 'marketOverview' && (
+                <>
+                  <p className="text-sm text-gray-400">Live snapshot from API.</p>
+                  <div className="space-y-2">
+                    {Object.entries(realMarketData).slice(0, 8).map(([sym, d]) => (
+                      <div key={sym} className="flex justify-between items-center p-2 rounded bg-slate-800/50 text-sm">
+                        <span>{sym}</span>
+                        <span className={d.change_percent != null && d.change_percent >= 0 ? 'text-green-400' : 'text-red-400'}>
+                          ${d.price?.toLocaleString()} ({d.change_percent != null ? (d.change_percent >= 0 ? '+' : '') + d.change_percent.toFixed(2) : '—'}%)
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
+
         {/* Trading Controls */}
         <Card className="glass-card">
           <CardContent className="p-4">
@@ -272,7 +435,8 @@ export default function TechnicalPage() {
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {/* Chart Panel */}
           <div className="xl:col-span-3">
-            <TradingViewChart 
+            <TradingViewChart
+              key={chartRefreshKey}
               symbol={selectedSymbol}
               interval={selectedTimeframe}
               height={600}
@@ -282,7 +446,7 @@ export default function TechnicalPage() {
 
           {/* Side Panel */}
           <div className="space-y-4">
-            {/* Market Info */}
+            {/* Market Info - real data when available */}
             <Card className="glass-card">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm">Market Info</CardTitle>
@@ -290,19 +454,23 @@ export default function TechnicalPage() {
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-400">24h Change</span>
-                  <span className="text-green-400">+2.45%</span>
+                  <span className={currentMarket?.change_percent != null ? (currentMarket.change_percent >= 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400'}>
+                    {currentMarket?.change_percent != null
+                      ? (currentMarket.change_percent >= 0 ? '+' : '') + currentMarket.change_percent.toFixed(2) + '%'
+                      : '+2.45%'}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">24h Volume</span>
-                  <span>$2.4B</span>
+                  <span>{currentMarket?.volume != null ? (currentMarket.volume / 1e6).toFixed(2) + 'M' : '$2.4B'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Market Cap</span>
-                  <span>$834.5B</span>
+                  <span className="text-gray-400">Price</span>
+                  <span>{currentMarket?.price != null ? '$' + currentMarket.price.toLocaleString() : '—'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">ATH</span>
-                  <span>$69,045</span>
+                  <span className="text-gray-400">Open</span>
+                  <span>{currentMarket?.open != null ? '$' + currentMarket.open.toLocaleString() : '—'}</span>
                 </div>
               </CardContent>
             </Card>
@@ -653,34 +821,6 @@ export default function TechnicalPage() {
             </Card>
           </TabsContent>
         </Tabs>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
-          <Button className="btn-liquid text-white h-12">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh Data
-          </Button>
-          <Button className="btn-morphic h-12">
-            <Zap className="h-4 w-4 mr-2" />
-            Screener
-          </Button>
-          <Button className="btn-morphic h-12">
-            <Target className="h-4 w-4 mr-2" />
-            Watchlist
-          </Button>
-          <Button className="btn-morphic h-12">
-            <Calendar className="h-4 w-4 mr-2" />
-            Economic Calendar
-          </Button>
-          <Button className="btn-morphic h-12">
-            <Settings className="h-4 w-4 mr-2" />
-            Chart Settings
-          </Button>
-          <Button className="btn-morphic h-12">
-            <Eye className="h-4 w-4 mr-2" />
-            Market Overview
-          </Button>
-        </div>
       </div>
     </div>
   );

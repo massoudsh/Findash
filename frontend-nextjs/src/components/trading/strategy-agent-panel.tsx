@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { AgentPanel } from './agent-panel';
 import { Badge } from '@/components/ui/badge';
 import { Target, TrendingUp, TrendingDown } from 'lucide-react';
@@ -23,8 +23,29 @@ const MOCK_SIGNALS: StrategySignal[] = [
   { id: '4', strategy: 'momentum', symbol: 'AAPL', side: 'long', strength: 0.71, timestamp: '12m ago' },
 ];
 
+const API_BASE = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL || '' : '';
+
 export function StrategyAgentPanel() {
   const [signals, setSignals] = useState<StrategySignal[]>(MOCK_SIGNALS);
+
+  const fetchSignals = useCallback(async () => {
+    if (!API_BASE) return;
+    try {
+      const res = await fetch(`${API_BASE}/api/agent-panels/strategy-signals`, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.signals)) setSignals(data.signals);
+      }
+    } catch {
+      // keep mock
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSignals();
+    const t = setInterval(fetchSignals, 30000);
+    return () => clearInterval(t);
+  }, [fetchSignals]);
 
   return (
     <AgentPanel

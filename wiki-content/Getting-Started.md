@@ -24,7 +24,23 @@ This guide will help you set up and run the Octopus Trading Platform (Findash) o
 
 ---
 
-## Installation Methods
+## Installation Methods Overview
+
+```mermaid
+flowchart TD
+    START[Start] --> CHOICE{Choose method}
+    CHOICE -->|Dev machine| LOCAL[Method 1: Local]
+    CHOICE -->|Full stack| DOCKER[Method 2: Docker]
+    CHOICE -->|Automation| MAKE[Method 3: Makefile]
+    LOCAL --> L1[Clone → venv → pip install]
+    LOCAL --> L2[frontend: npm install]
+    LOCAL --> L3[.env + start backend + frontend]
+    DOCKER --> D1[docker compose up]
+    MAKE --> M1[make dev / make test]
+    L3 --> ACCESS[Access :3000 & :8000]
+    D1 --> ACCESS
+    M1 --> ACCESS
+```
 
 ### Method 1: Local Development (Recommended for Development)
 
@@ -105,6 +121,14 @@ npm run dev
 ```
 
 #### Step 6: Access the Platform
+
+```mermaid
+flowchart LR
+    YOU[You] --> FE[Frontend :3000]
+    YOU --> API[Backend :8000]
+    YOU --> DOCS[Swagger /docs]
+    FE --> API
+```
 
 | Service | URL |
 |---------|-----|

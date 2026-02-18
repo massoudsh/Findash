@@ -14,6 +14,7 @@ import {
   DashboardPieChart,
   DashboardLineChart,
 } from '@/components/dashboard/dashboard-charts';
+import { LivePriceCharts } from '@/components/dashboard/live-price-charts';
 
 // Lazy load API to avoid webpack issues
 let apiLoaded = false;
@@ -167,11 +168,15 @@ export function DashboardContent() {
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        // Lazy load the API module
         await loadApi();
-        
-        const portfoliosResponse = await getPortfolios();
-        const portfolios = portfoliosResponse.data;
+        const timeoutMs = 8000;
+        const portfoliosResponse = await Promise.race([
+          getPortfolios(),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error('timeout')), timeoutMs)
+          ),
+        ]);
+        const portfolios = portfoliosResponse?.data;
         
         if (portfolios && portfolios.length > 0) {
           const totalValue = portfolios.reduce((sum: number, portfolio: any) => 
@@ -229,6 +234,31 @@ export function DashboardContent() {
       />
 
       <div className="space-y-6 relative">
+        {/* Tabs at top: Overview, Holdings, Markets, Activity, Analytics */}
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-5 bg-muted/50 h-10">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="positions" className="flex items-center gap-2">
+              <PieChart className="h-4 w-4" />
+              Holdings
+            </TabsTrigger>
+            <TabsTrigger value="market" className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
+              Markets
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center gap-2">
+              <Clock className="h-4 w-4" />
+              Activity
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
         {hasError && (
           <Alert className="border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200">
             <AlertTriangle className="h-4 w-4" />
@@ -245,76 +275,76 @@ export function DashboardContent() {
           ))}
         </div>
 
-        {/* Financial Summary Cards - Modern Style */}
-        <div className="grid gap-4 md:grid-cols-4">
-        <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardContent className="p-6 relative">
+        {/* Financial Summary Cards - Glass/green fintech theme (aligned with account cards) */}
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
+        <Card className="relative overflow-hidden group border border-white/30 dark:border-white/20 bg-white/15 dark:bg-white/10 backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:bg-white/20 dark:hover:bg-white/15 hover:border-emerald-400/30 dark:hover:border-emerald-500/20 transition-all duration-300">
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-600/15 pointer-events-none" aria-hidden />
+          <CardContent className="p-4 sm:p-6 relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                <Banknote className="h-6 w-6 text-white" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-500/25 to-teal-600/20 dark:from-emerald-400/20 dark:to-teal-500/25 ring-1 ring-white/30 dark:ring-white/20">
+                <Banknote className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-700 dark:text-emerald-200" />
               </div>
-              <Badge variant="outline" className="text-xs text-green-600 border-green-600 bg-green-50 dark:bg-green-950/30">
+              <Badge variant="outline" className="text-xs text-emerald-600 border-emerald-500/40 bg-emerald-50/80 dark:bg-emerald-950/30">
                 +{formatPercentage(data.portfolioChange)}
               </Badge>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1 font-medium">Total Earnings</p>
-              <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
+              <p className="text-xl sm:text-2xl font-bold text-foreground tabular-nums">
                 {formatCurrency(data.totalEarnings)}
               </p>
             </div>
           </CardContent>
-        </ElevatedCard>
+        </Card>
 
-        <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-red-500/10 via-red-500/5 to-transparent border-red-500/20">
-          <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardContent className="p-6 relative">
+        <Card className="relative overflow-hidden group border border-white/30 dark:border-white/20 bg-white/15 dark:bg-white/10 backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:bg-white/20 dark:hover:bg-white/15 hover:border-rose-400/30 dark:hover:border-rose-500/20 transition-all duration-300">
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-rose-500/15 to-red-600/10 pointer-events-none" aria-hidden />
+          <CardContent className="p-4 sm:p-6 relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20">
-                <CreditCard className="h-6 w-6 text-white" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-rose-500/25 to-red-600/20 dark:from-rose-400/20 dark:to-red-500/25 ring-1 ring-white/30 dark:ring-white/20">
+                <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-rose-700 dark:text-rose-200" />
               </div>
-              <Badge variant="outline" className="text-xs text-red-600 border-red-600 bg-red-50 dark:bg-red-950/30">
+              <Badge variant="outline" className="text-xs text-rose-600 border-rose-500/40 bg-rose-50/80 dark:bg-rose-950/30">
                 Monthly
               </Badge>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1 font-medium">Expenses</p>
-              <p className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-400 dark:from-red-400 dark:to-red-300 bg-clip-text text-transparent">
+              <p className="text-xl sm:text-2xl font-bold text-foreground tabular-nums">
                 {formatCurrency(data.expenses)}
               </p>
             </div>
           </CardContent>
-        </ElevatedCard>
+        </Card>
 
-        <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent border-purple-500/20">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardContent className="p-6 relative">
+        <Card className="relative overflow-hidden group border border-white/30 dark:border-white/20 bg-white/15 dark:bg-white/10 backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:bg-white/20 dark:hover:bg-white/15 hover:border-teal-400/30 dark:hover:border-teal-500/20 transition-all duration-300">
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-500/20 to-emerald-600/15 pointer-events-none" aria-hidden />
+          <CardContent className="p-4 sm:p-6 relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
-                <BarChart3 className="h-6 w-6 text-white" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-teal-500/25 to-emerald-600/20 dark:from-teal-400/20 dark:to-emerald-500/25 ring-1 ring-white/30 dark:ring-white/20">
+                <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-teal-700 dark:text-teal-200" />
               </div>
-              <Badge variant="outline" className="text-xs text-blue-600 border-blue-600 bg-blue-50 dark:bg-blue-950/30">
+              <Badge variant="outline" className="text-xs text-teal-600 border-teal-500/40 bg-teal-50/80 dark:bg-teal-950/30">
                 This Week
               </Badge>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1 font-medium">Weekly Stats</p>
-              <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 dark:from-purple-400 dark:to-purple-300 bg-clip-text text-transparent">
+              <p className="text-xl sm:text-2xl font-bold text-foreground tabular-nums">
                 {formatCurrency(data.weeklyStats)}
               </p>
             </div>
           </CardContent>
-        </ElevatedCard>
+        </Card>
 
-        <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border-green-500/20">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <CardContent className="p-6 relative">
+        <Card className="relative overflow-hidden group border border-white/30 dark:border-white/20 bg-white/15 dark:bg-white/10 backdrop-blur-xl rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:bg-white/20 dark:hover:bg-white/15 hover:border-emerald-400/30 dark:hover:border-emerald-500/20 transition-all duration-300">
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-green-600/15 pointer-events-none" aria-hidden />
+          <CardContent className="p-4 sm:p-6 relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
-                <Target className="h-6 w-6 text-white" />
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-500/25 to-green-600/20 dark:from-emerald-400/20 dark:to-green-500/25 ring-1 ring-white/30 dark:ring-white/20">
+                <Target className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-700 dark:text-emerald-200" />
               </div>
-              <Badge variant="outline" className="text-xs text-green-600 border-green-600 bg-green-50 dark:bg-green-950/30">
+              <Badge variant="outline" className="text-xs text-emerald-600 border-emerald-500/40 bg-emerald-50/80 dark:bg-emerald-950/30">
                 {formatPercentage(data.winRate)}
               </Badge>
             </div>
@@ -323,35 +353,11 @@ export function DashboardContent() {
               <Progress value={data.winRate} className="mt-2 h-2 bg-muted" />
             </div>
           </CardContent>
-        </ElevatedCard>
+        </Card>
         </div>
 
-        {/* Enhanced Tabbed Interface */}
-        <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-5 bg-muted/50">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="positions" className="flex items-center gap-2">
-            <PieChart className="h-4 w-4" />
-            Holdings
-          </TabsTrigger>
-          <TabsTrigger value="market" className="flex items-center gap-2">
-            <Globe className="h-4 w-4" />
-            Markets
-          </TabsTrigger>
-          <TabsTrigger value="activity" className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            Activity
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4" />
-            Analytics
-          </TabsTrigger>
-        </TabsList>
-
         <TabsContent value="overview" className="space-y-4">
+          <LivePriceCharts />
           {/* One of each: Bar, Waterfall, Pie, Line */}
           <div className="grid gap-6 md:grid-cols-2">
             <DashboardBarChart

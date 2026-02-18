@@ -2,6 +2,20 @@
 
 Complete guide to configuring the Octopus Trading Platform.
 
+## Configuration Sources (Where Settings Come From)
+
+```mermaid
+flowchart LR
+    ENV[.env file] --> APP[Application]
+    OS[Environment variables] --> APP
+    DEFAULTS[Code defaults] --> APP
+    APP --> CORE[Core config]
+    APP --> SEC[Security]
+    APP --> DB[Database]
+    APP --> REDIS[Redis]
+    APP --> CELERY[Celery]
+```
+
 ## Environment Variables
 
 ### Core Configuration

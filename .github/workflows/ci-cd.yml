@@ -1,5 +1,11 @@
 # Findash Trading Platform CI/CD
 # Runs on push/PR to main and dev; Docker build and optional deploy.
+#
+# Deploy: set repo secrets (e.g. AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION)
+# and update deploy-dev / deploy-prod steps. See Deployment.md.
+#
+# Lint: remove "|| true" from Flake8/Black/Isort once codebase passes.
+# Mypy: remove continue-on-error when types are fixed for strict checking.
 
 name: CI/CD
 
@@ -73,6 +79,28 @@ jobs:
         env:
           CI: true
 
+  build-frontend:
+    name: Build (Frontend)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend-nextjs/package-lock.json
+
+      - name: Install and build
+        working-directory: frontend-nextjs
+        run: |
+          npm ci
+          npm run build
+        env:
+          CI: true
+
   test:
     name: Tests
     needs: [ lint-backend ]
@@ -136,7 +164,7 @@ jobs:
 
   build-api:
     name: Build API Image
-    needs: [ test, lint-frontend ]
+    needs: [ test, lint-frontend, build-frontend ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

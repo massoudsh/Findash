@@ -147,7 +147,6 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
   const [chartSettingsOpen, setChartSettingsOpen] = useState(false);
   const [orderbookSpread, setOrderbookSpread] = useState('0.1%');
   const [orderbookDepth, setOrderbookDepth] = useState(10);
-  const [incentivizedRange, setIncentivizedRange] = useState(false);
   const [placingOrder, setPlacingOrder] = useState(false);
   const [positions, setPositions] = useState<FundingPosition[]>([
     {
@@ -627,43 +626,12 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
         </div>
       </div>
 
-      {/* Main: Chart | Order book | Order entry — responsive grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 p-4 min-h-0">
-        {/* Left — Chart */}
-        <div className="lg:col-span-6 flex flex-col min-h-[280px] lg:min-h-0">
-          <Card className="flex-1 flex flex-col min-h-0 border rounded-lg">
-            <CardContent className="p-4 flex flex-col flex-1 min-h-0">
-              <div className="flex flex-wrap items-center gap-2 sm:gap-4 mb-3">
-                <Button
-                  variant={chartTab === 'apr' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setChartTab('apr')}
-                >
-                  APR Chart
-                </Button>
-                <Button
-                  variant={chartTab === 'pnl' ? 'default' : 'ghost'}
-                  size="sm"
-                  onClick={() => setChartTab('pnl')}
-                >
-                  My PnL
-                </Button>
-              </div>
-              {chartTab === 'apr' && (
-                <>
-                  <div className="flex items-center gap-4 mb-1 text-xs">
-                    <span>Implied APR</span>
-                    <span className="text-green-500">O{metrics.impliedApr.toFixed(2)}%</span>
-                    <span className="text-green-500">H{metrics.impliedApr.toFixed(2)}%</span>
-                    <span className="text-green-500">L{metrics.impliedApr.toFixed(2)}%</span>
-                    <span className="text-green-500">C{metrics.impliedApr.toFixed(2)}%</span>
-                  </div>
-                  <div className="text-xs text-red-500 mb-3">
-                    Underlying APR <span className="ml-2">{metrics.underlyingApr.toFixed(2)}%</span>
-                  </div>
-                </>
-              )}
-              <div className="relative flex-1 min-h-[240px] bg-muted/30 rounded-lg overflow-hidden transition-opacity duration-200">
+      {/* Top: APR Chart — horizontal (chart left, controls right) */}
+      <div className="px-4 pt-4">
+        <Card className="border rounded-lg">
+          <CardContent className="p-4 flex flex-col lg:flex-row gap-4">
+            {/* Chart area — takes space on left */}
+            <div className="relative flex-1 min-h-[200px] lg:min-h-[180px] bg-muted/30 rounded-lg overflow-hidden transition-opacity duration-200">
                 {chartLoading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-muted/20 z-10">
                     <span className="text-sm text-muted-foreground">Loading chart…</span>
@@ -782,12 +750,47 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   </button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            {/* Right — Tabs, OHLC, timeframes (horizontal strip) */}
+            <div className="flex flex-row flex-wrap items-center gap-3 lg:gap-4 lg:flex-col lg:items-start lg:min-w-[200px] shrink-0">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={chartTab === 'apr' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setChartTab('apr')}
+                >
+                  APR Chart
+                </Button>
+                <Button
+                  variant={chartTab === 'pnl' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setChartTab('pnl')}
+                >
+                  My PnL
+                </Button>
+              </div>
+              {chartTab === 'apr' && (
+                <>
+                  <div className="flex items-center gap-3 text-xs flex-wrap">
+                    <span className="text-muted-foreground">Implied APR</span>
+                    <span className="text-green-500">O{metrics.impliedApr.toFixed(2)}%</span>
+                    <span className="text-green-500">H{metrics.impliedApr.toFixed(2)}%</span>
+                    <span className="text-green-500">L{metrics.impliedApr.toFixed(2)}%</span>
+                    <span className="text-green-500">C{metrics.impliedApr.toFixed(2)}%</span>
+                  </div>
+                  <div className="text-xs text-red-500">
+                    Underlying APR <span className="ml-2">{metrics.underlyingApr.toFixed(2)}%</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-        {/* Center — Order book */}
-        <div className="lg:col-span-3 flex flex-col min-h-0 min-h-[240px]">
+      {/* Main: Order book | Order entry — orderbook wider */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1 p-4 min-h-0">
+        {/* Order book — more width */}
+        <div className="lg:col-span-5 flex flex-col min-h-0 min-h-[240px]">
           <Card className="flex-1 flex flex-col min-h-0 border rounded-lg">
             <CardHeader className="pb-2">
               <div className="flex flex-wrap items-center gap-4">
@@ -864,17 +867,6 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                     Compact
                   </button>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Checkbox
-                    id="inc-range"
-                    className="h-3 w-3"
-                    checked={incentivizedRange}
-                    onCheckedChange={(c) => setIncentivizedRange(c === true)}
-                  />
-                  <label htmlFor="inc-range" className="text-xs text-muted-foreground cursor-pointer">
-                    Incentivized Range
-                  </label>
-                </div>
               </div>
               <div className="mb-4">
                 <div className="text-xs text-red-500 font-semibold mb-2">SHORT RATE</div>
@@ -897,7 +889,6 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
               </div>
               <div className="flex justify-between text-xs py-2 border-y my-2">
                 <span className="text-muted-foreground">{orderbookSpread} Spread</span>
-                <span className="text-cyan-500">Incent. Range: 5.16% - 5.62%</span>
               </div>
               <div>
                 <div className="text-xs text-green-500 font-semibold mb-2">LONG RATE</div>
@@ -923,7 +914,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
         </div>
 
         {/* Right — Order entry */}
-        <div className="lg:col-span-3 flex flex-col min-h-0">
+        <div className="lg:col-span-7 flex flex-col min-h-0">
           <Card className="flex-1 flex flex-col min-h-0 border rounded-lg">
             <CardContent className="p-4 flex flex-col">
               {!makerRewardsBannerDismissed && (

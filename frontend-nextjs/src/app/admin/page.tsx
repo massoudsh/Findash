@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -113,6 +114,11 @@ interface ConfigSetting {
   modifiedBy: string;
   requiresRestart: boolean;
 }
+
+const AuditLogPage = dynamic(
+  () => import('@/app/audit-log/page').then((m) => m.default),
+  { ssr: false, loading: () => <div className="p-6 text-muted-foreground">Loading audit log…</div> }
+);
 
 export default function AdminPage() {
   const [selectedTab, setSelectedTab] = useState('overview');
@@ -738,42 +744,7 @@ export default function AdminPage() {
         </TabsContent>
 
         <TabsContent value="audit" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Audit Logs
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {auditLogs.map(log => (
-                  <div key={log.id} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-2 h-2 rounded-full ${
-                          log.severity === 'critical' ? 'bg-red-500' :
-                          log.severity === 'high' ? 'bg-orange-500' :
-                          log.severity === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                        }`} />
-                        <span className="font-medium">{log.action.replace('_', ' ')}</span>
-                        <Badge className={log.result === 'success' ? getStatusColor('healthy') : getStatusColor('critical')}>
-                          {log.result}
-                        </Badge>
-                      </div>
-                      <span className="text-sm text-gray-500">{formatTimestamp(log.timestamp)}</span>
-                    </div>
-                    <div className="text-sm text-gray-600 mb-2">{log.details}</div>
-                    <div className="flex gap-4 text-xs text-gray-500">
-                      <span>User: {log.user}</span>
-                      <span>Resource: {log.resource}</span>
-                      <span>IP: {log.ipAddress}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <AuditLogPage />
         </TabsContent>
 
         <TabsContent value="config" className="space-y-4">

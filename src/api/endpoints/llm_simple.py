@@ -3,11 +3,31 @@ Simplified LLM endpoints for development/demo purposes
 Provides mock data without requiring heavy ML dependencies
 """
 
+import os
 from typing import List, Dict, Any
 from fastapi import APIRouter
 from datetime import datetime
 
 llm_router = APIRouter()
+
+
+@llm_router.get("/status")
+async def get_llm_status() -> Dict[str, Any]:
+    """
+    Return which LLM backends are configured (no secrets).
+    Used by the UI to show an LLM status indicator.
+    """
+    falcon = bool(os.getenv("FALCON_TGI_URL", "").strip())
+    fingpt_local = bool(os.getenv("FINGPT_LOCAL_URL", "").strip())
+    hf_token = bool(os.getenv("HF_TOKEN", "").strip())
+    any_configured = falcon or fingpt_local or hf_token
+    return {
+        "falcon_configured": falcon,
+        "fingpt_local_configured": fingpt_local,
+        "hf_configured": hf_token,
+        "any_configured": any_configured,
+    }
+
 
 @llm_router.get("/reports/analysis-status")
 async def get_analysis_status():

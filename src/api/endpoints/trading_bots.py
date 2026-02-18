@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 import logging
 
-from src.core.security import get_current_active_user, TokenData
+from src.core.security import get_current_active_user, get_optional_user, TokenData
 
 logger = logging.getLogger(__name__)
 
@@ -92,24 +92,27 @@ def _normalize_bot(bot: dict) -> dict:
     return out
 
 
+def _user_id(current_user: Optional[TokenData]) -> str:
+    return (current_user.user_id if current_user else "default")
+
+
 @router.get("/", response_model=List[TradingBotResponse])
 async def get_trading_bots(
-    # current_user: TokenData = Depends(get_current_active_user)  # Temporarily disabled for testing
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
-    """Get all trading bots for the current user"""
-    default_user_id = "default"
-    user_bots = [_normalize_bot(bot) for bot in bots_db.values() if bot.get("user_id") == default_user_id]
+    """Get all trading bots for the current user (or default when unauthenticated)."""
+    user_bots = [_normalize_bot(bot) for bot in bots_db.values() if bot.get("user_id") == _user_id(current_user)]
     return user_bots
 
 
 @router.post("/", response_model=TradingBotResponse)
 async def create_trading_bot(
     bot_data: TradingBotCreate,
-    # current_user: TokenData = Depends(get_current_active_user)  # Temporarily disabled for testing
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
-    """Create a new trading bot"""
+    """Create a new trading bot (owned by current user or default when unauthenticated)."""
     bot_id = f"bot_{len(bots_db) + 1}"
-    
+    uid = _user_id(current_user)
     _risk = bot_data.risk or RiskConfig()
     risk = _risk.model_dump() if hasattr(_risk, "model_dump") else _risk.dict()
     symbols = bot_data.symbols or ([bot_data.symbol] if bot_data.symbol else [])
@@ -125,14 +128,14 @@ async def create_trading_bot(
         "symbol": bot_data.symbol,
         "parameters": bot_data.parameters or {},
         "performance": {"total_trades": 0, "win_rate": 0.0, "total_pnl": 0.0},
-        "user_id": "default",
+        "user_id": uid,
         "created_at": datetime.now().isoformat(),
         "updated_at": datetime.now().isoformat(),
         "last_signal_at": None,
     }
     
     bots_db[bot_id] = new_bot
-    logger.info(f"Created trading bot {bot_id} for user default")
+    logger.info(f"Created trading bot {bot_id} for user {uid}")
     
     return new_bot
 
@@ -141,12 +144,14 @@ async def create_trading_bot(
 async def update_trading_bot(
     bot_id: str,
     payload: TradingBotUpdate,
-    # current_user: TokenData = Depends(get_current_active_user)
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Update bot config (Phase 2: execution_mode, symbols, agent_sources, risk)."""
     if bot_id not in bots_db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
     bot = bots_db[bot_id]
+    if bot.get("user_id") != _user_id(current_user):
+        raise HTTPException(status_code=403, detail="Access denied")
     if payload.name is not None:
         bot["name"] = payload.name
     if payload.execution_mode is not None:
@@ -167,110 +172,95 @@ async def update_trading_bot(
 @router.get("/{bot_id}", response_model=TradingBotResponse)
 async def get_trading_bot(
     bot_id: str,
-    current_user: TokenData = Depends(get_current_active_user)
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
-    """Get a specific trading bot"""
+    """Get a specific trading bot."""
     if bot_id not in bots_db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    
     bot = bots_db[bot_id]
-    if bot.get("user_id") != current_user.user_id:
+    if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
-    
     return _normalize_bot(bot)
 
 
 @router.post("/{bot_id}/start")
 async def start_trading_bot(
     bot_id: str,
-    current_user: TokenData = Depends(get_current_active_user)
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
-    """Start a trading bot"""
+    """Start a trading bot. Execution uses bot's execution_mode (paper/live) when execution layer is connected."""
     if bot_id not in bots_db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    
     bot = bots_db[bot_id]
-    if bot.get("user_id") != current_user.user_id:
+    if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
-    
     bot["status"] = "active"
     bot["updated_at"] = datetime.now().isoformat()
-    logger.info(f"Started trading bot {bot_id}")
-    
-    return {"message": "Trading bot started", "bot_id": bot_id, "status": "active"}
+    execution_mode = bot.get("execution_mode") or "paper"
+    logger.info(f"Started trading bot {bot_id} (execution_mode={execution_mode})")
+    return {"message": "Trading bot started", "bot_id": bot_id, "status": "active", "execution_mode": execution_mode}
 
 
 @router.post("/{bot_id}/pause")
 async def pause_trading_bot(
     bot_id: str,
-    current_user: TokenData = Depends(get_current_active_user)
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
-    """Pause a trading bot"""
+    """Pause a trading bot."""
     if bot_id not in bots_db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    
     bot = bots_db[bot_id]
-    if bot.get("user_id") != current_user.user_id:
+    if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
-    
     bot["status"] = "paused"
     bot["updated_at"] = datetime.now().isoformat()
     logger.info(f"Paused trading bot {bot_id}")
-    
     return {"message": "Trading bot paused", "bot_id": bot_id, "status": "paused"}
 
 
 @router.post("/{bot_id}/stop")
 async def stop_trading_bot(
     bot_id: str,
-    current_user: TokenData = Depends(get_current_active_user)
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
-    """Stop a trading bot"""
+    """Stop a trading bot."""
     if bot_id not in bots_db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    
     bot = bots_db[bot_id]
-    if bot.get("user_id") != current_user.user_id:
+    if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
-    
     bot["status"] = "stopped"
     bot["updated_at"] = datetime.now().isoformat()
     logger.info(f"Stopped trading bot {bot_id}")
-    
     return {"message": "Trading bot stopped", "bot_id": bot_id, "status": "stopped"}
 
 
 @router.delete("/{bot_id}")
 async def delete_trading_bot(
     bot_id: str,
-    current_user: TokenData = Depends(get_current_active_user)
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
-    """Delete a trading bot"""
+    """Delete a trading bot."""
     if bot_id not in bots_db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    
     bot = bots_db[bot_id]
-    if bot.get("user_id") != current_user.user_id:
+    if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
-    
     del bots_db[bot_id]
     logger.info(f"Deleted trading bot {bot_id}")
-    
     return {"message": "Trading bot deleted", "bot_id": bot_id}
 
 
 @router.get("/{bot_id}/performance", response_model=TradingBotPerformance)
 async def get_bot_performance(
     bot_id: str,
-    current_user: TokenData = Depends(get_current_active_user)
+    current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
-    """Get performance metrics for a trading bot"""
+    """Get performance metrics for a trading bot."""
     if bot_id not in bots_db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    
     bot = bots_db[bot_id]
-    if bot.get("user_id") != current_user.user_id:
+    if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
-    
     return bot["performance"]
 

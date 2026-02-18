@@ -4,6 +4,13 @@ The Octopus Trading Platform uses PostgreSQL 15 with TimescaleDB extension for t
 
 ## Architecture Overview
 
+```mermaid
+flowchart LR
+    APP[Application Tables\nOLTP] --> TDB[TimescaleDB\nHypertables]
+    TDB --> EXT[Extensions\nSecurity / Audit]
+```
+
+*ASCII:*
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Application   │    │   TimescaleDB   │    │   Extensions    │
@@ -310,6 +317,57 @@ SELECT add_retention_policy('security_events', INTERVAL '2 years');
 
 ## Entity Relationship Diagram
 
+```mermaid
+erDiagram
+    users ||--o{ portfolios : "has"
+    users ||--o{ api_keys : "has"
+    portfolios ||--o{ positions : "contains"
+    portfolios ||--o{ orders : "has"
+    orders ||--o{ trade_executions : "results in"
+    users {
+        uuid id PK
+        string email
+        string password_hash
+        boolean is_active
+    }
+    portfolios {
+        uuid id PK
+        uuid user_id FK
+        string name
+        decimal total_value
+    }
+    positions {
+        uuid id PK
+        uuid portfolio_id FK
+        string symbol
+        decimal quantity
+    }
+    orders {
+        uuid id PK
+        uuid portfolio_id FK
+        string symbol
+        string side
+        string status
+    }
+    trade_executions {
+        uuid id PK
+        uuid order_id FK
+        decimal price
+        timestamp timestamp
+    }
+    market_data {
+        string symbol
+        timestamp timestamp
+        decimal close_price
+    }
+    portfolio_snapshots {
+        uuid portfolio_id
+        timestamp timestamp
+        decimal total_value
+    }
+```
+
+*ASCII sketch:*
 ```
 ┌────────────┐       ┌──────────────┐       ┌────────────┐
 │   users    │───────│  portfolios  │───────│ positions  │

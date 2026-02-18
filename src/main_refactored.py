@@ -67,8 +67,9 @@ from src.api.endpoints.unified_websocket import router as unified_websocket_rout
 # DEPRECATED: Legacy WebSocket routers (kept for backward compatibility)
 from src.api.endpoints.websocket_realtime import router as ws_realtime_router
 
-# Trading Bots and Backtesting APIs
+# Trading Bots, Agent Panels, and Backtesting APIs
 from src.api.endpoints.trading_bots import router as trading_bots_router
+from src.api.endpoints.agent_panels import router as agent_panels_router
 from src.api.endpoints.backtesting import router as backtesting_router
 from src.api.endpoints.strategies_crud import router as strategies_crud_router
 from src.api.endpoints.search import router as search_router
@@ -214,8 +215,9 @@ app.include_router(scenarios_router, tags=["Market Scenarios"])
 # Unified WebSocket API (consolidates all WebSocket endpoints)
 app.include_router(unified_websocket_router, tags=["Unified WebSocket"])
 
-# Trading Bots and Backtesting APIs
+# Trading Bots, Agent Panels, and Backtesting APIs
 app.include_router(trading_bots_router, tags=["Trading Bots"])
+app.include_router(agent_panels_router, tags=["Agent Panels"])
 app.include_router(backtesting_router, tags=["Backtesting"])
 app.include_router(strategies_crud_router, tags=["Strategies CRUD"])
 app.include_router(search_router, tags=["Search"])

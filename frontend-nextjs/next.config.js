@@ -4,12 +4,20 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true,
 
-  // Trading Center: Market, Live Trading, and Bots in one page
+  // Command Center: Options and Bots
   async redirects() {
     return [
-      { source: '/realtime', destination: '/trading?tab=market', permanent: false },
-      { source: '/trades', destination: '/trading?tab=center', permanent: false },
+      { source: '/realtime', destination: '/trading', permanent: false },
+      { source: '/trades', destination: '/trading', permanent: false },
       { source: '/trading-bots', destination: '/trading?tab=bots', permanent: false },
+      { source: '/strategies', destination: '/trading?tab=strategies', permanent: false },
+      { source: '/backtesting', destination: '/trading?tab=strategies&subtab=backtesting', permanent: false },
+      { source: '/risk', destination: '/trading?tab=risk', permanent: false },
+      { source: '/data-explorer', destination: '/data', permanent: false },
+      { source: '/visualization', destination: '/data?tab=charts', permanent: false },
+      { source: '/profile', destination: '/account', permanent: false },
+      { source: '/settings', destination: '/account?tab=settings', permanent: false },
+      { source: '/audit-log', destination: '/admin?tab=audit', permanent: false },
     ];
   },
   
