@@ -21,17 +21,17 @@ API_KEYS = {
     # Free tier: 5 API calls per minute, 500 calls per day
     # Premium plans start at $49.99/month
     'alpha_vantage': 'your_alpha_vantage_api_key_here',
-    
+
     # IEX Cloud - Real-time and historical market data
     # Free tier: 500,000 API calls per month
     # Paid plans start at $9/month
     'iex_cloud': 'your_iex_cloud_token_here',
-    
+
     # Polygon.io - High-frequency and professional market data
     # Free tier: 5 API calls per minute
     # Professional plans start at $99/month
     'polygon': 'your_polygon_api_key_here',
-    
+
     # Finnhub - Financial data and news
     # Free tier: 60 API calls per minute
     # Premium plans start at $39.99/month
@@ -125,48 +125,53 @@ SOURCE_CAPABILITIES = {
     }
 }
 
+
 def get_api_key(source: str) -> str:
     """Get API key for a specific source"""
     return API_KEYS.get(source, '')
+
 
 def is_source_configured(source: str) -> bool:
     """Check if a source has been configured with an API key"""
     key = API_KEYS.get(source, '')
     return key and not key.endswith('_here')
 
+
 def get_configured_sources() -> list:
     """Get list of sources that have been configured with API keys"""
     return [source for source in API_KEYS.keys() if is_source_configured(source)]
+
 
 def validate_configuration():
     """Validate API key configuration and show status"""
     print("🔑 API Key Configuration Status")
     print("=" * 50)
-    
+
     configured_sources = []
-    
+
     for source, key in API_KEYS.items():
         if is_source_configured(source):
             status = "✅ Configured"
             configured_sources.append(source)
         else:
             status = "❌ Not configured"
-        
+
         rate_limit = RATE_LIMITS.get(source, {})
         quality = DATA_QUALITY_SCORES.get(source, 0)
-        
+
         print(f"{source:15} | {status:15} | Quality: {quality:.2f}")
         print(f"{'':15} | {rate_limit.get('cost', 'N/A')}")
         print()
-    
+
     print(f"📊 Summary: {len(configured_sources)}/{len(API_KEYS)} sources configured")
-    
+
     if configured_sources:
         print(f"✅ Active sources: {', '.join(configured_sources)}")
     else:
         print("⚠️  No sources configured. At least Yahoo Finance will work without API keys.")
-    
+
     return configured_sources
 
+
 if __name__ == "__main__":
-    validate_configuration() 
+    validate_configuration()

@@ -12,7 +12,7 @@ Code in these paths implements or feeds the **Data Collector Agent** (M1): scrap
 
 - **Scraping**: Use `requests` with a reasonable `timeout` (e.g. 10–30s). Prefer `BeautifulSoup` for HTML; keep selectors stable and handle missing elements. Log URL and count of items fetched.
 - **Rate limiting**: Do not hammer external sites; add delays or use a rate limiter when scraping or calling free APIs. Respect `Retry-After` and 429 responses.
-- **API keys**: Read from env or config (e.g. `os.getenv("ALPHA_VANTAGE_API_KEY")`); never commit keys. Use the project’s API key config if present (`api_keys_config.py` / env.example).
+- **API keys**: Read from env or config (e.g. `os.getenv("ALPHA_VANTAGE_API_KEY")`); never commit keys. Use the project’s API key config if present (`config/api_keys_config.py` / config/env.example).
 - **Validation**: Validate and normalize symbols, timestamps, and numeric fields before storing or passing to other agents (M2, M3). Use schemas or dataclasses for structured output.
 - **Errors**: Catch `requests.RequestException` and log; return empty list/dict or raise a known project exception so the orchestrator can handle failures.
 - **Async**: If the caller is async (orchestrator, Celery), prefer `aiohttp` or async-capable clients for concurrent fetches; keep sync scrapers in thread pool if needed.

@@ -79,7 +79,7 @@ cd ..
 
 ```bash
 # Copy the example environment file
-cp env.example .env
+cp config/env.example .env
 
 # Edit .env with your configuration
 # At minimum, you need:

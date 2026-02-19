@@ -200,7 +200,7 @@ def main():
     if not imports_ok:
         logger.error("❌ Critical import failures detected!")
         print("\n🔧 Suggested fixes:")
-        print("1. Check if all dependencies are installed: pip install -r requirements.txt")
+        print("1. Check if all dependencies are installed: pip install -r requirements/requirements.txt")
         print("2. Verify Python path includes current directory")
         print("3. Check for missing Phase 5 component files")
         return

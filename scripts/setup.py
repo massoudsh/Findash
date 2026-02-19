@@ -95,11 +95,11 @@ def install_dependencies():
             return False
     
     # Install main dependencies
-    if not run_command("pip install -r requirements.txt", "Installing main dependencies"):
+    if not run_command("pip install -r requirements/requirements.txt", "Installing main dependencies"):
         return False
     
     # Install development dependencies
-    if not run_command("pip install -r requirements-dev.txt", "Installing development dependencies"):
+    if not run_command("pip install -r requirements/requirements-dev.txt", "Installing development dependencies"):
         return False
     
     return True

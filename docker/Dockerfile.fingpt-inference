@@ -1,6 +1,5 @@
 # FinGPT-style inference server for report generation.
-# Optional: run when you want local FinGPT instead of HuggingFace API.
-# For smaller footprint use HF_TOKEN + HF API and omit this service.
+# Build from repo root: docker build -f docker/Dockerfile.fingpt-inference .
 
 FROM python:3.11-slim
 
@@ -10,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements-llm.txt /app/requirements-llm.txt
+COPY requirements/requirements-llm.txt /app/requirements-llm.txt
 RUN pip install --no-cache-dir -r requirements-llm.txt
 
 COPY src/llm/fingpt_inference_server.py /app/fingpt_inference_server.py

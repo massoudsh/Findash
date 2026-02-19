@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -25,11 +25,13 @@ import {
   Database,
   Percent,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  LineChart,
+  Cpu,
+  GitBranch
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserMenu } from "@/components/navigation/user-menu";
-import { GlobalSearch } from "@/components/search/global-search";
 import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { NotificationCenter } from "@/components/ui/notification-center";
@@ -40,7 +42,7 @@ interface NavigationWrapperProps {
   children: React.ReactNode;
 }
 
-// Left Sidebar - Trading + Analysis & Research (aligned with right)
+// Left Sidebar - Trading + Analysis & Research (unique icons when wrapped)
 const leftSidebarItems = {
   'Trading': [
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
@@ -49,23 +51,23 @@ const leftSidebarItems = {
   'Analysis & Research': [
     { name: 'Technical', href: '/technical', icon: Target },
     { name: 'Fundamental Research', href: '/fundamental-data', icon: Brain },
-    { name: 'Macro', href: '/macro', icon: TrendingUp },
+    { name: 'Macro', href: '/macro', icon: LineChart },
     { name: 'On-chain', href: '/on-chain', icon: Database },
     { name: 'Social Signals', href: '/social', icon: MessageSquare },
-    { name: 'AI Models', href: '/ai-models', icon: Brain },
+    { name: 'AI Models', href: '/ai-models', icon: Cpu },
   ],
 };
 
-// Right Sidebar - Tools & System (merged: Data & Charts, Account, Admin includes Audit)
+// Right Sidebar - Tools & System (unique icons when wrapped)
 const rightSidebarItems = {
   'Tools & System': [
-    { name: 'Data & Charts', href: '/data', icon: Database },
+    { name: 'Data & Charts', href: '/data', icon: PieChart },
     { name: 'Reports', href: '/reports', icon: FileText },
     { name: 'API Playground', href: '/api-playground', icon: Activity },
     { name: 'Notifications', href: '/notifications', icon: Bell },
     { name: 'Admin', href: '/admin', icon: ServerCog },
     { name: 'Account', href: '/account', icon: User },
-    { name: 'Workflow', href: '/workflow', icon: Activity },
+    { name: 'Workflow', href: '/workflow', icon: GitBranch },
     { name: 'Help', href: '/help', icon: BookOpen },
   ],
 };
@@ -73,11 +75,15 @@ const rightSidebarItems = {
 const SIDEBAR_EXPANDED = 256; // w-64 = 16rem = 256px
 const SIDEBAR_COLLAPSED = 64;  // w-16 = 4rem = 64px
 
+const SIDEBAR_HOVER_LEAVE_DELAY_MS = 200;
+
 export function NavigationWrapper({ children }: NavigationWrapperProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [leftCollapsed, setLeftCollapsed] = useState(true);
   const [rightCollapsed, setRightCollapsed] = useState(true);
+  const leftLeaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rightLeaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const t = useTranslations();
@@ -181,16 +187,32 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
       </div>
 
       <div className="lg:flex">
-        {/* Left Desktop Sidebar - collapsible, rolls to left (icon-only when collapsed) */}
+        {/* Left Desktop Sidebar - hover to expand, leave to collapse */}
         <div
           className={cn(
             'hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-out',
             leftCollapsed ? 'lg:w-16' : 'lg:w-64'
           )}
+          onMouseEnter={() => {
+            if (leftLeaveTimeoutRef.current) {
+              clearTimeout(leftLeaveTimeoutRef.current);
+              leftLeaveTimeoutRef.current = null;
+            }
+            setLeftCollapsed(false);
+          }}
+          onMouseLeave={() => {
+            leftLeaveTimeoutRef.current = setTimeout(() => {
+              setLeftCollapsed(true);
+              leftLeaveTimeoutRef.current = null;
+            }, SIDEBAR_HOVER_LEAVE_DELAY_MS);
+          }}
         >
           <div className="flex grow flex-col gap-y-5 overflow-y-auto overflow-x-hidden border-r border-white/30 dark:border-white/20 bg-card pb-4 transition-[padding] duration-200 ease-out border-2 border-amber-400/90 shadow-[0_0_12px_rgba(251,191,36,0.4)] dark:shadow-[0_0_14px_rgba(251,191,36,0.3)] rounded-r-lg">
             <div className={cn('px-2 pt-4', leftCollapsed && 'flex justify-center px-0')}>
-              <CommandPaletteTrigger onOpen={() => setCommandOpen(true)} />
+              <CommandPaletteTrigger
+                onOpen={() => setCommandOpen(true)}
+                iconOnly={leftCollapsed}
+              />
             </div>
             <div className={leftCollapsed ? 'px-0' : 'px-2'}>
               <LeftNavigationContent collapsed={leftCollapsed} />
@@ -231,12 +253,25 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
           </main>
         </div>
 
-        {/* Right Desktop Sidebar - collapsible, rolls to right (icon-only when collapsed) */}
+        {/* Right Desktop Sidebar - hover to expand, leave to collapse */}
         <div
           className={cn(
             'hidden lg:fixed lg:inset-y-0 lg:right-0 lg:z-40 lg:flex lg:flex-col transition-[width] duration-200 ease-out',
             rightCollapsed ? 'lg:w-16' : 'lg:w-64'
           )}
+          onMouseEnter={() => {
+            if (rightLeaveTimeoutRef.current) {
+              clearTimeout(rightLeaveTimeoutRef.current);
+              rightLeaveTimeoutRef.current = null;
+            }
+            setRightCollapsed(false);
+          }}
+          onMouseLeave={() => {
+            rightLeaveTimeoutRef.current = setTimeout(() => {
+              setRightCollapsed(true);
+              rightLeaveTimeoutRef.current = null;
+            }, SIDEBAR_HOVER_LEAVE_DELAY_MS);
+          }}
         >
           <div className="flex grow flex-col gap-y-5 overflow-y-auto overflow-x-hidden border-l border-white/30 dark:border-white/20 bg-card pb-4 transition-[padding] duration-200 ease-out border-2 border-amber-400/90 shadow-[0_0_12px_rgba(251,191,36,0.4)] dark:shadow-[0_0_14px_rgba(251,191,36,0.3)] rounded-l-lg">
             <div className={cn('flex h-16 shrink-0 items-center justify-center', !rightCollapsed && 'px-2')}>

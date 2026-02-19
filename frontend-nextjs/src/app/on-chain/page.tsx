@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,10 +24,39 @@ import {
   ArrowUpDown,
   Wallet,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  RefreshCw
 } from 'lucide-react';
 
 export default function OnChainPage() {
+  const [onchainData, setOnchainData] = useState<Record<string, unknown> | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchOnchainData = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/onchain/comprehensive');
+      if (res.ok) {
+        const json = await res.json();
+        setOnchainData(json.data ?? null);
+        setLastUpdated(json.last_updated ?? new Date().toISOString());
+      } else {
+        setOnchainData(null);
+      }
+    } catch {
+      setOnchainData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOnchainData();
+    const interval = setInterval(fetchOnchainData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Bitcoin Network Fundamentals (Glassnode-style)
   const bitcoinFundamentals = [
     { metric: 'Hash Rate', value: '520.2 EH/s', change: '+5.2%', trend: 'up', signal: 'bullish', category: 'security' },
@@ -94,7 +124,7 @@ export default function OnChainPage() {
   const renderMetricSection = (title: string, metrics: any[], icon: any, description: string) => (
     <Card className="glass-card">
       <CardHeader>
-        <CardTitle className="flex items-center space-x-2">
+        <CardTitle className="flex items-center gap-2 text-foreground">
           {icon}
           <span>{title}</span>
         </CardTitle>
@@ -105,7 +135,7 @@ export default function OnChainPage() {
           {metrics.map((metric, index) => (
             <div key={metric.metric} className="neomorphic p-4 rounded-lg">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-300">{metric.metric}</span>
+                <span className="text-sm font-medium text-muted-foreground">{metric.metric}</span>
                 <div className="flex items-center space-x-2">
                   <Badge className={`text-xs ${
                     metric.signal === 'bullish' ? 'bg-green-500/20 text-green-300' :
@@ -117,10 +147,10 @@ export default function OnChainPage() {
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-lg font-bold">{metric.value}</span>
+                <span className="text-lg font-bold text-foreground">{metric.value}</span>
                 <div className={`flex items-center space-x-1 ${
-                  metric.trend === 'up' ? 'text-green-400' : 
-                  metric.trend === 'down' ? 'text-red-400' : 'text-gray-400'
+                  metric.trend === 'up' ? 'text-chart-2' : 
+                  metric.trend === 'down' ? 'text-destructive' : 'text-muted-foreground'
                 }`}>
                   {metric.trend === 'up' ? (
                     <TrendingUp className="h-4 w-4" />
@@ -140,29 +170,40 @@ export default function OnChainPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold gradient-text">Glassnode Analytics</h1>
-            <p className="text-gray-400 mt-2">Institutional-grade blockchain intelligence and on-chain metrics</p>
-          </div>
-          <div className="flex space-x-2">
-            <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30">
-              Live On-Chain Data
-            </Badge>
-            <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30">
-              Glassnode Grade
-            </Badge>
-          </div>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">On-Chain</h1>
+          <p className="text-muted-foreground mt-1">
+            Blockchain intelligence and on-chain metrics — real-time when backend is available
+          </p>
         </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {onchainData ? (
+            <Badge className="bg-primary/20 text-primary border-primary/30">
+              Live from source
+            </Badge>
+          ) : (
+            <Badge variant="secondary">Static snapshot</Badge>
+          )}
+          {lastUpdated && (
+            <span className="text-xs text-muted-foreground">
+              Updated {lastUpdated ? new Date(lastUpdated).toLocaleTimeString() : ''}
+            </span>
+          )}
+          <Button variant="outline" size="sm" onClick={fetchOnchainData} disabled={isLoading}>
+            <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
+      </div>
+      <div className="space-y-6">
 
         {/* Bitcoin Network Fundamentals */}
         {renderMetricSection(
           'Bitcoin Network Fundamentals',
           bitcoinFundamentals,
-          <Shield className="h-5 w-5 text-orange-400" />,
+          <Shield className="h-5 w-5 text-foreground" />,
           'Core network security and performance metrics'
         )}
 
@@ -170,7 +211,7 @@ export default function OnChainPage() {
         {renderMetricSection(
           'Network Activity & Adoption',
           networkActivity,
-          <Users className="h-5 w-5 text-blue-400" />,
+          <Users className="h-5 w-5 text-foreground" />,
           'User adoption and network usage indicators'
         )}
 
@@ -178,7 +219,7 @@ export default function OnChainPage() {
         {renderMetricSection(
           'Market Structure & Capital Flows',
           marketStructure,
-          <ArrowUpDown className="h-5 w-5 text-cyan-400" />,
+          <ArrowUpDown className="h-5 w-5 text-foreground" />,
           'Exchange flows and market structure analysis'
         )}
 
@@ -186,7 +227,7 @@ export default function OnChainPage() {
         {renderMetricSection(
           'HODLer & Investor Behavior',
           hodlerMetrics,
-          <Clock className="h-5 w-5 text-green-400" />,
+          <Clock className="h-5 w-5 text-foreground" />,
           'Long-term holder patterns and coin age analysis'
         )}
 
@@ -194,7 +235,7 @@ export default function OnChainPage() {
         {renderMetricSection(
           'Valuation Models & Metrics',
           valuationMetrics,
-          <Target className="h-5 w-5 text-purple-400" />,
+          <Target className="h-5 w-5 text-foreground" />,
           'Advanced valuation models and fair value indicators'
         )}
 
@@ -202,7 +243,7 @@ export default function OnChainPage() {
         {renderMetricSection(
           'Whale & Institution Activity',
           whaleActivity,
-          <Eye className="h-5 w-5 text-red-400" />,
+          <Eye className="h-5 w-5 text-foreground" />,
           'Large holder behavior and institutional flow analysis'
         )}
 
@@ -210,7 +251,7 @@ export default function OnChainPage() {
         {renderMetricSection(
           'Mining & Security Analytics',
           miningMetrics,
-          <Zap className="h-5 w-5 text-yellow-400" />,
+          <Zap className="h-5 w-5 text-foreground" />,
           'Mining economics and network security indicators'
         )}
 
@@ -218,7 +259,7 @@ export default function OnChainPage() {
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Layers className="h-5 w-5 text-indigo-400" />
+              <Layers className="h-5 w-5 text-foreground" />
               <span>DeFi & Layer 2 Ecosystem</span>
             </CardTitle>
             <CardDescription>Cross-chain and DeFi protocol analytics</CardDescription>
@@ -230,7 +271,7 @@ export default function OnChainPage() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center">
-                        <span className="text-white font-bold text-xs">
+                        <span className="text-foreground font-bold text-xs">
                           {protocol.protocol.slice(0, 2)}
                         </span>
                       </div>
@@ -244,22 +285,22 @@ export default function OnChainPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-gray-400">
+                      <p className="text-muted-foreground">
                         {protocol.category === 'layer2' ? 'Capacity/TVL' : 'Supply/TVL'}
                       </p>
                       <p className="font-medium">{protocol.capacity || protocol.tvl}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">
+                      <p className="text-muted-foreground">
                         {protocol.category === 'layer2' ? 'Nodes/Txns' : 'Volume/Protocols'}
                       </p>
                       <p className="font-medium">{protocol.nodes || protocol.transactions || protocol.volume || protocol.protocols}</p>
                     </div>
                   </div>
                   <div className="mt-3 flex justify-between items-center">
-                    <span className="text-xs text-gray-400">24h Change</span>
+                    <span className="text-xs text-muted-foreground">24h Change</span>
                     <span className={`text-sm font-medium ${
-                      protocol.change.startsWith('+') ? 'text-green-400' : 'text-red-400'
+                      protocol.change.startsWith('+') ? 'text-chart-2' : 'text-destructive'
                     }`}>
                       {protocol.change}
                     </span>
@@ -274,7 +315,7 @@ export default function OnChainPage() {
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="h-5 w-5 text-emerald-400" />
+              <BarChart3 className="h-5 w-5 text-foreground" />
               <span>Market Intelligence Summary</span>
             </CardTitle>
             <CardDescription>AI-powered insights from on-chain data</CardDescription>
@@ -282,7 +323,7 @@ export default function OnChainPage() {
           <CardContent>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="space-y-4">
-                <h4 className="font-semibold text-emerald-400">Network Health</h4>
+                <h4 className="font-semibold text-muted-foreground">Network Health</h4>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span>Security Score</span>
@@ -300,7 +341,7 @@ export default function OnChainPage() {
               </div>
               
               <div className="space-y-4">
-                <h4 className="font-semibold text-cyan-400">Market Sentiment</h4>
+                <h4 className="font-semibold text-muted-foreground">Market Sentiment</h4>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span>HODLer Strength</span>
@@ -318,7 +359,7 @@ export default function OnChainPage() {
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-semibold text-purple-400">Valuation Signals</h4>
+                <h4 className="font-semibold text-muted-foreground">Valuation Signals</h4>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span>Fair Value</span>

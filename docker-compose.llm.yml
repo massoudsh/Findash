@@ -37,7 +37,7 @@ services:
   fingpt-inference:
     build:
       context: .
-      dockerfile: Dockerfile.fingpt-inference
+      dockerfile: docker/Dockerfile.fingpt-inference
     image: findash-fingpt-inference:latest
     container_name: findash-fingpt
     restart: unless-stopped

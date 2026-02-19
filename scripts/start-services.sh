@@ -1,7 +1,12 @@
 #!/bin/bash
 
 # Octopus Trading Platform - Service Startup Script
+# Run from repo root: ./scripts/start-services.sh
 set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+cd "$ROOT_DIR"
 
 # Colors for output
 RED='\033[0;31m'
@@ -28,16 +33,16 @@ create_directories() {
     echo -e "${GREEN}✅ Directories created${NC}"
 }
 
-# Function to check if .env file exists
+# Function to check if .env file exists (run from repo root)
 check_env() {
     if [ ! -f .env ]; then
         echo -e "${YELLOW}⚠️  No .env file found. Creating from template...${NC}"
-        if [ -f env.example ]; then
-            cp env.example .env
+        if [ -f config/env.example ]; then
+            cp config/env.example .env
             echo -e "${GREEN}✅ Created .env from template${NC}"
             echo -e "${YELLOW}🔧 Please edit .env file with your configuration${NC}"
         else
-            echo -e "${RED}❌ No env.example found. Please create .env file manually.${NC}"
+            echo -e "${RED}❌ No config/env.example found. Please create .env file manually.${NC}"
         fi
     fi
 }
@@ -136,12 +141,12 @@ view_logs() {
         echo "No Octopus services running"
         return
     fi
-    
+
     echo "$services" | nl
     echo ""
     echo "Enter service number (or 'all' for all services):"
     read -r choice
-    
+
     if [ "$choice" = "all" ]; then
         echo -e "${BLUE}🔍 Showing logs for all services (last 50 lines each):${NC}"
         for service in $services; do
@@ -164,11 +169,11 @@ main() {
     check_docker
     create_directories
     check_env
-    
+
     while true; do
         show_menu
         read -r choice
-        
+
         case $choice in
             1)
                 start_core
@@ -196,7 +201,7 @@ main() {
                 echo -e "${RED}❌ Invalid option${NC}"
                 ;;
         esac
-        
+
         echo ""
         echo -e "${YELLOW}Press Enter to continue...${NC}"
         read -r
@@ -204,4 +209,4 @@ main() {
 }
 
 # Run main function
-main 
+main

@@ -69,7 +69,7 @@ cd /opt/octopus-trading
 git clone https://github.com/massoudsh/Findash.git .
 
 # Copy environment file
-cp env.example .env
+cp config/env.example .env
 
 # Generate secure secrets
 python3 -c "import secrets; print('SECRET_KEY=' + secrets.token_urlsafe(32))" >> .env

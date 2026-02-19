@@ -51,8 +51,8 @@ We are committed to providing a welcoming and inclusive environment for all cont
    ```bash
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
-   pip install -r requirements-dev.txt
+   pip install -r requirements/requirements.txt
+   pip install -r requirements/requirements-dev.txt
    ```
 
 3. **Install Pre-commit Hooks**
@@ -62,7 +62,7 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 4. **Set up Environment**
    ```bash
-   cp env.example .env
+   cp config/env.example .env
    # Edit .env with your development configuration
    ```
 

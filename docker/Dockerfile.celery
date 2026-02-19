@@ -1,11 +1,10 @@
 # Celery Worker Dockerfile - Optimized for Background Tasks
+# Build from repo root: docker build -f docker/Dockerfile.celery .
 
 FROM python:3.11-slim AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Install build dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
@@ -16,15 +15,11 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements files
-COPY requirements.txt requirements-dev.txt /app/
+COPY requirements/requirements.txt requirements/requirements-dev.txt /app/
 
-# Install dependencies into a virtual environment
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Install dependencies with Celery optimization
-# Core deps first (required for src.core.config / celery_app to load)
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir "pydantic>=2.0" "pydantic-settings>=2.0" python-dotenv && \
     pip install --no-cache-dir -r requirements.txt || true && \
@@ -33,20 +28,16 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 # ===== RUNTIME STAGE =====
 FROM python:3.11-slim AS runtime
 
-# Set environment variables for Celery
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH="/app/src:$PYTHONPATH" \
     C_FORCE_ROOT=1
 
-# Create a non-root user
 RUN groupadd -r celery && useradd -r -g celery celery
 
-# Set working directory
 WORKDIR /app
 
-# Install runtime dependencies (procps for beat healthcheck: pgrep)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
@@ -54,23 +45,17 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy virtual environment from builder stage
 COPY --from=builder /opt/venv /opt/venv
 
-# Copy application code
 COPY src/ /app/src/
 COPY .env /app/
 
-# Create necessary directories and set permissions
 RUN mkdir -p /app/data /app/logs /app/models && \
     chown -R celery:celery /app
 
-# Switch to non-root user
 USER celery
 
-# Health check for Celery worker
 HEALTHCHECK --interval=60s --timeout=30s --start-period=10s --retries=3 \
     CMD celery -A src.core.celery_app inspect ping || exit 1
 
-# Default command (will be overridden in docker-compose)
-CMD ["celery", "-A", "src.core.celery_app", "worker", "-l", "info"] 
+CMD ["celery", "-A", "src.core.celery_app", "worker", "-l", "info"]

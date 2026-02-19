@@ -214,7 +214,7 @@ if [[ -f "$ENV_FILE" ]]; then
     echo ""
 else
     echo -e "${RED}❌ Environment file not found: $ENV_FILE${NC}"
-    echo -e "${YELLOW}💡 Create it by copying from env.example${NC}"
+    echo -e "${YELLOW}💡 Create it by copying from config/env.example${NC}"
     exit 1
 fi
 

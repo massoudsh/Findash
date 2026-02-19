@@ -11,7 +11,7 @@ This guide gives you **three ways** to show the Octopus (Findash) platform to in
 1. **Deploy the app** (you do this once):
    - **Frontend:** Deploy to [Vercel](https://vercel.com) (connect GitHub repo, deploy `frontend-nextjs` or root with correct build settings).
    - **Backend:** Deploy to [Render](https://render.com), [Railway](https://railway.app), or similar (use `Dockerfile.fastapi` or Python runtime; add PostgreSQL and Redis from their dashboards).
-   - Set **environment variables** on both (see repo `env.example`). On the frontend, set `NEXT_PUBLIC_API_URL` to your backend URL (e.g. `https://your-api.onrender.com`).
+   - Set **environment variables** on both (see repo `config/env.example`). On the frontend, set `NEXT_PUBLIC_API_URL` to your backend URL (e.g. `https://your-api.onrender.com`).
 
 2. **Share the frontend URL** with stakeholders, e.g.:
    - `https://findash-demo.vercel.app`  

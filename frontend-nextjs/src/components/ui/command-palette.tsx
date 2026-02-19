@@ -587,16 +587,36 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 }
 
 // Helper component for showing command palette trigger
-export function CommandPaletteTrigger({ onOpen }: { onOpen: () => void }) {
+export function CommandPaletteTrigger({
+  onOpen,
+  iconOnly = false,
+}: {
+  onOpen: () => void;
+  iconOnly?: boolean;
+}) {
   const t = useTranslations();
+  if (iconOnly) {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        className="h-9 w-9 shrink-0 bg-background shadow-none"
+        onClick={onOpen}
+        aria-label={t('common.commandPalette')}
+      >
+        <CommandIcon className="h-4 w-4" />
+      </Button>
+    );
+  }
   return (
     <Button
       variant="outline"
       className="relative h-8 w-full justify-start bg-background text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-40 lg:w-64"
       onClick={onOpen}
+      aria-label={t('common.commandPalette')}
     >
-      <span className="hidden lg:inline-flex">{t('common.search')}</span>
-      <span className="inline-flex lg:hidden">{t('common.searchShort')}</span>
+      <span className="hidden lg:inline-flex">{t('common.commandPalette')}</span>
+      <span className="inline-flex lg:hidden">{t('common.commandPaletteShort')}</span>
       <div className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
         <span className="text-xs">⌘</span>K
       </div>

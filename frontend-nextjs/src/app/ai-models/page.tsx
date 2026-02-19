@@ -37,8 +37,7 @@ import {
   Workflow,
   Infinity,
   Network,
-  Binary,
-  Atom
+  Binary
 } from 'lucide-react';
 
 interface TrainingJob {
@@ -391,7 +390,7 @@ export default function AIModelsPage() {
       case 'medium': return 'text-yellow-400';
       case 'high': return 'text-orange-400';
       case 'extreme': return 'text-red-400';
-      default: return 'text-gray-400';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -408,145 +407,142 @@ export default function AIModelsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-8">
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">AI Models</h1>
+        <p className="text-muted-foreground mt-1">
+          Train and manage ML models for trading intelligence
+        </p>
+      </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
-        <div className="min-w-0">
-      {/* Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
-        <div className="flex items-center gap-4 mb-4">
-          <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500">
-            <Atom className="h-8 w-8" />
-          </div>
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              AI Models Training Center
-            </h1>
-            <p className="text-gray-400 text-lg">State-of-the-art machine learning models for trading intelligence</p>
-          </div>
-        </div>
-      </motion.div>
+        <div className="min-w-0 space-y-6">
 
-      {/* Enhanced Stats */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+      {/* Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8"
+        transition={{ duration: 0.2 }}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"
       >
-        <Card className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-green-500/20">
-              <Cpu className="h-6 w-6 text-green-400" />
+        <Card className="glass-card p-4 border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Cpu className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Active Models</p>
-              <p className="text-2xl font-bold text-green-400">{models.filter(m => m.status === 'active').length}</p>
+              <p className="text-sm text-muted-foreground">Active Models</p>
+              <p className="text-xl font-bold text-foreground">{models.filter(m => m.status === 'active').length}</p>
             </div>
           </div>
         </Card>
-
-        <Card className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-blue-500/20">
-              <Activity className="h-6 w-6 text-blue-400" />
+        <Card className="glass-card p-4 border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-chart-1/20">
+              <Activity className="h-5 w-5 text-chart-1" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Training Jobs</p>
-              <p className="text-2xl font-bold text-blue-400">{trainingJobs.filter(j => j.status === 'running').length}</p>
+              <p className="text-sm text-muted-foreground">Training Jobs</p>
+              <p className="text-xl font-bold text-foreground">{trainingJobs.filter(j => j.status === 'running').length}</p>
             </div>
           </div>
         </Card>
-
-        <Card className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-purple-500/20">
-              <BarChart3 className="h-6 w-6 text-purple-400" />
+        <Card className="glass-card p-4 border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-chart-2/20">
+              <BarChart3 className="h-5 w-5 text-chart-2" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Avg Accuracy</p>
-              <p className="text-2xl font-bold text-purple-400">
+              <p className="text-sm text-muted-foreground">Avg Accuracy</p>
+              <p className="text-xl font-bold text-foreground">
                 {(models.reduce((acc, m) => acc + m.accuracy, 0) / models.length * 100).toFixed(1)}%
               </p>
             </div>
           </div>
         </Card>
-
-        <Card className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-yellow-500/20">
-              <Sparkles className="h-6 w-6 text-yellow-400" />
+        <Card className="glass-card p-4 border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-chart-3/20">
+              <Sparkles className="h-5 w-5 text-chart-3" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Predictions Today</p>
-              <p className="text-2xl font-bold text-yellow-400">
+              <p className="text-sm text-muted-foreground">Predictions Today</p>
+              <p className="text-xl font-bold text-foreground">
                 {models.reduce((acc, m) => acc + m.predictions_count, 0).toLocaleString()}
               </p>
             </div>
           </div>
         </Card>
-
-        <Card className="glass-card p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-2 rounded-lg bg-red-500/20">
-              <Binary className="h-6 w-6 text-red-400" />
+        <Card className="glass-card p-4 border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-chart-4/20">
+              <Binary className="h-5 w-5 text-chart-4" />
             </div>
             <div>
-              <p className="text-sm text-gray-400">Model Types</p>
-              <p className="text-2xl font-bold text-red-400">{new Set(models.map(m => m.type)).size}</p>
+              <p className="text-sm text-muted-foreground">Model Types</p>
+              <p className="text-xl font-bold text-foreground">{new Set(models.map(m => m.type)).size}</p>
             </div>
           </div>
         </Card>
       </motion.div>
 
-      {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 glass-card">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="training">Training</TabsTrigger>
-          <TabsTrigger value="models">Models</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
-        </TabsList>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="border-b border-border/50 bg-card/30 px-4 py-2 rounded-lg">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <Gauge className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="training" className="flex items-center gap-2">
+              <Zap className="h-4 w-4" />
+              Training
+            </TabsTrigger>
+            <TabsTrigger value="models" className="flex items-center gap-2">
+              <Database className="h-4 w-4" />
+              Models
+            </TabsTrigger>
+            <TabsTrigger value="advanced" className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Advanced
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
+        <TabsContent value="overview" className="mt-6 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Model Performance Overview */}
             <Card className="glass-card p-6">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <Gauge className="h-6 w-6 text-blue-400" />
+              <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+                <Gauge className="h-6 w-6 text-foreground" />
                 Model Performance Overview
               </h2>
               
               <div className="space-y-4">
                 {models.slice(0, 4).map((model) => (
-                  <div key={model.id} className="border border-gray-700 rounded-lg p-4">
+                  <div key={model.id} className="border border-border rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         {getModelIcon(model.type)}
-                        <h3 className="font-semibold text-white">{model.name}</h3>
+                        <h3 className="font-semibold text-foreground">{model.name}</h3>
                       </div>
-                      <Badge className={`${getStatusColor(model.status)} text-white`}>
+                      <Badge className={`${getStatusColor(model.status)} text-foreground`}>
                         {model.status}
                       </Badge>
                     </div>
                     
-                    <p className="text-sm text-gray-400 mb-3">{model.description}</p>
+                    <p className="text-sm text-muted-foreground mb-3">{model.description}</p>
                     
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-400">Accuracy</p>
+                        <p className="text-muted-foreground">Accuracy</p>
                         <p className="text-green-400 font-bold">{(model.accuracy * 100).toFixed(1)}%</p>
                       </div>
                       <div>
-                        <p className="text-gray-400">Performance</p>
+                        <p className="text-muted-foreground">Performance</p>
                         <p className="text-blue-400 font-bold">{(model.performance_score * 100).toFixed(1)}%</p>
                       </div>
                       <div>
-                        <p className="text-gray-400">Complexity</p>
+                        <p className="text-muted-foreground">Complexity</p>
                         <p className={`font-bold ${getComplexityColor(model.complexity)}`}>
                           {model.complexity.toUpperCase()}
                         </p>
@@ -559,8 +555,8 @@ export default function AIModelsPage() {
 
             {/* Quick Actions */}
             <Card className="glass-card p-6">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <Zap className="h-6 w-6 text-yellow-400" />
+              <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+                <Zap className="h-6 w-6 text-foreground" />
                 Quick Actions
               </h2>
 
@@ -585,7 +581,6 @@ export default function AIModelsPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <Button 
                     onClick={() => setActiveTab('training')}
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
                   >
                     <PlayCircle className="h-4 w-4 mr-2" />
                     Start Training
@@ -605,7 +600,7 @@ export default function AIModelsPage() {
                   <Button 
                     onClick={generateSyntheticData}
                     disabled={isLoading}
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                    variant="secondary"
                   >
                     <Infinity className="h-4 w-4 mr-2" />
                     Generate Data
@@ -626,12 +621,12 @@ export default function AIModelsPage() {
         </TabsContent>
 
         {/* Training Tab */}
-        <TabsContent value="training" className="space-y-6">
+        <TabsContent value="training" className="mt-6 space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Training Controls */}
             <Card className="glass-card p-6">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <Zap className="h-6 w-6 text-yellow-400" />
+              <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+                <Zap className="h-6 w-6 text-foreground" />
                 Start New Training
               </h2>
 
@@ -685,7 +680,7 @@ export default function AIModelsPage() {
                 <Button 
                   onClick={startTraining}
                   disabled={isLoading || selectedModelTypes.length === 0}
-                  className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
+                  className="w-full"
                 >
                   <PlayCircle className="h-4 w-4 mr-2" />
                   Start Training
@@ -695,8 +690,8 @@ export default function AIModelsPage() {
 
             {/* XGBoost Configuration */}
             <Card className="glass-card p-6">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <Target className="h-6 w-6 text-green-400" />
+              <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+                <Target className="h-6 w-6 text-foreground" />
                 XGBoost Configuration
               </h2>
 
@@ -782,14 +777,14 @@ export default function AIModelsPage() {
 
           {/* GAN Configuration */}
           <Card className="glass-card p-6">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Infinity className="h-6 w-6 text-purple-400" />
+            <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+              <Infinity className="h-6 w-6 text-foreground" />
               GAN Configuration
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-purple-300">Architecture</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">Architecture</h3>
                 <div>
                   <Label>Input Dimension</Label>
                   <Input
@@ -829,7 +824,7 @@ export default function AIModelsPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-purple-300">Training</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">Training</h3>
                 <div>
                   <Label>Learning Rate</Label>
                   <Input
@@ -870,12 +865,12 @@ export default function AIModelsPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-purple-300">Actions</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">Actions</h3>
                 <div className="space-y-2">
                   <Button 
                     onClick={generateSyntheticData}
                     disabled={isLoading}
-                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                    className="w-full"
                   >
                     <Infinity className="h-4 w-4 mr-2" />
                     Generate Synthetic Data
@@ -903,44 +898,44 @@ export default function AIModelsPage() {
         </TabsContent>
 
         {/* Models Tab */}
-        <TabsContent value="models" className="space-y-6">
+        <TabsContent value="models" className="mt-6 space-y-6">
           {/* Active Models */}
           <Card className="glass-card p-6">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Database className="h-6 w-6 text-blue-400" />
+            <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+              <Database className="h-6 w-6 text-foreground" />
               Active Models Registry
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {models.map((model) => (
-                <div key={model.id} className="border border-gray-700 rounded-lg p-4 hover:border-blue-500/50 transition-colors">
+                <div key={model.id} className="border border-border rounded-lg p-4 hover:border-primary/30 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       {getModelIcon(model.type)}
-                      <h3 className="font-semibold text-white">{model.name}</h3>
+                      <h3 className="font-semibold text-foreground">{model.name}</h3>
                     </div>
-                    <Badge className={`${getStatusColor(model.status)} text-white`}>
+                    <Badge className={`${getStatusColor(model.status)} text-foreground`}>
                       {model.status}
                     </Badge>
                   </div>
                   
-                  <p className="text-sm text-gray-400 mb-3">{model.description}</p>
+                  <p className="text-sm text-muted-foreground mb-3">{model.description}</p>
                   
                   <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                     <div>
-                      <p className="text-gray-400">Accuracy</p>
+                      <p className="text-muted-foreground">Accuracy</p>
                       <p className="text-green-400 font-bold">{(model.accuracy * 100).toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Performance</p>
+                      <p className="text-muted-foreground">Performance</p>
                       <p className="text-blue-400 font-bold">{(model.performance_score * 100).toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Predictions</p>
+                      <p className="text-muted-foreground">Predictions</p>
                       <p className="text-purple-400 font-bold">{model.predictions_count.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Complexity</p>
+                      <p className="text-muted-foreground">Complexity</p>
                       <p className={`font-bold ${getComplexityColor(model.complexity)}`}>
                         {model.complexity.toUpperCase()}
                       </p>
@@ -968,24 +963,24 @@ export default function AIModelsPage() {
         </TabsContent>
 
         {/* Advanced Tab */}
-        <TabsContent value="advanced" className="space-y-6">
+        <TabsContent value="advanced" className="mt-6 space-y-6">
           {/* Training Jobs */}
           <Card className="glass-card p-6">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <TrendingUp className="h-6 w-6 text-green-400" />
+            <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+              <TrendingUp className="h-6 w-6 text-foreground" />
               Training Jobs Monitor
             </h2>
 
             <div className="space-y-4">
               {trainingJobs.map((job) => (
-                <div key={job.id} className="border border-gray-700 rounded-lg p-4">
+                <div key={job.id} className="border border-border rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
                       {getModelIcon(job.model_type)}
-                      <h3 className="font-semibold text-white">
+                      <h3 className="font-semibold text-foreground">
                         {job.symbol} - {job.model_type.toUpperCase()}
                       </h3>
-                      <Badge className={`${getStatusColor(job.status)} text-white`}>
+                      <Badge className={`${getStatusColor(job.status)} text-foreground`}>
                         {job.status}
                       </Badge>
                     </div>
@@ -1011,19 +1006,19 @@ export default function AIModelsPage() {
 
                   <div className="grid grid-cols-4 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-400">Loss</p>
+                      <p className="text-muted-foreground">Loss</p>
                       <p className="text-red-400 font-bold">{job.loss.toFixed(4)}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Accuracy</p>
+                      <p className="text-muted-foreground">Accuracy</p>
                       <p className="text-green-400 font-bold">{(job.accuracy * 100).toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">Started</p>
+                      <p className="text-muted-foreground">Started</p>
                       <p className="text-blue-400">{new Date(job.started_at).toLocaleTimeString()}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400">ETA</p>
+                      <p className="text-muted-foreground">ETA</p>
                       <p className="text-purple-400">{new Date(job.estimated_completion).toLocaleTimeString()}</p>
                     </div>
                   </div>
@@ -1034,61 +1029,61 @@ export default function AIModelsPage() {
 
           {/* System Status */}
           <Card className="glass-card p-6">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-              <Activity className="h-6 w-6 text-yellow-400" />
+            <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
+              <Activity className="h-6 w-6 text-foreground" />
               System Status
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-blue-300">Hardware</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">Hardware</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">GPU Available:</span>
+                    <span className="text-muted-foreground">GPU Available:</span>
                     <span className="text-green-400">✓ CUDA 11.8</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Memory Usage:</span>
+                    <span className="text-muted-foreground">Memory Usage:</span>
                     <span className="text-yellow-400">67%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">CPU Cores:</span>
+                    <span className="text-muted-foreground">CPU Cores:</span>
                     <span className="text-blue-400">16 cores</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-purple-300">Model Versions</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">Model Versions</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">PyTorch:</span>
+                    <span className="text-muted-foreground">PyTorch:</span>
                     <span className="text-green-400">2.1.0</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">XGBoost:</span>
+                    <span className="text-muted-foreground">XGBoost:</span>
                     <span className="text-green-400">1.7.3</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Transformers:</span>
+                    <span className="text-muted-foreground">Transformers:</span>
                     <span className="text-green-400">4.36.0</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-green-300">Performance</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">Performance</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Avg Training Time:</span>
+                    <span className="text-muted-foreground">Avg Training Time:</span>
                     <span className="text-blue-400">2.3h</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Inference Speed:</span>
+                    <span className="text-muted-foreground">Inference Speed:</span>
                     <span className="text-green-400">45ms</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Model Accuracy:</span>
+                    <span className="text-muted-foreground">Model Accuracy:</span>
                     <span className="text-purple-400">91.2%</span>
                   </div>
                 </div>
@@ -1098,7 +1093,7 @@ export default function AIModelsPage() {
         </TabsContent>
       </Tabs>
         </div>
-        <aside className="hidden xl:block min-h-[360px]">
+        <aside className="hidden xl:block xl:sticky xl:top-6 h-[calc(100vh-14rem)] min-h-[420px] max-h-[560px] overflow-y-auto">
           <MLModelsAgentPanel />
         </aside>
       </div>

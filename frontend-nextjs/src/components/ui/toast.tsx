@@ -9,7 +9,10 @@ export interface ToastProps {
   title?: string;
   description?: string;
   type?: 'success' | 'error' | 'warning' | 'info';
+  /** Auto-dismiss after this many ms. When set, toast will fade out and remove after telling the user. */
   duration?: number;
+  /** False when toast is dismissed (fade-out state before remove). */
+  open?: boolean;
   onDismiss?: () => void;
   action?: {
     label: string;
@@ -22,7 +25,8 @@ export interface ToastState {
 }
 
 const TOAST_LIMIT = 5;
-const TOAST_REMOVE_DELAY = 2000;
+/** Delay after dismiss before removing from DOM (allows fade-out animation). */
+const TOAST_REMOVE_DELAY = 350;
 
 let count = 0;
 
@@ -60,7 +64,7 @@ export const reducer = (state: ToastState, action: ActionType): ToastState => {
     case 'ADD_TOAST':
       return {
         ...state,
-        toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
+        toasts: [{ ...action.toast, open: true }, ...state.toasts].slice(0, TOAST_LIMIT),
       };
 
     case 'UPDATE_TOAST':
@@ -121,7 +125,7 @@ function dispatch(action: ActionType) {
 
 type Toast = Omit<ToastProps, 'id'>;
 
-function toast({ ...props }: Toast) {
+function toast({ duration, ...props }: Toast) {
   const id = genId();
 
   const update = (props: ToastProps) =>
@@ -136,9 +140,14 @@ function toast({ ...props }: Toast) {
     toast: {
       ...props,
       id,
+      open: true,
       onDismiss: dismiss,
     },
   });
+
+  if (typeof duration === 'number' && duration > 0) {
+    setTimeout(() => dismiss(), duration);
+  }
 
   return {
     id: id,
@@ -184,14 +193,15 @@ const ToastIcons = {
 const Toast = React.forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'> & ToastProps
->(({ className, title, description, type = 'info', onDismiss, action, ...props }, ref) => {
+>(({ className, title, description, type = 'info', open = true, onDismiss, action, ...props }, ref) => {
   const Icon = ToastIcons[type];
 
   return (
     <div
       ref={ref}
       className={cn(
-        'relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 pr-8 shadow-lg transition-all',
+        'relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 pr-8 shadow-lg transition-all duration-300 ease-out',
+        open ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 pointer-events-none',
         ToastVariants[type],
         className
       )}

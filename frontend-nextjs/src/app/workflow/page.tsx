@@ -12,7 +12,7 @@ declare global {
   interface Window {
     mermaid?: {
       run: (config?: { nodes: HTMLElement[] }) => Promise<void>;
-      initialize: (config: { startOnLoad: boolean }) => void;
+      initialize: (config: Record<string, unknown>) => void;
     };
   }
 }
@@ -129,12 +129,42 @@ export default function WorkflowPage() {
     };
     const runMermaid = () => {
       try {
+        const isDark = document.documentElement.classList.contains('dark');
         window.mermaid?.initialize({
           startOnLoad: false,
-          theme: 'neutral',
-          flowchart: { useMaxWidth: true },
-          sequence: { useMaxWidth: true },
-        } as { startOnLoad: boolean });
+          theme: 'base',
+          themeVariables: isDark
+            ? {
+                darkMode: true,
+                background: '#1c1917',
+                primaryColor: '#fef3c7',
+                primaryTextColor: '#fef9c3',
+                primaryBorderColor: '#f59e0b',
+                secondaryColor: '#e0e7ff',
+                secondaryTextColor: '#e0e7ff',
+                tertiaryColor: '#d1fae5',
+                lineColor: '#94a3b8',
+                textColor: '#f1f5f9',
+                fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+                fontSize: '15px',
+              }
+            : {
+                darkMode: false,
+                background: '#fafaf9',
+                primaryColor: '#fef3c7',
+                primaryTextColor: '#1c1917',
+                primaryBorderColor: '#f59e0b',
+                secondaryColor: '#e0e7ff',
+                secondaryTextColor: '#312e81',
+                tertiaryColor: '#d1fae5',
+                lineColor: '#475569',
+                textColor: '#1c1917',
+                fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+                fontSize: '15px',
+              },
+          flowchart: { useMaxWidth: true, padding: 16 },
+          sequence: { useMaxWidth: true, diagramMarginX: 20, diagramMarginY: 20 },
+        });
         window.mermaid?.run?.({ nodes: Array.from(containerRef.current!.querySelectorAll('.mermaid')) as HTMLElement[] });
       } catch (e) {
         console.warn('Mermaid render:', e);
@@ -267,41 +297,56 @@ export default function WorkflowPage() {
 
       {/* Diagrams - Mermaid (detailed, code-based) */}
       <div ref={containerRef}>
-        <Card className="mt-6 border-l-4 border-l-amber-500">
+        <Card className="mt-6 border-l-4 border-l-amber-500 overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-lg">
               Detailed pipeline (Mermaid)
             </CardTitle>
-            <p className="text-sm text-muted-foreground">Full agent flow — code-based diagrams, scroll if needed</p>
+            <p className="text-sm text-muted-foreground">Full agent flow — Sources → Ingest → Analyze → You → Execute</p>
           </CardHeader>
-          <CardContent className="overflow-x-auto max-w-full">
-            <pre className="mermaid bg-muted/30 p-4 rounded-lg text-sm min-w-0">
-              {diagram1}
-            </pre>
+          <CardContent className="p-0">
+            <div
+              className="mermaid-diagram-container min-h-[320px] overflow-auto rounded-b-lg border-t border-border bg-stone-100/80 dark:bg-stone-900/60 p-8 flex items-center justify-center ring-1 ring-inset ring-border/30"
+              aria-label="Detailed pipeline flowchart"
+            >
+              <pre id="mermaid-pipeline" className="mermaid text-sm m-0 flex items-center justify-center [&_svg]:max-w-full [&_svg]:h-auto">
+                {diagram1}
+              </pre>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="mt-6 border-l-4 border-l-amber-500">
+        <Card className="mt-6 border-l-4 border-l-amber-500 overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Decision flow in 4 phases</CardTitle>
             <p className="text-sm text-muted-foreground">Market updates → Analytics → Your decision → Execution & reporting</p>
           </CardHeader>
-          <CardContent className="overflow-x-auto max-w-full">
-            <pre className="mermaid bg-muted/30 p-4 rounded-lg text-sm min-w-0">
-              {diagram2}
-            </pre>
+          <CardContent className="p-0">
+            <div
+              className="mermaid-diagram-container min-h-[380px] overflow-auto rounded-b-lg border-t border-border bg-stone-100/80 dark:bg-stone-900/60 p-8 flex items-center justify-center ring-1 ring-inset ring-border/30"
+              aria-label="Decision flow in 4 phases"
+            >
+              <pre id="mermaid-phases" className="mermaid text-sm m-0 flex items-center justify-center [&_svg]:max-w-full [&_svg]:h-auto">
+                {diagram2}
+              </pre>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="mt-6 border-l-4 border-l-amber-500">
+        <Card className="mt-6 border-l-4 border-l-amber-500 overflow-hidden">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">You and the agents (sequence)</CardTitle>
             <p className="text-sm text-muted-foreground">How the UI and agents interact when you trade or request a report</p>
           </CardHeader>
-          <CardContent className="overflow-x-auto max-w-full">
-            <pre className="mermaid bg-muted/30 p-4 rounded-lg text-sm min-w-0">
-              {diagram3}
-            </pre>
+          <CardContent className="p-0">
+            <div
+              className="mermaid-diagram-container min-h-[340px] overflow-auto rounded-b-lg border-t border-border bg-stone-100/80 dark:bg-stone-900/60 p-8 flex items-center justify-center ring-1 ring-inset ring-border/30"
+              aria-label="You and the agents sequence diagram"
+            >
+              <pre id="mermaid-sequence" className="mermaid text-sm m-0 flex items-center justify-center [&_svg]:max-w-full [&_svg]:h-auto">
+                {diagram3}
+              </pre>
+            </div>
           </CardContent>
         </Card>
       </div>

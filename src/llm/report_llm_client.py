@@ -1,12 +1,14 @@
 """
 Report generation using open-source / free LLMs only (no paid API keys).
 
+- Llama (Ollama): self-hosted via Ollama, no key. LLAMA_URL, LLAMA_MODEL.
 - Falcon (TGI): self-hosted via Docker, no key. FALCON_TGI_URL.
 - FinGPT local: self-hosted via Docker, no key for public models. FINGPT_LOCAL_URL.
 - FinGPT (HuggingFace): free HF token (https://huggingface.co/settings/tokens). HF_TOKEN, HF_API_URL.
 
-Configure via env: FALCON_TGI_URL, FINGPT_LOCAL_URL, HF_API_URL + HF_TOKEN.
+Configure via env: LLAMA_URL, LLAMA_MODEL, FALCON_TGI_URL, FINGPT_LOCAL_URL, HF_API_URL + HF_TOKEN.
 """
+from __future__ import annotations
 
 import os
 import asyncio
@@ -16,6 +18,10 @@ from typing import Optional
 import httpx
 
 logger = logging.getLogger(__name__)
+
+# Env: Llama via Ollama (local; no key) — https://ollama.com
+LLAMA_URL = os.getenv("LLAMA_URL", "").rstrip("/")  # e.g. http://localhost:11434
+LLAMA_MODEL = os.getenv("LLAMA_MODEL", "llama3.2").strip()  # e.g. llama3.2, mistral, llama3.1
 
 # Env: Falcon via Hugging Face Text Generation Inference (Docker)
 FALCON_TGI_URL = os.getenv("FALCON_TGI_URL", "").rstrip("/")  # e.g. http://localhost:8080
@@ -27,6 +33,31 @@ HF_API_URL = os.getenv("HF_API_URL", "https://api-inference.huggingface.co").rst
 
 # Env: FinGPT via local Docker inference server (docker-compose.llm.yml)
 FINGPT_LOCAL_URL = os.getenv("FINGPT_LOCAL_URL", "").rstrip("/")  # e.g. http://localhost:8081
+
+
+async def _generate_via_llama(prompt: str, max_new_tokens: int = 1024) -> Optional[str]:
+    """Generate completion via Ollama (Llama / Mistral / etc.)."""
+    if not LLAMA_URL or not LLAMA_MODEL:
+        return None
+    try:
+        url = f"{LLAMA_URL}/api/generate"
+        payload = {
+            "model": LLAMA_MODEL,
+            "prompt": prompt,
+            "stream": False,
+            "options": {
+                "num_predict": max_new_tokens,
+                "temperature": 0.3,
+            },
+        }
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            r = await client.post(url, json=payload)
+            r.raise_for_status()
+            data = r.json()
+            return (data.get("response") or "").strip()
+    except Exception as e:
+        logger.warning("Llama (Ollama) request failed: %s", e)
+        return None
 
 
 async def _generate_via_falcon_tgi(prompt: str, max_new_tokens: int = 1024) -> Optional[str]:
@@ -101,19 +132,22 @@ async def _generate_via_fingpt_hf(prompt: str, max_new_tokens: int = 1024) -> Op
         return None
 
 
-async def generate_report_text(prompt: str, max_new_tokens: int = 1024) -> str:
+async def generate_report_text(prompt: str, max_new_tokens: int = 1024) -> tuple[str, str]:
     """
-    Generate report text using Falcon (TGI) or FinGPT (HF). Falls back to None
-    so caller can use a mock/simulated response.
+    Generate report text using Llama (Ollama), Falcon (TGI), FinGPT local, or FinGPT (HF).
+    Returns (text, model_used). model_used is one of: llama, falcon, fingpt_local, fingpt_hf, simulated.
     """
-    # Order: Falcon (TGI Docker) -> FinGPT local (Docker) -> FinGPT (HF API)
+    # Order: Llama (Ollama) -> Falcon (TGI Docker) -> FinGPT local (Docker) -> FinGPT (HF API)
+    out = await _generate_via_llama(prompt, max_new_tokens)
+    if out:
+        return (out, "llama")
     out = await _generate_via_falcon_tgi(prompt, max_new_tokens)
     if out:
-        return out
+        return (out, "falcon")
     out = await _generate_via_fingpt_local(prompt, max_new_tokens)
     if out:
-        return out
+        return (out, "fingpt_local")
     out = await _generate_via_fingpt_hf(prompt, max_new_tokens)
     if out:
-        return out
-    return ""
+        return (out, "fingpt_hf")
+    return ("", "simulated")

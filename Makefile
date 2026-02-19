@@ -17,8 +17,8 @@ NODE := npm
 
 # Environment setup
 VENV_NAME := .venv
-REQUIREMENTS := requirements.txt
-DEV_REQUIREMENTS := requirements-dev.txt
+REQUIREMENTS := requirements/requirements.txt
+DEV_REQUIREMENTS := requirements/requirements-dev.txt
 
 # =====================================================================
 # HELP & DOCUMENTATION
@@ -41,7 +41,7 @@ install: ## Install Python dependencies
 setup-env: ## Setup environment from template
 	@echo "🔧 Setting up environment configuration..."
 	@if [ ! -f .env ]; then \
-		cp env.example .env; \
+		cp config/env.example .env; \
 		echo "✅ Created .env from template. Please update with your values."; \
 		echo "🔐 Generate secure secrets using: python -c \"import secrets; print(secrets.token_urlsafe(32))\""; \
 	else \
@@ -178,7 +178,7 @@ clean-docker: ## Clean Docker resources
 reset-env: ## Reset environment file
 	@echo "🔄 Resetting environment file..."
 	@rm -f .env
-	@cp env.example .env
+	@cp config/env.example .env
 	@echo "✅ Environment file reset. Please update with your values."
 
 # =====================================================================
@@ -188,7 +188,7 @@ reset-env: ## Reset environment file
 deploy-staging: ## Deploy to staging environment
 	@echo "🚀 Deploying to staging..."
 	@echo "ENVIRONMENT=staging" > .env.staging
-	@cat env.example >> .env.staging
+	@cat config/env.example >> .env.staging
 	$(DOCKER_COMPOSE) -f docker-compose.yml --env-file .env.staging up -d
 
 deploy-prod: ## Deploy to production environment
@@ -197,7 +197,7 @@ deploy-prod: ## Deploy to production environment
 	@read -p "Type 'DEPLOY' to confirm: " confirm; \
 	if [ "$$confirm" = "DEPLOY" ]; then \
 		echo "ENVIRONMENT=production" > .env.production; \
-		cat env.example >> .env.production; \
+		cat config/env.example >> .env.production; \
 		$(DOCKER_COMPOSE) -f docker-compose.yml --env-file .env.production up -d; \
 		echo "✅ Production deployment complete"; \
 	else \

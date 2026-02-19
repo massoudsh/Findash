@@ -52,4 +52,7 @@ docker-compose.override.yml
 
 # Misc
 *.tsbuildinfo
-frontend-nextjs/tsconfig.tsbuildinfo 
+frontend-nextjs/tsconfig.tsbuildinfo
+
+# Accidental / generated
+MyProjects/

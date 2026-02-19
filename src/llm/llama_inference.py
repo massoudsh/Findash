@@ -176,10 +176,10 @@ async def run_llama_inference(text: str) -> str:
         from src.llm.report_llm_client import generate_report_text
 
         start_time = time.time()
-        real_response = await generate_report_text(text, max_new_tokens=1024)
-        if real_response:
-            logger.info("Report generated via Falcon/FinGPT in %.2fs", time.time() - start_time)
-            return real_response
+        report_text, model_used = await generate_report_text(text, max_new_tokens=1024)
+        if report_text:
+            logger.info("Report generated via %s in %.2fs", model_used, time.time() - start_time)
+            return report_text
 
         # Fallback: simulated response when no model endpoint is configured
         analyzer = FinancialLlamaAnalyzer()

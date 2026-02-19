@@ -170,43 +170,42 @@ export default function FundamentalDataPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 p-6">
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold gradient-text">Deep Fundamental Research</h1>
-            <p className="text-gray-400 mt-2">AI-powered fundamental analysis with institutional-grade research and PDF reports</p>
-          </div>
-          <div className="flex space-x-2">
-            <Badge className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30">
-              LLM-Powered
-            </Badge>
-            <Button onClick={runDeepAnalysis} disabled={deepAnalysisLoading} className="btn-morphic">
-              <Brain className="h-4 w-4 mr-2" />
-              {deepAnalysisLoading ? 'Analyzing...' : 'AI Analysis'}
-            </Button>
-            <Button onClick={generateDeepResearchReport} disabled={reportGenerating} className="btn-morphic">
-              <FileText className="h-4 w-4 mr-2" />
-              {reportGenerating ? 'Generating...' : 'Generate PDF'}
-            </Button>
-          </div>
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Fundamental Research</h1>
+          <p className="text-muted-foreground mt-1">
+            Fundamental analysis and research — dashboard from API when available
+          </p>
         </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button onClick={runDeepAnalysis} disabled={deepAnalysisLoading} variant="outline" size="sm">
+            <Brain className="h-4 w-4 mr-2" />
+            {deepAnalysisLoading ? 'Analyzing...' : 'AI Analysis'}
+          </Button>
+          <Button onClick={generateDeepResearchReport} disabled={reportGenerating} variant="secondary" size="sm">
+            <FileText className="h-4 w-4 mr-2" />
+            {reportGenerating ? 'Generating...' : 'Generate PDF'}
+          </Button>
+        </div>
+      </div>
 
-        <Tabs defaultValue="research" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 glass-card">
+      <Tabs defaultValue="research" className="w-full">
+        <div className="border-b border-border/50 bg-card/30 px-4 py-2 rounded-lg">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="research">Deep Research</TabsTrigger>
             <TabsTrigger value="new-projects">New Projects</TabsTrigger>
             <TabsTrigger value="ai-insights">AI Insights</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
           </TabsList>
+        </div>
 
-          <TabsContent value="research" className="space-y-6">
+          <TabsContent value="research" className="mt-6 space-y-6">
             {/* Asset Selection & Research Tools */}
             <Card className="glass-card">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  <Database className="h-5 w-5 text-blue-400" />
+                  <Database className="h-5 w-5 text-foreground" />
                   <span>Research Center</span>
                 </CardTitle>
                 <CardDescription>Select assets for deep fundamental analysis with AI-powered insights</CardDescription>
@@ -224,7 +223,7 @@ export default function FundamentalDataPage() {
                           <SelectItem key={asset.symbol} value={asset.symbol}>
                             <div className="flex items-center space-x-2">
                               <span className="font-medium">{asset.symbol}</span>
-                              <span className="text-gray-500">- {asset.name}</span>
+                              <span className="text-muted-foreground">- {asset.name}</span>
                               <Badge variant="outline" className="text-xs">
                                 {asset.category}
                               </Badge>
@@ -558,7 +557,6 @@ export default function FundamentalDataPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </div>
     </div>
   );
 } 

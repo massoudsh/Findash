@@ -96,7 +96,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.fastapi
+      dockerfile: docker/Dockerfile.fastapi
     image: octopus-trading-api:latest
     container_name: octopus-api
     restart: unless-stopped
@@ -200,7 +200,7 @@ services:
   celery-worker:
     build:
       context: .
-      dockerfile: Dockerfile.celery
+      dockerfile: docker/Dockerfile.celery
     image: octopus-trading-celery:latest
     container_name: octopus-celery-worker
     restart: unless-stopped
@@ -223,7 +223,7 @@ services:
   celery-beat:
     build:
       context: .
-      dockerfile: Dockerfile.celery
+      dockerfile: docker/Dockerfile.celery
     image: octopus-trading-celery:latest
     container_name: octopus-celery-beat
     restart: unless-stopped
@@ -256,7 +256,7 @@ services:
   celery-metrics:
     build:
       context: .
-      dockerfile: Dockerfile.celery
+      dockerfile: docker/Dockerfile.celery
     image: octopus-trading-celery:latest
     container_name: octopus-celery-metrics
     restart: unless-stopped
@@ -277,7 +277,7 @@ services:
   market-data-producer:
     build:
       context: .
-      dockerfile: Dockerfile.celery
+      dockerfile: docker/Dockerfile.celery
     image: octopus-trading-celery:latest
     container_name: octopus-market-data-producer
     restart: unless-stopped
@@ -296,7 +296,7 @@ services:
   market-data-consumer:
     build:
       context: .
-      dockerfile: Dockerfile.celery
+      dockerfile: docker/Dockerfile.celery
     image: octopus-trading-celery:latest
     container_name: octopus-market-data-consumer
     restart: unless-stopped
@@ -316,7 +316,7 @@ services:
   btc-metrics:
     build:
       context: .
-      dockerfile: Dockerfile.celery
+      dockerfile: docker/Dockerfile.celery
     image: octopus-trading-celery:latest
     container_name: octopus-btc-metrics
     restart: unless-stopped

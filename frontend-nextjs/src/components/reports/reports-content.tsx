@@ -6,15 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Brain, 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
-  Target, 
-  Zap, 
-  Download, 
-  RefreshCw, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { toast } from '@/components/ui/toast';
+import {
+  Brain,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  Target,
+  Zap,
+  Download,
+  RefreshCw,
   Eye,
   BarChart3,
   PieChart,
@@ -25,7 +33,7 @@ import {
   Lightbulb,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 
 interface AIInsight {
@@ -57,9 +65,36 @@ interface DataSource {
   recordsProcessed: number;
 }
 
+const REPORT_TYPES = [
+  { value: 'market_summary', label: 'Market Summary' },
+  { value: 'risk_assessment', label: 'Risk Assessment' },
+  { value: 'sentiment', label: 'Sentiment Analysis' },
+  { value: 'technical', label: 'Technical Analysis' },
+] as const;
+
+/** Extract report narrative from backend response (multiple possible keys). */
+function getReportTextFromResponse(data: Record<string, unknown>): string | null {
+  const raw = data.raw_ai_response ?? data.report ?? data.content;
+  if (typeof raw === 'string' && raw.trim()) return raw.trim();
+  const insights = data.insights as Array<{ ai_analysis?: string; summary?: string }> | undefined;
+  if (Array.isArray(insights)) {
+    const parts = insights
+      .map((i) => (i?.ai_analysis ?? i?.summary) as string | undefined)
+      .filter((s): s is string => typeof s === 'string' && s.length > 0);
+    if (parts.length) return parts.join('\n\n');
+  }
+  return null;
+}
+
 export function ReportsContent() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState('7d');
+  const [reportType, setReportType] = useState<string>('market_summary');
+  const [activeTab, setActiveTab] = useState('insights');
+  const [lastReportText, setLastReportText] = useState<string | null>(null);
+  const [reportModelUsed, setReportModelUsed] = useState<string | null>(null);
+  const [reportGeneratedAt, setReportGeneratedAt] = useState<string | null>(null);
+  const [generateError, setGenerateError] = useState<string | null>(null);
   const [aiInsights, setAiInsights] = useState<AIInsight[]>([
     {
       id: '1',
@@ -165,41 +200,80 @@ export function ReportsContent() {
 
   const generateAIReport = async () => {
     setIsGenerating(true);
-    
+    setGenerateError(null);
+
     try {
-      // Call the backend API to generate AI insights
       const response = await fetch('/api/llm/reports/generate-insights', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ report_type: reportType }),
       });
-      
+
+      const data = await response.json().catch(() => ({}));
+
       if (response.ok) {
-        const data = await response.json();
-        
-        // Update insights with real AI-generated data
-        if (data.insights) {
-          setAiInsights(data.insights);
+        const dataObj = data as Record<string, unknown>;
+        if (dataObj.insights) setAiInsights(dataObj.insights as AIInsight[]);
+        setReportSections((prev) =>
+          prev.map((section) => ({
+            ...section,
+            progress: 100,
+            status: 'completed',
+            lastUpdated: 'Just now',
+          }))
+        );
+
+        const reportText = getReportTextFromResponse(dataObj);
+        if (reportText) {
+          setLastReportText(reportText);
+          const marketSummary = dataObj.market_summary as { ai_model?: string } | undefined;
+          setReportModelUsed(marketSummary?.ai_model ?? (dataObj.model_used as string) ?? 'AI');
+          setReportGeneratedAt(new Date().toISOString());
+          setActiveTab('reports');
         }
-        
-        // Update report sections to show completion
-        setReportSections(prev => prev.map(section => ({
-          ...section,
-          progress: 100,
-          status: 'completed',
-          lastUpdated: 'Just now'
-        })));
-        
-        console.log('AI Report generated successfully:', data);
+        toast({
+          title: 'Report generated',
+          description: reportText ? 'AI report is ready in the Generated Reports tab.' : 'Insights updated.',
+          type: 'success',
+          duration: 4500,
+        });
       } else {
-        console.error('Failed to generate AI report');
+        const message = (data as { error?: string }).error ?? `Request failed (${response.status})`;
+        setGenerateError(message);
+        toast({
+          title: 'Generate report failed',
+          description: message,
+          type: 'error',
+          duration: 6000,
+        });
       }
     } catch (error) {
-      console.error('Error generating AI report:', error);
+      const message = error instanceof Error ? error.message : 'Network or server error. Is the backend running at BACKEND_URL?';
+      setGenerateError(message);
+      toast({
+        title: 'Generate report failed',
+        description: message,
+        type: 'error',
+        duration: 6000,
+      });
     }
-    
+
     setIsGenerating(false);
+  };
+
+  const downloadReport = () => {
+    if (!lastReportText || !reportGeneratedAt) return;
+    const title = REPORT_TYPES.find((r) => r.value === reportType)?.label ?? 'Report';
+    const blob = new Blob(
+      [`# ${title}\n\nGenerated: ${new Date(reportGeneratedAt).toLocaleString()}\nModel: ${reportModelUsed ?? 'AI'}\n\n---\n\n${lastReportText}`],
+      { type: 'text/markdown' }
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `findash-report-${reportType}-${reportGeneratedAt.slice(0, 10)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const getInsightIcon = (type: string) => {
@@ -234,37 +308,65 @@ export function ReportsContent() {
   return (
     <div className="space-y-6">
       {/* AI Report Header */}
-      <Card className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-200">
+      <Card className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-border">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <Brain className="w-8 h-8 text-purple-600" />
+              <Brain className="w-8 h-8 text-primary" />
               <div>
-                <CardTitle className="text-2xl">Llama AI Intelligence Report</CardTitle>
-                <p className="text-muted-foreground">
-                  Comprehensive analysis across 17 assets using advanced AI models
+                <CardTitle className="text-2xl">AI Intelligence Report</CardTitle>
+                <p className="text-muted-foreground text-sm">
+                  Reports are generated by AI models (Llama/FinGPT when configured, otherwise simulated). Choose type and generate.
                 </p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Eye className="w-4 h-4 mr-2" />
-                View Full Report
-              </Button>
-              <Button onClick={generateAIReport} disabled={isGenerating}>
-                {isGenerating ? (
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Zap className="w-4 h-4 mr-2" />
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <Select value={reportType} onValueChange={setReportType}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Report type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {REPORT_TYPES.map((r) => (
+                    <SelectItem key={r.value} value={r.value}>
+                      {r.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="flex gap-2">
+                {lastReportText && (
+                  <Button variant="outline" size="sm" onClick={downloadReport}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download
+                  </Button>
                 )}
-                {isGenerating ? 'Generating...' : 'Generate Report'}
-              </Button>
+                <Button onClick={generateAIReport} disabled={isGenerating}>
+                  {isGenerating ? (
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Zap className="w-4 h-4 mr-2" />
+                  )}
+                  {isGenerating ? 'Generating…' : 'Generate Report'}
+                </Button>
+              </div>
             </div>
           </div>
+          {reportModelUsed && reportGeneratedAt && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Last report: generated with <span className="font-medium">{reportModelUsed}</span> at{' '}
+              {new Date(reportGeneratedAt).toLocaleString()}
+            </p>
+          )}
+          {generateError && (
+            <div className="mt-3 flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+              <span>{generateError}</span>
+            </div>
+          )}
         </CardHeader>
       </Card>
 
-      <Tabs defaultValue="insights" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="insights">AI Insights</TabsTrigger>
           <TabsTrigger value="analysis">Analysis Status</TabsTrigger>
@@ -451,95 +553,70 @@ export function ReportsContent() {
         </TabsContent>
 
         <TabsContent value="reports" className="space-y-6">
-          {/* Generated Reports */}
+          {/* Latest AI-generated report */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <PieChart className="w-5 h-5" />
-                Generated Reports
+                Latest AI-Generated Report
               </CardTitle>
-              <Button>
-                <Download className="w-4 h-4 mr-2" />
-                Export All
-              </Button>
+              {lastReportText && (
+                <Button size="sm" onClick={downloadReport}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Download (.md)
+                </Button>
+              )}
+            </CardHeader>
+            <CardContent>
+              {lastReportText ? (
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                    <Badge variant="secondary">{reportModelUsed ?? 'AI'}</Badge>
+                    {reportGeneratedAt && (
+                      <span>{new Date(reportGeneratedAt).toLocaleString()}</span>
+                    )}
+                    <span>
+                      {REPORT_TYPES.find((r) => r.value === reportType)?.label ?? reportType}
+                    </span>
+                  </div>
+                  <div className="rounded-lg border bg-muted/30 p-4 max-h-[420px] overflow-y-auto whitespace-pre-wrap text-sm">
+                    {lastReportText}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  Generate a report using the &quot;Generate Report&quot; button above. The full AI-written narrative (Llama/FinGPT when configured) will appear here.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Report type templates */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PieChart className="w-5 h-5" />
+                Report Types
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
-                <Card className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold">Weekly AI Analysis</h3>
-                    <Badge>Ready</Badge>
+                {REPORT_TYPES.map((r) => (
+                  <div key={r.value} className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-semibold">{r.label}</h3>
+                      <Badge variant={reportType === r.value ? 'default' : 'outline'}>
+                        {reportType === r.value ? 'Selected' : 'Select above'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {r.value === 'market_summary' && 'One-page market analysis: indices, tech, macro, outlook.'}
+                      {r.value === 'risk_assessment' && 'Portfolio risk: volatility, correlations, tail risk, recommendations.'}
+                      {r.value === 'sentiment' && 'Social and news sentiment, sector highlights, divergences.'}
+                      {r.value === 'technical' && 'Support/resistance, momentum, actionable technical signals.'}
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Comprehensive 7-day analysis across all 17 assets with AI-powered insights and recommendations.
-                  </p>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
-                      <Eye className="w-3 w-3 mr-1" />
-                      Preview
-                    </Button>
-                    <Button size="sm">
-                      <Download className="w-3 w-3 mr-1" />
-                      Download
-                    </Button>
-                  </div>
-                </Card>
-
-                <Card className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold">Risk Assessment Report</h3>
-                    <Badge variant="secondary">Processing</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    AI-powered risk analysis with portfolio optimization suggestions and stress testing results.
-                  </p>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" disabled>
-                      <RefreshCw className="w-3 w-3 mr-1 animate-spin" />
-                      Processing
-                    </Button>
-                  </div>
-                </Card>
-
-                <Card className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold">Market Sentiment Analysis</h3>
-                    <Badge>Ready</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Social media and news sentiment analysis with predictive insights for market movements.
-                  </p>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
-                      <Eye className="w-3 w-3 mr-1" />
-                      Preview
-                    </Button>
-                    <Button size="sm">
-                      <Download className="w-3 w-3 mr-1" />
-                      Download
-                    </Button>
-                  </div>
-                </Card>
-
-                <Card className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold">Technical Analysis Report</h3>
-                    <Badge>Ready</Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Advanced technical indicators and pattern recognition with AI-enhanced signal detection.
-                  </p>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
-                      <Eye className="w-3 w-3 mr-1" />
-                      Preview
-                    </Button>
-                    <Button size="sm">
-                      <Download className="w-3 w-3 mr-1" />
-                      Download
-                    </Button>
-                  </div>
-                </Card>
+                ))}
               </div>
             </CardContent>
           </Card>

@@ -7,6 +7,10 @@ interface OctopusLogoProps {
   showText?: boolean;
   variant?: 'svg' | 'image' | 'text-only';
   textSize?: 'sm' | 'md' | 'lg' | 'xl';
+  /** Show only "Octopus" (no "Trading Platform" subtitle) */
+  brandOnly?: boolean;
+  /** Optional class for the brand text (e.g. red bleeding style) */
+  textClassName?: string;
 }
 
 export function OctopusLogo({ 
@@ -14,7 +18,9 @@ export function OctopusLogo({
   className = "", 
   showText = true, 
   variant = 'svg',
-  textSize = 'md' 
+  textSize = 'md',
+  brandOnly = false,
+  textClassName,
 }: OctopusLogoProps) {
   const textSizeClasses = {
     sm: 'text-sm font-semibold tracking-tight',
@@ -102,18 +108,18 @@ export function OctopusLogo({
     );
   }
 
+  const brandTextClass = textClassName ?? 'text-foreground';
+
   if (variant === 'image') {
     return (
       <div className={`inline-flex items-center space-x-3 ${className}`}>
         <LogoImage />
         {showText && (
-          <div className="flex flex-col items-start justify-center gap-0.5 min-w-0">
-            <span className={`text-foreground leading-tight ${textSizeClasses[textSize]}`}>
+          <div className="flex flex-col items-center justify-center gap-0.5 min-w-0">
+            <span className={`leading-tight ${textSizeClasses[textSize]} ${brandTextClass}`}>
               Octopus
             </span>
-            <span className={subtitleClass}>
-              Trading Platform
-            </span>
+            {!brandOnly && <span className={subtitleClass}>Trading Platform</span>}
           </div>
         )}
       </div>
@@ -124,13 +130,11 @@ export function OctopusLogo({
     <div className={`inline-flex items-center space-x-3 ${className}`}>
       <LogoSVG />
       {showText && (
-        <div className="flex flex-col items-start justify-center gap-0.5 min-w-0">
-          <span className={`text-foreground leading-tight ${textSizeClasses[textSize]}`}>
+        <div className="flex flex-col items-center justify-center gap-0.5 min-w-0">
+          <span className={`leading-tight ${textSizeClasses[textSize]} ${brandTextClass}`}>
             Octopus
           </span>
-          <span className={subtitleClass}>
-            Trading Platform
-          </span>
+          {!brandOnly && <span className={subtitleClass}>Trading Platform</span>}
         </div>
       )}
     </div>

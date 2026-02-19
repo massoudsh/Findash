@@ -21,12 +21,12 @@ Use this skill when adding a new scraper, API client, or feed that supplies **pr
    - If this source should be triggered from the pipeline, extend `coordinate_pipeline()` in `src/core/intelligence_orchestrator.py` so that the M1 task payload includes the new source or a task_type that invokes it. Do not add a new agent; extend M1 capabilities.
 
 5. **Config and docs**
-   - Add any new env vars to `env.example` (no real keys). Update `api_keys_config.py` or project config if the project uses a central key store.
+   - Add any new env vars to `config/env.example` (no real keys). Update `config/api_keys_config.py` or project config if the project uses a central key store.
    - Optionally document the new source in `wiki-content/` or `docs/` (e.g. AI-Agents.md M1 section).
 
 ## Files to touch (typical)
 
 - `src/data_processing/scraping/<new_scraper>.py` or `src/data_processing/ingestion/`
 - `src/data_processing/collection_tasks.py` (if scheduled)
-- `env.example` (new env vars)
+- `config/env.example` (new env vars)
 - `src/core/intelligence_orchestrator.py` (only if pipeline must call this source)

@@ -34,7 +34,7 @@ python quick_start.py
 ### Step 1: Environment Setup
 ```bash
 # Copy secure environment template
-cp env.example env.local
+cp config/env.example .env
 
 # Generate secure secrets (replace in env.local)
 python -c "import secrets; print('SECRET_KEY=' + secrets.token_urlsafe(32))"

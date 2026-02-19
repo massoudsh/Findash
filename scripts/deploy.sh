@@ -170,13 +170,13 @@ run_tests() {
     cd "$PROJECT_ROOT"
     
     # Run Python tests
-    if [[ -f "requirements-dev.txt" ]]; then
+    if [[ -f "requirements/requirements-dev.txt" ]]; then
         python -m pytest tests/ -v --tb=short || {
             print_error "Tests failed. Deployment aborted."
             exit 1
         }
     else
-        print_warning "requirements-dev.txt not found, skipping Python tests"
+        print_warning "requirements/requirements-dev.txt not found, skipping Python tests"
     fi
     
     # Run frontend tests if they exist

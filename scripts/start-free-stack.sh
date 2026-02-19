@@ -66,12 +66,12 @@ cd "$(dirname "$0")/.."
 
 # Check if .env file exists
 if [ ! -f ".env" ]; then
-    print_warning ".env file not found. Creating from env.example..."
-    if [ -f "env.example" ]; then
-        cp env.example .env
-        print_status "Created .env file from env.example"
+    print_warning ".env file not found. Creating from config/env.example..."
+    if [ -f "config/env.example" ]; then
+        cp config/env.example .env
+        print_status "Created .env file from config/env.example"
     else
-        print_error "env.example file not found. Please create a .env file with required environment variables."
+        print_error "config/env.example not found. Please create a .env file with required environment variables."
         exit 1
     fi
 fi

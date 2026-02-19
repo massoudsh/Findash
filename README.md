@@ -84,6 +84,9 @@ Pipeline flow: **Data (M1, M3, M9)** → **ML & prediction (M5, M7)** → **Risk
 
 ---
 
+- **Repo layout:** [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)  
+- **Development log (zero to now):** [docs/DEVELOPMENT-LOG.md](docs/DEVELOPMENT-LOG.md)
+
 ## Installation
 
 ### Prerequisites
@@ -100,7 +103,7 @@ cd Findash
 # Backend
 python -m venv venv
 source venv/bin/activate   # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r requirements/requirements.txt
 
 # Frontend
 cd frontend-nextjs
@@ -130,6 +133,9 @@ docker compose -f docker-compose-core.yml up -d
 
 # Optional: run a smoke test after bring-up
 ./scripts/healthcheck-core.sh
+
+# Or use the interactive service manager:
+./scripts/start-services.sh
 ```
 
 - **API:** http://localhost:8011 (mapped from 8000 in container)  
@@ -145,7 +151,7 @@ LLM services (Falcon TGI, FinGPT inference) are under the `llm` profile. Use the
 docker compose -f docker-compose-core.yml --profile llm up -d
 ```
 
-Set in your env (or `.env`): `FALCON_TGI_URL=http://localhost:8080`, `FINGPT_LOCAL_URL=http://localhost:8081`, and optionally `HF_TOKEN` for HuggingFace. See **env.example** for all LLM variables.
+Set in your env (or `.env`): `FALCON_TGI_URL=http://localhost:8080`, `FINGPT_LOCAL_URL=http://localhost:8081`, and optionally `HF_TOKEN` for HuggingFace. See **config/env.example** for all LLM variables.
 
 For production, use a `docker-compose.override.yml` (or env file) to set `ENVIRONMENT=production`, secure secrets, and correct database/Redis hosts.
 
@@ -155,6 +161,7 @@ For production, use a `docker-compose.override.yml` (or env file) to set `ENVIRO
 
 - **API:** Swagger at `/docs`, ReDoc at `/redoc`
 - **Architecture:** See `docs/ARCHITECTURE_DIAGRAMS.md` and `docs/orchestrator-architecture.md` for detailed diagrams
+- **Agent–user decision workflow:** From market updates to reports — [docs/AGENT_USER_DECISION_WORKFLOW.md](docs/AGENT_USER_DECISION_WORKFLOW.md) (Aladdin-style)
 
 ---
 

@@ -24,6 +24,14 @@ export async function POST(request: Request) {
 
   } catch (error) {
     console.error('Error proxying AI insights request:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    const err = error as NodeJS.ErrnoException & { cause?: { code?: string } };
+    const isConnectionRefused =
+      err?.code === 'ECONNREFUSED' || err?.cause?.code === 'ECONNREFUSED';
+    const message = isConnectionRefused
+      ? 'Backend unreachable. Start the API (e.g. run Docker or uvicorn) and set BACKEND_URL if needed.'
+      : error instanceof Error
+        ? error.message
+        : 'Internal Server Error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 } 
