@@ -1,6 +1,6 @@
 {
   "name": "octopus-trading-platform",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -22,6 +22,7 @@
     "@radix-ui/react-switch": "^1.2.5",
     "@radix-ui/react-tabs": "^1.1.12",
     "@types/recharts": "^1.8.29",
+    "@xyflow/react": "^12.10.1",
     "axios": "^1.6.2",
     "chart.js": "^4.5.0",
     "class-variance-authority": "^0.7.0",

@@ -32,6 +32,7 @@ import {
   Settings,
   Link2,
   AlertTriangle,
+  Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -250,8 +251,8 @@ export function TradingBotsContent() {
     setCreateOpen(false);
   };
 
-  const toggleStatus = async (id: string, current: string) => {
-    const next = current === 'active' ? 'paused' : current === 'paused' ? 'active' : 'stopped';
+  const toggleStatus = async (id: string, current: string, forceNext?: 'active' | 'paused' | 'stopped') => {
+    const next = forceNext ?? (current === 'active' ? 'paused' : 'active');
     if (API_BASE) {
       const path = next === 'active' ? 'start' : next === 'paused' ? 'pause' : 'stop';
       try {
@@ -268,6 +269,22 @@ export function TradingBotsContent() {
       }
     }
     setBots((prev) => prev.map((b) => (b.id === id ? { ...b, status: next as BotConfig['status'] } : b)));
+  };
+
+  const deleteBot = async (id: string) => {
+    if (!confirm('Delete this bot? This cannot be undone.')) return;
+    if (API_BASE) {
+      try {
+        const res = await fetch(`${API_BASE}/api/trading-bots/${id}`, { method: 'DELETE', credentials: 'include' });
+        if (res.ok) {
+          await fetchBots();
+          return;
+        }
+      } catch {
+        // fallback to local state
+      }
+    }
+    setBots((prev) => prev.filter((b) => b.id !== id));
   };
 
   return (
@@ -386,10 +403,19 @@ export function TradingBotsContent() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => toggleStatus(bot.id, 'stopped')}
+                  onClick={() => toggleStatus(bot.id, bot.status, 'stopped')}
                   disabled={bot.status === 'stopped'}
                 >
                   <Square className="h-3 w-3" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-destructive"
+                  onClick={() => deleteBot(bot.id)}
+                  aria-label={`Delete ${bot.name}`}
+                >
+                  <Trash2 className="h-3 w-3" />
                 </Button>
               </div>
             </CardContent>

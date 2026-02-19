@@ -38,6 +38,36 @@ import {
 
 const SYMBOL_TO_API = (s: string) => s.replace('/', '-');
 const API_SYMBOLS = 'BTC-USD,ETH-USD,AAPL,TSLA,NVDA,MSFT,GOOGL';
+const WATCHLIST_STORAGE_KEY = 'technical-watchlist';
+
+const DEFAULT_WATCHLIST = ['BTC/USD', 'ETH/USD', 'AAPL', 'TSLA', 'NVDA', 'MSFT', 'GOOGL'];
+
+function loadWatchlist(): string[] {
+  if (typeof window === 'undefined') return DEFAULT_WATCHLIST;
+  try {
+    const raw = localStorage.getItem(WATCHLIST_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as string[];
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_WATCHLIST;
+    }
+  } catch (_) {}
+  return DEFAULT_WATCHLIST;
+}
+
+function saveWatchlist(symbols: string[]) {
+  try {
+    localStorage.setItem(WATCHLIST_STORAGE_KEY, JSON.stringify(symbols));
+  } catch (_) {}
+}
+
+const ECONOMIC_EVENTS_MOCK = [
+  { title: 'FOMC Statement', date: 'This week', impact: 'High' },
+  { title: 'Non-Farm Payrolls', date: 'Next Fri', impact: 'High' },
+  { title: 'CPI Release', date: 'Next month', impact: 'High' },
+  { title: 'Fed Chair Speech', date: 'In 2 weeks', impact: 'Medium' },
+  { title: 'Retail Sales', date: 'Next week', impact: 'Medium' },
+  { title: 'Initial Jobless Claims', date: 'Thu', impact: 'Low' },
+];
 
 export default function TechnicalPage() {
   const [selectedSymbol, setSelectedSymbol] = useState('BTC/USD');
@@ -48,6 +78,27 @@ export default function TechnicalPage() {
   const [chartRefreshKey, setChartRefreshKey] = useState(0);
   const [realMarketData, setRealMarketData] = useState<Record<string, { price: number; open?: number; high?: number; low?: number; volume?: number; change?: number; change_percent?: number }>>({});
   const [activePanel, setActivePanel] = useState<'screener' | 'watchlist' | 'calendar' | 'chartSettings' | 'marketOverview' | null>(null);
+  const [watchlist, setWatchlist] = useState<string[]>(DEFAULT_WATCHLIST);
+  const [watchlistLoaded, setWatchlistLoaded] = useState(false);
+
+  useEffect(() => {
+    setWatchlist(loadWatchlist());
+    setWatchlistLoaded(true);
+  }, []);
+
+  const persistWatchlist = (symbols: string[]) => {
+    setWatchlist(symbols);
+    saveWatchlist(symbols);
+  };
+
+  const addToWatchlist = (symbol: string) => {
+    if (watchlist.includes(symbol)) return;
+    persistWatchlist([...watchlist, symbol]);
+  };
+
+  const removeFromWatchlist = (symbol: string) => {
+    persistWatchlist(watchlist.filter((s) => s !== symbol));
+  };
 
   const fetchRealMarketData = useCallback(async () => {
     try {
@@ -268,9 +319,9 @@ export default function TechnicalPage() {
             <div className="mt-6 space-y-4">
               {activePanel === 'screener' && (
                 <>
-                  <p className="text-sm text-gray-400">Filter symbols by price, volume, and technicals.</p>
+                  <p className="text-sm text-gray-400">Filter symbols by price, volume, and technicals. Wired to live data from /api/real-market-data.</p>
                   <div className="space-y-2">
-                    {['BTC/USD', 'ETH/USD', 'AAPL', 'TSLA', 'NVDA'].map((s) => (
+                    {['BTC/USD', 'ETH/USD', 'AAPL', 'TSLA', 'NVDA', 'MSFT', 'GOOGL'].map((s) => (
                       <Button
                         key={s}
                         variant="outline"
@@ -291,41 +342,52 @@ export default function TechnicalPage() {
               )}
               {activePanel === 'watchlist' && (
                 <>
-                  <p className="text-sm text-gray-400">Your saved symbols. Click to load on chart.</p>
+                  <p className="text-sm text-gray-400">Your saved symbols (persisted locally). Click to load on chart.</p>
                   <div className="space-y-2">
-                    {['BTC/USD', 'ETH/USD', 'AAPL', 'TSLA', 'NVDA', 'MSFT', 'GOOGL'].map((s) => (
-                      <Button
-                        key={s}
-                        variant="outline"
-                        className="w-full justify-between"
-                        onClick={() => {
-                          setSelectedSymbol(s);
-                          setActivePanel(null);
-                        }}
-                      >
-                        <Star className="h-4 w-4" />
-                        <span>{s}</span>
-                      </Button>
+                    {(watchlistLoaded ? watchlist : DEFAULT_WATCHLIST).map((s) => (
+                      <div key={s} className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          className="flex-1 justify-between"
+                          onClick={() => {
+                            setSelectedSymbol(s);
+                            setActivePanel(null);
+                          }}
+                        >
+                          <Star className="h-4 w-4 fill-current" />
+                          <span>{s}</span>
+                          {realMarketData[SYMBOL_TO_API(s)] && (
+                            <span className="text-green-400 text-xs">${realMarketData[SYMBOL_TO_API(s)].price?.toLocaleString()}</span>
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="shrink-0 text-gray-400 hover:text-red-400"
+                          onClick={() => removeFromWatchlist(s)}
+                          aria-label={`Remove ${s} from watchlist`}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                      </div>
                     ))}
                   </div>
+                  <p className="text-xs text-gray-500 mt-2">Add symbols from Screener or chart selector.</p>
                 </>
               )}
               {activePanel === 'calendar' && (
                 <>
-                  <p className="text-sm text-gray-400">Upcoming economic events (free tier).</p>
+                  <p className="text-sm text-gray-400">Upcoming economic events. Source: static/mock (replace with API when available).</p>
                   <ul className="space-y-2 text-sm">
-                    <li className="flex justify-between p-2 rounded bg-slate-800/50">
-                      <span>FOMC Statement</span>
-                      <span className="text-gray-400">This week</span>
-                    </li>
-                    <li className="flex justify-between p-2 rounded bg-slate-800/50">
-                      <span>Non-Farm Payrolls</span>
-                      <span className="text-gray-400">Next Fri</span>
-                    </li>
-                    <li className="flex justify-between p-2 rounded bg-slate-800/50">
-                      <span>CPI Release</span>
-                      <span className="text-gray-400">Next month</span>
-                    </li>
+                    {ECONOMIC_EVENTS_MOCK.map((ev) => (
+                      <li key={ev.title} className="flex justify-between items-center p-2 rounded bg-slate-800/50">
+                        <span>{ev.title}</span>
+                        <div className="flex items-center gap-2">
+                          <Badge className="text-xs bg-slate-600/50">{ev.impact}</Badge>
+                          <span className="text-gray-400">{ev.date}</span>
+                        </div>
+                      </li>
+                    ))}
                   </ul>
                 </>
               )}

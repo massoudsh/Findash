@@ -165,57 +165,55 @@ export function DashboardContent() {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  useEffect(() => {
-    async function fetchDashboardData() {
-      try {
-        await loadApi();
-        const timeoutMs = 8000;
-        const portfoliosResponse = await Promise.race([
-          getPortfolios(),
-          new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error('timeout')), timeoutMs)
-          ),
-        ]);
-        const portfolios = portfoliosResponse?.data;
-        
-        if (portfolios && portfolios.length > 0) {
-          const totalValue = portfolios.reduce((sum: number, portfolio: any) => 
-            sum + (portfolio.current_value || 0), 0);
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    setHasError(false);
+    try {
+      await loadApi();
+      const timeoutMs = 8000;
+      const portfoliosResponse = await Promise.race([
+        getPortfolios(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), timeoutMs)
+        ),
+      ]);
+      const portfolios = portfoliosResponse?.data;
 
-          let totalActiveTrades = 0;
-          for (const portfolio of portfolios) {
-            try {
-              const tradesResponse = await getTrades(portfolio.id);
-              totalActiveTrades += tradesResponse.data.filter((trade: any) => 
-                trade.status === 'open').length;
-            } catch (error) {
-              console.error(`Error fetching trades for portfolio ${portfolio.id}:`, error);
-            }
+      if (portfolios && portfolios.length > 0) {
+        const totalValue = portfolios.reduce((sum: number, portfolio: any) =>
+          sum + (portfolio.current_value || 0), 0);
+
+        let totalActiveTrades = 0;
+        for (const portfolio of portfolios) {
+          try {
+            const tradesResponse = await getTrades(portfolio.id);
+            totalActiveTrades += tradesResponse.data.filter((trade: any) =>
+              trade.status === 'open').length;
+          } catch (error) {
+            console.error(`Error fetching trades for portfolio ${portfolio.id}:`, error);
           }
-
-          setData(prev => ({
-            ...prev,
-            totalPortfolioValue: totalValue || prev.totalPortfolioValue,
-            activeTrades: totalActiveTrades || prev.activeTrades,
-          }));
-          
-          setHasError(false);
         }
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-        setHasError(true);
-        setErrorMessage('Live data unavailable. Displaying simulated market data.');
-      } finally {
-        setIsLoading(false);
-      }
-    }
 
+        setData(prev => ({
+          ...prev,
+          totalPortfolioValue: totalValue || prev.totalPortfolioValue,
+          activeTrades: totalActiveTrades || prev.activeTrades,
+        }));
+
+        setHasError(false);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setHasError(true);
+      setErrorMessage('Live data unavailable. Displaying simulated market data.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchDashboardData();
   }, []);
-
-  if (isLoading) {
-    return <DashboardSkeleton />;
-  }
 
   return (
     <>
@@ -262,16 +260,19 @@ export function DashboardContent() {
         {hasError && (
           <Alert className="border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200">
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription className="flex items-center gap-2">
-              {errorMessage}
+            <AlertDescription className="flex items-center justify-between gap-2 flex-wrap">
+              <span>{errorMessage}</span>
+              <Button variant="outline" size="sm" className="border-amber-600 text-amber-800 dark:text-amber-200" onClick={fetchDashboardData}>
+                Retry
+              </Button>
             </AlertDescription>
           </Alert>
         )}
 
-        {/* Account / Wallet Cards — glassy, greeny fintech */}
+        {/* Account / Wallet Cards — glassy, greeny fintech; skeleton during fetch */}
         <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
           {walletCards.map((wallet) => (
-            <AccountCard key={wallet.id} account={wallet} className="h-full" />
+            <AccountCard key={wallet.id} account={wallet} className="h-full" isLoading={isLoading} />
           ))}
         </div>
 
@@ -357,6 +358,9 @@ export function DashboardContent() {
         </div>
 
         <TabsContent value="overview" className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Summary of accounts, earnings, and performance. Charts: P&L by month, cash flow, sector allocation, portfolio value over time.
+          </p>
           <LivePriceCharts />
           {/* One of each: Bar, Waterfall, Pie, Line */}
           <div className="grid gap-6 md:grid-cols-2">
@@ -416,6 +420,9 @@ export function DashboardContent() {
         </TabsContent>
 
         <TabsContent value="positions" className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            {positions.length} positions · Total value {formatCurrency(positions.reduce((s, p) => s + p.marketValue, 0))} · Unrealized P&L and weight by position.
+          </p>
           <ElevatedCard>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -457,6 +464,9 @@ export function DashboardContent() {
         </TabsContent>
 
         <TabsContent value="market" className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Watchlist: live prices and 24h change for crypto and equities. Use Command Center for full market data and Technical for charts.
+          </p>
           <GlassCard>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -516,6 +526,9 @@ export function DashboardContent() {
         </TabsContent>
 
         <TabsContent value="activity" className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Recent buys, sells, alerts, and dividends. For full trade history and filters, go to the Trades or Portfolio page.
+          </p>
           <GlassCard>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -559,6 +572,9 @@ export function DashboardContent() {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            Risk metrics: Sharpe ratio (risk-adjusted return), volatility, max drawdown, and beta. {data.sharpeRatio > 1 && data.volatility < 20 ? 'Profile: solid risk-adjusted returns with moderate volatility.' : data.volatility >= 20 ? 'Profile: higher volatility — consider diversification or risk limits.' : 'Profile: review allocation and drawdown controls.'}
+          </p>
           <div className="grid gap-4 md:grid-cols-4">
             <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
               <CardHeader className="pb-2">

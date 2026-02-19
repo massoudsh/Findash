@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+/** Backend base URL. Use NEXT_PUBLIC_API_URL (no /api suffix), e.g. http://localhost:8000 or http://localhost:8011. */
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 const api = axios.create({
