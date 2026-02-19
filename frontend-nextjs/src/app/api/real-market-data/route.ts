@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || process.env.BACKEND_URL || 'http://localhost:8000';
+import { getBackendUrl } from '@/lib/backend-url';
 
 function chunkArray<T>(arr: T[], size: number): T[][] {
   const res: T[][] = [];
@@ -22,7 +21,7 @@ export async function GET(request: NextRequest) {
       const batchSymbols = batch.join(',');
       try {
         const backendResponse = await fetch(
-          `${BACKEND_URL}/api/simple/simple-market-data/real-time?symbols=${batchSymbols}`,
+          `${getBackendUrl()}/api/simple/simple-market-data/real-time?symbols=${batchSymbols}`,
           {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -59,7 +58,7 @@ export async function GET(request: NextRequest) {
           symbol: 'AAPL', price: 175.23, open: 173.45, high: 176.89, low: 172.11, volume: 65432100, change: 1.78, change_percent: 1.03, timestamp: new Date().toISOString(), source: 'mock_fallback'
         },
         'BTC-USD': {
-          symbol: 'BTC-USD', price: 107850.00, open: 108100.00, high: 108300.00, low: 107600.00, volume: 3400, change: -250.00, change_percent: -0.23, timestamp: new Date().toISOString(), source: 'mock_fallback'
+          symbol: 'BTC-USD', price: 67200.00, open: 66800.00, high: 67500.00, low: 66500.00, volume: 28400, change: 400.00, change_percent: 0.60, timestamp: new Date().toISOString(), source: 'mock_fallback'
         },
         'ETH-USD': {
           symbol: 'ETH-USD', price: 3650.50, open: 3620.00, high: 3680.00, low: 3610.00, volume: 125000, change: 30.50, change_percent: 0.84, timestamp: new Date().toISOString(), source: 'mock_fallback'
@@ -84,7 +83,7 @@ export async function GET(request: NextRequest) {
           symbol: 'AAPL', price: 175.23, open: 173.45, high: 176.89, low: 172.11, volume: 65432100, change: 1.78, change_percent: 1.03, timestamp: new Date().toISOString(), source: 'mock_fallback'
         },
         'BTC-USD': {
-          symbol: 'BTC-USD', price: 107850.00, open: 108100.00, high: 108300.00, low: 107600.00, volume: 3400, change: -250.00, change_percent: -0.23, timestamp: new Date().toISOString(), source: 'mock_fallback'
+          symbol: 'BTC-USD', price: 67200.00, open: 66800.00, high: 67500.00, low: 66500.00, volume: 28400, change: 400.00, change_percent: 0.60, timestamp: new Date().toISOString(), source: 'mock_fallback'
         },
         'ETH-USD': {
           symbol: 'ETH-USD', price: 3650.50, open: 3620.00, high: 3680.00, low: 3610.00, volume: 125000, change: 30.50, change_percent: 0.84, timestamp: new Date().toISOString(), source: 'mock_fallback'

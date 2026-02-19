@@ -6,6 +6,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { OptionTradingTerminal } from '@/components/options/option-trading-terminal';
 import { OptionsStrategiesTab } from '@/components/options/options-strategies-tab';
 import { OptionsMarketTools } from '@/components/options/options-market-tools';
+import { OptionsChainView } from '@/components/options/options-chain-view';
+import { OptionCalculationPanel } from '@/components/options/option-calculation-panel';
+import type { OptionContractSelection } from '@/components/options/option-calculation-panel';
 import { TrendingUp, Target } from 'lucide-react';
 
 export interface OptionsStrategySelection {
@@ -26,6 +29,7 @@ export function OptionsPageContent() {
   );
   const [selectedStrategyForTerminal, setSelectedStrategyForTerminal] = useState<OptionsStrategySelection | null>(null);
   const [strategyPnl, setStrategyPnl] = useState(0);
+  const [selectedContract, setSelectedContract] = useState<OptionContractSelection | null>(null);
 
   useEffect(() => {
     if (tabParam === 'strategies') setActiveTab('strategies');
@@ -69,6 +73,13 @@ export function OptionsPageContent() {
         onSelectStrategy={handleQuickStrategyFromTools}
         onOpenTrade={() => setActiveTab('trade')}
       />
+      <OptionsChainView onSelectContract={setSelectedContract} />
+      {selectedContract && (
+        <OptionCalculationPanel
+          contract={selectedContract}
+          onClose={() => setSelectedContract(null)}
+        />
+      )}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'trade' | 'strategies')} className="flex-1 flex flex-col">
         <div className="border-b bg-background/95 px-4 py-2 shrink-0">
           <TabsList className="grid w-full max-w-full sm:max-w-md grid-cols-2">

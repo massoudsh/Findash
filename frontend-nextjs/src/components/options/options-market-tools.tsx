@@ -88,11 +88,32 @@ export interface OptionsMarketToolsProps {
   onOpenTrade?: () => void;
 }
 
+const REAL_DATA_KEYS: Record<string, string> = {
+  SPY: 'SPY', QQQ: 'QQQ', AAPL: 'AAPL', NVDA: 'NVDA', TSLA: 'TSLA',
+  ETH: 'ETH-USD', BTC: 'BTC-USD',
+};
+
 export function OptionsMarketTools({ onSelectStrategy, onOpenTrade }: OptionsMarketToolsProps) {
   const [underlying, setUnderlying] = useState('SPY');
   const [expiry, setExpiry] = useState(EXPIRIES[0].label);
-  const snapshot = MOCK_SNAPSHOTS[underlying] ?? MOCK_SNAPSHOTS.SPY;
+  const [realSpot, setRealSpot] = useState<{ price: number; change?: number; change_percent?: number } | null>(null);
+  const mockSnapshot = MOCK_SNAPSHOTS[underlying] ?? MOCK_SNAPSHOTS.SPY;
+  const snapshot: MarketSnapshot = realSpot
+    ? { ...mockSnapshot, spot: realSpot.price, change: realSpot.change ?? 0, changePct: realSpot.change_percent ?? 0 }
+    : mockSnapshot;
   const greeks = MOCK_GREEKS[underlying] ?? MOCK_GREEKS.SPY;
+
+  useEffect(() => {
+    const key = REAL_DATA_KEYS[underlying] ?? underlying;
+    fetch(`/api/real-market-data?symbols=${key}`)
+      .then((r) => r.json())
+      .then((json) => {
+        const d = json?.data?.[key];
+        if (d?.price != null) setRealSpot({ price: Number(d.price), change: d.change, change_percent: d.change_percent });
+        else setRealSpot(null);
+      })
+      .catch(() => setRealSpot(null));
+  }, [underlying]);
 
   return (
     <div className="space-y-4">
