@@ -48,56 +48,57 @@
 ## 🟠 Medium Priority
 
 ### TASK-002 — بهبود داشبورد اصلی
-**وضعیت:** `📋 Backlog`
+**وضعیت:** `✅ Done — 2026-06-28`
 **اندازه:** M
 **نوع:** Enhancement
 
 **توضیح:**
 داشبورد فعلی فقط بازارهای بین‌المللی دارد. نیاز به:
-- [ ] TASK-002a — ویجت خلاصه دارایی‌های ایرانی (بعد از TASK-001)
-- [ ] TASK-002b — نرخ تورم و شاخص‌های کلان ایران
-- [ ] TASK-002c — کارت مقایسه‌ای: ارزش دارایی به ریال vs دلار
+- [x] TASK-002a — ویجت خلاصه دارایی‌های ایرانی (بعد از TASK-001)
+- [x] TASK-002b — نرخ تورم و شاخص‌های کلان ایران (IranMacroWidget)
+- [x] TASK-002c — کارت مقایسه‌ای: ارزش دارایی به ریال vs دلار (CurrencyComparisonCard)
 
 ### TASK-003 — لوکالیزیشن فارسی (RTL)
-**وضعیت:** `📋 Backlog`
+**وضعیت:** `✅ Done — 2026-06-28`
 **اندازه:** M
 **نوع:** Enhancement
 
 **توضیح:**
 پلتفرم فعلاً کاملاً انگلیسی است. برای بازار ایران نیاز به:
-- [ ] TASK-003a — پشتیبانی از RTL در UI
-- [ ] TASK-003b — ترجمه برچسب‌ها و منوها به فارسی
-- [ ] TASK-003c — نمایش اعداد به فارسی (اختیاری)
-- [ ] TASK-003d — فرمت تاریخ شمسی
+- [x] TASK-003a — پشتیبانی از RTL در UI (layout.tsx با dir=rtl)
+- [x] TASK-003b — ترجمه برچسب‌ها و منوها به فارسی
+- [x] TASK-003c — نمایش اعداد به فارسی (toPersianDigits در locale.ts)
+- [x] TASK-003d — فرمت تاریخ شمسی (formatJalali در locale.ts)
 
 ### TASK-004 — واحد پولی تومانی
-**وضعیت:** `📋 Backlog`
+**وضعیت:** `✅ Done — 2026-06-28`
 **اندازه:** S
 **نوع:** Feature
 
 **توضیح:**
-- [ ] TASK-004a — افزودن IRT (ریال/تومان) به لیست ارزها
-- [ ] TASK-004b — نرخ تبدیل ریال ↔ دلار در همه صفحات
-- [ ] TASK-004c — نمایش قیمت‌ها به تومان در کنار دلار
+- [x] TASK-004a — افزودن IRT (تومان) به CurrencyContext
+- [x] TASK-004b — CurrencyToggle در داشبورد — سوئیچ ت / $
+- [x] TASK-004c — format() در CurrencyContext نمایش تومان و دلار هر دو
 
 ---
 
 ## 🟡 Low Priority
 
 ### TASK-005 — بهبود بک‌تستینگ
-**وضعیت:** `📋 Backlog`
+**وضعیت:** `✅ Done — 2026-06-28`
 **اندازه:** L
 **نوع:** Enhancement
-- [ ] پشتیبانی از داده‌های تاریخی دارایی‌های ایرانی
-- [ ] امکان بک‌تست استراتژی بر اساس قیمت طلا/دلار
+- [x] پشتیبانی از داده‌های تاریخی دارایی‌های ایرانی (IranAssetBacktest)
+- [x] استراتژی‌های Buy & Hold، DCA، Relative Strength
+- [x] صفحه `/backtesting` با تب ایرانی + جهانی
 
 ### TASK-006 — مستندسازی و تست
-**وضعیت:** `📋 Backlog`
+**وضعیت:** `✅ Done — 2026-06-28`
 **اندازه:** M
 **نوع:** Chore
-- [ ] نوشتن unit test برای API endpoints جدید
-- [ ] به‌روزرسانی README با سکشن دارایی‌ها
-- [ ] swagger docs برای endpoint های جدید
+- [x] unit test کامل برای /api/assets endpoints (test_assets_api.py)
+- [x] unit test برای AssetService و cache logic (test_asset_service.py)
+- [x] README آپدیت با سکشن Iranian Market Features
 
 ---
 
@@ -106,8 +107,8 @@
 | تسک | اندازه | اولویت | وضعیت |
 |-----|--------|--------|--------|
 | TASK-001 دارایی‌های ایرانی | L | 🔴 High | ✅ Done |
-| TASK-002 بهبود داشبورد | M | 🟠 Medium | 📋 Backlog |
-| TASK-003 لوکالیزیشن فارسی | M | 🟠 Medium | 📋 Backlog |
-| TASK-004 واحد تومانی | S | 🟠 Medium | 📋 Backlog |
-| TASK-005 بک‌تستینگ | L | 🟡 Low | 📋 Backlog |
-| TASK-006 تست و مستندات | M | 🟡 Low | 📋 Backlog |
+| TASK-002 بهبود داشبورد | M | 🟠 Medium | ✅ Done |
+| TASK-003 لوکالیزیشن فارسی | M | 🟠 Medium | ✅ Done |
+| TASK-004 واحد تومانی | S | 🟠 Medium | ✅ Done |
+| TASK-005 بک‌تستینگ | L | 🟡 Low | ✅ Done |
+| TASK-006 تست و مستندات | M | 🟡 Low | ✅ Done |

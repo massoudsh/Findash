@@ -450,10 +450,41 @@ npm run dev
 - Risk metrics dashboard
 
 #### 8. **Backtesting** (`/backtesting`)
-- Strategy backtesting
-- Historical performance analysis
-- Parameter optimization
-- Results visualization
+- Strategy backtesting (global + Iranian markets)
+- Buy & Hold, DCA, Relative Strength strategies
+- Historical performance analysis with Jalali dates
+- Parameter optimization and results visualization
+
+#### 9. **Iranian Assets** (`/assets`) 🆕
+- Real-time prices for gold, silver, currency, real estate, crypto
+- 16 Iranian market symbols (طلا، سکه، دلار، نقره، مسکن، کریپتو)
+- Data source: tgju.org with Redis cache (60s TTL)
+- Add assets to personal portfolio with P&L tracking
+- Dashboard widget with top movers
+
+---
+
+## 🇮🇷 Iranian Market Features
+
+| Feature | API | UI |
+|---------|-----|----|
+| Gold prices (18K, 24K, coins) | `GET /api/assets?category=gold` | `/assets` |
+| Currency (USD, EUR, AED, GBP) | `GET /api/assets?category=currency` | `/assets` |
+| Silver | `GET /api/assets?category=silver` | `/assets` |
+| Real estate index | `GET /api/assets?category=real_estate` | `/assets` |
+| Crypto (BTC, ETH, USDT) | `GET /api/assets?category=crypto` | `/assets` |
+| USD/Toman rate | `GET /api/assets/usd-rate` | Dashboard widget |
+| Portfolio tracking | `POST /api/assets/portfolio` | `/portfolio` |
+| Price history (OHLCV) | `GET /api/assets/{symbol}/history` | Chart in `/assets` |
+| Macro indicators | — | Dashboard widget |
+| Iran backtesting | — | `/backtesting` |
+
+### Running Asset Tests
+```bash
+cd Modules
+pip install pytest pytest-asyncio httpx
+pytest tests/test_assets_api.py tests/test_asset_service.py -v
+```
 
 ---
 
