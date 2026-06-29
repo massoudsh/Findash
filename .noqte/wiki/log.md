@@ -7,3 +7,4 @@
 ## [2026-06-27] feature | TASK-001 پیاده‌سازی شد — 11 فایل جدید: schemas، models، service، API router، migration SQL، 6 فایل frontend
 ## [2026-06-27] feature | TASK-001 کامل شد — 001e widget داشبورد، 001f portfolio section، 001g main_refactored.py ساخته شد
 ## [2026-06-28] feature | TASK-002~006 کامل شد — IranMacro، CurrencyToggle، Jalali، backtesting، 2 test file، README update
+## [2026-06-29] feature | 6 قابلیت جدید — WebSocket hook، TradeTracker، PriceAlerts، News page، light-mode CSS، 31 unit test، build ✓ 57 pages

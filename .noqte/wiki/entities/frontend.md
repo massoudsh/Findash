@@ -10,14 +10,26 @@
 ## صفحات اصلی
 | مسیر | عملکرد |
 |------|--------|
-| `/` | داشبورد اصلی + پورتفولیو |
-| `/realtime` | داده‌های زنده بازار، orderbook، سنتیمنت |
+| `/dashboard` | داشبورد اصلی + پورتفولیو + My Trades (3 تب) |
+| `/realtime` | داده‌های زنده بازار با WebSocket + polling fallback |
+| `/news` | اخبار بازار ایران (طلا، ارز، بورس، کریپتو) |
+| `/alerts` | هشدار قیمت با localStorage + toast notification |
 | `/trades` | مرکز معاملات، سفارش‌ها، تاریخچه |
 | `/portfolio` | آنالیز چند دارایی |
 | `/trading-bots` | ساخت و مدیریت ربات |
 | `/ai-models` | مارکت‌پلیس مدل، آموزش، پیش‌بینی |
 | `/risk` | VaR، stress test، متریک‌های ریسک |
-| `/backtesting` | آزمون استراتژی تاریخی |
+
+## کامپوننت‌های جدید (این مکالمه)
+| فایل | عملکرد |
+|------|--------|
+| `src/lib/hooks/use-market-ws.ts` | WebSocket hook با auto-reconnect و polling fallback |
+| `src/lib/hooks/use-price-alerts.ts` | هشدار قیمت در localStorage + trigger callback |
+| `src/components/portfolio/trade-tracker.tsx` | ثبت خرید/فروش، محاسبه P&L واقعی |
+| `src/components/alerts/alerts-panel.tsx` | پنل ایجاد و مدیریت هشدار قیمت |
+| `src/components/data/data-explorer.tsx` | جدول داده‌های بازار با فیلتر |
+| `src/app/news/page.tsx` | صفحه اخبار ایران با RSS feed |
+| `src/app/alerts/page.tsx` | صفحه مستقل هشدارهای قیمت |
 
 ## وابستگی‌ها
 - [[entities/backend]] — API calls و WebSocket

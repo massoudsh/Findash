@@ -5,12 +5,13 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
 import { DashboardContent } from '@/components/dashboard/dashboard-content';
 import { PortfolioContent } from '@/components/portfolio/portfolio-content';
+import { TradeTracker } from '@/components/portfolio/trade-tracker';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, GlassCard } from '@/components/ui/card';
-import { BarChart3, Briefcase, Bell, TrendingUp, Users } from 'lucide-react';
+import { BarChart3, Briefcase, Bell, TrendingUp, Users, ClipboardList } from 'lucide-react';
 
-type DashboardTab = 'overview' | 'portfolio';
+type DashboardTab = 'overview' | 'portfolio' | 'trades';
 
 function DashboardPageContent() {
   const router = useRouter();
@@ -22,7 +23,7 @@ function DashboardPageContent() {
   });
 
   useEffect(() => {
-    if (tabParam === 'overview' || tabParam === 'portfolio') setActiveTab(tabParam);
+    if (tabParam === 'overview' || tabParam === 'portfolio' || tabParam === 'trades') setActiveTab(tabParam);
   }, [tabParam]);
 
   function handleTabChange(value: string) {
@@ -55,7 +56,7 @@ function DashboardPageContent() {
               Command center
             </h1>
             <div className="flex justify-center mb-4">
-              <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsList className="grid w-full max-w-lg grid-cols-3">
                 <TabsTrigger value="overview" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
                   Overview
@@ -63,6 +64,10 @@ function DashboardPageContent() {
                 <TabsTrigger value="portfolio" className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4" />
                   Portfolio
+                </TabsTrigger>
+                <TabsTrigger value="trades" className="flex items-center gap-2">
+                  <ClipboardList className="h-4 w-4" />
+                  My Trades
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -116,6 +121,9 @@ function DashboardPageContent() {
             <Suspense fallback={<div className="text-muted-foreground">Loading portfolio…</div>}>
               <PortfolioContent />
             </Suspense>
+          </TabsContent>
+          <TabsContent value="trades" className="mt-0">
+            <TradeTracker />
           </TabsContent>
         </div>
       </Tabs>

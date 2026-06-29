@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { OctopusLogo } from '@/components/ui/octopus-logo';
 import { 
-  BarChart3, 
-  Menu, 
-  Target, 
+  BarChart3,
+  Menu,
+  Target,
   TrendingUp,
   Activity,
   Brain,
@@ -28,7 +28,9 @@ import {
   ChevronRight,
   LineChart,
   Cpu,
-  GitBranch
+  GitBranch,
+  Newspaper,
+  BellRing,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UserMenu } from "@/components/navigation/user-menu";
@@ -47,6 +49,8 @@ const leftSidebarItems = {
   'Trading': [
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
     { name: 'Command Center', href: '/trading', icon: TrendingUp },
+    { name: 'Iran Market News', href: '/news', icon: Newspaper },
+    { name: 'Price Alerts', href: '/alerts', icon: BellRing },
   ],
   'Analysis & Research': [
     { name: 'Technical', href: '/technical', icon: Target },
