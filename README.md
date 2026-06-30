@@ -1,181 +1,388 @@
-# Octopus Trading Platform
+# فین‌دَش | Findash
 
 <div align="center">
 
-**AI-powered trading platform with real-time analytics and 11 orchestrated agents**
+**داشبورد هوشمند فین‌تک برای بازار ایران؛ تحلیل، پرتفوی، ریسک، پرداخت و هوش مصنوعی در یک تجربه فارسی و RTL**
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat&logo=postgresql&logoColor=white)
+![RTL](https://img.shields.io/badge/RTL-Persian-22C55E?style=flat)
 
-[Features](#-features) · [Agents](#-ai-agents) · [Installation](#-installation) · [Docs](#-documentation)
+[شروع سریع](#شروع-سریع) · [قابلیت‌ها](#قابلیت‌ها) · [معماری](#معماری-سیستم) · [پرداخت](#پرداخت-زرین‌پال) · [امنیت](#امنیت-و-اعتماد)
 
 </div>
 
 ---
 
-## Overview
+## فین‌دَش چیست؟
 
-Octopus is an AI-powered trading system that combines real-time market data, analytics, ML models, and automated trading in a single interface. The backend coordinates **11 AI agents** (M1–M11) for data collection, strategy, risk, sentiment, and reporting.
+فین‌دَش یک اپلیکیشن فین‌تک و داشبورد معاملاتی فارسی است که برای تجربه‌ی موبایل‌محور، تحلیل سریع بازار، مدیریت پرتفوی، پایش ریسک ریل‌تایم و پرداخت ایرانی طراحی شده است.
+
+هدف پروژه این است که کاربر به‌جای جابه‌جایی بین چند ابزار پراکنده، همه چیز را در یک محیط تمیز و قابل فهم ببیند:
+
+- وضعیت بازار
+- ارزش پرتفوی
+- معاملات و هشدارها
+- مدیریت ریسک
+- امتیاز اعتباری معاملاتی
+- پرداخت و اشتراک
+- گزارش‌ها و تحلیل‌های هوش مصنوعی
 
 ---
 
-## System architecture
+## قابلیت‌ها
+
+### تجربه کاربری فارسی و موبایل‌محور
+
+- رابط کاربری فارسی، راست‌به‌چپ و مناسب موبایل
+- طراحی فین‌تک با رنگ اصلی `#22C55E`
+- فرم‌های ورود و ثبت‌نام بازطراحی‌شده
+- داشبورد ساده‌تر با تب‌های کمتر و قابل فهم‌تر
+- فونت فارسی با fallback امن
+
+### داشبورد معاملاتی
+
+- نمای کلی پرتفوی و حساب‌ها
+- نمودارهای عملکرد، جریان نقدی و تخصیص دارایی
+- ticker زنده برای بازارهای مهم
+- پرتفوی، معاملات، بازار و تحلیل در تب‌های جداگانه
+
+### مدیریت ریسک ریل‌تایم
+
+- گیج ریسک زنده
+- سطح‌بندی ریسک: ایمن، متوسط، بالا، بحرانی
+- نمایش VaR، افت حداکثری و بتای پرتفوی
+- مناسب برای تصمیم‌گیری سریع در شرایط پرنوسان
+
+### امتیاز اعتباری معاملاتی
+
+- امتیاز ۳۰۰ تا ۸۵۰ برای سنجش کیفیت رفتار معاملاتی
+- فاکتورهای امتیازدهی:
+  - نرخ موفقیت
+  - فعالیت معاملاتی
+  - مدیریت ریسک
+  - تنوع پرتفوی
+
+### پرداخت زرین‌پال
+
+- ایجاد پرداخت
+- redirect به درگاه
+- callback
+- verify اجباری بعد از بازگشت از درگاه
+- ذخیره وضعیت تراکنش در جدول `payment_orders`
+- صفحات موفق و ناموفق پرداخت
+
+### احراز هویت کاربر
+
+- ورود با ایمیل و رمز عبور
+- ثبت‌نام فارسی
+- مسیرهای auth آماده در frontend و backend
+- محافظت از مسیر پرداخت برای کاربران واردشده
+
+### هوش مصنوعی و تحلیل
+
+- معماری مبتنی بر ۱۱ Agent برای جمع‌آوری داده، تحلیل، ریسک، استراتژی و گزارش
+- پشتیبانی از مدل‌های ML و گزارش‌سازی
+- طراحی‌شده برای توسعه تحلیل‌های پیشرفته مالی
+
+---
+
+## معماری سیستم
 
 ```mermaid
 flowchart LR
-    subgraph You["🖥️ You"]
-        UI[Next.js]
-    end
-
-    subgraph Octopus["🐙 Octopus"]
-        API[FastAPI]
-        Agents[11 Agents]
-        API --> Agents
-    end
-
-    subgraph Store["💾 Store"]
-        DB[(PostgreSQL)]
-        Cache[(Redis)]
-    end
-
-    UI <-->|REST · WS| API
+    User[کاربر] --> Web[Frontend - Next.js]
+    Web <-->|REST / WebSocket| API[Backend - FastAPI]
+    API --> Auth[Auth]
+    API --> Payment[ZarinPal Payment]
+    API --> Agents[AI Agents]
+    API --> DB[(PostgreSQL / TimescaleDB)]
+    API --> Redis[(Redis)]
     Agents --> DB
-    Agents --> Cache
+    Agents --> Redis
 ```
 
-*Data in → Agents think → You decide.*
+### لایه‌ها
+
+| لایه | تکنولوژی |
+|---|---|
+| Frontend | Next.js 15, TypeScript, Tailwind CSS, Shadcn UI |
+| Backend | FastAPI, Python 3.10+ |
+| Database | PostgreSQL, TimescaleDB |
+| Cache / Queue | Redis, Celery |
+| Realtime | WebSocket |
+| Monitoring | Prometheus, Grafana |
+| Payment | ZarinPal |
+| AI/ML | PyTorch, scikit-learn, orchestrated agents |
 
 ---
 
-## AI Agents
+## شروع سریع
 
-The platform uses **11 orchestrated agents** (M1–M11) with distinct roles and personas. Each has a character name used across the UI (Command Center, Risk, Reports, etc.).
+### پیش‌نیازها
 
-| ID  | Character | Role | Responsibility |
-|-----|-----------|------|----------------|
-| M1  | **Nexus** | Data Collection | Market data, news, alternative data pipelines |
-| M2  | **Vault** | Data Warehouse | Storage, validation, historical datasets |
-| M3  | **Pulse** | Real-time Processor | Streaming data, live analytics, alerts |
-| M4  | **Atlas** | Strategy Agent | Signals, strategy execution, backtesting |
-| M5  | **Neuron** | ML Models | Prediction, classification, deep learning |
-| M6  | **Guardian** | Risk Management | VaR, position sizing, compliance |
-| M7  | **Oracle** | Price Prediction | Time-series and price forecasting |
-| M8  | **Shadow** | Paper Trading | Simulated execution, paper portfolio |
-| M9  | **Echo** | Market Sentiment | News and social sentiment analysis |
-| M10 | **Chronicle** | Backtesting | Historical testing, strategy validation |
-| M11 | **Lens** | Visualization | Charts, dashboards, report insights |
-
-Pipeline flow: **Data (M1, M3, M9)** → **ML & prediction (M5, M7)** → **Risk & strategy (M6, M4)** → **Backtest & viz (M10, M11)**. The orchestrator routes tasks via `submit_task()` and runs full pipelines via `coordinate_pipeline()`.
+- Node.js 18+
+- Python 3.10+
+- PostgreSQL 14+
+- Redis
+- Docker و Docker Compose برای اجرای ساده‌تر
 
 ---
 
-## Features
-
-- **Dashboard** – Portfolio overview, market watchlists, live data
-- **Command Center** – Order entry, positions, bots, options
-- **Options** – Options chain and strategies
-- **Portfolio & Risk** – Multi-asset tracking, VaR, stress tests
-- **Strategies & Backtesting** – Strategy builder and historical backtests
-- **AI Models** – Training, predictions, insights
-- **Reports & Visualization** – AI-powered reports and charts
-- **Platform search** – Search anything (pages, commands) via ⌘K
-
----
-
-- **Repo layout:** [docs/PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)  
-- **Development log (zero to now):** [docs/DEVELOPMENT-LOG.md](docs/DEVELOPMENT-LOG.md)
-
-## Installation
-
-### Prerequisites
-
-- Node.js 18+, Python 3.10+, PostgreSQL 14+, Redis (optional)
-
-### Quick start
+## اجرای پروژه با Docker
 
 ```bash
-# Clone
 git clone https://github.com/massoudsh/Findash.git
 cd Findash
 
-# Backend
-python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-pip install -r requirements/requirements.txt
+# ساخت و اجرای سرویس‌های اصلی
+docker compose -f docker-compose-core.yml up --build -d
+```
 
-# Frontend
+بعد از اجرا:
+
+| سرویس | آدرس |
+|---|---|
+| Frontend | http://localhost:3003 |
+| Backend API | http://localhost:8011 |
+| Swagger | http://localhost:8011/docs |
+| Grafana | http://localhost:3001 |
+
+برای دیدن لاگ‌ها:
+
+```bash
+docker compose -f docker-compose-core.yml logs -f
+```
+
+برای توقف:
+
+```bash
+docker compose -f docker-compose-core.yml down
+```
+
+---
+
+## اجرای پروژه بدون Docker
+
+### Backend
+
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements/requirements.txt
+python3 start.py --reload
+```
+
+### Frontend
+
+```bash
 cd frontend-nextjs
 npm install
+npm run dev
 ```
 
-### Run
+Frontend روی این آدرس اجرا می‌شود:
 
-```bash
-# Terminal 1 – backend
-python3 start.py --reload
-
-# Terminal 2 – frontend
-cd frontend-nextjs && npm run dev
+```text
+http://localhost:3003
 ```
-
-- **Frontend:** http://localhost:3000  
-- **API docs:** http://localhost:8000/docs  
-
-### Run with Docker (core stack)
-
-The core stack runs API, frontend, PostgreSQL, Redis, Celery worker/beat, Prometheus, and Grafana. **Redis is exposed on port 6380 by default** to avoid conflict with a local Redis on 6379.
-
-```bash
-# Core only (no LLM services)
-docker compose -f docker-compose-core.yml up -d
-
-# Optional: run a smoke test after bring-up
-./scripts/healthcheck-core.sh
-
-# Or use the interactive service manager:
-./scripts/start-services.sh
-```
-
-- **API:** http://localhost:8011 (mapped from 8000 in container)  
-- **Frontend:** http://localhost:3000  
-- **Grafana:** http://localhost:3001  
-
-### Run with Docker + LLM profile (optional)
-
-LLM services (Falcon TGI, FinGPT inference) are under the `llm` profile. Use them for report generation; see [docs/llm-report-models.md](docs/llm-report-models.md).
-
-```bash
-# Core + LLM services (TGI Falcon, FinGPT inference)
-docker compose -f docker-compose-core.yml --profile llm up -d
-```
-
-Set in your env (or `.env`): `FALCON_TGI_URL=http://localhost:8080`, `FINGPT_LOCAL_URL=http://localhost:8081`, and optionally `HF_TOKEN` for HuggingFace. See **config/env.example** for all LLM variables.
-
-For production, use a `docker-compose.override.yml` (or env file) to set `ENVIRONMENT=production`, secure secrets, and correct database/Redis hosts.
 
 ---
 
-## Documentation
+## تنظیمات محیطی مهم
 
-- **API:** Swagger at `/docs`, ReDoc at `/redoc`
-- **Architecture:** See `docs/ARCHITECTURE_DIAGRAMS.md` and `docs/orchestrator-architecture.md` for detailed diagrams
-- **Agent–user decision workflow:** From market updates to reports — [docs/AGENT_USER_DECISION_WORKFLOW.md](docs/AGENT_USER_DECISION_WORKFLOW.md) (Aladdin-style)
+یک فایل env برای توسعه لازم است. نمونه متغیرهای مهم:
+
+```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/trading_db
+REDIS_URL=redis://localhost:6379/0
+
+SECRET_KEY=change-this-secret-key-min-32-chars
+JWT_SECRET_KEY=change-this-jwt-secret-min-32-chars
+
+NEXT_PUBLIC_API_URL=http://localhost:8011
+APP_BASE_URL=http://localhost:3003
+
+ZARINPAL_MERCHANT_ID=your-zarinpal-merchant-id
+```
+
+برای sandbox زرین‌پال می‌توانید از merchant آزمایشی استفاده کنید، ولی برای production حتماً merchant واقعی و تنظیمات امن جداگانه قرار دهید.
 
 ---
 
-## Tech stack
+## پرداخت زرین‌پال
 
-| Layer      | Stack |
-|-----------|--------|
-| Frontend  | Next.js 14, TypeScript, Tailwind CSS, Shadcn UI |
-| Backend   | FastAPI, Python 3.10+ |
-| Data      | PostgreSQL (TimescaleDB), Redis |
-| ML/AI     | PyTorch, scikit-learn, Celery workers |
+فین‌دَش چرخه کامل پرداخت را پیاده‌سازی می‌کند:
+
+```text
+Create Payment → Redirect to ZarinPal → Callback → Verify → Success / Failed
+```
+
+### مسیرهای backend
+
+| مسیر | توضیح |
+|---|---|
+| `POST /api/payment/zarinpal/create` | ایجاد سفارش پرداخت |
+| `GET /api/payment/zarinpal/callback` | بازگشت از درگاه و verify |
+| `GET /api/payment/zarinpal/status/{id}` | وضعیت سفارش |
+| `GET /api/payment/zarinpal/history` | تاریخچه پرداخت کاربر |
+
+### مسیرهای frontend
+
+| مسیر | توضیح |
+|---|---|
+| `/payment/checkout` | انتخاب پلن و شروع پرداخت |
+| `/payment/callback/zarinpal` | bridge برگشت از زرین‌پال |
+| `/payment/success` | پرداخت موفق |
+| `/payment/failed` | پرداخت ناموفق |
+
+### Migration جدول پرداخت
+
+```bash
+psql -d trading_db -f database/schemas/payment_orders.sql
+```
+
+یا داخل Docker:
+
+```bash
+docker exec -i octopus-db psql -U postgres -d trading_db < database/schemas/payment_orders.sql
+```
+
+---
+
+## احراز هویت
+
+صفحات آماده:
+
+| مسیر | توضیح |
+|---|---|
+| `/auth/signin` | ورود کاربر |
+| `/auth/signup` | ثبت‌نام کاربر |
+
+نکته‌های مهم برای production:
+
+- `SECRET_KEY` و `JWT_SECRET_KEY` باید قوی و محرمانه باشند.
+- رمزها نباید در frontend ذخیره شوند.
+- پرداخت فقط برای کاربر احراز هویت‌شده انجام شود.
+- callback پرداخت نباید منبع اعتماد باشد؛ verify سمت سرور الزامی است.
+
+---
+
+## ساختار مهم پروژه
+
+```text
+frontend-nextjs/
+  src/app/
+    page.tsx                         صفحه اصلی فارسی
+    dashboard/page.tsx                داشبورد اصلی
+    auth/signin/page.tsx              ورود
+    auth/signup/page.tsx              ثبت‌نام
+    payment/checkout/page.tsx         پرداخت
+    payment/success/page.tsx          نتیجه موفق
+    payment/failed/page.tsx           نتیجه ناموفق
+
+src/
+  main_refactored.py                  ثبت routerهای backend
+  api/endpoints/payment_zarinpal.py   منطق زرین‌پال
+  core/config.py                      تنظیمات پروژه
+
+database/
+  schemas/payment_orders.sql          جدول پرداخت‌ها
+```
+
+---
+
+## امنیت و اعتماد
+
+برای یک پروژه فین‌تک، این موارد حیاتی هستند:
+
+- verify اجباری پرداخت در backend
+- ذخیره مبلغ در دیتابیس به ریال
+- عدم ذخیره merchant id یا secret در frontend
+- استفاده از HTTPS در production
+- rate limit برای auth و payment
+- لاگ‌گیری callback و verify برای audit
+- جداسازی sandbox و production
+- پشتیبان‌گیری از PostgreSQL
+- مانیتورینگ خطاها و latency
+
+---
+
+## چک‌لیست production
+
+قبل از انتشار عمومی:
+
+- [ ] مقدارهای واقعی `SECRET_KEY` و `JWT_SECRET_KEY` تنظیم شود
+- [ ] merchant واقعی زرین‌پال جایگزین sandbox شود
+- [ ] دامنه اصلی در `APP_BASE_URL` تنظیم شود
+- [ ] SSL/HTTPS فعال شود
+- [ ] migration دیتابیس اجرا شود
+- [ ] backup دیتابیس فعال شود
+- [ ] لاگ پرداخت‌ها مانیتور شود
+- [ ] CORS فقط برای دامنه‌های مجاز تنظیم شود
+- [ ] تست پرداخت موفق، ناموفق و callback تکراری انجام شود
+- [ ] تست موبایل، RTL و خوانایی فارسی انجام شود
+
+---
+
+## صفحات اصلی برای تست دستی
+
+بعد از اجرا، این مسیرها را بررسی کنید:
+
+```text
+/
+/auth/signin
+/auth/signup
+/dashboard
+/payment/checkout
+/payment/success
+/payment/failed
+```
+
+---
+
+## نکات توسعه UI/UX
+
+اصول طراحی فعلی پروژه:
+
+- mobile-first
+- فارسی و RTL از ابتدا
+- حداکثر ۵ آیتم در navigation موبایل
+- تب‌های کم و قابل فهم
+- کارت‌های داده با تراکم کنترل‌شده
+- رنگ سبز برای primary action و وضعیت سالم
+- رنگ قرمز/نارنجی برای ریسک و هشدار
+- نمایش عددها با خوانایی بالا و tabular figures
+
+---
+
+## Roadmap پیشنهادی
+
+- اتصال کامل پرداخت به پلن اشتراک
+- صفحه مدیریت اشتراک کاربر
+- سیستم KYC / احراز هویت مالی
+- کیف پول ریالی
+- گزارش PDF فارسی
+- هشدارهای push و SMS
+- Risk policy برای محدودیت معامله
+- اتصال به داده‌های واقعی بازار ایران
+- پنل admin برای تراکنش‌ها و کاربران
+
+---
+
+## مشارکت
+
+برای توسعه:
+
+1. یک branch جدید بسازید
+2. تغییرات را کوچک و قابل review نگه دارید
+3. قبل از commit، مسیرهای اصلی را دستی تست کنید
+4. برای تغییرات پرداخت یا auth، سناریوهای خطا را هم تست کنید
 
 ---
 
 ## License
 
-MIT – see [LICENSE](LICENSE).
+MIT — برای جزئیات فایل `LICENSE` را ببینید.
