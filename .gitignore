@@ -1,3 +1,7 @@
+# Noqte Platform
+.vibe/
+.noqte/
+
 # Node / Next.js
 frontend-nextjs/node_modules/
 frontend-nextjs/.next/
