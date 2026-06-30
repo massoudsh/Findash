@@ -36,14 +36,14 @@ function DashboardPageContent() {
     router.replace(query ? `/dashboard?${query}` : '/dashboard', { scroll: false });
   }
 
-  const currentTime = new Date().toLocaleString('en-US', {
+  const currentTime = new Date().toLocaleString('fa-IR', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    timeZone: 'America/New_York',
+    timeZone: 'Asia/Tehran',
   });
 
   return (
@@ -52,22 +52,22 @@ function DashboardPageContent() {
         {/* Header: Command center + Overview/Portfolio tabs */}
         <div className="border-b border-white/30 dark:border-white/20 bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
           <div className="container mx-auto px-4 py-6">
-            <h1 className="text-center text-3xl sm:text-4xl font-bold tracking-tight text-foreground antialiased font-serif mb-4 uppercase tracking-wider">
-              Command center
+            <h1 className="text-center text-3xl sm:text-4xl font-bold tracking-tight text-foreground antialiased mb-4">
+              مرکز فرمان
             </h1>
             <div className="flex justify-center mb-4">
               <TabsList className="grid w-full max-w-lg grid-cols-3">
                 <TabsTrigger value="overview" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
-                  Overview
+                  نمای کلی
                 </TabsTrigger>
                 <TabsTrigger value="portfolio" className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4" />
-                  Portfolio
+                  پرتفوی
                 </TabsTrigger>
                 <TabsTrigger value="trades" className="flex items-center gap-2">
                   <ClipboardList className="h-4 w-4" />
-                  My Trades
+                  معاملات من
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -80,24 +80,24 @@ function DashboardPageContent() {
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full animate-pulse shadow-lg shadow-green-500/50" />
                       <span className="text-sm font-semibold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
-                        Market Open
+                        بازار باز است
                       </span>
                     </div>
                     <div className="text-xs text-muted-foreground font-medium">
-                      {currentTime} EST
+                      {currentTime}
                     </div>
                     <div className="flex items-center gap-4 text-xs">
                       <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-500/10 border border-white/30 dark:border-white/20">
                         <TrendingUp className="h-3 w-3 text-green-600" />
-                        <span className="font-semibold">S&P 500: +0.8%</span>
+                        <span className="font-semibold" dir="ltr">S&P 500: +0.8%</span>
                       </div>
                       <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-500/10 border border-white/30 dark:border-white/20">
                         <TrendingUp className="h-3 w-3 text-green-600" />
-                        <span className="font-semibold">NASDAQ: +1.2%</span>
+                        <span className="font-semibold" dir="ltr">NASDAQ: +1.2%</span>
                       </div>
                       <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-blue-500/10 border border-white/30 dark:border-white/20">
                         <Users className="h-3 w-3 text-blue-600" />
-                        <span className="font-semibold">247 Active Traders</span>
+                        <span className="font-semibold">۲۴۷ معامله‌گر فعال</span>
                       </div>
                     </div>
                   </div>
@@ -118,7 +118,7 @@ function DashboardPageContent() {
             <DashboardContent />
           </TabsContent>
           <TabsContent value="portfolio" className="mt-0">
-            <Suspense fallback={<div className="text-muted-foreground">Loading portfolio…</div>}>
+            <Suspense fallback={<div className="text-muted-foreground">در حال بارگذاری پرتفوی…</div>}>
               <PortfolioContent />
             </Suspense>
           </TabsContent>
@@ -133,7 +133,7 @@ function DashboardPageContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-muted-foreground">Loading…</div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-muted-foreground">در حال بارگذاری…</div>}>
       <DashboardPageContent />
     </Suspense>
   );

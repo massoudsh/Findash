@@ -310,7 +310,7 @@ export function TradingBotsContent() {
           <CardContent className="py-3 px-4 flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
             <span className="text-sm">{botsError}. Showing fallback data.</span>
-            <Button variant="outline" size="sm" onClick={() => fetchBots()}>Retry</Button>
+            <Button variant="outline" size="sm" onClick={() => fetchBots()}>تلاش مجدد</Button>
           </CardContent>
         </Card>
       )}
@@ -331,7 +331,7 @@ export function TradingBotsContent() {
       </Card>
 
       {botsLoading ? (
-        <div className="text-muted-foreground text-sm py-8 text-center">Loading bots…</div>
+        <div className="text-muted-foreground text-sm py-8 text-center">در حال بارگذاری ربات‌ها…</div>
       ) : (
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {bots.map((bot) => (

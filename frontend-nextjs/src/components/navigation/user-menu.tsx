@@ -5,7 +5,7 @@ export function UserMenu() {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    return <div className="px-4">Loading...</div>;
+    return <div className="px-4">در حال بارگذاری...</div>;
   }
 
   if (session) {
@@ -16,7 +16,7 @@ export function UserMenu() {
           onClick={() => signOut({ callbackUrl: "/auth/signin" })}
           className="bg-red-500 text-white px-4 py-1 rounded-md font-semibold hover:bg-red-600 transition"
         >
-          Sign out
+          خروج
         </button>
       </div>
     );

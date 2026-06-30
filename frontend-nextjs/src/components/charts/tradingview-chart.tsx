@@ -368,7 +368,7 @@ export function TradingViewChart({
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="flex items-center space-x-2">
                   <RefreshCw className="h-6 w-6 animate-spin text-blue-400" />
-                  <span className="text-gray-400">Loading chart data...</span>
+                  <span className="text-gray-400">در حال بارگذاری داده‌های نمودار...</span>
                 </div>
               </div>
             ) : (

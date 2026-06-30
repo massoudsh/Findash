@@ -87,7 +87,7 @@ export function GlobalSearch() {
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>نتیجه‌ای یافت نشد.</CommandEmpty>
           {Object.entries(
             searchItems.reduce((acc, item) => {
               if (!acc[item.category]) {

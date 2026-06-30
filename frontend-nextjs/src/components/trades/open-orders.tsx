@@ -37,7 +37,7 @@ export function OpenOrders() {
       </CardHeader>
       <CardContent>
         {isLoading && openOrders.length === 0 ? (
-          <p>Loading open orders...</p>
+          <p>در حال بارگذاری سفارش‌های باز...</p>
         ) : openOrders.length === 0 ? (
           <p className="text-muted-foreground">No open orders.</p>
         ) : (
@@ -50,7 +50,7 @@ export function OpenOrders() {
                     {order.quantity} @ {formatCurrency(order.price)}
                   </p>
                 </div>
-                <Button variant="outline" size="sm">Cancel</Button>
+                <Button variant="outline" size="sm">لغو</Button>
               </div>
             ))}
           </div>

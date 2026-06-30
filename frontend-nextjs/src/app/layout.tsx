@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { Vazirmatn } from 'next/font/google';
 import './globals.css';
 import { NavigationWrapper } from '@/components/navigation/navigation-wrapper';
 import { SessionProviderWrapper } from '@/components/auth/session-provider-wrapper';
@@ -8,16 +9,22 @@ import { Toaster } from '@/components/ui/toaster';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { ChunkErrorHandler } from '@/components/chunk-error-handler';
 
+const vazir = Vazirmatn({
+  subsets: ['arabic'],
+  variable: '--font-vazir',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'Octopus Trading Platform',
-  description: 'Octopus - Intelligent Multi-Agent Trading Platform with AI-Powered Analytics, Deep Learning Models, and Quantum-Enhanced Investment Strategies',
+  title: 'پلتفرم معاملاتی اکتپوس',
+  description: 'پلتفرم هوشمند معاملاتی با هوش مصنوعی، تحلیل ریل‌تایم و مدیریت ریسک پیشرفته',
   icons: {
     icon: '/favicon.svg',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'Octopus Trading Platform',
-    description: 'Intelligent Multi-Agent Trading Platform with AI-Powered Analytics',
+    title: 'پلتفرم معاملاتی اکتپوس',
+    description: 'پلتفرم هوشمند معاملاتی با هوش مصنوعی',
     type: 'website',
   },
 };
@@ -28,19 +35,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="fa" dir="rtl" className={`dark ${vazir.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-sans">
+      <body className="font-vazir">
         <ErrorBoundary>
           <ChunkErrorHandler />
           <LocaleProvider>
             <SessionProviderWrapper>
-              <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading…</div>}>
+              <Suspense fallback={<div className="flex min-h-screen items-center justify-center">در حال بارگذاری…</div>}>
                 <NavigationWrapper>
                   {children}
                 </NavigationWrapper>

@@ -10,7 +10,7 @@
 ## خلاصه معماری
 پروژه از سه لایه اصلی تشکیل شده:
 
-1. **Frontend** — Next.js 15 (TypeScript) روی پورت `3002`
+1. **Frontend** — Next.js 15 (TypeScript) روی پورت `3003` | زبان پیش‌فرض: فارسی (RTL، فونت Vazirmatn)
 2. **Backend** — FastAPI (Python 3.10+) روی پورت `8000`
 3. **Data Layer** — PostgreSQL + TimescaleDB، Redis Cache، Kafka Streaming
 

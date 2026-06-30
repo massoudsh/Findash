@@ -179,13 +179,13 @@ export function AdvancedChart({
     return (
       <Card className={`glass-card ${className}`}>
         <CardHeader>
-          <CardTitle>Chart Loading...</CardTitle>
+          <CardTitle>در حال بارگذاری نمودار...</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-96 flex items-center justify-center text-muted-foreground">
             <div className="text-center">
               <Activity className="h-8 w-8 mx-auto mb-2 animate-pulse" />
-              <p>Loading chart data...</p>
+              <p>در حال بارگذاری داده‌های نمودار...</p>
             </div>
           </div>
         </CardContent>

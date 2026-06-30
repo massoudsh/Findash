@@ -131,7 +131,7 @@ function TradingCenterContent() {
             <TabsContent value="strategies" className="mt-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4 min-h-[480px]">
                 <div className="min-w-0">
-                  <Suspense fallback={<div className="text-center">Loading strategies...</div>}>
+                  <Suspense fallback={<div className="text-center">در حال بارگذاری استراتژی‌ها...</div>}>
                     <StrategiesContent />
                   </Suspense>
                 </div>
@@ -143,7 +143,7 @@ function TradingCenterContent() {
             <TabsContent value="backtesting" className="mt-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4 min-h-[480px]">
                 <div className="min-w-0">
-                  <Suspense fallback={<div>Loading backtesting...</div>}>
+                  <Suspense fallback={<div>در حال بارگذاری بک‌تست...</div>}>
                     <BacktestRunner />
                   </Suspense>
                 </div>
@@ -157,7 +157,7 @@ function TradingCenterContent() {
         <TabsContent value="risk" className="mt-6">
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4 min-h-[480px]">
             <div className="min-w-0">
-              <Suspense fallback={<div>Loading risk analysis...</div>}>
+              <Suspense fallback={<div>در حال بارگذاری تحلیل ریسک...</div>}>
                 <RiskContent />
               </Suspense>
             </div>
@@ -188,7 +188,7 @@ function TradingCenterContent() {
 
 export default function TradingPage() {
   return (
-    <Suspense fallback={<div className="p-6 text-muted-foreground">Loading Command Center…</div>}>
+    <Suspense fallback={<div className="p-6 text-muted-foreground">در حال بارگذاری مرکز فرمان…</div>}>
       <TradingCenterContent />
     </Suspense>
   );

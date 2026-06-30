@@ -208,7 +208,7 @@ export default function MarketDataPage() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="py-8 text-center text-muted-foreground">Loading market data...</div>
+            <div className="py-8 text-center text-muted-foreground">در حال بارگذاری داده‌های بازار...</div>
           ) : error ? (
             <div className="py-8 text-center text-red-500">{error}</div>
           ) : (

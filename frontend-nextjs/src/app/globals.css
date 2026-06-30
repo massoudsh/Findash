@@ -107,6 +107,7 @@
     @apply bg-background text-foreground;
     color: hsl(var(--foreground));
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    font-family: var(--font-vazir), 'Vazirmatn', Tahoma, ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -115,10 +116,6 @@
   /* Light mode body background */
   .light body {
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
-  }
-  /* Use Dana when language is Persian */
-  html[lang='fa'] body {
-    font-family: 'Dana', ui-sans-serif, system-ui, sans-serif;
   }
 }
 
@@ -523,7 +520,6 @@ nextjs-portal > * {
 /* RTL (Persian / Farsi) support */
 [dir="rtl"] {
   text-align: right;
-  font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
 }
 
 [dir="rtl"] .space-x-3 > * + * {

@@ -502,7 +502,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         onValueChange={setSearch}
       />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty>نتیجه‌ای یافت نشد.</CommandEmpty>
 
         {platformResults.length > 0 && (
           <>

@@ -532,7 +532,7 @@ export default function SettingsPage() {
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Confirm Orders</div>
+                    <div className="font-medium">تأیید سفارش‌ها</div>
                     <div className="text-sm text-gray-600">Show confirmation dialog</div>
                   </div>
                   <input 

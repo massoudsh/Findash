@@ -211,7 +211,7 @@ deploy-prod: ## Deploy to production environment
 health: ## Check service health
 	@echo "🏥 Checking service health..."
 	@curl -f http://localhost:8000/health || echo "❌ API not responding"
-	@curl -f http://localhost:3000 || echo "❌ Frontend not responding"
+	@curl -f http://localhost:3003 || echo "❌ Frontend not responding"
 	@curl -f http://localhost:9090 || echo "❌ Prometheus not responding"
 	@curl -f http://localhost:3001 || echo "❌ Grafana not responding"
 

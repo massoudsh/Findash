@@ -13,7 +13,7 @@ export default function SocialPage() {
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
         <div className="min-w-0">
-          <Suspense fallback={<div className="text-center text-muted-foreground py-8">Loading social signals...</div>}>
+          <Suspense fallback={<div className="text-center text-muted-foreground py-8">در حال بارگذاری سیگنال‌های اجتماعی...</div>}>
             <SocialContent />
           </Suspense>
         </div>

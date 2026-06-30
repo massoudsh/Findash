@@ -180,7 +180,7 @@ export function ChartShowcase({ className }: ChartShowcaseProps) {
             />
           ) : (
             <div className="h-96 flex items-center justify-center">
-              <p>Loading chart data...</p>
+              <p>در حال بارگذاری داده‌های نمودار...</p>
             </div>
           )}
         </CardContent>

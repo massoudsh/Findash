@@ -48,12 +48,13 @@ services:
     container_name: octopus-frontend
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "3003:3003"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8011
       - NODE_ENV=production
+      - PORT=3003
       - NEXTAUTH_SECRET=${SECRET_KEY:-dev-secret-key}
-      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_URL=http://localhost:3003
     depends_on:
       api: { condition: service_healthy }
     networks:

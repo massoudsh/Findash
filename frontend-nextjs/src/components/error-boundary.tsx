@@ -112,20 +112,20 @@ export class ErrorBoundary extends Component<Props, State> {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-destructive">
                 <AlertTriangle className="h-5 w-5" />
-                {isChunkError ? 'Loading Error' : 'Something went wrong'}
+                {isChunkError ? 'خطا در بارگذاری' : 'خطایی رخ داده است'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-sm text-muted-foreground">
                 {isChunkError ? (
                   <p>
-                    The application failed to load some resources. This usually happens
-                    when the app has been updated. Please try refreshing the page.
+                    برنامه نتوانست منابع لازم را بارگذاری کند. این مشکل معمولاً
+                    پس از به‌روزرسانی برنامه رخ می‌دهد. لطفاً صفحه را رفرش کنید.
                   </p>
                 ) : (
                   <p>
-                    An unexpected error occurred. Please try refreshing the page or
-                    contact support if the problem persists.
+                    خطای غیرمنتظره‌ای رخ داد. لطفاً صفحه را رفرش کنید یا
+                    در صورت ادامه مشکل با پشتیبانی تماس بگیرید.
                   </p>
                 )}
               </div>
@@ -133,7 +133,7 @@ export class ErrorBoundary extends Component<Props, State> {
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <details className="text-xs bg-muted p-2 rounded">
                   <summary className="cursor-pointer font-medium mb-2">
-                    Error Details
+                    جزئیات خطا
                   </summary>
                   <pre className="whitespace-pre-wrap break-all">
                     {this.state.error.toString()}
@@ -149,8 +149,8 @@ export class ErrorBoundary extends Component<Props, State> {
                   size="sm"
                   disabled={this.state.isRetrying}
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh Page
+                  <RefreshCw className="h-4 w-4 ms-2" />
+                  رفرش صفحه
                 </Button>
                 
                 {!isChunkError && (
@@ -160,7 +160,7 @@ export class ErrorBoundary extends Component<Props, State> {
                     size="sm"
                     disabled={this.state.isRetrying}
                   >
-                    {this.state.isRetrying ? 'Retrying...' : 'Try Again'}
+                    {this.state.isRetrying ? 'در حال تلاش...' : 'تلاش مجدد'}
                   </Button>
                 )}
               </div>

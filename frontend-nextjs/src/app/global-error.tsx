@@ -34,21 +34,20 @@ export default function GlobalError({
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-destructive">
                 <AlertTriangle className="h-5 w-5" />
-                {isChunkLoadError ? 'Loading Error' : 'Application Error'}
+                {isChunkLoadError ? 'خطا در بارگذاری' : 'خطای برنامه'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-sm text-muted-foreground">
                 {isChunkLoadError ? (
                   <p>
-                    The application failed to load some resources. This usually happens
-                    when the app has been updated. Please refresh the page to get the
-                    latest version.
+                    برنامه نتوانست منابع لازم را بارگذاری کند. این مشکل معمولاً پس از به‌روزرسانی برنامه رخ می‌دهد.
+                    لطفاً صفحه را رفرش کنید تا نسخه جدید بارگذاری شود.
                   </p>
                 ) : (
                   <p>
-                    A critical error occurred in the application. Please refresh the page
-                    or contact support if the problem persists.
+                    خطای بحرانی در برنامه رخ داده است. لطفاً صفحه را رفرش کنید
+                    یا در صورت ادامه مشکل با پشتیبانی تماس بگیرید.
                   </p>
                 )}
               </div>
@@ -56,7 +55,7 @@ export default function GlobalError({
               {process.env.NODE_ENV === 'development' && (
                 <details className="text-xs bg-muted p-2 rounded">
                   <summary className="cursor-pointer font-medium mb-2">
-                    Error Details
+                    جزئیات خطا
                   </summary>
                   <pre className="whitespace-pre-wrap break-all">
                     {error.message}
@@ -67,12 +66,12 @@ export default function GlobalError({
 
               <div className="flex gap-2">
                 <Button onClick={handleReload} variant="default" size="sm">
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh Page
+                  <RefreshCw className="h-4 w-4 ms-2" />
+                  رفرش صفحه
                 </Button>
                 {!isChunkLoadError && (
                   <Button onClick={reset} variant="outline" size="sm">
-                    Try Again
+                    تلاش مجدد
                   </Button>
                 )}
               </div>

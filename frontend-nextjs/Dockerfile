@@ -27,6 +27,7 @@ FROM node:18-alpine AS runtime
 # Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3003
 
 # Install curl for healthcheck
 RUN apk add --no-cache curl
@@ -48,11 +49,11 @@ RUN chown -R nextjs:nodejs /app
 USER nextjs
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3003
 
 # Health check (Next.js may bind to hostname; use it so curl reaches the app)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD ["/bin/sh", "-c", "curl -f http://$(hostname):3000/ || exit 1"]
+    CMD ["/bin/sh", "-c", "curl -f http://$(hostname):3003/ || exit 1"]
 
 # Start the application
 CMD ["node", "server.js"] 

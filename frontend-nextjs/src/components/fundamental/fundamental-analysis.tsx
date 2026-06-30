@@ -81,7 +81,7 @@ export function FundamentalAnalysis({ symbol }: FundamentalAnalysisProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Loading Fundamental Analysis...</CardTitle>
+          <CardTitle>در حال بارگذاری تحلیل بنیادی...</CardTitle>
         </CardHeader>
       </Card>
     );
@@ -91,7 +91,7 @@ export function FundamentalAnalysis({ symbol }: FundamentalAnalysisProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Error Loading Data</CardTitle>
+          <CardTitle>خطا در بارگذاری داده</CardTitle>
         </CardHeader>
       </Card>
     );

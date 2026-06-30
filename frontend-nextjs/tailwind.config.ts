@@ -66,6 +66,7 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
+        vazir: ['var(--font-vazir)', 'Vazirmatn', 'Tahoma', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         dana: ['Dana', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       keyframes: {

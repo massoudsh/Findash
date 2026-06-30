@@ -221,7 +221,7 @@ export function TradeTracker({ prices = {} }: TradeTrackerProps) {
                   />
                 </div>
               </div>
-              <Button size="sm" onClick={addTrade} className="mt-1">Save Trade</Button>
+              <Button size="sm" onClick={addTrade} className="mt-1">ثبت معامله</Button>
             </div>
           )}
 

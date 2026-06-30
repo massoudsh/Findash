@@ -634,7 +634,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
             <div className="relative flex-1 min-h-[200px] lg:min-h-[180px] bg-muted/30 rounded-lg overflow-hidden transition-opacity duration-200">
                 {chartLoading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-muted/20 z-10">
-                    <span className="text-sm text-muted-foreground">Loading chart…</span>
+                    <span className="text-sm text-muted-foreground">در حال بارگذاری نمودار…</span>
                   </div>
                 )}
                 <div className="absolute left-2 top-0 bottom-0 flex flex-col justify-between text-[10px] text-muted-foreground py-4">

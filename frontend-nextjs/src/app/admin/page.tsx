@@ -117,7 +117,7 @@ interface ConfigSetting {
 
 const AuditLogPage = dynamic(
   () => import('@/app/audit-log/page').then((m) => m.default),
-  { ssr: false, loading: () => <div className="p-6 text-muted-foreground">Loading audit log…</div> }
+  { ssr: false, loading: () => <div className="p-6 text-muted-foreground">در حال بارگذاری لاگ ممیزی…</div> }
 );
 
 export default function AdminPage() {

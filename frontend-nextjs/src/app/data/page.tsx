@@ -76,7 +76,7 @@ export default function DataPage() {
         <TabsContent value="charts" className="mt-6">
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
             <div className="min-w-0">
-              <Suspense fallback={<div className="text-center text-muted-foreground">Loading visualizations...</div>}>
+              <Suspense fallback={<div className="text-center text-muted-foreground">در حال بارگذاری نمودارها...</div>}>
                 <ChartShowcase />
                 <VisualizationContent />
               </Suspense>

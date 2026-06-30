@@ -13,7 +13,7 @@ export default function RealtimePage() {
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
         <div className="min-w-0">
-          <Suspense fallback={<div>Loading real-time data...</div>}>
+          <Suspense fallback={<div>در حال بارگذاری داده‌های لحظه‌ای...</div>}>
             <RealtimeContent />
           </Suspense>
         </div>

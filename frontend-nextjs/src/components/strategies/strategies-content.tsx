@@ -887,7 +887,7 @@ export function StrategiesContent() {
   }
 
   if (isLoading) {
-    return <div>Loading strategies...</div>;
+    return <div>در حال بارگذاری استراتژی‌ها...</div>;
   }
 
   return (

@@ -8,12 +8,12 @@ import { User, Settings } from 'lucide-react';
 
 const ProfilePage = dynamic(() => import('@/app/profile/page').then((m) => m.default), {
   ssr: false,
-  loading: () => <div className="p-6 text-muted-foreground">Loading profile…</div>,
+  loading: () => <div className="p-6 text-muted-foreground">در حال بارگذاری پروفایل…</div>,
 });
 
 const SettingsPage = dynamic(() => import('@/app/settings/page').then((m) => m.default), {
   ssr: false,
-  loading: () => <div className="p-6 text-muted-foreground">Loading settings…</div>,
+  loading: () => <div className="p-6 text-muted-foreground">در حال بارگذاری تنظیمات…</div>,
 });
 
 type AccountTab = 'profile' | 'settings';

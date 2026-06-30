@@ -58,7 +58,7 @@ function StrategiesPageContent() {
         <TabsContent value="strategies" className="mt-6">
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
             <div className="min-w-0">
-              <Suspense fallback={<div className="text-center">Loading strategies...</div>}>
+              <Suspense fallback={<div className="text-center">در حال بارگذاری استراتژی‌ها...</div>}>
                 <StrategiesContent />
               </Suspense>
             </div>
@@ -70,7 +70,7 @@ function StrategiesPageContent() {
         <TabsContent value="backtesting" className="mt-6">
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
             <div className="min-w-0">
-              <Suspense fallback={<div>Loading backtesting interface...</div>}>
+              <Suspense fallback={<div>در حال بارگذاری بک‌تست...</div>}>
                 <BacktestRunner />
               </Suspense>
             </div>
@@ -86,7 +86,7 @@ function StrategiesPageContent() {
 
 export default function StrategiesPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto px-6 py-8 text-muted-foreground">Loading…</div>}>
+    <Suspense fallback={<div className="container mx-auto px-6 py-8 text-muted-foreground">در حال بارگذاری…</div>}>
       <StrategiesPageContent />
     </Suspense>
   );

@@ -162,10 +162,10 @@ export const translations: Record<Locale, Record<string, string>> = {
 const LOCALE_STORAGE_KEY = 'findash-locale';
 
 export function getStoredLocale(): Locale {
-  if (typeof window === 'undefined') return 'en';
+  if (typeof window === 'undefined') return 'fa';
   const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-  if (stored === 'fa' || stored === 'es') return stored;
-  return 'en';
+  if (stored === 'en' || stored === 'fa' || stored === 'es') return stored;
+  return 'fa';
 }
 
 export function setStoredLocale(locale: Locale): void {

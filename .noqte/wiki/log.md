@@ -8,3 +8,5 @@
 ## [2026-06-27] feature | TASK-001 کامل شد — 001e widget داشبورد، 001f portfolio section، 001g main_refactored.py ساخته شد
 ## [2026-06-28] feature | TASK-002~006 کامل شد — IranMacro، CurrencyToggle، Jalali، backtesting، 2 test file، README update
 ## [2026-06-29] feature | 6 قابلیت جدید — WebSocket hook، TradeTracker، PriceAlerts، News page، light-mode CSS، 31 unit test، build ✓ 57 pages
+## [2026-06-29] update | تغییر پورت frontend از 3000 به 3003 (Dockerfile, docker-compose-core, docker-compose-complete, package.json, Makefile)
+## [2026-06-30] update | فارسی‌سازی کل اپ: lang=fa dir=rtl، فونت Vazirmatn، default locale=fa، fa-utils.ts، ترجمه صفحات auth/dashboard/error و ۲۰+ کامپوننت

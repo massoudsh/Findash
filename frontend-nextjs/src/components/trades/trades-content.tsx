@@ -42,7 +42,7 @@ export function TradesContent() {
     : trades.filter(trade => trade.portfolio_id === selectedPortfolio);
 
   if (isLoading) {
-    return <div>Loading trades...</div>;
+    return <div>در حال بارگذاری معاملات...</div>;
   }
 
   return (
