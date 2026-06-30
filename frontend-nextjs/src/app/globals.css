@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* IRANYekanX — فونت اصلی پروژه
+   برای استفاده آفلاین: فایل‌های IRANYekanX.woff2 را در public/fonts/ قرار دهید
+   دانلود: https://github.com/rastikerdar/iranyekan/releases */
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/IRANYekanX.woff2') format('woff2'),
+       url('/fonts/IRANYekanX.woff') format('woff');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Dana font (Persian) — put files in public/fonts/ (e.g. Dana.woff2, Dana.woff) */
 @font-face {
   font-family: 'Dana';
@@ -39,15 +51,21 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     
-    /* Custom fintech variables */
-    --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    /* Custom fintech variables — Persian Green Theme */
+    --gradient-primary: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
+    --gradient-success: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
     --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     --gradient-glass: linear-gradient(135deg, rgba(30,41,59,0.8) 0%, rgba(15,23,42,0.8) 100%);
-    --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
+    --shadow-glow: 0 0 20px rgba(34, 197, 94, 0.25);
     --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.25);
     --shadow-intense: 0 20px 60px rgba(0, 0, 0, 0.4);
+    /* Persian color tokens */
+    --persian-green: #22C55E;
+    --persian-green-dark: #16a34a;
+    --persian-green-light: #4ade80;
+    --persian-gold: #d4a017;
+    --persian-pattern-opacity: 0.04;
   }
 
   .dark {
@@ -57,8 +75,8 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 84% 4.9%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
@@ -69,7 +87,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 94.1%;
+    --ring: 142 71% 55%;
   }
 }
 
@@ -81,19 +99,19 @@
   --card-foreground: 222.2 84% 4.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
-  --primary: 222.2 84% 4.9%;
-  --primary-foreground: 210 40% 98%;
+  --primary: 142 76% 32%;
+  --primary-foreground: 0 0% 100%;
   --secondary: 210 40% 96%;
   --secondary-foreground: 222.2 84% 4.9%;
   --muted: 210 40% 96%;
   --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 84% 4.9%;
+  --accent: 142 30% 94%;
+  --accent-foreground: 142 76% 22%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
   --border: 214.3 31.8% 91.4%;
   --input: 214.3 31.8% 91.4%;
-  --ring: 222.2 84% 4.9%;
+  --ring: 142 71% 45%;
 }
 
 @layer base {
@@ -107,7 +125,7 @@
     @apply bg-background text-foreground;
     color: hsl(var(--foreground));
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-    font-family: var(--font-vazir), 'Vazirmatn', Tahoma, ui-sans-serif, system-ui, sans-serif;
+    font-family: 'IRANYekanX', var(--font-vazir), 'Vazirmatn', Tahoma, ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -183,7 +201,7 @@
 
 /* Professional gradients */
 .gradient-text {
-  background: linear-gradient(135deg, #3b82f6 0%, #1e40af 50%, #1e3a8a 100%);
+  background: linear-gradient(135deg, #22C55E 0%, #16a34a 50%, #15803d 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -220,8 +238,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); }
-  50% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 25px rgba(59, 130, 246, 0.2); }
+  0%, 100% { box-shadow: 0 0 5px rgba(34, 197, 94, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.5), 0 0 25px rgba(34, 197, 94, 0.2); }
 }
 
 @keyframes slide-in-bottom {
@@ -273,12 +291,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #22C55E, #16a34a);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #764ba2, #667eea);
+  background: linear-gradient(135deg, #16a34a, #22C55E);
 }
 
 /* Advanced grid patterns */
@@ -515,6 +533,127 @@ nextjs-portal > * {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   عناصر هنری و فرهنگی ایرانی — Persian Cultural Design Elements
+   ═══════════════════════════════════════════════════════════════ */
+
+/* فونت ایران یکان */
+.font-iran-yekan {
+  font-family: 'IRANYekanX', var(--font-vazir), 'Vazirmatn', sans-serif;
+}
+
+/* بوردر تزئینی ایرانی — سبک اسلیمی */
+.persian-border {
+  position: relative;
+}
+.persian-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.6) 0%,
+    rgba(212, 160, 23, 0.4) 25%,
+    rgba(34, 197, 94, 0.2) 50%,
+    rgba(212, 160, 23, 0.4) 75%,
+    rgba(34, 197, 94, 0.6) 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* پترن هندسی ایرانی */
+.persian-pattern-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%2322C55E' stroke-width='0.5' opacity='0.08'%3E%3Cpolygon points='30,5 55,20 55,40 30,55 5,40 5,20'/%3E%3Cpolygon points='30,12 48,22 48,38 30,48 12,38 12,22'/%3E%3Cline x1='30' y1='5' x2='30' y2='12'/%3E%3Cline x1='55' y1='20' x2='48' y2='22'/%3E%3Cline x1='55' y1='40' x2='48' y2='38'/%3E%3Cline x1='30' y1='55' x2='30' y2='48'/%3E%3Cline x1='5' y1='40' x2='12' y2='38'/%3E%3Cline x1='5' y1='20' x2='12' y2='22'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 60px 60px;
+}
+
+/* کارت با سبک ایرانی */
+.persian-card {
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(20px) saturate(120%);
+  -webkit-backdrop-filter: blur(20px) saturate(120%);
+  border: 1px solid rgba(34, 197, 94, 0.15);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(34, 197, 94, 0.08),
+    inset 0 1px 0 rgba(34, 197, 94, 0.08);
+  border-radius: 16px;
+}
+
+/* دکوراسیون گوشه‌ای */
+.persian-corner {
+  position: relative;
+}
+.persian-corner::after {
+  content: '✦';
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  color: rgba(34, 197, 94, 0.3);
+  font-size: 10px;
+  pointer-events: none;
+}
+
+/* نوار رنگی فارسی */
+.persian-accent-bar {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(34, 197, 94, 0.6) 20%,
+    rgba(212, 160, 23, 0.4) 50%,
+    rgba(34, 197, 94, 0.6) 80%,
+    transparent 100%
+  );
+  height: 2px;
+  width: 100%;
+}
+
+/* گلوی سبز ایرانی برای عناصر فعال */
+.persian-active-glow {
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.4),
+    0 0 12px rgba(34, 197, 94, 0.15),
+    0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* دکمه سبز ایرانی */
+.btn-persian {
+  background: linear-gradient(135deg, #22C55E 0%, #16a34a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-family: 'IRANYekanX', var(--font-vazir), sans-serif;
+  font-weight: 600;
+  padding: 10px 24px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.btn-persian:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.3);
+  transform: translateY(-1px);
+}
+.btn-persian:active {
+  transform: translateY(0);
+}
+
+/* بج / برچسب ایرانی */
+.persian-badge {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22C55E;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  font-family: 'IRANYekanX', var(--font-vazir), sans-serif;
 }
 
 /* RTL (Persian / Farsi) support */

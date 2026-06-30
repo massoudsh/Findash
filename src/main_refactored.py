@@ -73,6 +73,7 @@ from src.api.endpoints.agent_panels import router as agent_panels_router
 from src.api.endpoints.backtesting import router as backtesting_router
 from src.api.endpoints.strategies_crud import router as strategies_crud_router
 from src.api.endpoints.search import router as search_router
+from src.api.endpoints.payment_zarinpal import router as zarinpal_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -210,6 +211,7 @@ app.include_router(social_router, prefix="/api/social", tags=["Real Social Data"
 # Phase 3: Backend Integration APIs
 app.include_router(agents_router, tags=["Agent Monitoring"])
 app.include_router(wallet_router, tags=["Wallet & Funding"])
+app.include_router(zarinpal_router, tags=["ZarinPal Payment"])
 app.include_router(security_router, tags=["Security & Access Control"])
 app.include_router(scenarios_router, tags=["Market Scenarios"])
 # Unified WebSocket API (consolidates all WebSocket endpoints)

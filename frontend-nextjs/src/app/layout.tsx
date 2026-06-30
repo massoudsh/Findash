@@ -16,8 +16,8 @@ const vazir = Vazirmatn({
 });
 
 export const metadata: Metadata = {
-  title: 'پلتفرم معاملاتی اکتپوس',
-  description: 'پلتفرم هوشمند معاملاتی با هوش مصنوعی، تحلیل ریل‌تایم و مدیریت ریسک پیشرفته',
+  title: 'فین‌دَش | پلتفرم هوشمند معاملاتی',
+  description: 'پلتفرم هوشمند معاملاتی بازار ایران با هوش مصنوعی، تحلیل ریل‌تایم و مدیریت ریسک پیشرفته',
   icons: {
     icon: '/favicon.svg',
     apple: '/apple-touch-icon.png',
@@ -39,7 +39,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
-      <body className="font-vazir">
+      <body className="font-iran-yekan">
         <ErrorBoundary>
           <ChunkErrorHandler />
           <LocaleProvider>

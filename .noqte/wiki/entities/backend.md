@@ -19,6 +19,10 @@
 | `/api/risk` | آنالیز ریسک |
 | `/api/ai-models` | endpoint های مدل AI |
 | `/api/websocket` | اتصال WebSocket |
+| `/api/payment/zarinpal/create` | ایجاد سفارش پرداخت زرین‌پال |
+| `/api/payment/zarinpal/callback` | callback زرین‌پال + verify اجباری |
+| `/api/payment/zarinpal/status/{id}` | وضعیت سفارش پرداخت |
+| `/api/payment/zarinpal/history` | تاریخچه پرداخت کاربر |
 | `/docs` | Swagger UI |
 | `/redoc` | ReDoc |
 
@@ -34,5 +38,7 @@
 - Alembic (migrations)
 
 ## منابع کد
-- `MyProjects/Octopus/Modules/src/main_refactored.py` — نقطه ورود اصلی
+- `src/main_refactored.py` — نقطه ورود اصلی و ثبت routerها
+- `src/api/endpoints/payment_zarinpal.py` — یکپارچه‌سازی زرین‌پال: create/callback/verify/status/history
+- `database/schemas/payment_orders.sql` — schema جدول payment_orders
 - پورت پیش‌فرض: `localhost:8000`

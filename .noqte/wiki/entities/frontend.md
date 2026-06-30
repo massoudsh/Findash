@@ -19,6 +19,10 @@
 | `/trading-bots` | ساخت و مدیریت ربات |
 | `/ai-models` | مارکت‌پلیس مدل، آموزش، پیش‌بینی |
 | `/risk` | VaR، stress test، متریک‌های ریسک |
+| `/payment/checkout` | انتخاب پلن و شروع پرداخت زرین‌پال |
+| `/payment/callback/zarinpal` | bridge برگشت از زرین‌پال به backend verify |
+| `/payment/success` | نتیجه پرداخت موفق |
+| `/payment/failed` | نتیجه پرداخت ناموفق |
 
 ## کامپوننت‌های جدید (این مکالمه)
 | فایل | عملکرد |
@@ -42,5 +46,9 @@
 - Recharts, TradingView Charts
 
 ## منابع کد
-- `MyProjects/Octopus/README.md:559` — ساختار پروژه frontend
-- پورت پیش‌فرض: `localhost:3002`
+- `frontend-nextjs/src/app/payment/checkout/page.tsx` — صفحه انتخاب پلن و پرداخت
+- `frontend-nextjs/src/app/payment/callback/zarinpal/page.tsx` — callback bridge زرین‌پال
+- `frontend-nextjs/src/app/payment/success/page.tsx` — صفحه موفقیت پرداخت
+- `frontend-nextjs/src/app/payment/failed/page.tsx` — صفحه شکست پرداخت
+- `frontend-nextjs/src/app/api/payment/zarinpal/create/route.ts` — API proxy پرداخت
+- پورت پیش‌فرض: `localhost:3003`

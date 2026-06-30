@@ -59,6 +59,12 @@ const config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        'persian-green': {
+          DEFAULT: '#22C55E',
+          dark: '#16a34a',
+          light: '#4ade80',
+        },
+        'persian-gold': '#d4a017',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -66,6 +72,7 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
+        'iran-yekan': ['IRANYekanX', 'var(--font-vazir)', 'Vazirmatn', 'Tahoma', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         vazir: ['var(--font-vazir)', 'Vazirmatn', 'Tahoma', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         dana: ['Dana', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },

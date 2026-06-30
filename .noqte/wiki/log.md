@@ -10,3 +10,4 @@
 ## [2026-06-29] feature | 6 قابلیت جدید — WebSocket hook، TradeTracker، PriceAlerts، News page، light-mode CSS، 31 unit test، build ✓ 57 pages
 ## [2026-06-29] update | تغییر پورت frontend از 3000 به 3003 (Dockerfile, docker-compose-core, docker-compose-complete, package.json, Makefile)
 ## [2026-06-30] update | فارسی‌سازی کل اپ: lang=fa dir=rtl، فونت Vazirmatn، default locale=fa، fa-utils.ts، ترجمه صفحات auth/dashboard/error و ۲۰+ کامپوننت
+## [2026-06-30] feature | یکپارچه‌سازی زرین‌پال: backend create/callback/verify، payment_orders SQL، صفحات checkout/success/failed/callback و env sandbox

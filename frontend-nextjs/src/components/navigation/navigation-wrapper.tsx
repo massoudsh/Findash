@@ -211,7 +211,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
             }, SIDEBAR_HOVER_LEAVE_DELAY_MS);
           }}
         >
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto overflow-x-hidden border-r border-white/30 dark:border-white/20 bg-card pb-4 transition-[padding] duration-200 ease-out border-2 border-amber-400/90 shadow-[0_0_12px_rgba(251,191,36,0.4)] dark:shadow-[0_0_14px_rgba(251,191,36,0.3)] rounded-r-lg">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto overflow-x-hidden border-r border-white/30 dark:border-white/20 bg-card pb-4 transition-[padding] duration-200 ease-out border border-green-500/20 shadow-[0_0_14px_rgba(34,197,94,0.12)] rounded-r-lg">
             <div className={cn('px-2 pt-4', leftCollapsed && 'flex justify-center px-0')}>
               <CommandPaletteTrigger
                 onOpen={() => setCommandOpen(true)}
@@ -250,7 +250,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
             rightCollapsed ? 'lg:pr-16' : 'lg:pr-64'
           )}
         >
-          <main className="py-6">
+          <main className="py-6 pb-24 lg:pb-6">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               {children}
             </div>
@@ -277,7 +277,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
             }, SIDEBAR_HOVER_LEAVE_DELAY_MS);
           }}
         >
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto overflow-x-hidden border-l border-white/30 dark:border-white/20 bg-card pb-4 transition-[padding] duration-200 ease-out border-2 border-amber-400/90 shadow-[0_0_12px_rgba(251,191,36,0.4)] dark:shadow-[0_0_14px_rgba(251,191,36,0.3)] rounded-l-lg">
+          <div className="flex grow flex-col gap-y-5 overflow-y-auto overflow-x-hidden border-l border-white/30 dark:border-white/20 bg-card pb-4 transition-[padding] duration-200 ease-out border border-green-500/20 shadow-[0_0_14px_rgba(34,197,94,0.12)] rounded-l-lg">
             <div className={cn('flex h-16 shrink-0 items-center justify-center', !rightCollapsed && 'px-2')}>
               {!rightCollapsed ? (
                 <h2 className="text-lg font-semibold text-muted-foreground">{t('nav.title.Tools & System')}</h2>
@@ -301,6 +301,46 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
       
       {/* Command Palette */}
       <CommandPalette open={commandOpen} onOpenChange={setCommandOpen} />
+
+      {/* Mobile Bottom Navigation — ناوبری پایین موبایل */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-card/95 backdrop-blur-xl border-t border-white/10 safe-area-inset-bottom"
+           style={{ boxShadow: '0 -4px 20px rgba(0,0,0,0.3), 0 -1px 0 rgba(34,197,94,0.1)' }}>
+        {/* نوار تزئینی سبز */}
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-green-500/40 to-transparent" />
+        <div className="flex items-stretch h-16">
+          {[
+            { href: '/dashboard', icon: BarChart3, label: 'داشبورد' },
+            { href: '/trading', icon: TrendingUp, label: 'معاملات' },
+            { href: '/news', icon: Newspaper, label: 'اخبار' },
+            { href: '/portfolio', icon: PieChart, label: 'پرتفولیو' },
+            { href: '/technical', icon: Target, label: 'تحلیل' },
+          ].map((item) => {
+            const Icon = item.icon;
+            const active = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'flex flex-1 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-all duration-200 active:scale-95',
+                  active
+                    ? 'text-green-400'
+                    : 'text-muted-foreground'
+                )}
+              >
+                <div className={cn(
+                  'rounded-xl p-1.5 transition-all duration-200',
+                  active && 'bg-green-500/15 shadow-[0_0_10px_rgba(34,197,94,0.2)]'
+                )}>
+                  <Icon className={cn('h-5 w-5', active && 'drop-shadow-[0_0_4px_rgba(34,197,94,0.8)]')} />
+                </div>
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+        <div className="h-[env(safe-area-inset-bottom)]" />
+      </nav>
     </div>
   );
 } 

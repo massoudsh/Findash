@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle, GlassCard, ElevatedCard } fro
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
 import {
@@ -232,30 +231,6 @@ export function DashboardContent() {
       />
 
       <div className="space-y-6 relative">
-        {/* Tabs at top: Overview, Holdings, Markets, Activity, Analytics */}
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5 bg-muted/50 h-10">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="positions" className="flex items-center gap-2">
-              <PieChart className="h-4 w-4" />
-              Holdings
-            </TabsTrigger>
-            <TabsTrigger value="market" className="flex items-center gap-2">
-              <Globe className="h-4 w-4" />
-              Markets
-            </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              Activity
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-          </TabsList>
 
         {hasError && (
           <Alert className="border-amber-200 bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200">
@@ -357,10 +332,8 @@ export function DashboardContent() {
         </Card>
         </div>
 
-        <TabsContent value="overview" className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Summary of accounts, earnings, and performance. Charts: P&L by month, cash flow, sector allocation, portfolio value over time.
-          </p>
+        {/* Overview section — flat scroll instead of nested tabs */}
+        <div className="space-y-4">
           <LivePriceCharts />
           {/* One of each: Bar, Waterfall, Pie, Line */}
           <div className="grid gap-6 md:grid-cols-2">
@@ -417,12 +390,10 @@ export function DashboardContent() {
               strokeColor="#8b5cf6"
             />
           </div>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="positions" className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            {positions.length} positions · Total value {formatCurrency(positions.reduce((s, p) => s + p.marketValue, 0))} · Unrealized P&L and weight by position.
-          </p>
+        {/* Holdings section */}
+        <div className="space-y-4">
           <ElevatedCard>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -461,12 +432,10 @@ export function DashboardContent() {
               </div>
             </CardContent>
           </ElevatedCard>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="market" className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Watchlist: live prices and 24h change for crypto and equities. Use Command Center for full market data and Technical for charts.
-          </p>
+        {/* Live market watchlist section */}
+        <div className="space-y-4">
           <GlassCard>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -523,12 +492,10 @@ export function DashboardContent() {
               </div>
             </CardContent>
           </GlassCard>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="activity" className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Recent buys, sells, alerts, and dividends. For full trade history and filters, go to the Trades or Portfolio page.
-          </p>
+        {/* Recent activity section */}
+        <div className="space-y-4">
           <GlassCard>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -569,12 +536,10 @@ export function DashboardContent() {
               </div>
             </CardContent>
           </GlassCard>
-        </TabsContent>
+        </div>
 
-        <TabsContent value="analytics" className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Risk metrics: Sharpe ratio (risk-adjusted return), volatility, max drawdown, and beta. {data.sharpeRatio > 1 && data.volatility < 20 ? 'Profile: solid risk-adjusted returns with moderate volatility.' : data.volatility >= 20 ? 'Profile: higher volatility — consider diversification or risk limits.' : 'Profile: review allocation and drawdown controls.'}
-          </p>
+        {/* Risk metrics section */}
+        <div className="space-y-4">
           <div className="grid gap-4 md:grid-cols-4">
             <ElevatedCard className="relative overflow-hidden group bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border-blue-500/20">
               <CardHeader className="pb-2">
@@ -640,8 +605,7 @@ export function DashboardContent() {
               </CardContent>
             </ElevatedCard>
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
       </div>
     </div>
     </>

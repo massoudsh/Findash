@@ -176,6 +176,14 @@ class TradingSettings(BaseSettings):
         return v
 
 
+class PaymentSettings(BaseSettings):
+    """Payment gateway configuration"""
+    zarinpal_merchant_id: str = Field(
+        "1344b5d4-0048-11e8-94db-005056a205be",
+        env="ZARINPAL_MERCHANT_ID"
+    )
+
+
 class TestSettings(BaseSettings):
     """Testing configuration"""
     database_url: str = Field(
@@ -207,6 +215,7 @@ class Settings(BaseSettings):
     rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)
     cors: CORSSettings = Field(default_factory=CORSSettings)
     trading: TradingSettings = Field(default_factory=TradingSettings)
+    payment: PaymentSettings = Field(default_factory=PaymentSettings)
     testing: TestSettings = Field(default_factory=TestSettings)
     
     @validator("environment")

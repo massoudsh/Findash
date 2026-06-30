@@ -27,6 +27,8 @@ services:
       - FALCON_TGI_URL=${FALCON_TGI_URL:-}
       - FINGPT_LOCAL_URL=${FINGPT_LOCAL_URL:-}
       - HF_TOKEN=${HF_TOKEN:-}
+      - ZARINPAL_MERCHANT_ID=${ZARINPAL_MERCHANT_ID:-1344b5d4-0048-11e8-94db-005056a205be}
+      - APP_BASE_URL=${APP_BASE_URL:-http://localhost:3003}
     depends_on:
       - db
       - redis
