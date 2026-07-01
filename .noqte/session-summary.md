@@ -1,93 +1,104 @@
+---
+
 ### هدف اصلی کاربر
-توسعه و تکمیل پلتفرم مالی «اختاپوس» (Octopus) — یک داشبورد مالی همه‌کاره با تمرکز بر بازار ایران (دارایی‌های فیزیکی: طلا، سکه، دلار، نقره، مسکن، ارز دیجیتال).
+ساخت داشبورد مالی همه‌کاره به نام **اختاپوس** (Octopus) — اپلیکیشن موبایل/وب با تمرکز بر بازار مالی ایران (طلا، سکه، دلار، نقره، مسکن، ارز دیجیتال) روی ریپو `massoudsh/Findash`.
 
 ---
 
 ### وضعیت فعلی پروژه
-**همه ۶ تسک اصلی (TASK-001 تا TASK-006) کامل شده‌اند.**
-- آخرین commit: `642b3ea` — `feat: complete iranian market platform (TASK-002~006)`
-- push به `massoudsh/Findash` → شاخه `main` انجام شده است.
-- بک‌لاگ خالی از تسک باز است.
+- **همه TASK-001 تا TASK-006 کامل و push شده‌اند** (آخرین commit: `642b3ea`)
+- کاربر در آخرین پیام (`2026-06-29T05:58:38`) خواسته مراحل ۱ تا ۶ (WebSocket، Portfolio Tracker، Alert، News، UI/UX، pytest) انجام شوند، اپ local اجرا شود و با GitHub sync شود
+- دستیار شروع به بررسی ساختار پروژه واقعی در `/project/` کرده (نه Modules) و در حال پیاده‌سازی مرحله ۱ (WebSocket hook) بوده که مکالمه قطع شده
 
 ---
 
 ### فایل‌های مهم و تغییرات آن‌ها
 
-**Backend (Python/FastAPI):**
-- `MyProjects/Octopus/Modules/src/schemas/asset_schema.py` — Pydantic types
-- `MyProjects/Octopus/Modules/src/models/asset.py` — 4 جدول SQLAlchemy + seed برای ۱۶ نماد
-- `MyProjects/Octopus/Modules/src/services/asset_service.py` — fetch از `tgju.org` + Redis cache (60s TTL)
-- `MyProjects/Octopus/Modules/src/api/routes/assets.py` — 5 endpoint: list، detail، history، usd-rate، portfolio
-- `MyProjects/Octopus/Modules/src/main_refactored.py` — ثبت assets_router
-- `MyProjects/Octopus/Modules/src/migrations/add_asset_tables.sql` — migration + TimescaleDB hypertable
+**ساختار واقعی پروژه (در `/project/`):**
+- `/project/frontend-nextjs/src/app/` — صفحات Next.js (dashboard، realtime، portfolio، notifications، backtesting)
+- `/project/frontend-nextjs/src/components/` — کامپوننت‌ها (dashboard، portfolio، realtime، navigation، ui)
+- `/project/frontend-nextjs/src/lib/` — utilitiesها شامل `i18n/locale-context.ts`، `backend-url.ts`، `utils.ts`
+- `/project/src/api/routes/` — FastAPI routes
+- `/project/src/realtime/` — سرویس realtime
+- `/project/tests/` — تست‌های backend
 
-**Frontend (Next.js/TypeScript):**
-- `src/lib/assets.ts` — types، `formatToman`، `formatChange`، fetch helpers
-- `src/app/assets/page.tsx` — صفحه دارایی‌ها با tabs
-- `src/app/assets/_components/AssetCard.tsx`، `AssetPriceChart.tsx`، `AssetGrid.tsx`، `AssetSummaryBar.tsx`
-- `src/app/_components/AssetsDashboardWidget.tsx` — top 3 گینر/لوزر در داشبورد
-- `src/app/page.tsx` — داشبورد اصلی
-- `src/app/portfolio/page.tsx` + `PortfolioAssetsSection.tsx` — پورتفولیو فیزیکی
-- `src/context/CurrencyContext.tsx` — سوئیچ سراسری IRT/USD
-- `src/app/_components/CurrencyToggle.tsx` — دکمه «ت / $»
-- `src/lib/locale.ts` — `formatJalali`، `toPersianDigits`
-- `src/app/layout.tsx` — `dir="rtl"` + فونت Vazirmatn
-- `src/app/dashboard/_components/IranMacroWidget.tsx` — ۶ شاخص کلان اقتصادی
-- `src/app/dashboard/_components/CurrencyComparisonCard.tsx` — مقایسه دارایی‌ها
-- `src/app/backtesting/_components/IranAssetBacktest.tsx` — سه استراتژی بک‌تست
-- `src/app/backtesting/page.tsx`
+**فایل‌های ساخته‌شده در Modules (commit شده):**
+- `MyProjects/Octopus/Modules/src/schemas/asset_schema.py`
+- `MyProjects/Octopus/Modules/src/models/asset.py` — 4 جدول SQLAlchemy + 16 نماد seed data
+- `MyProjects/Octopus/Modules/src/services/asset_service.py` — fetch از tgju.org با Redis cache
+- `MyProjects/Octopus/Modules/src/api/routes/assets.py` — 5 endpoint
+- `MyProjects/Octopus/Modules/src/main_refactored.py` — ثبت router
+- `MyProjects/Octopus/Modules/src/migrations/add_asset_tables.sql`
+- `MyProjects/Octopus/Modules/frontend-nextjs/src/app/assets/page.tsx` + کامپوننت‌ها
+- `MyProjects/Octopus/Modules/frontend-nextjs/src/context/CurrencyContext.tsx`
+- `MyProjects/Octopus/Modules/frontend-nextjs/src/lib/locale.ts`
+- `MyProjects/Octopus/Modules/frontend-nextjs/src/app/layout.tsx`
+- `MyProjects/Octopus/Modules/frontend-nextjs/src/app/dashboard/_components/IranMacroWidget.tsx`
+- `MyProjects/Octopus/Modules/frontend-nextjs/src/app/backtesting/page.tsx`
+- `MyProjects/Octopus/Modules/tests/test_assets_api.py` (15 تست)، `test_asset_service.py`
 
-**Tests:**
-- `MyProjects/Octopus/Modules/tests/test_assets_api.py` — ۱۵ تست endpoint
-- `MyProjects/Octopus/Modules/tests/test_asset_service.py` — تست cache و TGJU fetch
+**فایل‌های ساخته‌شده برای مراحل جدید (ناقص — مکالمه قطع شد):**
+- `frontend-nextjs/src/lib/hooks/use-market-ws.ts` — WebSocket hook (نوشته شد)
+- `frontend-nextjs/src/components/realtime/realtime-content.tsx` — بازنویسی با hook (نوشته شد)
+- `frontend-nextjs/src/components/portfolio/trade-tracker.tsx` — در حال نوشتن بود
+- `.noqte/wiki/pending-issues.md` — لیست issue های ثبت‌نشده
 
-**Wiki/مستندات:**
-- `.noqte/wiki/backlog.md` — همه تسک‌ها Done
-- `.noqte/wiki/entities/assets-feature.md`
-- `.noqte/wiki/pending-issues.md` — issue های پیشنهادی برای GitHub UI
-- `MyProjects/Octopus/README.md` — به‌روزشده با Iranian Market Features
+**ویکی `.noqte/wiki/`:**
+- `overview.md`، `index.md`، `backlog.md`، `log.md`، `pending-issues.md`
+- entities: `frontend.md`، `backend.md`، `orchestrator.md`، `data-layer.md`، `assets-feature.md`
+- concepts: `trading-flow.md`، `data-pipeline.md`
 
 ---
 
 ### تصمیمات معماری/طراحی
-- **Submodule مشکل:** `MyProjects/Octopus/Modules` به‌صورت gitlink (submodule) بود؛ با `git rm --cached` حذف و به directory معمولی تبدیل شد تا قابل track باشد.
-- **منبع داده:** `tgju.org` برای قیمت‌های لحظه‌ای بازار ایران.
-- **Cache:** Redis با TTL 60 ثانیه برای داده‌های قیمتی.
-- **DB:** PostgreSQL/TimescaleDB با hypertable برای داده‌های سری زمانی دارایی‌ها.
-- **gh CLI:** در محیط اجرا نصب نیست؛ issue ها به صورت فایل local ذخیره شدند.
-- **RTL/فارسی:** `dir="rtl"` در layout سراسری، فونت Vazirmatn.
-- **واحد پولی:** Context سراسری CurrencyContext با قابلیت سوئیچ IRT↔USD.
+- پروژه اصلی: Next.js 15 frontend + FastAPI backend + PostgreSQL/TimescaleDB + Redis + Kafka
+- `MyProjects/Octopus/Modules` در git به‌عنوان submodule بود؛ دستیار آن را detach و به‌عنوان directory معمولی add کرد
+- داده قیمت دارایی‌های ایران از `tgju.org` با Redis cache 60ثانیه‌ای
+- RTL سراسری با فونت Vazirmatn و تاریخ شمسی
+- CurrencyContext برای سوئیچ IRT/USD در کل اپ
+- `gh` CLI روی محیط نصب نیست — issue ها باید از GitHub UI ساخته شوند
 
 ---
 
 ### کارهای انجام‌شده (به ترتیب زمانی)
 
-1. **Bootstrap ویکی پروژه** — `overview.md`، 4 entity، 2 concept، `log.md`، `index.md`
-2. **ایجاد بک‌لاگ** — 6 تسک با اولویت‌بندی
-3. **TASK-001** — سکشن دارایی‌های ایرانی: backend کامل + frontend کامل (001a تا 001d)
-4. **001e/001f/001g** — widget داشبورد، portfolio tracker، ثبت router در main_refactored.py
-5. **Commit اول:** `11b642d` — `feat: adding persian market assets`
-6. **TASK-002** — IranMacroWidget + CurrencyComparisonCard + به‌روز صفحه داشبورد
-7. **TASK-003** — locale.ts + layout.tsx با RTL/Jalali
-8. **TASK-004** — CurrencyContext + CurrencyToggle
-9. **TASK-005** — IranAssetBacktest (3 استراتژی: Buy & Hold، DCA، قدرت نسبی)
-10. **TASK-006** — 2 فایل test + README آپدیت
-11. **Commit دوم:** `642b3ea` — `feat: complete iranian market platform (TASK-002~006)` → push شد
+1. **2026-06-27:** Bootstrap ویکی پروژه (overview، 4 entity، 2 concept)
+2. **2026-06-27:** تعریف بک‌لاگ TASK-001 تا TASK-006
+3. **2026-06-27:** پیاده‌سازی TASK-001 (بخش اول) — backend کامل (schema، model، service، routes، migration) + frontend (AssetCard، AssetGrid، AssetPriceChart، AssetSummaryBar، page.tsx)
+4. **2026-06-27:** پیاده‌سازی TASK-001 (بخش دوم) — AssetsDashboardWidget، portfolio/page.tsx، main_refactored.py — **commit و push: `feat: adding persian market assets`**
+5. **2026-06-28:** اجرای TASK-002 تا TASK-006 یکجا: IranMacroWidget، CurrencyComparisonCard، CurrencyContext، locale.ts، IranAssetBacktest، unit tests، README update — **commit و push: `642b3ea` — `feat: complete iranian market platform (TASK-002~006)`**
+6. **2026-06-29:** بررسی ساختار واقعی `/project/` (کشف frontend-nextjs موجود با WebSocket، portfolio، notifications، backtesting از قبل)
+7. **2026-06-29:** نوشتن `use-market-ws.ts` hook برای WebSocket ریل‌تایم
+8. **2026-06-29:** بازنویسی `realtime-content.tsx` با WebSocket hook
+9. **2026-06-29:** شروع نوشتن `trade-tracker.tsx` — **مکالمه اینجا قطع شد**
 
 ---
 
 ### کارهای باقی‌مانده / گام بعدی
-**هیچ تسک بازی در بک‌لاگ وجود ندارد.** تسک‌های پیشنهادی برای آینده (در `pending-issues.md`):
-- TASK-002 تا 006 که همه Done شدند
-- issue های اضافه‌ای که از GitHub UI باید ساخته شوند (چون gh CLI نصب نیست)
+
+**ناتمام از آخرین session (باید از همینجا ادامه داد):**
+- [ ] تکمیل `trade-tracker.tsx` (Step 2 — Portfolio Trade Tracker با خرید/فروش و P&L)
+- [ ] اضافه کردن tab «Trades» به dashboard یا portfolio page
+- [ ] Step 3 — Alert سیستم (قیمت هدف، email/telegram)
+- [ ] Step 4 — صفحه News (اخبار بازار ایران)
+- [ ] Step 5 — UI/UX بهبود (dark mode کامل، انیمیشن، mobile-friendly)
+- [ ] Step 6 — اجرای pytest و validate کردن تست‌ها
+- [ ] اجرای اپ local (`npm run dev` برای frontend، uvicorn برای backend)
+- [ ] commit و push نهایی به `massoudsh/Findash` → `main`
+
+**از بک‌لاگ pending-issues.md (برای GitHub UI):**
+- TASK-002 تا TASK-006 issue ساخته نشده‌اند (gh CLI نصب نیست)
 
 ---
 
 ### نکات، گاتچاها، و درخواست‌های اخیر کاربر
 
-- **آخرین درخواست کاربر (2026-06-28):** `"continue the tasks"` — اجرای خودکار همه تسک‌های فردا که قبلاً تعیین شده بودند.
-- **gh CLI:** در محیط موجود نیست؛ اگر نیاز به ساخت issue در GitHub است، باید از UI یا یک محیط با gh نصب‌شده استفاده کرد.
-- **submodule pitfall:** `MyProjects/Octopus/Modules` قبلاً submodule بود؛ اکنون به directory معمولی تبدیل شده — این وضعیت باید حفظ شود.
-- **داده TGJU:** سرویس از `tgju.org` fetch می‌کند؛ در صورت failure، باید error handling مناسب بررسی شود.
-- **تست‌ها:** هنوز `pytest` اجرا نشده تا تسک‌های نوشته‌شده validate شوند.
-- **pending-issues.md** در `.noqte/wiki/` محتوی متن ۵ issue برای ایجاد دستی در GitHub UI قرار دارد.
+**درخواست verbatim آخرین کاربر:**
+> "do the steps from 1 to 6 and run the app local and sync local and github."
+> انتخاب مراحل: مرحله 1 تا 6، اجرای برنامه محلی: بله، همگام‌سازی با GitHub: بله، نام شاخه: massoudsh/Findash
+
+**گاتچاها:**
+- ساختار پروژه **دوگانه** است: فایل‌های commit‌شده در `MyProjects/Octopus/Modules/` هستند، اما پروژه اصلی در `/project/frontend-nextjs/` و `/project/src/` است — باید تغییرات جدید (Steps 1-6) روی `/project/` اعمال شوند نه Modules
+- `gh` CLI نصب نیست — برای GitHub issues از UI استفاده شود
+- frontend موجود قبلاً WebSocket route، notification center، backtesting page داشت؛ باید با کد جدید تلفیق شود نه بازنویسی کامل
+- `use-market-ws.ts` و `realtime-content.tsx` نوشته شده اما هنوز commit نشده‌اند
