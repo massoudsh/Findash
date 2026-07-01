@@ -10,30 +10,34 @@
 ## صفحات اصلی
 | مسیر | عملکرد |
 |------|--------|
-| `/dashboard` | داشبورد اصلی + پورتفولیو + My Trades (3 تب) |
-| `/realtime` | داده‌های زنده بازار با WebSocket + polling fallback |
+| `/` | صفحه اصلی فارسی — phone mockup، market cards، feature cards، CTA |
+| `/dashboard` | داشبورد اصلی — 5 تب یکپارچه (نمای کلی / پرتفولیو / بازار / معاملات / تحلیل) |
+| `/auth/signin` | ورود — two-column layout، visual preview panel |
+| `/auth/signup` | ثبت‌نام — two-column layout، feature list |
 | `/news` | اخبار بازار ایران (طلا، ارز، بورس، کریپتو) |
 | `/alerts` | هشدار قیمت با localStorage + toast notification |
-| `/trades` | مرکز معاملات، سفارش‌ها، تاریخچه |
-| `/portfolio` | آنالیز چند دارایی |
-| `/trading-bots` | ساخت و مدیریت ربات |
-| `/ai-models` | مارکت‌پلیس مدل، آموزش، پیش‌بینی |
-| `/risk` | VaR، stress test، متریک‌های ریسک |
 | `/payment/checkout` | انتخاب پلن و شروع پرداخت زرین‌پال |
 | `/payment/callback/zarinpal` | bridge برگشت از زرین‌پال به backend verify |
 | `/payment/success` | نتیجه پرداخت موفق |
 | `/payment/failed` | نتیجه پرداخت ناموفق |
 
-## کامپوننت‌های جدید (این مکالمه)
+## کامپوننت‌های اصلی
 | فایل | عملکرد |
 |------|--------|
+| `src/components/dashboard/risk-gauge.tsx` | گیج ریسک SVG semicircle، ۴ سطح رنگی، live mode با drift |
+| `src/components/dashboard/credit-score.tsx` | امتیاز اعتباری ۳۰۰-۸۵۰، animated counter، progress bars |
+| `src/components/portfolio/trade-tracker.tsx` | ثبت خرید/فروش، محاسبه P&L واقعی |
 | `src/lib/hooks/use-market-ws.ts` | WebSocket hook با auto-reconnect و polling fallback |
 | `src/lib/hooks/use-price-alerts.ts` | هشدار قیمت در localStorage + trigger callback |
-| `src/components/portfolio/trade-tracker.tsx` | ثبت خرید/فروش، محاسبه P&L واقعی |
 | `src/components/alerts/alerts-panel.tsx` | پنل ایجاد و مدیریت هشدار قیمت |
-| `src/components/data/data-explorer.tsx` | جدول داده‌های بازار با فیلتر |
 | `src/app/news/page.tsx` | صفحه اخبار ایران با RSS feed |
-| `src/app/alerts/page.tsx` | صفحه مستقل هشدارهای قیمت |
+
+## طراحی بصری فعلی
+- رنگ اصلی: `#22C55E` (سبز) — CSS var `--primary: 142 71% 45%`
+- فونت: IRANYekanX با fallback به Vazirmatn
+- CSS classes فارسی: `.persian-card`, `.persian-border`, `.persian-pattern-bg`, `.btn-persian`, `.persian-badge`
+- داشبورد: 5 تب یکپارچه (overview/portfolio/market/trades/analytics) — تب state در URL
+- موبایل: bottom navigation bar با 5 آیتم، `pb-24 lg:pb-6` برای clearance
 
 ## وابستگی‌ها
 - [[entities/backend]] — API calls و WebSocket
