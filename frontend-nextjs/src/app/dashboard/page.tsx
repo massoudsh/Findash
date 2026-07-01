@@ -7,7 +7,10 @@ import { PortfolioContent } from '@/components/portfolio/portfolio-content';
 import { TradeTracker } from '@/components/portfolio/trade-tracker';
 import { RiskGauge } from '@/components/dashboard/risk-gauge';
 import { CreditScore } from '@/components/dashboard/credit-score';
+import { IranMarketOverview } from '@/components/market/iran-market-overview';
+import { AnalyticsOverview } from '@/components/analytics/analytics-overview';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useIranTicker } from '@/lib/hooks/use-iran-ticker';
 import {
   BarChart3,
   Briefcase,
@@ -30,52 +33,45 @@ const TABS = [
   { value: 'analytics',  icon: LineChart,     label: 'تحلیل' },
 ] as const;
 
-// ── Live ticker data ──────────────────────────────────────────────────────
-const TICKERS = [
-  { label: 'بیت‌کوین',   value: '۶۷,۴۲۰',   change: '+۱.۸٪', up: true },
-  { label: 'طلا',        value: '$۲,۳۴۵',    change: '+۰.۴٪', up: true },
-  { label: 'دلار',       value: '۶۱,۲۰۰',   change: '-۰.۲٪', up: false },
-  { label: 'شاخص کل',   value: '۲,۱۸۶,۴۴۰', change: '+۰.۹٪', up: true },
-  { label: 'نفت برنت',   value: '$۸۳.۲',    change: '-۰.۶٪', up: false },
-];
-
-// ── Lazy market placeholder ───────────────────────────────────────────────
-function MarketPlaceholder() {
-  return (
-    <div className="rounded-2xl border border-dashed border-border flex items-center justify-center h-64 text-muted-foreground text-sm">
-      داده‌های بازار به‌زودی
-    </div>
-  );
-}
-
-function AnalyticsPlaceholder() {
-  return (
-    <div className="rounded-2xl border border-dashed border-border flex items-center justify-center h-64 text-muted-foreground text-sm">
-      تحلیل پیشرفته به‌زودی
-    </div>
-  );
-}
-
 // ── Ticker bar ────────────────────────────────────────────────────────────
+// Moved to component below; static TICKERS removed (now live via useIranTicker)
+
+// ── Ticker bar — زنده از API ────────────────────────────────────────────
 function TickerBar() {
+  const { items, loading } = useIranTicker();
+
   return (
     <div className="flex items-center gap-1 overflow-x-auto scrollbar-none px-1 py-2 flex-nowrap">
-      {/* Live dot */}
       <div className="flex items-center gap-1.5 shrink-0 ml-2">
-        <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
-        <span className="text-[10px] text-green-400 font-medium">زنده</span>
+        <span className={`h-1.5 w-1.5 rounded-full ${loading ? 'bg-amber-400' : 'bg-green-400 animate-pulse'}`} />
+        <span className={`text-[10px] font-medium ${loading ? 'text-amber-400' : 'text-green-400'}`}>
+          {loading ? 'بارگذاری' : 'زنده'}
+        </span>
       </div>
       <div className="h-3 w-px bg-border mx-1 shrink-0" />
-      {TICKERS.map((t) => (
-        <div key={t.label} className="flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-lg bg-muted/50 border border-border/50">
-          <span className="text-[10px] text-muted-foreground">{t.label}</span>
-          <span className="text-[11px] font-bold tabular-nums text-foreground" dir="ltr">{t.value}</span>
-          <span className={['text-[10px] font-semibold flex items-center gap-0.5', t.up ? 'text-green-400' : 'text-red-400'].join(' ')} dir="ltr">
-            {t.up ? <TrendingUp className="h-2.5 w-2.5" /> : <TrendingDown className="h-2.5 w-2.5" />}
-            {t.change}
-          </span>
-        </div>
-      ))}
+
+      {loading
+        ? Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="shrink-0 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/30 w-28 h-7 animate-pulse" />
+          ))
+        : items.map((t) => (
+            <div key={t.symbol} className="flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-lg bg-muted/50 border border-border/50">
+              <span className="text-[10px] text-muted-foreground">{t.label}</span>
+              {t.available && t.price !== null ? (
+                <>
+                  <span className="text-[11px] font-bold tabular-nums text-foreground" dir="ltr">
+                    {new Intl.NumberFormat('fa-IR').format(Math.round(t.price))}
+                  </span>
+                  <span className={`text-[10px] font-semibold flex items-center gap-0.5 ${t.up ? 'text-green-400' : 'text-red-400'}`} dir="ltr">
+                    {t.up ? <TrendingUp className="h-2.5 w-2.5" /> : <TrendingDown className="h-2.5 w-2.5" />}
+                    {t.change_pct !== null ? `${t.up ? '+' : ''}${t.change_pct.toFixed(1)}٪` : '—'}
+                  </span>
+                </>
+              ) : (
+                <span className="text-[10px] text-muted-foreground">—</span>
+              )}
+            </div>
+          ))}
     </div>
   );
 }
@@ -172,7 +168,7 @@ function DashboardPageContent() {
               </TabsContent>
 
               <TabsContent value="market" className="mt-0 animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
-                <MarketPlaceholder />
+                <IranMarketOverview />
               </TabsContent>
 
               <TabsContent value="trades" className="mt-0 animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
@@ -180,7 +176,7 @@ function DashboardPageContent() {
               </TabsContent>
 
               <TabsContent value="analytics" className="mt-0 animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
-                <AnalyticsPlaceholder />
+                <AnalyticsOverview />
               </TabsContent>
 
             </div>

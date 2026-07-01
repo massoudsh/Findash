@@ -53,6 +53,7 @@ services:
       - "3003:3003"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8011
+      - BACKEND_INTERNAL_URL=http://api:8000
       - NODE_ENV=production
       - PORT=3003
       - NEXTAUTH_SECRET=${SECRET_KEY:-dev-secret-key}

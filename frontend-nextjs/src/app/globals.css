@@ -2,23 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
-/* IRANYekanX — فونت اصلی پروژه
-   برای استفاده آفلاین: فایل‌های IRANYekanX.woff2 را در public/fonts/ قرار دهید
-   دانلود: https://github.com/rastikerdar/iranyekan/releases */
+/* IRANYekan — فونت اصلی پروژه
+   فایل‌ها را در public/fonts/ قرار بده:
+   iranyekanwebthinfanum.woff, iranyekanweblightfanum.woff,
+   iranyekanwebregularfanum.woff, iranyekanwebmediumfanum.woff,
+   iranyekanwebboldfanum.woff, iranyekanwebblackfanum.woff */
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/IRANYekanX.woff2') format('woff2'),
-       url('/fonts/IRANYekanX.woff') format('woff');
-  font-weight: 100 900;
+  src: url('/fonts/iranyekanwebthinfanum.woff') format('woff');
+  font-weight: 100;
   font-style: normal;
   font-display: swap;
 }
-
-/* Dana font (Persian) — put files in public/fonts/ (e.g. Dana.woff2, Dana.woff) */
 @font-face {
-  font-family: 'Dana';
-  src: url('/fonts/Dana.woff2') format('woff2'), url('/fonts/Dana.woff') format('woff');
-  font-weight: 400 700;
+  font-family: 'IRANYekanX';
+  src: url('/fonts/iranyekanweblightfanum.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/iranyekanwebregularfanum.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/iranyekanwebmediumfanum.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/iranyekanwebboldfanum.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/iranyekanwebblackfanum.woff') format('woff');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }

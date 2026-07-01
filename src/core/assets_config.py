@@ -18,6 +18,8 @@ class AssetType(Enum):
     FOREX = "forex"
     OPTION = "option"
     FUTURE = "future"
+    COIN = "coin"          # سکه طلا
+    IRAN_STOCK = "iran_stock"   # سهام بورس تهران
 
 
 class Sector(Enum):
@@ -37,6 +39,12 @@ class Sector(Enum):
     STABLECOIN = "stablecoin"
     COMMODITIES = "commodities"
     DIVERSIFIED = "diversified"
+    # Iranian market sectors
+    GOLD = "gold"
+    CURRENCY = "currency"
+    IRAN_BOURSE = "iran_bourse"
+    IRAN_CRYPTO = "iran_crypto"
+    IRAN_COMMODITY = "iran_commodity"
 
 
 @dataclass
@@ -282,31 +290,246 @@ class AssetsConfig:
             liquidity_category="high",
             trading_hours="market_hours"
         ),
+
+        # ── Iranian Market Assets ─────────────────────────────────────────
+        # ارزهای خارجی (به ریال)
+        "USD-IRR": AssetMetadata(
+            symbol="USD-IRR",
+            name="دلار آمریکا",
+            asset_type=AssetType.FOREX,
+            sector=Sector.CURRENCY,
+            currency="IRR",
+            description="نرخ دلار آمریکا در بازار آزاد ایران",
+            volatility_category="high",
+            liquidity_category="high",
+            trading_hours="24/7",
+        ),
+        "EUR-IRR": AssetMetadata(
+            symbol="EUR-IRR",
+            name="یورو",
+            asset_type=AssetType.FOREX,
+            sector=Sector.CURRENCY,
+            currency="IRR",
+            description="نرخ یورو در بازار آزاد ایران",
+            volatility_category="high",
+            liquidity_category="high",
+            trading_hours="24/7",
+        ),
+        "GBP-IRR": AssetMetadata(
+            symbol="GBP-IRR",
+            name="پوند انگلیس",
+            asset_type=AssetType.FOREX,
+            sector=Sector.CURRENCY,
+            currency="IRR",
+            description="نرخ پوند در بازار آزاد ایران",
+            volatility_category="high",
+            liquidity_category="medium",
+            trading_hours="24/7",
+        ),
+        # طلا و سکه
+        "GOLD18-IRT": AssetMetadata(
+            symbol="GOLD18-IRT",
+            name="طلا ۱۸ عیار",
+            asset_type=AssetType.COMMODITY,
+            sector=Sector.GOLD,
+            currency="IRT",
+            description="قیمت هر گرم طلای ۱۸ عیار به تومان",
+            volatility_category="medium",
+            liquidity_category="high",
+            trading_hours="market_hours",
+            tick_size=100.0,
+        ),
+        "GOLD24-IRT": AssetMetadata(
+            symbol="GOLD24-IRT",
+            name="طلا ۲۴ عیار",
+            asset_type=AssetType.COMMODITY,
+            sector=Sector.GOLD,
+            currency="IRT",
+            description="قیمت هر گرم طلای ۲۴ عیار (خالص) به تومان",
+            volatility_category="medium",
+            liquidity_category="high",
+            trading_hours="market_hours",
+            tick_size=100.0,
+        ),
+        "COIN-IRT": AssetMetadata(
+            symbol="COIN-IRT",
+            name="سکه بهار آزادی",
+            asset_type=AssetType.COIN,
+            sector=Sector.GOLD,
+            currency="IRT",
+            description="قیمت سکه تمام بهار آزادی به تومان",
+            volatility_category="high",
+            liquidity_category="high",
+            trading_hours="market_hours",
+            tick_size=1000.0,
+        ),
+        "HALFCOIN-IRT": AssetMetadata(
+            symbol="HALFCOIN-IRT",
+            name="نیم‌سکه",
+            asset_type=AssetType.COIN,
+            sector=Sector.GOLD,
+            currency="IRT",
+            description="قیمت نیم‌سکه بهار آزادی به تومان",
+            volatility_category="high",
+            liquidity_category="medium",
+            trading_hours="market_hours",
+            tick_size=1000.0,
+        ),
+        "QUARTERCOIN-IRT": AssetMetadata(
+            symbol="QUARTERCOIN-IRT",
+            name="ربع‌سکه",
+            asset_type=AssetType.COIN,
+            sector=Sector.GOLD,
+            currency="IRT",
+            description="قیمت ربع‌سکه بهار آزادی به تومان",
+            volatility_category="high",
+            liquidity_category="medium",
+            trading_hours="market_hours",
+            tick_size=500.0,
+        ),
+        # کریپتو به تومان (از Nobitex)
+        "BTC-IRT": AssetMetadata(
+            symbol="BTC-IRT",
+            name="بیت‌کوین (تومانی)",
+            asset_type=AssetType.CRYPTOCURRENCY,
+            sector=Sector.IRAN_CRYPTO,
+            currency="IRT",
+            description="قیمت بیت‌کوین به تومان در صرافی‌های ایرانی",
+            market_cap_category="large",
+            volatility_category="extreme",
+            liquidity_category="high",
+            trading_hours="24/7",
+            min_trade_size=0.00001,
+            tick_size=1000.0,
+        ),
+        "ETH-IRT": AssetMetadata(
+            symbol="ETH-IRT",
+            name="اتریوم (تومانی)",
+            asset_type=AssetType.CRYPTOCURRENCY,
+            sector=Sector.IRAN_CRYPTO,
+            currency="IRT",
+            description="قیمت اتریوم به تومان در صرافی‌های ایرانی",
+            market_cap_category="large",
+            volatility_category="extreme",
+            liquidity_category="high",
+            trading_hours="24/7",
+            min_trade_size=0.0001,
+            tick_size=100.0,
+        ),
+        "USDT-IRT": AssetMetadata(
+            symbol="USDT-IRT",
+            name="تتر (تومانی)",
+            asset_type=AssetType.STABLECOIN,
+            sector=Sector.IRAN_CRYPTO,
+            currency="IRT",
+            description="قیمت تتر به تومان — معادل نزدیک به دلار",
+            market_cap_category="large",
+            volatility_category="low",
+            liquidity_category="high",
+            trading_hours="24/7",
+            min_trade_size=1.0,
+            tick_size=10.0,
+        ),
+        "BNB-IRT": AssetMetadata(
+            symbol="BNB-IRT",
+            name="بایننس کوین (تومانی)",
+            asset_type=AssetType.CRYPTOCURRENCY,
+            sector=Sector.IRAN_CRYPTO,
+            currency="IRT",
+            description="قیمت BNB به تومان",
+            market_cap_category="large",
+            volatility_category="extreme",
+            liquidity_category="high",
+            trading_hours="24/7",
+            min_trade_size=0.001,
+            tick_size=100.0,
+        ),
+        "TRX-IRT": AssetMetadata(
+            symbol="TRX-IRT",
+            name="ترون (تومانی)",
+            asset_type=AssetType.CRYPTOCURRENCY,
+            sector=Sector.IRAN_CRYPTO,
+            currency="IRT",
+            description="قیمت ترون به تومان",
+            market_cap_category="mid",
+            volatility_category="extreme",
+            liquidity_category="high",
+            trading_hours="24/7",
+            min_trade_size=1.0,
+            tick_size=1.0,
+        ),
+        # شاخص‌های بورس تهران
+        "TEDPIX": AssetMetadata(
+            symbol="TEDPIX",
+            name="شاخص کل بورس",
+            asset_type=AssetType.ETF,
+            sector=Sector.IRAN_BOURSE,
+            currency="IRR",
+            exchange="TSETMC",
+            description="شاخص کل قیمت و بازده نقدی بورس اوراق بهادار تهران",
+            volatility_category="medium",
+            liquidity_category="high",
+            trading_hours="market_hours",
+        ),
+        "FARA-IRT": AssetMetadata(
+            symbol="FARA-IRT",
+            name="فارا بورس",
+            asset_type=AssetType.ETF,
+            sector=Sector.IRAN_BOURSE,
+            currency="IRR",
+            exchange="FARA",
+            description="شاخص فرابورس ایران",
+            volatility_category="medium",
+            liquidity_category="high",
+            trading_hours="market_hours",
+        ),
     }
     
     # Asset groups for easy access
     WATCHLIST_DEFAULT = [
         "AAPL", "TSLA", "MSFT", "GOOGL", "AMZN", "NVDA",
-        "BTC-USD", "ETH-USD", "USDT-USD", "USDC-USD", 
+        "BTC-USD", "ETH-USD", "USDT-USD", "USDC-USD",
         "TRX-USD", "LINK-USD", "CAKE-USD", "GLD", "SLV"
     ]
-    
+
+    # ── Iranian market groups ─────────────────────────────────────────────
+    IRANIAN_WATCHLIST_DEFAULT = [
+        "USD-IRR", "EUR-IRR",
+        "GOLD18-IRT", "COIN-IRT",
+        "BTC-IRT", "ETH-IRT", "USDT-IRT",
+        "TEDPIX",
+    ]
+
+    IRANIAN_CURRENCY_ASSETS = ["USD-IRR", "EUR-IRR", "GBP-IRR"]
+
+    IRANIAN_GOLD_ASSETS = [
+        "GOLD18-IRT", "GOLD24-IRT",
+        "COIN-IRT", "HALFCOIN-IRT", "QUARTERCOIN-IRT",
+    ]
+
+    IRANIAN_CRYPTO_ASSETS = [
+        "BTC-IRT", "ETH-IRT", "USDT-IRT", "BNB-IRT", "TRX-IRT"
+    ]
+
+    IRANIAN_BOURSE_ASSETS = ["TEDPIX", "FARA-IRT"]
+
+    # ── Global groups ─────────────────────────────────────────────────────
     CRYPTO_ASSETS = [
         "BTC-USD", "ETH-USD", "TRX-USD", "LINK-USD", "CAKE-USD"
     ]
-    
+
     STABLECOIN_ASSETS = [
         "USDT-USD", "USDC-USD"
     ]
-    
+
     COMMODITY_ASSETS = [
         "GLD", "SLV"
     ]
-    
+
     STOCK_ASSETS = [
         "AAPL", "TSLA", "MSFT", "GOOGL", "AMZN", "NVDA"
     ]
-    
+
     ETF_ASSETS = [
         "SPY", "QQQ", "GLD", "SLV"
     ]

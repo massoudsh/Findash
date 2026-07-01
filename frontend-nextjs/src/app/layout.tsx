@@ -38,6 +38,11 @@ export default function RootLayout({
     <html lang="fa" dir="rtl" className={`dark ${vazir.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#22C55E" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="فین‌دَش" />
       </head>
       <body className="font-iran-yekan">
         <ErrorBoundary>

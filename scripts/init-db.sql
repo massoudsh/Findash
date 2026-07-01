@@ -333,6 +333,33 @@ VALUES (
     ARRAY['read', 'write', 'trade']
 ) ON CONFLICT (email) DO NOTHING;
 
+-- =====================================================================
+-- PAYMENT ORDERS (ZarinPal)
+-- =====================================================================
+
+CREATE TABLE IF NOT EXISTS payment_orders (
+    id               BIGSERIAL PRIMARY KEY,
+    user_id          VARCHAR(128)  NOT NULL,
+    gateway          VARCHAR(32)   NOT NULL DEFAULT 'zarinpal',
+    authority        VARCHAR(128)  NOT NULL,
+    amount_rial      BIGINT        NOT NULL,
+    amount_toman     BIGINT        NOT NULL,
+    description      TEXT,
+    status           VARCHAR(16)   NOT NULL DEFAULT 'pending',
+    ref_id           VARCHAR(64),
+    card_pan         VARCHAR(20),
+    error_code       VARCHAR(32),
+    callback_payload JSONB,
+    verify_payload   JSONB,
+    created_at       TIMESTAMPTZ   NOT NULL DEFAULT NOW(),
+    paid_at          TIMESTAMPTZ,
+    CONSTRAINT payment_orders_gateway_authority_key UNIQUE (gateway, authority)
+);
+
+CREATE INDEX IF NOT EXISTS payment_orders_user_id_idx ON payment_orders (user_id);
+CREATE INDEX IF NOT EXISTS payment_orders_status_idx  ON payment_orders (status);
+CREATE INDEX IF NOT EXISTS payment_orders_created_idx ON payment_orders (created_at DESC);
+
 -- Success message
 DO $$
 BEGIN

@@ -16,17 +16,39 @@ export default function SignUpPage() {
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
     const confirm = (form.elements.namedItem("confirm") as HTMLInputElement).value;
+    const firstName = (form.elements.namedItem("firstName") as HTMLInputElement).value || "کاربر";
+    const lastName = (form.elements.namedItem("lastName") as HTMLInputElement).value || "جدید";
+
     if (password !== confirm) {
       setError("رمز عبور و تأیید آن یکسان نیستند");
       setLoading(false);
       return;
     }
-    if (email === "demo@demo.com") {
-      setError("این کاربر قبلاً ثبت‌نام کرده است");
+
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8011";
+      const res = await fetch(`${apiUrl}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          confirm_password: confirm,
+          first_name: firstName,
+          last_name: lastName,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setError(data.message || data.detail || "خطا در ثبت‌نام. لطفاً دوباره تلاش کنید.");
+        setLoading(false);
+        return;
+      }
+      window.location.href = "/auth/signin?signup=success";
+    } catch {
+      setError("اتصال به سرور برقرار نشد. لطفاً اینترنت خود را بررسی کنید.");
       setLoading(false);
-      return;
     }
-    window.location.href = "/auth/signin?signup=success";
   }
 
   return (
