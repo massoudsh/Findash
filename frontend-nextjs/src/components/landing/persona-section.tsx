@@ -9,7 +9,7 @@ const PERSONAS = [
     icon: User,
     label: 'Retail trader',
     problem: 'Too much noise, not enough signal.',
-    solution: 'One command center: data, signals, risk, execute.',
+    solution: 'یک مرکز فرماندهی واحد: داده، سیگنال، ریسک و اجرا.',
   },
   {
     icon: FlaskConical,

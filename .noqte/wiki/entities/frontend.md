@@ -11,7 +11,7 @@
 | مسیر | عملکرد |
 |------|--------|
 | `/` | صفحه اصلی فارسی — phone mockup، market cards، feature cards، CTA |
-| `/dashboard` | داشبورد اصلی — 5 تب یکپارچه (نمای کلی / پرتفولیو / بازار / معاملات / تحلیل) |
+| `/dashboard` | داشبورد اصلی بازطراحی‌شده — modern mill-flat، grid layout، رنگ آبی `#3B82F6`، 5 تب یکپارچه |
 | `/auth/signin` | ورود — two-column layout، visual preview panel |
 | `/auth/signup` | ثبت‌نام — two-column layout، feature list |
 | `/news` | اخبار بازار ایران (طلا، ارز، بورس، کریپتو) |
@@ -33,9 +33,8 @@
 | `src/app/news/page.tsx` | صفحه اخبار ایران با RSS feed |
 
 ## طراحی بصری فعلی
-- رنگ اصلی: `#22C55E` (سبز) — CSS var `--primary: 142 71% 45%`
-- فونت: IRANYekanX با fallback به Vazirmatn
-- CSS classes فارسی: `.persian-card`, `.persian-border`, `.persian-pattern-bg`, `.btn-persian`, `.persian-badge`
+- داشبورد `/dashboard`: سبک modern mill-flat با پس‌زمینه تیره، glass cards، رنگ اصلی `#3B82F6`، grid layout، کارت‌های KPI، نمودار عملکرد SVG، donut allocation، جدول دارایی‌ها، insight widget و activity timeline
+- تم عمومی پروژه: فونت IRANYekanX با fallback به Vazirmatn؛ صفحات دیگر هنوز از CSS classes فارسی مثل `.persian-card`, `.persian-border`, `.persian-pattern-bg`, `.btn-persian`, `.persian-badge` استفاده می‌کنند
 - داشبورد: 5 تب یکپارچه (overview/portfolio/market/trades/analytics) — تب state در URL
 - موبایل: bottom navigation bar با 5 آیتم، `pb-24 lg:pb-6` برای clearance
 

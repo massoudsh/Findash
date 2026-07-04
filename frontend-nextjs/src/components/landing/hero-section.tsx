@@ -65,7 +65,7 @@ export function HeroSection() {
             className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold shadow-md border-0 w-full min-[400px]:w-auto h-10 sm:h-11 px-4 sm:px-6"
           >
             <Link href="/trading" className="justify-center">
-              Open Command Center
+              مرکز فرماندهی را باز کنید
               <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
             </Link>
           </Button>

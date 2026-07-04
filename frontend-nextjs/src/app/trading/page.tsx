@@ -71,9 +71,9 @@ function TradingCenterContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Command Center</h1>
+        <h1 className="text-3xl font-bold tracking-tight">مرکز فرماندهی</h1>
         <p className="text-muted-foreground">
-          Options, strategies, risk management, and automated bots in one place
+          اختیار معامله، استراتژی‌ها، مدیریت ریسک و ربات‌های معاملاتی در یک بخش واحد
         </p>
       </div>
       <Tabs

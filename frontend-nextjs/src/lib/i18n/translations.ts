@@ -116,7 +116,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.item.Dashboard': 'داشبورد',
     'nav.item.Market': 'بازار',
     'nav.item.Options': 'اختیار معامله',
-    'nav.item.Command Center': 'مرکز فرمان',
+    'nav.item.Command Center': 'مرکز فرماندهی',
     'nav.item.Trading Bots': 'ربات‌های معاملاتی',
     'nav.item.Paper Trading & Backtesting': 'معاملات کاغذی و بک‌تست',
     'nav.item.Portfolio': 'پرتفوی',

@@ -5,7 +5,7 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
 /** Platform index for fast search when backend Elasticsearch is not available */
 const PLATFORM_INDEX: { title: string; path: string; keywords: string[]; type: string }[] = [
   { title: 'Dashboard', path: '/dashboard', keywords: ['home', 'overview', 'analytics'], type: 'page' },
-  { title: 'Command Center', path: '/trading', keywords: ['trading', 'market', 'bots', 'options'], type: 'page' },
+  { title: 'مرکز فرماندهی', path: '/trading', keywords: ['trading', 'market', 'bots', 'options', 'command center', 'مرکز فرماندهی'], type: 'page' },
   { title: 'Options', path: '/options', keywords: ['options', 'greeks', 'derivatives'], type: 'page' },
   { title: 'Live Trading', path: '/trades', keywords: ['trades', 'orders', 'positions', 'live'], type: 'page' },
   { title: 'Portfolio', path: '/portfolio', keywords: ['portfolio', 'holdings', 'allocation'], type: 'page' },

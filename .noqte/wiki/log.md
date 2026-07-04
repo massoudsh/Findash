@@ -2,6 +2,7 @@
 
 > تاریخچه append-only — هر ورود با `## [YYYY-MM-DD] <type> | <خلاصه>` شروع می‌شود.
 
+## [2026-07-01] redesign | داشبورد `/dashboard` با سبک modern mill-flat و رنگ `#3B82F6` بازطراحی شد — grid KPI cards، SVG performance chart، donut allocation، positions table، widgets و activity timeline
 ## [2026-07-01] audit | آدیت کامل Hawk View: 18 تسک جدید در backlog — Auth broken (demo hardcoded)، font missing، market/analytics tab placeholder، Iranian assets absent، CI/CD placeholder، no Jalali calendar
 ## [2026-06-27] bootstrap | ویکی پروژه اختاپوس از README bootstrap شد — overview، index، 4 entity، 2 concept ساخته شد
 ## [2026-06-27] backlog | بک‌لاگ پروژه ساخته شد — TASK-001 (دارایی‌های ایرانی) با اولویت بالا + 5 تسک دیگر

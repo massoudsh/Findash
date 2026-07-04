@@ -296,7 +296,7 @@ export function TradingBotsContent() {
             Trading Bots
           </h1>
           <p className="text-muted-foreground mt-1">
-            Automated strategies with risk controls; executed on the platform via Command Center
+            Automated strategies with risk controls; executed on the platform via مرکز فرماندهی
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>

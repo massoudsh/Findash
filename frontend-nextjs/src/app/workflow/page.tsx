@@ -77,7 +77,7 @@ const diagram2 = `flowchart TB
         B3 --> B4
     end
     subgraph Phase3["Phase 3: Your decision"]
-        C1[Dashboard & Command Center]
+        C1[Dashboard & مرکز فرماندهی]
         C2[Review signals, risk, portfolio]
         C3[Approve / Reject / Modify]
         C1 --> C2 --> C3
@@ -94,7 +94,7 @@ const diagram2 = `flowchart TB
 
 const diagram3 = `sequenceDiagram
     participant User as 👤 Trader
-    participant UI as Dashboard / Command Center
+    participant UI as Dashboard / مرکز فرماندهی
     participant M4 as Atlas Strategy
     participant M6 as Guardian Risk
     participant M8 as Shadow Execution
@@ -201,7 +201,7 @@ export default function WorkflowPage() {
             <FalloutCharacter pose="helm" size={36} className="shrink-0 mt-0.5" />
             <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-amber-700 dark:text-amber-300 mb-2">You at the helm</p>
-            <p className="text-sm text-foreground">The Octopus prepares; you command. In the Command Center you see what his arms have gathered — signals, risk, reports — and you make the call. He works so you stay in control. That’s the pact.</p>
+            <p className="text-sm text-foreground">The Octopus prepares; you command. In the مرکز فرماندهی you see what his arms have gathered — signals, risk, reports — and you make the call. He works so you stay in control. That’s the pact.</p>
             </div>
           </div>
         </div>
@@ -218,7 +218,7 @@ export default function WorkflowPage() {
           You decide. Agents assist.
         </h1>
         <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-          From live market data to signals and risk — our 11 agents prepare everything. You review in the Command Center and take the final call.
+          From live market data to signals and risk — our 11 agents prepare everything. You review in the مرکز فرماندهی and take the final call.
         </p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
           <Button
@@ -226,7 +226,7 @@ export default function WorkflowPage() {
             className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold shadow-md border-0"
           >
             <Link href="/trading">
-              Open Command Center
+              Open مرکز فرماندهی
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -379,7 +379,7 @@ export default function WorkflowPage() {
                   [6, 'Analytics', 'Oracle (M7)', 'Price forecasting', 'Targets, scenarios'],
                   [7, 'Signals', 'Atlas (M4)', 'Fuse signals, ideas', 'Trading signals, suggestions'],
                   [8, 'Risk', 'Guardian (M6)', 'VaR, limits, sizing', 'Approved size, risk view'],
-                  [9, 'Decision', '👤 You', 'Approve, reject, or adjust in Command Center', 'Your order or no-trade'],
+                  [9, 'Decision', '👤 You', 'Approve, reject, or adjust in مرکز فرماندهی', 'Your order or no-trade'],
                   [10, 'Execution', 'Shadow (M8)', 'Paper or live execution', 'Fills, position updates'],
                   [11, 'Validation', 'Chronicle (M10)', 'Backtest if needed', 'Backtest report'],
                   [12, 'Reporting', 'Lens (M11)', 'Charts, dashboards, AI reports', 'Visualizations & reports'],
@@ -410,16 +410,16 @@ export default function WorkflowPage() {
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
-              ['Nexus (M1)', 'Data Explorer, Command Center', 'Live feeds, export'],
+              ['Nexus (M1)', 'Data Explorer, مرکز فرماندهی', 'Live feeds, export'],
               ['Vault (M2)', 'Data Explorer', 'Historical data'],
               ['Pulse (M3)', 'Dashboard, live charts', 'Real-time prices'],
-              ['Atlas (M4)', 'Command Center → Strategies, Bots', 'Signals, ideas'],
+              ['Atlas (M4)', 'مرکز فرماندهی → Strategies, Bots', 'Signals, ideas'],
               ['Neuron (M5)', 'AI Models', 'Predictions'],
-              ['Guardian (M6)', 'Command Center → Risk', 'VaR, limits'],
+              ['Guardian (M6)', 'مرکز فرماندهی → Risk', 'VaR, limits'],
               ['Oracle (M7)', 'Options', 'Price forecasts'],
               ['Shadow (M8)', 'Paper trading, Portfolio', 'Sim execution'],
-              ['Echo (M9)', 'Command Center, Social', 'Sentiment'],
-              ['Chronicle (M10)', 'Command Center → Backtesting', 'Backtest results'],
+              ['Echo (M9)', 'مرکز فرماندهی, Social', 'Sentiment'],
+              ['Chronicle (M10)', 'مرکز فرماندهی → Backtesting', 'Backtest results'],
               ['Lens (M11)', 'Reports, Visualization, Dashboard', 'Charts, insights'],
             ].map(([agent, where, what]) => (
               <div
@@ -447,13 +447,13 @@ export default function WorkflowPage() {
         <CardContent className="space-y-4">
           <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
             <li><strong className="text-foreground">Agents</strong> handle data, analytics, signals, risk, execution, and reporting.</li>
-            <li><strong className="text-foreground">You</strong> decide in the Command Center and Dashboard — approve, reject, or adjust.</li>
+            <li><strong className="text-foreground">You</strong> decide in the مرکز فرماندهی and Dashboard — approve, reject, or adjust.</li>
             <li><strong className="text-foreground">Flow:</strong> Market updates → enrichment → signals & risk → your decision → execution → reports.</li>
           </ul>
           <div className="pt-2">
             <Button asChild className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold">
               <Link href="/trading">
-                Open Command Center
+                Open مرکز فرماندهی
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

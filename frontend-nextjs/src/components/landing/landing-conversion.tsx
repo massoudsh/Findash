@@ -45,7 +45,7 @@ export function StickyCta() {
           size="default"
           className="w-full sm:w-auto h-10 sm:h-11 bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold shadow-lg border-0 text-sm sm:text-base"
         >
-          Open Command Center
+          Open مرکز فرماندهی
           <ArrowRight className="ml-2 h-4 w-4 shrink-0" />
         </Button>
       </Link>
@@ -64,7 +64,7 @@ export function FooterCtaBlock() {
         <div className="flex flex-wrap items-center justify-center gap-4">
           <Button asChild size="lg" className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-semibold border-0">
             <Link href="/trading">
-              Open Command Center
+              Open مرکز فرماندهی
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -134,7 +134,7 @@ export function OnboardingPreviewModal({
             Quick start
           </DialogTitle>
           <DialogDescription>
-            Frictionless onboarding: connect data, set risk, then trade from the Command Center.
+            Frictionless onboarding: connect data, set risk, then trade from the مرکز فرماندهی.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -145,7 +145,7 @@ export function OnboardingPreviewModal({
             <strong className="text-foreground">2.</strong> Review signals and risk in Dashboard.
           </div>
           <div className="rounded-lg border border-border/50 bg-muted/20 p-3 text-sm text-muted-foreground">
-            <strong className="text-foreground">3.</strong> Execute from Command Center when ready.
+            <strong className="text-foreground">3.</strong> Execute from مرکز فرماندهی when ready.
           </div>
         </div>
         <div className="flex justify-end gap-2">
@@ -154,7 +154,7 @@ export function OnboardingPreviewModal({
           </Button>
           <Button asChild className="bg-amber-500 hover:bg-amber-600 text-amber-950 border-0">
             <Link href="/trading" onClick={() => onOpenChange(false)}>
-              Go to Command Center
+              Go to مرکز فرماندهی
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

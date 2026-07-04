@@ -428,7 +428,7 @@ export function CryptoAnalyticsDashboard() {
             <CardHeader>
               <CardTitle className="text-base">Futures</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Open interest, funding rates, and liquidations. See Command Center → Options for funding.
+                Open interest, funding rates, and liquidations. See مرکز فرماندهی → Options for funding.
               </p>
             </CardHeader>
           </Card>
