@@ -96,17 +96,19 @@ class SignalFusionEngine:
     def __init__(self, cache: TradingCache):
         self.cache = cache
         self.logger = logging.getLogger(__name__)
-        
-        # Agent weights: historical data (M5, M7, technical, fundamental) weighted lower
-        # than real-time/sentiment/risk to account for market volatility (e.g. crypto).
-        self.agent_weights: Dict[str, float] = {
-            "M5_deep_learning": 0.15,       # historical ML – reduced
-            "M7_price_prediction": 0.15,     # historical prediction – reduced
-            "M9_sentiment": 0.28,            # real-time sentiment – increased
-            "technical_analysis": 0.12,      # history-based – reduced
-            "fundamental_analysis": 0.05,    # history-based – reduced
-            "risk_adjusted": 0.12            # risk/metrics – increased
-        }
+        # Agent weights from central config (config/metrics_config.py) when available
+        try:
+            from config.metrics_config import get_metrics_config
+            self.agent_weights = get_metrics_config().agent_weights.copy()
+        except Exception:
+            self.agent_weights = {
+                "M5_deep_learning": 0.15,
+                "M7_price_prediction": 0.15,
+                "M9_sentiment": 0.28,
+                "technical_analysis": 0.12,
+                "fundamental_analysis": 0.05,
+                "risk_adjusted": 0.12,
+            }
         
         # Performance tracking for dynamic weight adjustment
         self.agent_performance: Dict[str, Dict[str, float]] = {}

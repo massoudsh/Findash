@@ -4,7 +4,7 @@ Create Mock Data for Octopus Trading Platform Database
 Creates tables and inserts realistic mock data for testing queries
 """
 
-import os
+from src.core.config import get_settings
 import sys
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -20,16 +20,13 @@ load_dotenv()
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from passlib.context import CryptContext
+from src.core.security import hash_password
 
 # Database connection
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql://postgres:postgres@localhost:5433/trading_db"
 )
-
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Sample symbols
 SYMBOLS = [
@@ -46,10 +43,6 @@ SYMBOLS = [
     ("V", "Visa Inc."),
     ("JNJ", "Johnson & Johnson"),
 ]
-
-def hash_password(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
 
 def create_tables(engine):
     """Create all database tables"""

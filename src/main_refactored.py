@@ -27,29 +27,16 @@ from src.core.middleware import ErrorHandlingMiddleware, RequestLoggingMiddlewar
 from src.core.middleware_metrics import MetricsMiddleware
 from src.monitoring.metrics import metrics_collector
 
-# Use the comprehensive WebSocket implementation
-from src.realtime.websockets import WebSocketManager
+# Use the comprehensive WebSocket implementation (singleton from module)
+from src.realtime.websockets import websocket_manager
 
-# Create global websocket manager instance
-websocket_manager = WebSocketManager()
-
-from src.api.routes import market_data
-from src.api.routes import realtime
 from src.api.routes import ml_models
-from src.api.routes import websocket
 from src.api.routes import portfolios
-# Unified Auth API (professional_auth is the main implementation, auth.py delegates to it)
+# Unified Auth API (single implementation via professional_auth)
 from src.api.endpoints.professional_auth import router as auth_router
 
-# DEPRECATED: Legacy auth router (kept for backward compatibility)
-from src.api.endpoints.auth import router as legacy_auth_router
 # Unified Market Data API (replaces professional_market_data, market_data_workflow, real_market_data, simple_real_data)
 from src.api.endpoints.unified_market_data import router as unified_market_data_router
-
-# DEPRECATED: Legacy market data routers (kept for backward compatibility)
-from src.api.endpoints.professional_market_data import router as market_router
-from src.api.endpoints.market_data_workflow import router as market_data_workflow_router
-from src.api.endpoints.simple_real_data import simple_data_router
 
 from src.api.endpoints.comprehensive_api import router as comprehensive_router
 from src.api.endpoints.risk import router as risk_router
@@ -64,9 +51,6 @@ from src.api.endpoints.scenarios import router as scenarios_router
 # Unified WebSocket API (replaces websocket_realtime, websocket, realtime endpoints)
 from src.api.endpoints.unified_websocket import router as unified_websocket_router, set_websocket_manager
 
-# DEPRECATED: Legacy WebSocket routers (kept for backward compatibility)
-from src.api.endpoints.websocket_realtime import router as ws_realtime_router
-
 # Trading Bots, Agent Panels, and Backtesting APIs
 from src.api.endpoints.trading_bots import router as trading_bots_router
 from src.api.endpoints.agent_panels import router as agent_panels_router
@@ -75,6 +59,15 @@ from src.api.endpoints.strategies_crud import router as strategies_crud_router
 from src.api.endpoints.search import router as search_router
 from src.api.endpoints.payment_zarinpal import router as zarinpal_router
 from src.api.endpoints.iran_market import router as iran_market_router
+
+# Orphaned routers (previously unregistered)
+from src.api.endpoints.fundamental_data import router as fundamental_router
+from src.api.endpoints.data_collection import router as data_collection_router
+from src.api.endpoints.portfolio_api import portfolio_router as portfolio_api_router
+from src.api.endpoints.strategies import router as strategies_router
+from src.api.endpoints.agents_v2 import router as agents_v2_router
+from src.api.routes.analysis import router as analysis_router
+from src.api.routes.trading import router as trading_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -123,7 +116,6 @@ app = FastAPI(
 )
 
 # Add unified error handling middleware (order matters - metrics first)
-from src.core.middleware_metrics import MetricsMiddleware
 app.add_middleware(MetricsMiddleware)
 app.add_middleware(ErrorHandlingMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
@@ -145,7 +137,6 @@ instrumentator.instrument(app).expose(app)
 @app.get("/metrics")
 async def metrics():
     """Prometheus metrics endpoint"""
-    from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
     return Response(
         content=generate_latest(),
         media_type=CONTENT_TYPE_LATEST
@@ -179,6 +170,13 @@ async def health_check_detailed():
         logger.error(f"Health check failed: {e}")
         raise HTTPException(status_code=503, detail="Service unhealthy")
 
+# Try to import LLM router (has heavy ML dependencies - torch, peft)
+try:
+    from src.api.endpoints.llm import llm_router as llm_full_router
+except ImportError as e:
+    logger.warning(f"LLM router not available (missing dependency: {e})")
+    llm_full_router = None
+
 # API Routes
 
 # Unified Authentication API (professional_auth is the main implementation)
@@ -187,17 +185,7 @@ app.include_router(auth_router, tags=["Unified Authentication"])
 # Unified Market Data API (consolidates all market data endpoints)
 app.include_router(unified_market_data_router, tags=["Unified Market Data"])
 
-# DEPRECATED: Legacy market data routers (kept for backward compatibility, will be removed in future)
-app.include_router(market_router, tags=["Professional Market Data (Deprecated)"])
-app.include_router(market_data_workflow_router, tags=["Market Data Workflow (Deprecated)"])
-app.include_router(simple_data_router, prefix="/api/simple", tags=["Real Market Data (Deprecated)"])
-
-# DEPRECATED: Legacy auth router (kept for backward compatibility, will be removed in future)
-app.include_router(legacy_auth_router, tags=["Authentication (Deprecated)"])
-
 # Other APIs
-app.include_router(market_data.router, prefix="/api/v1/market-data", tags=["Market Data (Legacy V1)"])
-app.include_router(realtime.router, prefix="/api/v1/realtime", tags=["Real-time Data (Legacy)"])
 app.include_router(ml_models.router, prefix="/api/v1/ml", tags=["Machine Learning"])
 app.include_router(portfolios.router, prefix="/portfolios", tags=["Portfolio Management"])
 app.include_router(comprehensive_router, prefix="/api", tags=["Comprehensive API"])
@@ -226,12 +214,16 @@ app.include_router(backtesting_router, tags=["Backtesting"])
 app.include_router(strategies_crud_router, tags=["Strategies CRUD"])
 app.include_router(search_router, tags=["Search"])
 
-# DEPRECATED: Legacy WebSocket routers (kept for backward compatibility, will be removed in future)
-app.include_router(ws_realtime_router, tags=["WebSocket Real-time (Deprecated)"])
-app.include_router(websocket.router, prefix="/api/v1/websocket", tags=["WebSocket (Legacy V1)"])
-
-# Market Data Workflow API (DEPRECATED - use unified_market_data_router instead)
-# app.include_router(market_data_workflow_router, tags=["Market Data Workflow"])  # Already included above
+# Previously orphaned routers
+app.include_router(fundamental_router, prefix="/api/fundamental", tags=["Fundamental Data"])
+app.include_router(data_collection_router, prefix="/api/data-collection", tags=["Data Collection"])
+app.include_router(portfolio_api_router, prefix="/api/portfolio", tags=["Portfolio API"])
+app.include_router(strategies_router, prefix="/api/strategies", tags=["Strategies"])
+app.include_router(agents_v2_router, tags=["Agent Monitoring V2"])
+if llm_full_router is not None:
+    app.include_router(llm_full_router, prefix="/api/llm", tags=["LLM & AI Analytics"])
+app.include_router(analysis_router, prefix="/api/analysis", tags=["Market Analysis"])
+app.include_router(trading_router, prefix="/api/trading", tags=["Trading Operations"])
 
 # Main WebSocket endpoint for real-time data streaming
 # This uses the unified websocket manager and is compatible with unified_websocket_router

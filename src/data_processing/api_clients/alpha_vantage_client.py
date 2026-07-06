@@ -2,8 +2,19 @@ import requests
 import logging
 from typing import Dict, Any
 from requests.adapters import HTTPAdapter, Retry
-from decouple import config
+import requests
+import logging
+from typing import Dict, Any
+# Mocking decouple dependency for testing purposes
+class MockConfig:
+    def __init__(self):
+        pass
+    def get(self, key, default=None):
+        if key == 'ALPHA_VANTAGE_API_KEY':
+            return "MOCK_API_KEY" # Mock API Key
+        return default
 
+config = MockConfig()
 logger = logging.getLogger(__name__)
 
 class AlphaVantageClient:

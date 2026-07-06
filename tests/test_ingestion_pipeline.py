@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from src.database.models import Base, MarketData
 from src.data_processing.tasks import ingest_market_data
 import os
-from main import app
+from src.main_refactored import app
 
 DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://user:password@localhost/dbname')
 engine = create_engine(DATABASE_URL)

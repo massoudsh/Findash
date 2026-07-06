@@ -12,8 +12,7 @@ import asyncio
 from pydantic import BaseModel
 import logging
 
-from ..auth.dependencies import get_current_user
-from ...database.models import User
+from src.core.security import get_current_active_user
 from ...risk.risk_manager import RiskManager
 from ...core.cache import TradingCache, CacheManager
 
@@ -87,7 +86,7 @@ class RebalancingRecommendation(BaseModel):
 # All risk functionality is now available through the unified RiskManager class
 
 @router.get("/skfolio-metrics")
-async def get_skfolio_metrics(current_user: User = Depends(get_current_user)):
+async def get_skfolio_metrics(current_user = Depends(get_current_active_user)):
     """Get comprehensive skfolio-inspired risk metrics using unified RiskManager"""
     try:
         # Mock portfolio data - in practice would fetch from database
@@ -121,7 +120,7 @@ async def get_skfolio_metrics(current_user: User = Depends(get_current_user)):
 @router.get("/portfolio-risk")
 async def get_portfolio_risk(
     portfolio_id: Optional[str] = None,
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get comprehensive portfolio risk assessment using unified RiskManager"""
     try:
@@ -162,7 +161,7 @@ async def get_portfolio_risk(
 @router.get("/risk-alerts")
 async def get_risk_alerts(
     portfolio_id: Optional[str] = None,
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Get risk alerts for current portfolio"""
     try:
@@ -182,7 +181,7 @@ async def get_risk_alerts(
 @router.post("/stress-test")
 async def stress_test_portfolio(
     scenarios: Optional[Dict[str, Dict[str, float]]] = None,
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Run stress tests on portfolio"""
     try:
@@ -203,7 +202,7 @@ async def stress_test_portfolio(
 @router.post("/optimize-portfolio")
 async def optimize_portfolio(
     optimization_target: OptimizationTarget,
-    current_user: User = Depends(get_current_user)
+    current_user = Depends(get_current_active_user)
 ):
     """Optimize portfolio based on specified objective (placeholder - optimization logic will be added to RiskManager)"""
     try:

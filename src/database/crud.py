@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from .models import User, Portfolio, Position, Trade, PortfolioSnapshot, MarketData, NewsArticle, RedditSentiment, AlertRule
 from src.schemas import UserCreate, PortfolioCreate, PositionCreate, TradeCreate, PortfolioSnapshotCreate
+from src.core.security import hash_password
 from typing import List, Optional, Dict
 from sqlalchemy.exc import NoResultFound
 from datetime import datetime
@@ -10,7 +11,7 @@ def create_user(db: Session, user: UserCreate) -> User:
     db_user = User(
         username=user.username,
         email=user.email,
-        password_hash=user.password  # Hash in real app!
+        password_hash=hash_password(user.password)
     )
     db.add(db_user)
     db.commit()

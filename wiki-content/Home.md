@@ -1,11 +1,7 @@
-# Octopus Trading Platform - Findash
+# Octopus Trading Platform – Findash Wiki
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/massoudsh/Findash/main/Modules/frontend-nextjs/public/octopus-logo.png" alt="Octopus Logo" width="200">
-</p>
-
-<p align="center">
-  <strong>Advanced AI-Powered Trading Platform with Real-Time Analytics</strong>
+  <strong>Elaborate project wiki: onboarding, architecture, development, and operations</strong>
 </p>
 
 <p align="center">
@@ -18,11 +14,28 @@
 
 ---
 
+## Start here
+
+| If you want to… | Go to |
+|------------------|--------|
+| **Get the platform running quickly** | [[Onboarding]] |
+| **Understand the repo layout** | [[Project Structure]] |
+| **Full installation options** | [[Getting Started]] |
+| **Configure env and API keys** | [[Configuration]], [[Data Sources]] |
+| **See how the system is built** | [[Architecture]], [[AI Agents]] |
+| **Fix common problems** | [[Troubleshooting]] |
+| **Deploy to production** | [[Deployment]] |
+| **Use or extend the API** | [[API Reference]] |
+| **Work on the frontend** | [[Frontend]] |
+| **Contribute** | [[Contributing]] |
+
+---
+
 ## Overview
 
-The **Octopus Trading Platform (Findash)** is a comprehensive, AI-powered trading system designed for professional traders and institutions. It combines real-time market data, advanced analytics, machine learning models, and automated trading capabilities in a unified, modern interface.
+The **Octopus Trading Platform (Findash)** is an AI-powered trading system that combines real-time market data, analytics, machine learning, and automated trading in a single interface. The backend coordinates **11 AI agents** (M1–M11) for data collection, strategy, risk, sentiment, and reporting.
 
-### Platform at a Glance (High-Level Flow)
+### Platform flow (high-level)
 
 ```mermaid
 flowchart LR
@@ -53,7 +66,7 @@ flowchart LR
     ORCH --> MKT & NEWS
 ```
 
-### User Journey Through the Platform
+### User journey
 
 ```mermaid
 flowchart TD
@@ -72,76 +85,66 @@ flowchart TD
     I & J & K & L & M --> B
 ```
 
-### Key Highlights
-
-- **AI-Powered**: 11 specialized AI agents orchestrated through an intelligent coordination layer
-- **Real-Time Analytics**: Live market data, orderbook, and sentiment analysis
-- **Multi-Asset Trading**: Stocks, options, crypto, and derivatives
-- **Risk Management**: Advanced risk assessment with VaR, stress testing, and portfolio optimization
-- **Automated Trading**: Bot framework with backtesting and paper trading
-- **Modern UI**: Beautiful glassmorphism design with responsive layouts
-
 ---
 
-## Diagrams in This Wiki
+## Wiki pages (full index)
 
-The wiki uses **Mermaid** and **ASCII** diagrams so you can see how the platform fits together:
+### Onboarding & setup
+| Page | Description |
+|------|-------------|
+| [[Onboarding]] | Step-by-step first-time setup and “where to go next” |
+| [[Getting Started]] | All installation methods (local, Docker, Makefile) |
+| [[Configuration]] | Environment variables, security, Docker, frontend config |
+| [[Project Structure]] | Repo layout, backend folders, quick commands |
 
-| Page | What you'll see |
-|------|------------------|
-| [[Home]] | Platform flow, user journey, tech stack |
-| [[Architecture]] | Layers, data flow, trading flow, scaling, auth, monitoring |
-| [[AI Agents]] | Agent collaboration flow, quick reference table, message flow |
-| [[Getting Started]] | Installation methods, access flow |
-| [[Database]] | Schema flow, entity-relationship diagram |
-| [[API Reference]] | Request lifecycle |
-| [[Frontend]] | App structure, page flow |
-| [[Deployment]] | Deployment pipeline |
-| [[Configuration]] | Config sources |
+### Architecture & data
+| Page | Description |
+|------|-------------|
+| [[Architecture]] | System layers, data flow, scaling, auth, monitoring |
+| [[AI Agents]] | The 11 agents (M1–M11), roles, and collaboration |
+| [[Database]] | Schema, entity-relationship, migrations |
+| [[Data Sources]] | Market/news providers, API keys, free tiers |
 
----
-
-## Quick Navigation
-
-| Section | Description |
-|---------|-------------|
-| [[Getting Started]] | Installation and setup guide |
-| [[Architecture]] | System architecture overview |
-| [[AI Agents]] | Detailed AI agent documentation |
-| [[API Reference]] | Complete API documentation |
-| [[Database]] | Database schema and models |
-| [[Frontend]] | Frontend architecture and components |
-| [[Deployment]] | Production deployment guide |
-| [[Configuration]] | Environment variables and settings |
+### Development
+| Page | Description |
+|------|-------------|
+| [[API Reference]] | REST API overview and request lifecycle |
+| [[Frontend]] | Next.js app structure, pages, components |
 | [[Contributing]] | How to contribute to the project |
 
----
-
-## Features Overview
-
-### Core Trading Features
-- **Dashboard**: Comprehensive trading overview with portfolio analytics
-- **Real-Time Market Data**: Live price feeds, orderbook, and tick data
-- **Options Trading**: Advanced options chain analysis and strategies
-- **Trading Bots**: Automated trading with customizable rules
-- **Portfolio Management**: Multi-asset portfolio tracking and optimization
-- **Market Analysis**: Technical, fundamental, and on-chain analysis tools
-
-### AI & Machine Learning
-- **Price Prediction**: Pre-trained models for market forecasting
-- **Sentiment Analysis**: Real-time news and social media sentiment
-- **Strategy Optimization**: AI-powered backtesting and parameter tuning
-- **Insights Generation**: Automated market recommendations
-
-### Risk & Analytics
-- **Risk Assessment**: VaR, stress testing, and correlation analysis
-- **Backtesting**: Historical strategy performance testing
-- **Reports**: Comprehensive trading analytics
-- **Data Explorer**: Advanced data querying tools
+### Operations
+| Page | Description |
+|------|-------------|
+| [[Deployment]] | Production and Docker deployment |
+| [[Troubleshooting]] | Common issues and fixes |
 
 ---
 
-## Technology Stack (Overview)
+## Features overview
+
+### Core trading
+- **Dashboard** – Portfolio overview, watchlists, live data  
+- **Real-time market data** – Prices, orderbook, tick data  
+- **Options** – Options chain and strategies  
+- **Trading bots** – Automated trading with configurable rules  
+- **Portfolio** – Multi-asset tracking and optimization  
+- **Market analysis** – Technical, fundamental, on-chain tools  
+
+### AI & ML
+- **Price prediction** – Pre-trained forecasting models  
+- **Sentiment** – News and social sentiment analysis  
+- **Strategy optimization** – Backtesting and parameter tuning  
+- **Insights** – Automated market recommendations  
+
+### Risk & analytics
+- **Risk** – VaR, stress testing, correlation  
+- **Backtesting** – Historical strategy testing  
+- **Reports** – Trading analytics  
+- **Data explorer** – Advanced querying  
+
+---
+
+## Tech stack (overview)
 
 ```mermaid
 flowchart TB
@@ -168,73 +171,41 @@ flowchart TB
     CE --> PG & RD
 ```
 
-### Frontend
-| Technology | Purpose |
-|------------|---------|
-| Next.js 14 | React framework |
-| TypeScript | Type-safe JavaScript |
-| Tailwind CSS | Utility-first styling |
-| Shadcn UI | Component library |
-| Recharts | Data visualization |
-
-### Backend
-| Technology | Purpose |
-|------------|---------|
-| FastAPI | High-performance API framework |
-| Python 3.10+ | Core programming language |
-| SQLAlchemy | ORM and database abstraction |
-| Celery | Async task processing |
-| Redis | Caching and pub/sub |
-
-### Database & Infrastructure
-| Technology | Purpose |
-|------------|---------|
-| PostgreSQL | Primary database |
-| TimescaleDB | Time-series data |
-| Docker | Containerization |
-| Prometheus | Metrics collection |
-| Grafana | Monitoring dashboards |
+| Layer | Technologies |
+|-------|---------------|
+| **Frontend** | Next.js 14, TypeScript, Tailwind CSS, Shadcn UI, Recharts |
+| **Backend** | FastAPI, Python 3.10+, SQLAlchemy, Celery, Redis |
+| **Data** | PostgreSQL, TimescaleDB, Docker, Prometheus, Grafana |
 
 ---
 
-## Quick Start
+## Quick start (copy-paste)
 
 ```bash
-# Clone the repository
 git clone https://github.com/massoudsh/Findash.git
 cd Findash
-
-# Backend setup
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# Frontend setup
-cd frontend-nextjs
-npm install
-
-# Start the application
-# Terminal 1: Backend
+cp config/env.example .env
+# Set SECRET_KEY and JWT_SECRET_KEY in .env
+python3 -m venv venv && source venv/bin/activate
+pip install -r requirements/requirements.txt
 python3 start.py --reload
-
-# Terminal 2: Frontend
-npm run dev
-
-# Access
-# Frontend: http://localhost:3000
-# API Docs: http://localhost:8000/docs
+# Second terminal:
+cd frontend-nextjs && npm install && npm run dev
+# Frontend: http://localhost:3000  |  API: http://localhost:8000  |  Docs: http://localhost:8000/docs
 ```
+
+---
+
+## Publishing this wiki
+
+The wiki lives in the **wiki-content/** folder. To publish to GitHub Wiki, see [wiki-content/PUBLISH_WIKI.md](https://github.com/massoudsh/Findash/blob/main/wiki-content/PUBLISH_WIKI.md).
 
 ---
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/massoudsh/Findash/issues)
-- **Documentation**: This Wiki
-- **Email**: support@octopus-trading.com
+- **Issues**: [GitHub Issues](https://github.com/massoudsh/Findash/issues)  
+- **Repo**: [GitHub Repository](https://github.com/massoudsh/Findash)  
+- **API docs**: http://localhost:8000/docs (when backend is running)
 
----
-
-<p align="center">
-  <strong>Made with ❤️ by the Octopus Trading Team</strong>
-</p>
+<p align="center"><strong>Octopus Trading Platform (Findash) – Wiki</strong></p>

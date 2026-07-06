@@ -69,6 +69,12 @@ const ECONOMIC_EVENTS_MOCK = [
   { title: 'Initial Jobless Claims', date: 'Thu', impact: 'Low' },
 ];
 
+interface EconomicEvent {
+  title: string;
+  date: string;
+  impact: string;
+}
+
 export default function TechnicalPage() {
   const [selectedSymbol, setSelectedSymbol] = useState('BTC/USD');
   const [selectedTimeframe, setSelectedTimeframe] = useState('1D');
@@ -80,6 +86,8 @@ export default function TechnicalPage() {
   const [activePanel, setActivePanel] = useState<'screener' | 'watchlist' | 'calendar' | 'chartSettings' | 'marketOverview' | null>(null);
   const [watchlist, setWatchlist] = useState<string[]>(DEFAULT_WATCHLIST);
   const [watchlistLoaded, setWatchlistLoaded] = useState(false);
+  const [economicEvents, setEconomicEvents] = useState<EconomicEvent[]>(ECONOMIC_EVENTS_MOCK);
+  const [calendarLoading, setCalendarLoading] = useState(false);
 
   useEffect(() => {
     setWatchlist(loadWatchlist());
@@ -113,6 +121,31 @@ export default function TechnicalPage() {
   useEffect(() => {
     fetchRealMarketData();
   }, [fetchRealMarketData]);
+
+  const fetchEconomicCalendar = useCallback(async () => {
+    setCalendarLoading(true);
+    try {
+      const res = await fetch('/api/economic-calendar?days_ahead=14');
+      const json = await res.json();
+      if (res.ok && Array.isArray(json?.data) && json.data.length > 0) {
+        setEconomicEvents(
+          json.data.map((ev: { event: string; date?: string; time?: string; impact?: string }) => ({
+            title: ev.event,
+            date: [ev.date, ev.time].filter(Boolean).join(' ') || '—',
+            impact: (ev.impact ?? 'medium').charAt(0).toUpperCase() + (ev.impact ?? 'medium').slice(1),
+          }))
+        );
+      }
+    } catch {
+      setEconomicEvents(ECONOMIC_EVENTS_MOCK);
+    } finally {
+      setCalendarLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (activePanel === 'calendar') fetchEconomicCalendar();
+  }, [activePanel, fetchEconomicCalendar]);
 
   const currentSymbolKey = SYMBOL_TO_API(selectedSymbol);
   const currentMarket = realMarketData[currentSymbolKey];
@@ -377,18 +410,22 @@ export default function TechnicalPage() {
               )}
               {activePanel === 'calendar' && (
                 <>
-                  <p className="text-sm text-gray-400">Upcoming economic events. Source: static/mock (replace with API when available).</p>
-                  <ul className="space-y-2 text-sm">
-                    {ECONOMIC_EVENTS_MOCK.map((ev) => (
-                      <li key={ev.title} className="flex justify-between items-center p-2 rounded bg-slate-800/50">
-                        <span>{ev.title}</span>
-                        <div className="flex items-center gap-2">
-                          <Badge className="text-xs bg-slate-600/50">{ev.impact}</Badge>
-                          <span className="text-gray-400">{ev.date}</span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-sm text-gray-400">Upcoming economic events from API when backend is available; otherwise fallback list.</p>
+                  {calendarLoading ? (
+                    <p className="text-sm text-muted-foreground py-4">Loading calendar…</p>
+                  ) : (
+                    <ul className="space-y-2 text-sm">
+                      {economicEvents.map((ev) => (
+                        <li key={`${ev.title}-${ev.date}`} className="flex justify-between items-center p-2 rounded bg-slate-800/50">
+                          <span>{ev.title}</span>
+                          <div className="flex items-center gap-2">
+                            <Badge className="text-xs bg-slate-600/50">{ev.impact}</Badge>
+                            <span className="text-gray-400">{ev.date}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </>
               )}
               {activePanel === 'chartSettings' && (

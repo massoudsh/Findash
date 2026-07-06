@@ -402,7 +402,7 @@ class SocialSentimentProvider:
 # Initialize provider
 social_provider = SocialSentimentProvider()
 
-@router.get("/social/fear-greed-index")
+@router.get("/fear-greed-index")
 async def get_fear_greed_index():
     """Get Crypto Fear & Greed Index"""
     try:
@@ -428,7 +428,7 @@ async def get_fear_greed_index():
         logger.error(f"Error in fear greed endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/social/reddit-sentiment")
+@router.get("/reddit-sentiment")
 async def get_reddit_sentiment():
     """Get Reddit sentiment analysis"""
     try:
@@ -454,7 +454,7 @@ async def get_reddit_sentiment():
         logger.error(f"Error in Reddit sentiment endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/social/twitter-sentiment")
+@router.get("/twitter-sentiment")
 async def get_twitter_sentiment():
     """Get Twitter sentiment analysis"""
     try:
@@ -480,7 +480,7 @@ async def get_twitter_sentiment():
         logger.error(f"Error in Twitter sentiment endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/social/news-sentiment")
+@router.get("/news-sentiment")
 async def get_news_sentiment():
     """Get news sentiment analysis"""
     try:
@@ -506,7 +506,7 @@ async def get_news_sentiment():
         logger.error(f"Error in news sentiment endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/social/volume-trends")
+@router.get("/volume-trends")
 async def get_social_volume_trends():
     """Get social media volume and engagement trends"""
     try:
@@ -532,7 +532,7 @@ async def get_social_volume_trends():
         logger.error(f"Error in social volume endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/social/comprehensive")
+@router.get("/comprehensive")
 async def get_comprehensive_social_data():
     """Get comprehensive social sentiment dashboard data"""
     try:

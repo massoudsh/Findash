@@ -18,7 +18,7 @@ from datetime import datetime, timedelta
 from unittest.mock import Mock, AsyncMock
 import json
 
-from src.core.cache_manager import CacheManager
+from src.core.cache import CacheManager
 from src.realtime.websockets import WebSocketManager
 from src.risk.risk_manager import RiskManager, RiskLevel
 from src.trading.execution_manager import ExecutionManager, OrderRequest, OrderType, OrderSide

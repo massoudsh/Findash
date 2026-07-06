@@ -1,18 +1,22 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TradingBotsContent } from '@/components/trading/trading-bots-content';
 import { AnalysisAgentInsightsPanel } from '@/components/trading/analysis-agent-insights';
 import { StrategyAgentPanel } from '@/components/trading/strategy-agent-panel';
-import { OptionsPageContent } from '@/app/options/options-page-content';
 import { RiskContent } from '@/components/risk/risk-content';
 import { RiskAgentPanel } from '@/components/agents/risk-agent-panel';
 import { StrategiesContent } from '@/components/strategies/strategies-content';
 import { BacktestRunner } from '@/components/backtesting/backtest-runner';
 import { BacktestAgentPanel } from '@/components/agents/backtest-agent-panel';
 import { Brain, DollarSign, Shield, Target, FlaskConical } from 'lucide-react';
+import { ErrorBoundary } from '@/components/error-boundary';
+
+const OptionsPageContent = lazy(() =>
+  import('@/app/options/options-page-content').then((m) => ({ default: m.OptionsPageContent }))
+);
 
 type TradingTab = 'bots' | 'options' | 'risk' | 'strategies';
 type StrategiesSubTab = 'strategies' | 'backtesting';
@@ -104,7 +108,11 @@ function TradingCenterContent() {
         <TabsContent value="options" className="mt-6">
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4 min-h-[480px]">
             <div className="min-w-0 -mx-4 xl:mx-0 min-h-[480px] flex flex-col">
-              <OptionsPageContent />
+              <ErrorBoundary>
+                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">Loading options…</div>}>
+                  <OptionsPageContent />
+                </Suspense>
+              </ErrorBoundary>
             </div>
             <aside className="h-[calc(100vh-14rem)] min-h-[420px] xl:sticky xl:top-6 max-xl:mt-4 max-xl:max-h-[420px] flex flex-col gap-4 overflow-y-auto">
               <div className="min-h-[280px]">

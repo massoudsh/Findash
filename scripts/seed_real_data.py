@@ -17,17 +17,15 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
-from passlib.context import CryptContext
 import uuid
+
+from src.core.security import hash_password
 
 # Database connection
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql://postgres:postgres@localhost:5434/trading_db"
 )
-
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Sample symbols for realistic data
 SYMBOLS = [
@@ -47,10 +45,6 @@ SYMBOLS = [
     ("DIS", "The Walt Disney Company", "Communication Services", "NYSE"),
     ("NFLX", "Netflix Inc.", "Communication Services", "NASDAQ"),
 ]
-
-def hash_password(password: str) -> str:
-    """Hash a password"""
-    return pwd_context.hash(password)
 
 def generate_sample_data():
     """Generate comprehensive sample data"""

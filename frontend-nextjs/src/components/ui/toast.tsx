@@ -125,7 +125,10 @@ function dispatch(action: ActionType) {
 
 type Toast = Omit<ToastProps, 'id'>;
 
-function toast({ duration, ...props }: Toast) {
+/** Default auto-dismiss so all toasts fade. Pass duration: 0 to keep until dismissed. */
+const DEFAULT_TOAST_DURATION = 4500;
+
+function toast({ duration = DEFAULT_TOAST_DURATION, ...props }: Toast) {
   const id = genId();
 
   const update = (props: ToastProps) =>

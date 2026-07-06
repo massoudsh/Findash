@@ -1,8 +1,8 @@
 from peft import LoraConfig, TaskType
 
 # Model and Tokenizer Configuration
-MODEL_NAME_OR_PATH = "facebook/bart-large"
-TOKENIZER_NAME_OR_PATH = "facebook/bart-large"
+MODEL_NAME_OR_PATH = "google/gemma-4-e4b"
+TOKENIZER_NAME_OR_PATH = "google/gemma-4-e4b"
 
 # PEFT Configuration
 PEFT_CONFIG = LoraConfig(

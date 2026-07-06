@@ -73,6 +73,21 @@ def close_db():
         SessionLocal = None
         logger.info("Database connection closed")
 
+def get_db_optional() -> Optional[Session]:
+    """
+    Return a database session if DB is available, else None.
+    Use when DB is optional (e.g. portfolios fallback to sample data).
+    Caller must close the session when done.
+    """
+    try:
+        if SessionLocal is None:
+            init_db_connection()
+        return SessionLocal()
+    except Exception as e:
+        logger.debug("Optional DB session not available: %s", e)
+        return None
+
+
 def get_db() -> Generator[Session, None, None]:
     """
     Get database session

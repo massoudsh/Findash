@@ -269,7 +269,7 @@ class MacroDataProvider:
 # Initialize provider
 macro_provider = MacroDataProvider()
 
-@router.get("/macro/treasury-yields")
+@router.get("/treasury-yields")
 async def get_treasury_yields():
     """Get real-time treasury yield data"""
     try:
@@ -295,7 +295,7 @@ async def get_treasury_yields():
         logger.error(f"Error in treasury yields endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/macro/inflation")
+@router.get("/inflation")
 async def get_inflation_indicators():
     """Get real inflation indicators"""
     try:
@@ -321,7 +321,7 @@ async def get_inflation_indicators():
         logger.error(f"Error in inflation endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/macro/monetary-policy")
+@router.get("/monetary-policy")
 async def get_monetary_policy():
     """Get Federal Reserve monetary policy data"""
     try:
@@ -347,7 +347,7 @@ async def get_monetary_policy():
         logger.error(f"Error in monetary policy endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/macro/comprehensive")
+@router.get("/comprehensive")
 async def get_comprehensive_macro_data():
     """Get comprehensive macro economic dashboard data"""
     try:
@@ -378,7 +378,7 @@ async def get_comprehensive_macro_data():
         logger.error(f"Error in comprehensive macro endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/macro/economic-calendar")
+@router.get("/economic-calendar")
 async def get_economic_calendar(days_ahead: int = Query(7, ge=1, le=30)):
     """Get upcoming economic events calendar"""
     try:

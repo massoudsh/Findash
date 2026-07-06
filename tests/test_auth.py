@@ -16,7 +16,6 @@ from src.core.security import (
     create_refresh_token,
     verify_password,
     hash_password,
-    get_password_hash
 )
 from src.core.config import get_settings
 
@@ -32,7 +31,7 @@ class TestPasswordSecurity:
     def test_password_hashing(self):
         """Test password is properly hashed"""
         password = "test_password_123"
-        hashed = get_password_hash(password)
+        hashed = hash_password(password)
         
         # Hash should be different from original password
         assert hashed != password
@@ -44,8 +43,8 @@ class TestPasswordSecurity:
     def test_password_hash_uniqueness(self):
         """Test that same password produces different hashes"""
         password = "test_password_123"
-        hash1 = get_password_hash(password)
-        hash2 = get_password_hash(password)
+        hash1 = hash_password(password)
+        hash2 = hash_password(password)
         
         # Different hashes but both should verify
         assert hash1 != hash2

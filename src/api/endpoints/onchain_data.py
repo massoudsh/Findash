@@ -445,7 +445,7 @@ class OnChainDataProvider:
 # Initialize provider
 onchain_provider = OnChainDataProvider()
 
-@router.get("/onchain/bitcoin/network-fundamentals")
+@router.get("/bitcoin/network-fundamentals")
 async def get_bitcoin_network_fundamentals():
     """Get Bitcoin network security and performance metrics"""
     try:
@@ -471,7 +471,7 @@ async def get_bitcoin_network_fundamentals():
         logger.error(f"Error in network fundamentals endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/onchain/bitcoin/network-activity")
+@router.get("/bitcoin/network-activity")
 async def get_bitcoin_network_activity():
     """Get Bitcoin network activity and adoption metrics"""
     try:
@@ -497,7 +497,7 @@ async def get_bitcoin_network_activity():
         logger.error(f"Error in network activity endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/onchain/bitcoin/exchange-flows")
+@router.get("/bitcoin/exchange-flows")
 async def get_exchange_flows():
     """Get Bitcoin exchange flow data"""
     try:
@@ -523,7 +523,7 @@ async def get_exchange_flows():
         logger.error(f"Error in exchange flows endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/onchain/bitcoin/hodler-metrics")
+@router.get("/bitcoin/hodler-metrics")
 async def get_hodler_metrics():
     """Get HODLer behavior and coin age analysis"""
     try:
@@ -549,7 +549,7 @@ async def get_hodler_metrics():
         logger.error(f"Error in HODLer metrics endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/onchain/bitcoin/valuation")
+@router.get("/bitcoin/valuation")
 async def get_valuation_metrics():
     """Get Bitcoin valuation models and metrics"""
     try:
@@ -575,7 +575,7 @@ async def get_valuation_metrics():
         logger.error(f"Error in valuation metrics endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/onchain/defi/metrics")
+@router.get("/defi/metrics")
 async def get_defi_metrics():
     """Get DeFi and Layer 2 metrics"""
     try:
@@ -601,7 +601,7 @@ async def get_defi_metrics():
         logger.error(f"Error in DeFi metrics endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/onchain/comprehensive")
+@router.get("/comprehensive")
 async def get_comprehensive_onchain_data():
     """Get comprehensive on-chain dashboard data"""
     try:

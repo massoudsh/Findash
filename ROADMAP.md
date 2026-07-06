@@ -16,10 +16,18 @@ High-level roadmap for the Octopus Trading Platform (Findash). Detailed issues l
 
 ---
 
-## Phase 2 In progress
+## Phase 2 ✅ Complete
 
-- **Trading bots execution** – Wire UI to backend CRUD and start/pause/stop; connect agent panels to real or stub data; implement paper → live execution path. ([#3](https://github.com/massoudsh/Findash/issues/3), [#10](https://github.com/massoudsh/Findash/issues/10))
-- **Dashboard real data** – Wire portfolio/accounts to backend with loading/error and timeout fallback. ([#8](https://github.com/massoudsh/Findash/issues/8))
+- **Trading bots** – Backend CRUD, start/pause/stop; persistence (JSON); Celery `run_bot_tick` execution; backend-health UX.
+- **Dashboard real data** – Portfolios/trades/positions from DB when available; sample fallback; backend-health “Connect backend” banner.
+
+---
+
+## Phase 3 In progress
+
+- **E2E tests** – Playwright for critical flows (app load, dashboard, trading bots, backend health).
+- **Observability** – Use existing `/health` and `/health/detailed`; optional structured logging and metrics.
+- **Production hardening** – Env validation, security headers, deploy configuration.
 
 ---
 
@@ -32,11 +40,10 @@ High-level roadmap for the Octopus Trading Platform (Findash). Detailed issues l
 
 ---
 
-## Phase 3 (TBD)
+## Phase 3 (in progress)
 
-- Scale and observability
-- Production hardening and override patterns
-- Broader test coverage and accessibility audit
+- E2E tests (Playwright), observability, production hardening — see Phase 3 section above.
+- Broader test coverage and accessibility audit in backlog.
 
 ---
 

@@ -39,45 +39,39 @@ class OctopusStartupManager:
         
     def validate_environment(self) -> bool:
         """Validate that all required environment variables are set"""
-        required_vars = [
-            "SECRET_KEY",
-            "JWT_SECRET_KEY", 
-            "DATABASE_URL",
-            "REDIS_URL"
-        ]
-        
-        # Optional but recommended variables
+        is_dev = os.getenv("ENVIRONMENT", "development").lower() == "development"
+        # In production, require these; in development use defaults so backend can start
+        required_vars = (
+            [] if is_dev
+            else ["SECRET_KEY", "JWT_SECRET_KEY", "DATABASE_URL", "REDIS_URL"]
+        )
         recommended_vars = [
+            "SECRET_KEY",
+            "JWT_SECRET_KEY",
+            "DATABASE_URL",
+            "REDIS_URL",
             "ALPHA_VANTAGE_API_KEY",
             "CORS_ORIGINS",
-            "ENVIRONMENT"
+            "ENVIRONMENT",
         ]
-        
-        missing_vars = []
-        missing_recommended = []
-        
-        # Check required variables
-        for var in required_vars:
-            value = os.getenv(var)
-            if not value:
-                missing_vars.append(var)
-            elif var in ["SECRET_KEY", "JWT_SECRET_KEY"] and len(value) < 32:
+        missing_vars = [v for v in required_vars if not os.getenv(v)]
+        missing_recommended = [v for v in recommended_vars if not os.getenv(v)]
+
+        for var in ["SECRET_KEY", "JWT_SECRET_KEY"]:
+            val = os.getenv(var)
+            if val and len(val) < 32:
                 logger.warning(f"⚠️ {var} should be at least 32 characters for security")
-        
-        # Check recommended variables
-        for var in recommended_vars:
-            if not os.getenv(var):
-                missing_recommended.append(var)
-                
+
         if missing_vars:
             logger.error(f"❌ Missing required environment variables: {missing_vars}")
             logger.error("Please check your .env file or environment configuration")
-            logger.error("Copy env.example to .env and update with your values")
             return False
-        
-        if missing_recommended:
-            logger.warning(f"⚠️ Missing recommended environment variables: {missing_recommended}")
-            logger.warning("Some features may be limited without these variables")
+
+        if missing_recommended and is_dev:
+            logger.warning(
+                "⚠️ Some env vars not set (using dev defaults): %s. Set them in .env for full features.",
+                [v for v in missing_recommended if v not in ("ALPHA_VANTAGE_API_KEY", "CORS_ORIGINS", "ENVIRONMENT")],
+            )
             
         # Validate format of critical variables
         try:

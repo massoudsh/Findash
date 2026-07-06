@@ -32,7 +32,7 @@ class SystemInitializer:
             # Lazy import to avoid circular dependencies
             from src.database.postgres_connection import init_db_connection
             from src.core.cache import TradingCache, initialize_cache
-            from src.realtime.websockets import WebSocketManager
+            from src.realtime.websockets import websocket_manager
             from src.core.intelligence_orchestrator import IntelligenceOrchestrator
             
             # Initialize database connection
@@ -44,9 +44,9 @@ class SystemInitializer:
             await initialize_cache()
             self.cache = TradingCache()
             
-            # Initialize WebSocket manager
+            # Use the canonical WebSocket manager singleton
             logger.info("🔌 Initializing WebSocket manager...")
-            self.websocket_manager = WebSocketManager()
+            self.websocket_manager = websocket_manager
             if hasattr(self.websocket_manager, 'initialize'):
                 await self.websocket_manager.initialize()
             

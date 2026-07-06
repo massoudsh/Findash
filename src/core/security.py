@@ -454,14 +454,3 @@ class SecurityAuditLogger:
 # Global security audit logger
 security_audit = SecurityAuditLogger(redis_client)
 
-def rate_limit_dependency(request: Request):
-    """FastAPI dependency for per-IP rate limiting (100 req/min)"""
-    client_ip = request.client.host if request.client else "unknown"
-    key = f"rate_limit:{client_ip}"
-    allowed = rate_limiter.is_allowed(key, 100, 60)
-    if not allowed:
-        raise HTTPException(
-            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Rate limit exceeded. Try again later."
-        )
-    return True 

@@ -68,22 +68,24 @@ class CelerySettings(BaseSettings):
 
 class AuthSettings(BaseSettings):
     """Authentication and security settings - Production secure defaults"""
-    secret_key: str = Field(..., env="SECRET_KEY")  # Required field
-    jwt_secret_key: str = Field(..., env="JWT_SECRET_KEY")  # Required field
+    secret_key: str = Field("", env="SECRET_KEY")
+    jwt_secret_key: str = Field("", env="JWT_SECRET_KEY")
     jwt_algorithm: str = Field("HS256", env="JWT_ALGORITHM")
     jwt_access_token_expire_minutes: int = Field(60, env="JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
     jwt_refresh_token_expire_days: int = Field(7, env="JWT_REFRESH_TOKEN_EXPIRE_DAYS")
     bcrypt_rounds: int = Field(12, env="BCRYPT_ROUNDS")
-    
+
     @validator("secret_key", "jwt_secret_key")
     def validate_secret_keys(cls, v):
-        if len(v) < 32:
-            raise ValueError("Secret keys must be at least 32 characters for security")
+        if not v or len(v) < 32:
+            if os.getenv("ENVIRONMENT", "").lower() == "development":
+                return "dev-secret-do-not-use-in-production-32-chars-minimum"
+            raise ValueError("SECRET_KEY and JWT_SECRET_KEY must be at least 32 characters (set in .env)")
         # bcrypt has a 72-byte limit; truncate to avoid passlib/bcrypt errors when used for hashing
         if len(v.encode("utf-8")) > 72:
             v = v.encode("utf-8")[:72].decode("utf-8", errors="replace")
         return v
-    
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

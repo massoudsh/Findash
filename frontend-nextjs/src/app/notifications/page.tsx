@@ -758,9 +758,9 @@ export default function NotificationsPage() {
                     Export Config
                   </Button>
                 </div>
-                <div className="text-sm text-green-600 flex items-center gap-2">
+                <div className="text-sm text-green-600 dark:text-green-400 flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
-                  Connected and monitoring 156 metrics
+                  Connected — scraping API, trading, risk, DB, Redis, Celery & system metrics
                 </div>
               </CardContent>
             </Card>
