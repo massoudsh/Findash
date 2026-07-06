@@ -14,7 +14,7 @@
 2. **Backend** — FastAPI (Python 3.10+) روی پورت `8000`
 3. **Data Layer** — PostgreSQL + TimescaleDB، Redis Cache، Kafka Streaming
 
-لایه‌ی هوش مصنوعی شامل `IntelligenceOrchestrator` است که ۱۱ AI Agent را هماهنگ می‌کند. داده‌های بازار از طریق Kafka دریافت، در Redis کش، و در TimescaleDB ذخیره می‌شوند. وظایف سنگین از طریق Celery Workers پردازش می‌شوند.
+لایه‌ی هوش مصنوعی شامل `IntelligenceOrchestrator` است که ۱۱ AI Agent را هماهنگ می‌کند (M1–M5 مستند و فعال؛ M6–M11 برنامه‌ریزی‌شده). داده‌های بازار از طریق Kafka دریافت، در Redis کش، و در TimescaleDB ذخیره می‌شوند. وظایف سنگین از طریق Celery Workers پردازش می‌شوند.
 
 ## قابلیت‌های اصلی
 - معامله‌گری چند دارایی (سهام، آپشن، کریپتو)
@@ -27,7 +27,7 @@
 ## تکنولوژی‌ها
 | لایه | فناوری |
 |------|--------|
-| Frontend | Next.js 15, TypeScript, Tailwind CSS, Shadcn UI, Recharts |
+| Frontend | Next.js 15, TypeScript, Tailwind CSS, Shadcn UI, Recharts — فونت: IRANYekanX (فایل TASK-008) با fallback به Vazirmatn |
 | Backend | FastAPI, Python 3.10+, Celery, WebSockets |
 | AI/ML | PyTorch, TensorFlow, scikit-learn |
 | Database | PostgreSQL, TimescaleDB, Redis |

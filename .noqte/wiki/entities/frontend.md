@@ -27,6 +27,8 @@
 | `src/components/dashboard/risk-gauge.tsx` | گیج ریسک SVG semicircle، ۴ سطح رنگی، live mode با drift |
 | `src/components/dashboard/credit-score.tsx` | امتیاز اعتباری ۳۰۰-۸۵۰، animated counter، progress bars |
 | `src/components/portfolio/trade-tracker.tsx` | ثبت خرید/فروش، محاسبه P&L واقعی |
+| `src/components/portfolio/add-asset-modal.tsx` | مودال ثبت دارایی ایرانی — 15 نماد، auto-calculate، localStorage |
+| `src/components/portfolio/iran-portfolio-section.tsx` | سکشن «دارایی‌های من» — donut chart، holdings، تاریخچه |
 | `src/lib/hooks/use-market-ws.ts` | WebSocket hook با auto-reconnect و polling fallback |
 | `src/lib/hooks/use-price-alerts.ts` | هشدار قیمت در localStorage + trigger callback |
 | `src/components/alerts/alerts-panel.tsx` | پنل ایجاد و مدیریت هشدار قیمت |

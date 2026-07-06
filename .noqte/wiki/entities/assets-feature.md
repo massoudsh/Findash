@@ -3,7 +3,7 @@
 > سکشن دارایی‌های ایرانی — طلا، نقره، ارز، مسکن، کریپتو
 
 ## وضعیت
-`✅ پیاده‌سازی اولیه — آماده اتصال به سرویس‌های موجود`
+`✅ کامل — push شده در commit 642b3ea`
 
 ## فایل‌ها
 
@@ -52,6 +52,23 @@ TGJU API → AssetService._fetch_tgju()
 - [[entities/backend]] — FastAPI router ثبت در main app
 - [[entities/frontend]] — صفحه `/assets` در App Router
 
+## قابلیت افزودن دارایی (Feature: Add Asset)
+
+### کامپوننت‌های جدید
+| فایل | عملکرد |
+|------|--------|
+| `frontend-nextjs/src/components/portfolio/add-asset-modal.tsx` | مودال ثبت دارایی — Select دارایی، کد، مقدار، قیمت واحد، ارزش کل، واحد پول، نوع تراکنش. auto-calculate قیمت↔ارزش. localStorage key: `iran_portfolio_v1` |
+| `frontend-nextjs/src/components/portfolio/iran-portfolio-section.tsx` | سکشن «دارایی‌های من» — KPI cards، donut chart SVG، لیست holdings، تاریخچه تراکنش |
+
+### دارایی‌های پیش‌فرض در مودال (15 نماد)
+طلا ۱۸/۲۴ عیار، سکه تمام/نیم، نقره، دلار، یورو، درهم، BTC، ETH، USDT، سهام، اوراق، مسکن، نقدی
+
+### ذخیره‌سازی
+`localStorage['iran_portfolio_v1']` — آرایه‌ای از `IranPortfolioAsset` (id، type، name، code، quantity، unitPrice، totalValue، currency، side، timestamp)
+
+### جایگاه در UI
+`portfolio-content.tsx` → اول صفحه پورتفولیو (تب portfolio در dashboard)
+
 ## مرحله بعدی (باقی‌مانده از TASK-001)
-- [ ] TASK-001b: ثبت router در `main_refactored.py` (`app.include_router(assets_router)`)
-- [ ] TASK-001f: اتصال دارایی‌ها به portfolio tracker موجود
+- [x] TASK-001b: ثبت router در `main_refactored.py` (`app.include_router(assets_router)`) — انجام شد 2026-06-27
+- [x] TASK-001f: اتصال دارایی‌ها به portfolio tracker موجود — trade-tracker.tsx ساخته شد 2026-06-29

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercentage } from '@/lib/utils';
 import { getPortfolios, getPositions } from '@/lib/services/api';
 import { PortfolioChart } from '@/components/portfolio/portfolio-chart';
+import { IranPortfolioSection } from '@/components/portfolio/iran-portfolio-section';
 import {
   Plus,
   DollarSign,
@@ -174,6 +175,11 @@ export function PortfolioContent() {
 
   return (
     <div className="space-y-6">
+      {/* Iranian Portfolio Section */}
+      <IranPortfolioSection />
+
+      <div className="border-t pt-4" />
+
       {/* Summary hero */}
       <GlassCard className="border-white/30 dark:border-white/20 bg-card/50 backdrop-blur">
         <CardContent className="p-6">

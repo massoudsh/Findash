@@ -17,7 +17,7 @@
 
 ### Redis Cache
 - کلید: `market_data:{symbol}:latest`
-- TTL: 300 ثانیه (SETEX)
+- TTL: **300 ثانیه** (pipeline اصلی Kafka → Redis) | **60 ثانیه** (assets feature: `asset_service.py`)
 - Pub/Sub کانال‌ها: `tasks:market_data:*`, `worker:*`
 
 ### Kafka

@@ -2,6 +2,8 @@
 
 > تاریخچه append-only — هر ورود با `## [YYYY-MM-DD] <type> | <خلاصه>` شروع می‌شود.
 
+## [2026-07-06] feature | قابلیت افزودن دارایی: AddAssetModal (15 نماد ایرانی، auto-calc، localStorage) + IranPortfolioSection (donut chart SVG، holdings list، تاریخچه) — وصل به portfolio tab
+## [2026-07-04] health-check | بررسی تناقضات ویکی — رفع 4 مورد: agents count (11→M1-M5 documented+M6-M11 planned)، Redis TTL (clarify 300s vs 60s)، TASK-001b/f (open→done)، font (overview اصلاح شد)
 ## [2026-07-01] redesign | داشبورد `/dashboard` با سبک modern mill-flat و رنگ `#3B82F6` بازطراحی شد — grid KPI cards، SVG performance chart، donut allocation، positions table، widgets و activity timeline
 ## [2026-07-01] audit | آدیت کامل Hawk View: 18 تسک جدید در backlog — Auth broken (demo hardcoded)، font missing، market/analytics tab placeholder، Iranian assets absent، CI/CD placeholder، no Jalali calendar
 ## [2026-06-27] bootstrap | ویکی پروژه اختاپوس از README bootstrap شد — overview، index، 4 entity، 2 concept ساخته شد

@@ -1,97 +1,113 @@
 ---
 
 ### هدف اصلی کاربر
-توسعه پروژه **اختاپوس (Octopus / Findash)** — یک داشبورد مالی جامع با تمرکز بر بازار ایران. شامل دارایی‌های ایرانی (طلا، سکه، دلار، نقره، مسکن، کریپتو)، لوکالیزیشن فارسی/RTL، بک‌تستینگ و قابلیت‌های ریل‌تایم.
+توسعه پروژه «اختاپوس» (Octopus/Findash) — یک داشبورد مالی همه‌کاره با تمرکز بر **بازار ایران** (طلا، سکه، دلار، نقره، مسکن، ارز دیجیتال). ریپو اصلی: `massoudsh/Findash` روی GitHub، شاخه `main`.
 
 ---
 
 ### وضعیت فعلی پروژه
-- **ریپو:** `massoudsh/Findash` — شاخه `main`
-- **آخرین commit push شده:** `642b3ea` — `feat: complete iranian market platform (TASK-002~006)`
-- **بک‌لاگ:** همه ۶ تسک اصلی (TASK-001 تا TASK-006) کامل و push شده‌اند
-- **در حال اجرا:** مرحله اجرای **Steps 1–6** جدید (WebSocket، Portfolio، Alert، News، UI/UX، pytest) که **نیمه‌کاره** ماند — تا Step 2 پیش رفت ولی transcript قطع شد
+- **همه TASK-001 تا TASK-006 کامل و push شده‌اند.**
+- آخرین commit push‌شده: `642b3ea` — `feat: complete iranian market platform (TASK-002~006)`
+- بک‌لاگ رسمی خالی است.
+- در **آخرین session (2026-06-29)**، کاربر خواسته مراحل ۱ تا ۶ جدید (WebSocket، Portfolio Tracker بهتر، Alert، News، UI/UX، pytest) پیاده شود و اپ local اجرا و با GitHub sync شود.
+- دستیار در حال بررسی ساختار پروژه واقعی (`/project/frontend-nextjs/` و `/project/src/`) بود و شروع پیاده‌سازی کرده بود، اما transcript ناتمام است — **Step 1 و Step 2 شروع شده‌اند اما کامل نشده‌اند.**
 
 ---
 
 ### فایل‌های مهم و تغییرات آن‌ها
 
-**پروژه اصلی (در `/project/frontend-nextjs/`):**
-- `src/app/dashboard/page.tsx` — داشبورد اصلی (در حال ویرایش برای افزودن تب Trades)
-- `src/app/portfolio/page.tsx` — صفحه پورتفولیو
-- `src/components/realtime/realtime-content.tsx` — **بازنویسی شد** با WebSocket hook جدید
-- `src/lib/hooks/use-market-ws.ts` — **جدید** — hook ریل‌تایم WebSocket
-- `src/components/portfolio/trade-tracker.tsx` — **جدید** — ثبت خرید/فروش با P&L
+**ساختار واقعی پروژه (در `/project/`):**
+- `frontend-nextjs/src/app/` — صفحات Next.js (dashboard, portfolio, realtime, notifications, backtesting, assets)
+- `frontend-nextjs/src/components/` — کامپوننت‌ها (dashboard, portfolio, realtime, navigation, ui)
+- `frontend-nextjs/src/lib/` — utils, backend-url, i18n, hooks
+- `src/api/routes/` — FastAPI route ها
+- `src/realtime/` — WebSocket backend
 
-**ماژول‌های ساخته‌شده (در `MyProjects/Octopus/Modules/`):**
-- `src/schemas/asset_schema.py` — Pydantic types
-- `src/models/asset.py` — 4 جدول SQLAlchemy + seed 16 نماد
-- `src/services/asset_service.py` — fetch از tgju.org + Redis cache (60s TTL)
-- `src/api/routes/assets.py` — 5 endpoint: list، detail، history، usd-rate، portfolio
-- `src/main_refactored.py` — ثبت assets_router
-- `src/migrations/add_asset_tables.sql` — TimescaleDB + seed
-- `frontend-nextjs/src/context/CurrencyContext.tsx` — سوئیچ IRT/USD
-- `frontend-nextjs/src/lib/locale.ts` — تاریخ شمسی + اعداد فارسی
-- `frontend-nextjs/src/app/layout.tsx` — RTL + Vazirmatn
-- `frontend-nextjs/src/app/dashboard/_components/IranMacroWidget.tsx`
-- `frontend-nextjs/src/app/dashboard/_components/CurrencyComparisonCard.tsx`
-- `frontend-nextjs/src/app/backtesting/_components/IranAssetBacktest.tsx`
-- `tests/test_assets_api.py` — 15 تست endpoint
-- `tests/test_asset_service.py` — تست cache/TGJU/error
+**فایل‌های تازه ایجادشده (session آخر، ناتمام):**
+- `frontend-nextjs/src/lib/hooks/use-market-ws.ts` — WebSocket hook جدید (نوشته شده)
+- `frontend-nextjs/src/components/realtime/realtime-content.tsx` — بازنویسی شده با hook جدید (نوشته شده)
+- `frontend-nextjs/src/components/portfolio/trade-tracker.tsx` — Portfolio trade tracker (شروع شده)
 
-**ویکی Noqte:**
-- `.noqte/wiki/backlog.md` — همه TASK-001~006 با وضعیت Done
-- `.noqte/wiki/pending-issues.md` — 5 issue آماده ایجاد در GitHub UI
-- `.noqte/wiki/entities/assets-feature.md`، `frontend.md`، `backend.md`، `orchestrator.md`، `data-layer.md`
-- `.noqte/wiki/concepts/trading-flow.md`، `data-pipeline.md`
+**فایل‌های موجود قبلی کلیدی:**
+- `frontend-nextjs/src/components/portfolio/portfolio-content.tsx`
+- `frontend-nextjs/src/app/dashboard/page.tsx`
+- `frontend-nextjs/src/app/portfolio/page.tsx`
+- `frontend-nextjs/src/app/realtime/page.tsx`
+- `frontend-nextjs/src/components/navigation/navigation-wrapper.tsx`
+- `frontend-nextjs/src/components/ui/theme-switcher.tsx`
+- `frontend-nextjs/src/components/ui/notification-center.tsx`
+- `frontend-nextjs/src/lib/i18n/locale-context` — i18n موجود
+
+**فایل‌های ویکی:**
+- `.noqte/wiki/backlog.md` — همه TASK-001~006 کامل
+- `.noqte/wiki/pending-issues.md` — issue های ذخیره‌شده برای GitHub UI
+- `.noqte/wiki/entities/assets-feature.md`
+- `.noqte/wiki/log.md`
 
 ---
 
 ### تصمیمات معماری/طراحی
-- **پروژه اصلی در `/project/frontend-nextjs/`** — جدا از ماژول‌های ساخته‌شده که در `MyProjects/Octopus/Modules/` هستند
-- `MyProjects/Octopus/Modules` به‌عنوان **submodule** وجود داشت — gitlink حذف و به‌عنوان directory معمولی add شد
-- فونت: **Vazirmatn** برای فارسی، `dir="rtl"` در `layout.tsx`
-- Cache: **Redis 60 ثانیه** برای قیمت‌های tgju.org
-- DB: **TimescaleDB** (PostgreSQL) برای time-series داده‌های قیمت
-- WebSocket hook: `use-market-ws.ts` با reconnect خودکار و fallback به polling
+- **ساختار واقعی پروژه** در `/project/frontend-nextjs/` و `/project/src/` است (نه `MyProjects/Octopus/Modules/`)
+- Frontend: Next.js 15 + TypeScript + RTL + فونت Vazirmatn
+- Backend: FastAPI + Python
+- DB: PostgreSQL/TimescaleDB + Redis (cache 60s TTL)
+- داده قیمت: fetch از `tgju.org`
+- WebSocket برای داده ریل‌تایم (backend موجود در `src/realtime/`)
+- i18n موجود با `locale-context` + تاریخ شمسی + اعداد فارسی
+- CurrencyContext: سوئیچ IRT/USD
+- Toast system با `toast.tsx` موجود در `components/ui/`
+- `gh` CLI موجود نیست، issue ها در `pending-issues.md` ذخیره می‌شوند
 
 ---
 
 ### کارهای انجام‌شده (به ترتیب زمانی)
 
-1. **2026-06-27:** Bootstrap ویکی پروژه — overview، 4 entity، 2 concept
-2. **2026-06-27:** ساخت بک‌لاگ — TASK-001 تا TASK-006
-3. **2026-06-27:** اجرای TASK-001 (سکشن دارایی‌های ایرانی) — backend کامل + frontend کامل
-4. **2026-06-27:** اجرای 001e/001f/001g — widget داشبورد، portfolio tracker، main_refactored.py
-5. **2026-06-27:** Commit `feat: adding persian market assets` و push
-6. **2026-06-28:** اجرای TASK-002~006 یکجا — داشبورد ایرانی، RTL، CurrencyContext، بک‌تستینگ، تست‌ها
-7. **2026-06-28:** Commit `feat: complete iranian market platform` و push — `642b3ea`
-8. **2026-06-29:** شروع Steps 1–6 جدید:
-   - **Step 1 (WebSocket):** `use-market-ws.ts` ساخته شد، `realtime-content.tsx` بازنویسی شد ✅
-   - **Step 2 (Portfolio):** `trade-tracker.tsx` ساخته شد ✅ — در حال افزودن تب به `dashboard/page.tsx` قطع شد
+**2026-06-27:**
+- Bootstrap ویکی پروژه (overview، 4 entity، 2 concept)
+- بک‌لاگ ساخته شد
+- TASK-001 پیاده: backend (schemas, models, service, routes, migration) + frontend (AssetCard, AssetGrid, AssetPriceChart, AssetSummaryBar, assets/page.tsx)
+- TASK-001 کامل: dashboard widget (AssetsDashboardWidget)، portfolio section (PortfolioAssetsSection)، main_refactored.py
+- Commit و push: `feat: adding persian market assets`
+
+**2026-06-28:**
+- TASK-004: CurrencyContext + CurrencyToggle
+- TASK-003: locale.ts (Jalali + toPersianDigits) + layout.tsx با RTL
+- TASK-002: IranMacroWidget + CurrencyComparisonCard + dashboard page
+- TASK-005: IranAssetBacktest (3 استراتژی) + backtesting/page.tsx
+- TASK-006: test_assets_api.py (15 تست) + test_asset_service.py + README update
+- Commit و push: `feat: complete iranian market platform (TASK-002~006)`
+
+**2026-06-29 (session ناتمام):**
+- کاربر: "do the steps from 1 to 6 and run the app local and sync local and github"
+- دستیار ساختار واقعی پروژه را بررسی کرد (مسیرهای واقعی در `/project/`)
+- **Step 1:** `use-market-ws.ts` hook نوشته شد، `realtime-content.tsx` بازنویسی شد
+- **Step 2:** `trade-tracker.tsx` شروع شد، portfolio page بررسی شد
+- **transcript قطع شده** — مراحل ۳ تا ۶ و اجرای local و push انجام نشده
 
 ---
 
 ### کارهای باقی‌مانده / گام بعدی
 
-درخواست کاربر در **2026-06-29T05:58:38** این بود:
-> "do the steps from 1 to 6 and run the app local and sync local and github."
-
-**Steps ناتمام:**
-- **Step 2 (ادامه):** افزودن تب Trades به `dashboard/page.tsx` — در حال خواندن فایل قطع شد
-- **Step 3 — Alert سیستم:** قیمت هدف + اطلاع‌رسانی (ایمیل/Telegram)
-- **Step 4 — صفحه News:** اخبار بازار ایران (RSS/scrape)
-- **Step 5 — UI/UX:** dark mode کامل، انیمیشن، mobile-friendly
-- **Step 6 — pytest:** اجرای تست‌های موجود و validate
-- **اجرای local:** `npm run dev` در `frontend-nextjs` و بالا آوردن backend
-- **sync با GitHub:** commit نهایی و push
+**مراحل ناتمام (از درخواست کاربر 2026-06-29):**
+1. **Step 2 (ادامه)** — اضافه کردن تب «Trades» به `portfolio/page.tsx` یا `dashboard/page.tsx`
+2. **Step 3** — Alert سیستم (اعلان قیمت هدف — email/telegram)
+3. **Step 4** — صفحه News (اخبار بازار ایران)
+4. **Step 5** — UI/UX بهبود (dark mode کامل، انیمیشن، mobile-friendly)
+5. **Step 6** — اجرای pytest و validate کردن تست‌ها
+6. **اجرای local** — راه‌اندازی اپ برای تست محلی
+7. **Sync با GitHub** — commit و push همه تغییرات جدید
 
 ---
 
 ### نکات، گاتچاها، و درخواست‌های اخیر کاربر
 
-- **`gh` CLI نصب نیست** — issue ها باید از GitHub UI ایجاد شوند (فایل `.noqte/wiki/pending-issues.md` آماده است)
-- پروژه اصلی frontend در **`/project/frontend-nextjs/`** است — نه در `MyProjects/Octopus/Modules/`
-- فایل `dashboard/page.tsx` در `/project/frontend-nextjs/src/app/dashboard/page.tsx` بود که در حال خواندن برای ویرایش قطع شد — **گام بعدی** همین ویرایش است
-- آخرین درخواست verbatim: **"do the steps from 1 to 6 and run the app local and sync local and github."**
-- ساختار navigation از `navigation-wrapper.tsx` مدیریت می‌شود
-- toast/notification سیستم موجود است: `notification-center.tsx` و `toast.tsx`
+**درخواست verbatim کاربر (آخرین پیام مهم):**
+> "do the steps from 1 to 6 and run the app local and sync local and github."
+
+**گاتچاها:**
+- `MyProjects/Octopus/Modules/` submodule بود و با `git rm --cached` حذف شد — فایل‌های آن‌جا با `git add -f` اضافه شدند ولی ساختار واقعی کد در `/project/frontend-nextjs/` و `/project/src/` است
+- `gh` CLI نصب نیست — issue ها را نمی‌توان از terminal ایجاد کرد
+- toast system موجود است در `components/ui/toast.tsx`
+- i18n با locale-context موجود است
+- WebSocket backend در `src/realtime/` موجود است
+- فایل‌های جدید Session آخر (use-market-ws.ts، realtime-content.tsx، trade-tracker.tsx) هنوز **commit و push نشده‌اند**
