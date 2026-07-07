@@ -85,19 +85,19 @@ function TradingCenterContent() {
           <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="options" className="flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
-              Options
+              اختیار معامله
             </TabsTrigger>
             <TabsTrigger value="strategies" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
-              Strategies
+              استراتژی‌ها
             </TabsTrigger>
             <TabsTrigger value="risk" className="flex items-center gap-2">
               <Shield className="h-4 w-4" />
-              Risk
+              ریسک
             </TabsTrigger>
             <TabsTrigger value="bots" className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
-              Trading Bots
+              ربات‌های معاملاتی
             </TabsTrigger>
           </TabsList>
         </div>
@@ -121,11 +121,11 @@ function TradingCenterContent() {
             <TabsList className="grid w-full max-w-md grid-cols-2 mb-4">
               <TabsTrigger value="strategies" className="flex items-center gap-2">
                 <Target className="h-4 w-4" />
-                Strategies
+                استراتژی‌ها
               </TabsTrigger>
               <TabsTrigger value="backtesting" className="flex items-center gap-2">
                 <FlaskConical className="h-4 w-4" />
-                Backtesting
+                بک‌تست
               </TabsTrigger>
             </TabsList>
             <TabsContent value="strategies" className="mt-0">

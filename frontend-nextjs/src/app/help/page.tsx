@@ -1,838 +1,496 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  HelpCircle,
-  Search,
-  Book,
-  Video,
-  MessageCircle,
-  FileText,
-  Download,
-  ExternalLink,
-  ChevronRight,
-  ChevronDown,
-  Star,
-  Clock,
-  Users,
-  Zap,
-  TrendingUp,
-  DollarSign,
-  BarChart3,
-  AlertCircle,
-  CheckCircle,
-  PlayCircle,
+import {
   BookOpen,
-  Phone,
-  Mail,
+  BarChart3,
+  TrendingUp,
+  Target,
+  Brain,
+  Shield,
+  Database,
   MessageSquare,
-  Calendar,
-  Globe,
-  Code,
+  Activity,
+  History,
   PieChart,
-  Monitor,
-  Eye,
-  Keyboard
+  Newspaper,
+  BellRing,
+  GitBranch,
+  Cpu,
+  ChevronDown,
+  ChevronRight,
+  LineChart,
+  Bot,
+  Layers,
+  Zap,
+  Settings,
+  User,
+  FileText,
+  Code,
+  Info,
+  Keyboard,
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
-interface HelpArticle {
+interface Section {
   id: string;
   title: string;
-  category: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  readTime: number;
-  rating: number;
-  views: number;
+  icon: React.ComponentType<{ className?: string }>;
+  href: string;
+  color: string;
   description: string;
-  tags: string[];
-  lastUpdated: string;
+  steps: string[];
+  agentId?: string;
+  agentName?: string;
 }
 
-interface FAQ {
-  id: string;
-  question: string;
-  answer: string;
-  category: string;
-  helpful: number;
-  notHelpful: number;
+interface FAQItem {
+  q: string;
+  a: string;
 }
 
-interface Tutorial {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  category: string;
-  steps: number;
-  completions: number;
-  thumbnail: string;
-}
+const APP_SECTIONS: Section[] = [
+  {
+    id: 'dashboard',
+    title: 'داشبورد',
+    icon: BarChart3,
+    href: '/dashboard',
+    color: 'text-blue-500',
+    description: 'نمای کلی از وضعیت پرتفولیو، بازار، و عملکرد روزانه.',
+    steps: [
+      'از سایدبار چپ روی «داشبورد» کلیک کن.',
+      'کارت‌های KPI (ارزش پرتفولیو، سود/زیان، تعداد موقعیت‌های باز) در بالا نمایش داده می‌شوند.',
+      'نمودار عملکرد تاریخی را در بخش مرکزی ببین.',
+      'تب‌های پایین‌تر: «پرتفولیو»، «بازار»، «تحلیل» را بررسی کن.',
+      'برای تعامل با عاملان هوش مصنوعی، پنل سمت راست را باز کن.',
+    ],
+    agentId: 'M11',
+    agentName: 'لنز',
+  },
+  {
+    id: 'trading',
+    title: 'مرکز فرماندهی',
+    icon: TrendingUp,
+    href: '/trading',
+    color: 'text-emerald-500',
+    description: 'مرکز اصلی معامله: اختیار معامله، استراتژی‌ها، ریسک، و ربات‌ها.',
+    steps: [
+      'از سایدبار چپ روی «مرکز فرماندهی» کلیک کن.',
+      'تب «اختیار معامله»: ابزارهای تصمیم‌گیری برای معاملات آپشن.',
+      'تب «استراتژی‌ها»: لیست استراتژی‌های فعال و امکان بک‌تست.',
+      'تب «ریسک»: داشبورد مدیریت ریسک با VaR و سقف موقعیت.',
+      'تب «ربات‌های معاملاتی»: تنظیم، راه‌اندازی، و پایش ربات‌ها.',
+      'پنل عاملان سمت راست هر تب: بینش‌های بلادرنگ هوش مصنوعی.',
+    ],
+    agentId: 'M4',
+    agentName: 'اطلس',
+  },
+  {
+    id: 'news',
+    title: 'اخبار بازار ایران',
+    icon: Newspaper,
+    href: '/news',
+    color: 'text-orange-500',
+    description: 'اخبار بلادرنگ بازار ایران، بورس تهران، و اخبار مرتبط.',
+    steps: [
+      'از سایدبار چپ روی «اخبار بازار ایران» کلیک کن.',
+      'اخبار به‌صورت بلادرنگ از منابع ایرانی دریافت می‌شود.',
+      'می‌توانی بر اساس موضوع یا نماد فیلتر کنی.',
+      'هر خبر با تگ سنتیمنت (مثبت/منفی/خنثی) مشخص شده.',
+    ],
+    agentId: 'M9',
+    agentName: 'پژواک',
+  },
+  {
+    id: 'alerts',
+    title: 'هشدار قیمت',
+    icon: BellRing,
+    href: '/alerts',
+    color: 'text-yellow-500',
+    description: 'تعیین آستانه قیمتی و دریافت اعلان هنگام رسیدن به هدف.',
+    steps: [
+      'از سایدبار چپ روی «هشدار قیمت» کلیک کن.',
+      'روی «افزودن هشدار جدید» کلیک کن.',
+      'نماد مورد نظر را جستجو و انتخاب کن.',
+      'قیمت هدف، جهت (بالاتر/پایین‌تر)، و روش اعلان را تنظیم کن.',
+      'هشدار ذخیره می‌شود و هنگام فعال‌شدن اعلان دریافت می‌کنی.',
+    ],
+  },
+  {
+    id: 'technical',
+    title: 'تکنیکال',
+    icon: Target,
+    href: '/technical',
+    color: 'text-blue-600',
+    description: 'تحلیل تکنیکال با اندیکاتورها، الگوها، و سیگنال‌های خودکار.',
+    steps: [
+      'از سایدبار چپ روی «تکنیکال» کلیک کن.',
+      'نماد مورد نظر را در نوار جستجو وارد کن.',
+      'تایم‌فریم دلخواه را از منوی بالای نمودار انتخاب کن.',
+      'اندیکاتورها را از پنل راست اضافه کن (RSI، MACD، BB و ...).',
+      'سیگنال‌های اتوماتیک را در پنل «سیگنال‌ها» زیر نمودار ببین.',
+    ],
+    agentId: 'M7',
+    agentName: 'پیشگو',
+  },
+  {
+    id: 'fundamental-data',
+    title: 'تحلیل بنیادی',
+    icon: Brain,
+    href: '/fundamental-data',
+    color: 'text-violet-500',
+    description: 'صورت‌های مالی، نسبت‌های بنیادی، و تحلیل کیفی شرکت‌ها.',
+    steps: [
+      'از سایدبار چپ روی «تحلیل بنیادی» کلیک کن.',
+      'نماد شرکت را جستجو کن.',
+      'تب‌ها: «خلاصه»، «صورت مالی»، «نسبت‌ها»، «تاریخچه سود» را بررسی کن.',
+      'مقایسه با صنعت در پنل «مقایسه بخشی» انجام می‌شود.',
+    ],
+    agentId: 'M5',
+    agentName: 'نورون',
+  },
+  {
+    id: 'macro',
+    title: 'کلان',
+    icon: LineChart,
+    href: '/macro',
+    color: 'text-amber-500',
+    description: 'شاخص‌های اقتصاد کلان، تورم، نرخ بهره، و داده‌های ارزی.',
+    steps: [
+      'از سایدبار چپ روی «کلان» کلیک کن.',
+      'شاخص‌های کلیدی (تورم، رشد GDP، نرخ دلار) در کارت‌های بالا.',
+      'نمودارهای سری زمانی را برای هر شاخص باز کن.',
+      'ارتباط بین شاخص‌ها و بازار سهام در تب «همبستگی» قابل بررسی است.',
+    ],
+  },
+  {
+    id: 'on-chain',
+    title: 'آن‌چین',
+    icon: Database,
+    href: '/on-chain',
+    color: 'text-violet-600',
+    description: 'داده‌های زنجیره‌ای رمزارزها: تراکنش‌ها، آدرس‌های فعال، جریان صرافی.',
+    steps: [
+      'از سایدبار چپ روی «آن‌چین» کلیک کن.',
+      'شبکه مورد نظر (BTC، ETH، ...) را انتخاب کن.',
+      'متریک‌های کلیدی: تراکنش‌های روزانه، هزینه گس، آدرس‌های فعال.',
+      'جریان ورود/خروج از صرافی‌ها در تب «جریان صرافی» قابل مشاهده است.',
+    ],
+    agentId: 'M1',
+    agentName: 'پیوند',
+  },
+  {
+    id: 'social',
+    title: 'سیگنال‌های اجتماعی',
+    icon: MessageSquare,
+    href: '/social',
+    color: 'text-pink-500',
+    description: 'سنتیمنت اجتماعی از توییتر، ردیت، شاخص ترس و طمع.',
+    steps: [
+      'از سایدبار چپ روی «سیگنال‌های اجتماعی» کلیک کن.',
+      'شاخص «ترس و طمع» را در بالای صفحه ببین.',
+      'نمودار سنتیمنت نمادهای مختلف در بخش مرکزی.',
+      'تب «ردیت/توییتر» آخرین پست‌های مرتبط با هر نماد را نشان می‌دهد.',
+    ],
+    agentId: 'M9',
+    agentName: 'پژواک',
+  },
+  {
+    id: 'ai-models',
+    title: 'مدل‌های هوش مصنوعی',
+    icon: Cpu,
+    href: '/ai-models',
+    color: 'text-cyan-500',
+    description: 'مدیریت، آموزش، و پیش‌بینی مدل‌های یادگیری ماشین.',
+    steps: [
+      'از سایدبار چپ روی «مدل‌های هوش مصنوعی» کلیک کن.',
+      'لیست مدل‌های فعال با وضعیت (آماده/در حال آموزش) نمایش داده می‌شود.',
+      'روی هر مدل کلیک کن تا جزئیات، متریک‌های ارزیابی، و تاریخچه آموزش ببینی.',
+      'برای اجرای پیش‌بینی: نماد انتخاب کن، افق زمانی تعیین کن، «پیش‌بینی» را بزن.',
+    ],
+    agentId: 'M5',
+    agentName: 'نورون',
+  },
+];
+
+const AGENTS = [
+  { id: 'M1', name: 'پیوند', fullName: 'عامل گردآوری داده', emoji: '📡', color: 'text-sky-500', tagline: 'هر فید را جاری نگه می‌دارم', desc: 'داده‌های بازار، اخبار، و داده‌های آن‌چین را از تمام منابع گردآوری می‌کند.' },
+  { id: 'M2', name: 'خزانه', fullName: 'عامل انبار داده', emoji: '🗄️', color: 'text-violet-500', tagline: 'داده‌هایت، سازمان‌یافته', desc: 'داده‌های تاریخی را ذخیره و سرویس‌دهی می‌کند.' },
+  { id: 'M3', name: 'نبض', fullName: 'عامل پردازش بلادرنگ', emoji: '⚡', color: 'text-amber-500', tagline: 'داده زنده، بدون تأخیر', desc: 'قیمت‌های لحظه‌ای و اطلاعات بازار را در زمان واقعی پردازش می‌کند.' },
+  { id: 'M4', name: 'اطلس', fullName: 'عامل استراتژی', emoji: '🎯', color: 'text-emerald-500', tagline: 'سیگنال‌هایی که بازار را می‌جنبانند', desc: 'سیگنال معاملاتی تولید می‌کند و اجرای استراتژی را مدیریت می‌کند.' },
+  { id: 'M5', name: 'نورون', fullName: 'عامل مدل‌های هوش مصنوعی', emoji: '🧠', color: 'text-fuchsia-500', tagline: 'یادگیری عمیق، مزیت عمیق‌تر', desc: 'مدل‌های پیش‌بینی و یادگیری ماشین را آموزش داده و اجرا می‌کند.' },
+  { id: 'M6', name: 'نگهبان', fullName: 'عامل مدیریت ریسک', emoji: '🛡️', color: 'text-rose-500', tagline: 'ریسک زیر کنترل', desc: 'VaR، سقف موقعیت، و انطباق پرتفولیو را پایش می‌کند.' },
+  { id: 'M7', name: 'پیشگو', fullName: 'عامل پیش‌بینی قیمت', emoji: '🔮', color: 'text-cyan-500', tagline: 'قیمت بعدی کجا می‌رود', desc: 'پیش‌بینی قیمت مبتنی بر سری زمانی و مدل‌های ترکیبی.' },
+  { id: 'M8', name: 'سایه', fullName: 'عامل معامله کاغذی', emoji: '📋', color: 'text-slate-500', tagline: 'تمرین بدون فشار', desc: 'اجرای شبیه‌سازی‌شده معاملات بدون ریسک سرمایه واقعی.' },
+  { id: 'M9', name: 'پژواک', fullName: 'عامل سنتیمنت بازار', emoji: '💬', color: 'text-pink-500', tagline: 'جمع چه احساسی دارد', desc: 'سنتیمنت اخبار و شبکه‌های اجتماعی را تحلیل می‌کند.' },
+  { id: 'M10', name: 'تاریخ‌نگار', fullName: 'عامل بک‌تست', emoji: '📜', color: 'text-orange-500', tagline: 'تاریخ تکرار می‌شود، ما اندازه‌اش می‌گیریم', desc: 'استراتژی‌ها را روی داده‌های تاریخی آزمایش می‌کند.' },
+  { id: 'M11', name: 'لنز', fullName: 'عامل نمایش داده', emoji: '📊', color: 'text-indigo-500', tagline: 'تصویر کامل را ببین', desc: 'نمودارها، داشبوردها، و بینش‌های گزارش را پشتیبانی می‌کند.' },
+];
+
+const FAQS: FAQItem[] = [
+  { q: 'از کجا شروع کنم؟', a: 'از داشبورد شروع کن. کارت‌های KPI، نمودار عملکرد، و موقعیت‌های باز را ببین. سپس به «مرکز فرماندهی» برو تا با ابزارهای معاملاتی آشنا بشی.' },
+  { q: 'عاملان هوش مصنوعی چی هستند؟', a: 'پلتفرم ۱۱ عامل هوش مصنوعی دارد که هر کدام مسئولیت بخشی از پردازش داده و تحلیل را دارند. هر صفحه پنل عامل مربوطه را در سمت راست نمایش می‌دهد.' },
+  { q: 'معامله کاغذی چیست؟', a: 'معامله کاغذی (Paper Trading) شبیه‌سازی معاملات بدون پول واقعی است. عامل «سایه» (M8) این محیط را مدیریت می‌کند. از «مرکز فرماندهی» به سراغش برو.' },
+  { q: 'چطور بک‌تست بگیرم؟', a: 'در «مرکز فرماندهی» تب «استراتژی‌ها» را باز کن، سپس تب فرعی «بک‌تست» را انتخاب کن. استراتژی، بازه زمانی، و سرمایه اولیه را تعیین کن و «اجرا» را بزن.' },
+  { q: 'مرکز فرماندهی چه تب‌هایی دارد؟', a: 'چهار تب: «اختیار معامله» (ابزارهای آپشن)، «استراتژی‌ها» (سیگنال و بک‌تست)، «ریسک» (مدیریت ریسک)، «ربات‌های معاملاتی» (تنظیم بات‌ها).' },
+  { q: 'چطور هشدار قیمت بسازم؟', a: 'به بخش «هشدار قیمت» در سایدبار چپ برو. روی «افزودن هشدار» کلیک کن، نماد، قیمت هدف، و جهت را تعیین کن. هنگام فعال‌شدن اعلان می‌گیری.' },
+  { q: 'سایدبار راست چیست؟', a: 'سایدبار راست شامل «داده و نمودارها»، «گزارش‌ها»، «API Playground»، «اعلان‌ها»، «مدیریت»، «حساب»، «گردش کار»، و «راهنما» می‌شود.' },
+  { q: 'چطور زبان پلتفرم را تغییر دهم؟', a: 'در پایین سایدبار چپ، کنار تم‌سوئیچر، گزینه زبان قرار دارد. می‌توانی بین فارسی، انگلیسی، و اسپانیایی جابجا شوی.' },
+  { q: 'داده‌های بازار از کجا می‌آیند؟', a: 'عامل «پیوند» (M1) داده را از منابع متعدد گردآوری می‌کند و عامل «نبض» (M3) پردازش بلادرنگ را انجام می‌دهد. در بخش «داده و نمودارها» جزئیات منابع قابل مشاهده است.' },
+  { q: 'API Playground چیست؟', a: 'یک محیط تعاملی برای تست endpoint‌های API پلتفرم. می‌توانی درخواست‌های REST بفرستی و پاسخ‌ها را مستقیم ببینی.' },
+];
+
+const SHORTCUTS = [
+  { key: '⌘K', desc: 'باز کردن Command Palette — جستجوی سریع در کل پلتفرم' },
+  { key: '⌘/', desc: 'نمایش راهنمای کلیدهای میانبر' },
+  { key: 'G → D', desc: 'رفتن به داشبورد' },
+  { key: 'G → T', desc: 'رفتن به مرکز فرماندهی' },
+  { key: 'G → N', desc: 'رفتن به اخبار' },
+  { key: 'G → H', desc: 'رفتن به راهنما' },
+  { key: 'Esc', desc: 'بستن دیالوگ یا Command Palette' },
+];
 
 export default function HelpPage() {
-  const [selectedTab, setSelectedTab] = useState('overview');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
-  const [articles, setArticles] = useState<HelpArticle[]>([]);
-  const [faqs, setFAQs] = useState<FAQ[]>([]);
-  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-
-  useEffect(() => {
-    // Sample help articles
-    const sampleArticles: HelpArticle[] = [
-      {
-        id: 'article-1',
-        title: 'Getting Started with Octopus',
-        category: 'Getting Started',
-        difficulty: 'beginner',
-        readTime: 5,
-        rating: 4.8,
-        views: 15420,
-        description: 'Complete guide to setting up your account and making your first trade',
-        tags: ['setup', 'basics', 'first-time'],
-        lastUpdated: '2024-01-15T00:00:00Z'
-      },
-      {
-        id: 'article-2',
-        title: 'Understanding Risk Management',
-        category: 'Risk Management',
-        difficulty: 'intermediate',
-        readTime: 12,
-        rating: 4.9,
-        views: 8930,
-        description: 'Learn how to protect your investments with proper risk management strategies',
-        tags: ['risk', 'portfolio', 'strategy'],
-        lastUpdated: '2024-01-18T00:00:00Z'
-      },
-      {
-        id: 'article-3',
-        title: 'Advanced Options Trading Strategies',
-        category: 'Options Trading',
-        difficulty: 'advanced',
-        readTime: 20,
-        rating: 4.7,
-        views: 3240,
-        description: 'Deep dive into complex options strategies for experienced traders',
-        tags: ['options', 'advanced', 'strategies'],
-        lastUpdated: '2024-01-20T00:00:00Z'
-      },
-      {
-        id: 'article-4',
-        title: 'API Integration Guide',
-        category: 'API & Development',
-        difficulty: 'advanced',
-        readTime: 25,
-        rating: 4.6,
-        views: 2180,
-        description: 'Complete guide to integrating with our trading APIs',
-        tags: ['api', 'development', 'integration'],
-        lastUpdated: '2024-01-19T00:00:00Z'
-      },
-      {
-        id: 'article-5',
-        title: 'Portfolio Optimization Techniques',
-        category: 'Portfolio Management',
-        difficulty: 'intermediate',
-        readTime: 15,
-        rating: 4.8,
-        views: 6750,
-        description: 'Learn how to optimize your portfolio for maximum returns with minimal risk',
-        tags: ['portfolio', 'optimization', 'returns'],
-        lastUpdated: '2024-01-17T00:00:00Z'
-      }
-    ];
-
-    const sampleFAQs: FAQ[] = [
-      {
-        id: 'faq-1',
-        question: 'How do I start trading on the platform?',
-        answer: 'To start trading with Octopus, first complete your account verification, deposit funds, and then navigate to the trading interface. You can place your first order by selecting an asset, choosing order type, and specifying quantity.',
-        category: 'Getting Started',
-        helpful: 245,
-        notHelpful: 12
-      },
-      {
-        id: 'faq-2',
-        question: 'What are the minimum deposit requirements?',
-        answer: 'The minimum deposit varies by account type: Basic accounts require $100, Premium accounts require $1,000, and Professional accounts require $10,000. There are no deposit fees for bank transfers.',
-        category: 'Account & Billing',
-        helpful: 189,
-        notHelpful: 8
-      },
-      {
-        id: 'faq-3',
-        question: 'How does the risk management system work?',
-        answer: 'Our risk management system monitors your positions in real-time, automatically calculating Value at Risk (VaR), position limits, and exposure limits. It can automatically close positions if risk thresholds are exceeded.',
-        category: 'Risk Management',
-        helpful: 156,
-        notHelpful: 23
-      },
-      {
-        id: 'faq-4',
-        question: 'Can I use the API for automated trading?',
-        answer: 'Yes, we provide comprehensive REST and WebSocket APIs for automated trading. You can access real-time market data, place orders, manage positions, and retrieve account information programmatically.',
-        category: 'API & Technical',
-        helpful: 98,
-        notHelpful: 5
-      }
-    ];
-
-    const sampleTutorials: Tutorial[] = [
-      {
-        id: 'tutorial-1',
-        title: 'Your First Trade',
-        description: 'Step-by-step guide to placing your first order',
-        duration: '8 mins',
-        difficulty: 'beginner',
-        category: 'Getting Started',
-        steps: 6,
-        completions: 12840,
-        thumbnail: '/tutorial-first-trade.jpg'
-      },
-      {
-        id: 'tutorial-2',
-        title: 'Setting Up Stop Losses',
-        description: 'Learn how to protect your investments with stop losses',
-        duration: '12 mins',
-        difficulty: 'beginner',
-        category: 'Risk Management',
-        steps: 8,
-        completions: 8650,
-        thumbnail: '/tutorial-stop-loss.jpg'
-      },
-      {
-        id: 'tutorial-3',
-        title: 'Options Trading Basics',
-        description: 'Introduction to buying and selling options',
-        duration: '25 mins',
-        difficulty: 'intermediate',
-        category: 'Options Trading',
-        steps: 12,
-        completions: 4230,
-        thumbnail: '/tutorial-options.jpg'
-      }
-    ];
-
-    setArticles(sampleArticles);
-    setFAQs(sampleFAQs);
-    setTutorials(sampleTutorials);
-  }, []);
-
-  const categories = [
-    'all',
-    'Getting Started',
-    'Trading',
-    'Portfolio Management',
-    'Options Trading',
-    'Risk Management',
-    'API & Development',
-    'Account & Billing'
-  ];
-
-  const filteredArticles = articles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === 'all' || article.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const filteredFAQs = faqs.filter(faq => {
-    const matchesSearch = faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         faq.answer.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || faq.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const filteredTutorials = tutorials.filter(tutorial => {
-    const matchesSearch = tutorial.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         tutorial.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || tutorial.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
+  const [activeTab, setActiveTab] = useState('manual');
+  const [expandedSection, setExpandedSection] = useState<string | null>('dashboard');
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
-            <HelpCircle className="w-8 h-8 text-blue-600" />
-            Help & Documentation
-          </h1>
-          <p className="text-muted-foreground">
-            Comprehensive guides, tutorials, and support resources for Octopus
-          </p>
-        </div>
-        
-        <div className="flex gap-3">
-          <Button variant="outline" className="flex items-center gap-2">
-            <MessageCircle className="w-4 h-4" />
-            Contact Support
-          </Button>
-          <Button className="flex items-center gap-2">
-            <Video className="w-4 h-4" />
-            Watch Demo
-          </Button>
-        </div>
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+          <BookOpen className="w-8 h-8 text-emerald-500" />
+          راهنمای پلتفرم
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          مرجع کامل استفاده از بخش‌ها، عاملان هوش مصنوعی، و ابزارهای پلتفرم
+        </p>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex gap-4 items-center">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search help articles, FAQs, and tutorials..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <select 
-              value={selectedCategory} 
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-3 py-2 border rounded-md min-w-48"
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category === 'all' ? 'All Categories' : category}
-                </option>
-              ))}
-            </select>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="guides">User Guides</TabsTrigger>
-          <TabsTrigger value="tutorials">Tutorials</TabsTrigger>
-          <TabsTrigger value="faq">FAQ</TabsTrigger>
-          <TabsTrigger value="api">API Docs</TabsTrigger>
-          <TabsTrigger value="support">Support</TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="manual" className="flex items-center gap-2">
+            <BookOpen className="h-4 w-4" />
+            راهنمای بخش‌ها
+          </TabsTrigger>
+          <TabsTrigger value="agents" className="flex items-center gap-2">
+            <Bot className="h-4 w-4" />
+            عاملان هوش مصنوعی
+          </TabsTrigger>
+          <TabsTrigger value="faq" className="flex items-center gap-2">
+            <Info className="h-4 w-4" />
+            سوالات متداول
+          </TabsTrigger>
+          <TabsTrigger value="shortcuts" className="flex items-center gap-2">
+            <Keyboard className="h-4 w-4" />
+            کلیدهای میانبر
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-3">
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setSelectedTab('guides')}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Book className="w-5 h-5 text-blue-600" />
-                  User Guides
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 mb-4">
-                  Comprehensive documentation and step-by-step guides
-                </p>
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline">{articles.length} articles</Badge>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setSelectedTab('tutorials')}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <PlayCircle className="w-5 h-5 text-green-600" />
-                  Video Tutorials
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 mb-4">
-                  Interactive video tutorials and walkthroughs
-                </p>
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline">{tutorials.length} tutorials</Badge>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setSelectedTab('faq')}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-purple-600" />
-                  Frequently Asked
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-600 mb-4">
-                  Quick answers to common questions
-                </p>
-                <div className="flex items-center justify-between">
-                  <Badge variant="outline">{faqs.length} questions</Badge>
-                  <ChevronRight className="w-4 h-4 text-gray-400" />
-                </div>
-              </CardContent>
-            </Card>
+        {/* ── Tab 1: Manual ── */}
+        <TabsContent value="manual" className="space-y-4 mt-4">
+          {/* Quick Nav */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+            {APP_SECTIONS.map((s) => {
+              const Icon = s.icon;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setExpandedSection(expandedSection === s.id ? null : s.id)}
+                  className={cn(
+                    'flex flex-col items-center gap-1.5 p-3 rounded-lg border text-xs font-medium transition-colors hover:bg-muted/60',
+                    expandedSection === s.id ? 'bg-muted border-primary/40' : 'bg-card'
+                  )}
+                >
+                  <Icon className={cn('h-5 w-5', s.color)} />
+                  <span className="text-center leading-tight">{s.title}</span>
+                </button>
+              );
+            })}
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5" />
-                Most Popular Articles
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {articles.slice(0, 3).map((article, index) => (
-                  <div key={article.id} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-sm font-medium text-blue-600">
-                      {index + 1}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium">{article.title}</div>
-                      <div className="text-sm text-gray-500">{article.description}</div>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Eye className="w-4 h-4" />
-                      {article.views.toLocaleString()}
-                    </div>
-                    <Badge className={getDifficultyColor(article.difficulty)}>
-                      {article.difficulty}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-slate-50 to-blue-50/50 dark:from-slate-900/50 dark:to-blue-950/20 border-blue-200/50 dark:border-blue-800/30">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <span className="text-2xl" aria-hidden>🐙</span>
-                Did you know? Sea life & our mascot
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Why Octopus? Here are some fun facts about sea creatures (and the brain behind the logo).
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm">
-              <ul className="space-y-2 list-none">
-                <li className="flex gap-2">
-                  <span className="text-blue-500 shrink-0">•</span>
-                  <span><strong>Octopuses have three hearts</strong> — two pump blood to the gills, one to the rest of the body. When they swim, the heart that feeds the body stops. No wonder they prefer crawling.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-blue-500 shrink-0">•</span>
-                  <span><strong>Two-thirds of an octopus’s neurons are in its arms</strong>, not its head. So each arm can “think” and react on its own. We like to think that’s why our platform can handle many strategies at once.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-blue-500 shrink-0">•</span>
-                  <span><strong>They can change color and texture in a flash</strong> — camouflage, mood, or communication. One minute you see them, the next you don’t. Kind of like market conditions.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-blue-500 shrink-0">•</span>
-                  <span><strong>Octopuses use tools</strong> — stacking rocks, carrying coconut shells. So we’re in good company building tools for trading.</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="text-blue-500 shrink-0">•</span>
-                  <span><strong>Bonus:</strong> A group of octopuses is called a “consortium.” We’re basically a consortium of agents working for your portfolio.</span>
-                </li>
-              </ul>
-              <p className="text-muted-foreground italic pt-2 border-t border-border/50">
-                Clownfish dads turn into moms when the breeding female dies. Dolphins sleep with one eye open. Sea cucumbers breathe through their butt. The ocean is weird. We just picked the smartest invertebrate for the logo.
-              </p>
-            </CardContent>
-          </Card>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="w-5 h-5" />
-                  Quick Access
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <PlayCircle className="w-4 h-4 mr-2" />
-                  Platform Overview Video
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Download className="w-4 h-4 mr-2" />
-                  Download User Manual
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Code className="w-4 h-4 mr-2" />
-                  API Reference
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Keyboard className="w-4 h-4 mr-2" />
-                  Keyboard Shortcuts
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5" />
-                  Need Help?
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full justify-start">
-                  <Mail className="w-4 h-4 mr-2" />
-                  Email Support
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Phone className="w-4 h-4 mr-2" />
-                  Call Support
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Live Chat
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule Demo
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="guides" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
-                User Guides & Documentation
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4">
-                {filteredArticles.map(article => (
-                  <div key={article.id} className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h3 className="font-medium mb-1">{article.title}</h3>
-                        <p className="text-sm text-gray-600 mb-2">{article.description}</p>
-                        <div className="flex items-center gap-3 text-xs text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {article.readTime} min read
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Star className="w-3 h-3" />
-                            {article.rating}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Eye className="w-3 h-3" />
-                            {article.views.toLocaleString()} views
-                          </div>
-                          <span>Updated {formatDate(article.lastUpdated)}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getDifficultyColor(article.difficulty)}>
-                          {article.difficulty}
-                        </Badge>
-                        <Badge variant="outline">{article.category}</Badge>
-                      </div>
-                    </div>
+          {/* Section Detail */}
+          {APP_SECTIONS.map((section) => {
+            const Icon = section.icon;
+            const isOpen = expandedSection === section.id;
+            return (
+              <Card key={section.id} className={cn('transition-all', isOpen && 'ring-1 ring-primary/20')}>
+                <button
+                  className="w-full text-right"
+                  onClick={() => setExpandedSection(isOpen ? null : section.id)}
+                >
+                  <CardHeader className="py-3">
                     <div className="flex items-center justify-between">
-                      <div className="flex gap-1">
-                        {article.tags.map(tag => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
+                      <div className="flex items-center gap-3">
+                        <Icon className={cn('h-5 w-5', section.color)} />
+                        <div className="text-right">
+                          <CardTitle className="text-sm">{section.title}</CardTitle>
+                          <p className="text-xs text-muted-foreground mt-0.5">{section.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {section.agentId && (
+                          <Badge variant="outline" className="text-[10px]">
+                            {section.agentId} · {section.agentName}
                           </Badge>
-                        ))}
+                        )}
+                        <Link
+                          href={section.href}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-xs text-primary hover:underline px-2"
+                        >
+                          رفتن به بخش
+                        </Link>
+                        {isOpen ? (
+                          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        )}
                       </div>
-                      <Button variant="outline" size="sm">
-                        Read Article
-                      </Button>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+                  </CardHeader>
+                </button>
+                {isOpen && (
+                  <CardContent className="pt-0 pb-4">
+                    <ol className="space-y-2 pr-4">
+                      {section.steps.map((step, i) => (
+                        <li key={i} className="flex gap-3 text-sm text-muted-foreground">
+                          <span className={cn('shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold text-white', section.color.replace('text-', 'bg-'))}>
+                            {i + 1}
+                          </span>
+                          {step}
+                        </li>
+                      ))}
+                    </ol>
+                  </CardContent>
+                )}
+              </Card>
+            );
+          })}
 
-        <TabsContent value="tutorials" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Video className="w-5 h-5" />
-                Interactive Tutorials
+          {/* Right sidebar note */}
+          <Card className="bg-muted/30">
+            <CardHeader className="py-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Layers className="h-4 w-4 text-muted-foreground" />
+                سایدبار ابزار و سیستم (راست)
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
-                {filteredTutorials.map(tutorial => (
-                  <div key={tutorial.id} className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
-                    <div className="aspect-video bg-gray-200 rounded-lg mb-3 flex items-center justify-center">
-                      <PlayCircle className="w-12 h-12 text-gray-400" />
-                    </div>
-                    <div className="space-y-3">
-                      <div>
-                        <h3 className="font-medium mb-1">{tutorial.title}</h3>
-                        <p className="text-sm text-gray-600">{tutorial.description}</p>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-3 text-gray-500">
-                          <span>{tutorial.duration}</span>
-                          <span>{tutorial.steps} steps</span>
-                          <span>{tutorial.completions.toLocaleString()} completed</span>
-                        </div>
-                        <Badge className={getDifficultyColor(tutorial.difficulty)}>
-                          {tutorial.difficulty}
-                        </Badge>
-                      </div>
-                      <Button className="w-full">
-                        <PlayCircle className="w-4 h-4 mr-2" />
-                        Start Tutorial
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="faq" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <HelpCircle className="w-5 h-5" />
-                Frequently Asked Questions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {filteredFAQs.map(faq => (
-                  <div key={faq.id} className="border rounded-lg">
-                    <button
-                      className="w-full p-4 text-left flex items-center justify-between hover:bg-gray-50"
-                      onClick={() => setExpandedFAQ(expandedFAQ === faq.id ? null : faq.id)}
+            <CardContent className="pb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                {[
+                  { icon: PieChart, label: 'داده و نمودارها', href: '/data' },
+                  { icon: FileText, label: 'گزارش‌ها', href: '/reports' },
+                  { icon: Code, label: 'API Playground', href: '/api-playground' },
+                  { icon: BellRing, label: 'اعلان‌ها', href: '/notifications' },
+                  { icon: Settings, label: 'مدیریت', href: '/admin' },
+                  { icon: User, label: 'حساب', href: '/account' },
+                  { icon: GitBranch, label: 'گردش کار', href: '/workflow' },
+                  { icon: BookOpen, label: 'راهنما', href: '/help' },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex items-center gap-1.5 p-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      <span className="font-medium">{faq.question}</span>
-                      {expandedFAQ === faq.id ? 
-                        <ChevronDown className="w-4 h-4" /> : 
-                        <ChevronRight className="w-4 h-4" />
-                      }
-                    </button>
-                    {expandedFAQ === faq.id && (
-                      <div className="p-4 border-t bg-gray-50">
-                        <p className="text-gray-700 mb-4">{faq.answer}</p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <span className="text-sm text-gray-500">Was this helpful?</span>
-                            <div className="flex gap-2">
-                              <Button variant="outline" size="sm">
-                                <CheckCircle className="w-4 h-4 mr-1" />
-                                Yes ({faq.helpful})
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <AlertCircle className="w-4 h-4 mr-1" />
-                                No ({faq.notHelpful})
-                              </Button>
-                            </div>
-                          </div>
-                          <Badge variant="outline">{faq.category}</Badge>
-                        </div>
+                      <Icon className="h-3.5 w-3.5 shrink-0" />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* ── Tab 2: Agents ── */}
+        <TabsContent value="agents" className="space-y-4 mt-4">
+          <Card className="bg-muted/30">
+            <CardContent className="py-4 text-sm text-muted-foreground">
+              پلتفرم دارای <strong className="text-foreground">۱۱ عامل هوش مصنوعی</strong> است که هر کدام یک بخش از پردازش داده و تحلیل را پوشش می‌دهند.
+              هر صفحه پنل عامل مربوطه را در سمت راست نشان می‌دهد. عاملان با داده‌های بلادرنگ بینش تولید می‌کنند.
+            </CardContent>
+          </Card>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {AGENTS.map((agent) => (
+              <Card key={agent.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="py-4">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">{agent.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={cn('font-semibold text-sm', agent.color)}>{agent.name}</span>
+                        <Badge variant="outline" className="text-[10px]">{agent.id}</Badge>
+                        <span className="text-xs text-muted-foreground">{agent.fullName}</span>
                       </div>
-                    )}
+                      <p className="text-xs text-muted-foreground mt-1 italic">«{agent.tagline}»</p>
+                      <p className="text-xs text-muted-foreground mt-1.5">{agent.desc}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        {/* ── Tab 3: FAQ ── */}
+        <TabsContent value="faq" className="space-y-3 mt-4">
+          {FAQS.map((faq, i) => (
+            <Card key={i}>
+              <button
+                className="w-full text-right px-4 py-3 flex items-center justify-between hover:bg-muted/40 rounded-lg transition-colors"
+                onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
+              >
+                <span className="font-medium text-sm">{faq.q}</span>
+                {expandedFaq === i ? (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 ml-2" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 ml-2" />
+                )}
+              </button>
+              {expandedFaq === i && (
+                <CardContent className="pt-0 pb-4 text-sm text-muted-foreground border-t mx-4">
+                  <p className="pt-3">{faq.a}</p>
+                </CardContent>
+              )}
+            </Card>
+          ))}
+        </TabsContent>
+
+        {/* ── Tab 4: Shortcuts ── */}
+        <TabsContent value="shortcuts" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <Zap className="h-4 w-4 text-yellow-500" />
+                کلیدهای میانبر
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {SHORTCUTS.map((s, i) => (
+                  <div key={i} className="flex items-center gap-4 py-2 border-b last:border-0">
+                    <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono shrink-0 min-w-16 text-center">
+                      {s.key}
+                    </kbd>
+                    <span className="text-sm text-muted-foreground">{s.desc}</span>
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="api" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Code className="w-5 h-5" />
-                API Documentation
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-4">
-                  <h3 className="font-medium">REST API</h3>
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start">
-                      <FileText className="w-4 h-4 mr-2" />
-                      Authentication
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <DollarSign className="w-4 h-4 mr-2" />
-                      Trading Endpoints
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <PieChart className="w-4 h-4 mr-2" />
-                      Portfolio Management
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <BarChart3 className="w-4 h-4 mr-2" />
-                      Market Data
-                    </Button>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <h3 className="font-medium">WebSocket API</h3>
-                  <div className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Zap className="w-4 h-4 mr-2" />
-                      Real-time Feeds
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Monitor className="w-4 h-4 mr-2" />
-                      Order Updates
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Users className="w-4 h-4 mr-2" />
-                      Account Events
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <AlertCircle className="w-4 h-4 mr-2" />
-                      Error Handling
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid gap-4 md:grid-cols-3">
-                <Button className="flex items-center gap-2">
-                  <Download className="w-4 h-4" />
-                  Download SDK
-                </Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <ExternalLink className="w-4 h-4" />
-                  Interactive API Explorer
-                </Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Code className="w-4 h-4" />
-                  Code Examples
-                </Button>
+              <div className="mt-4 p-3 bg-muted/30 rounded-lg text-xs text-muted-foreground">
+                <strong className="text-foreground">نکته:</strong> Command Palette (⌘K) سریع‌ترین راه برای جابجایی بین بخش‌ها است. کافی است نام بخش مورد نظر را تایپ کنی.
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="support" className="space-y-4">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5" />
-                  Contact Support
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <Button className="w-full justify-start">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Live Chat (24/7)
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Mail className="w-4 h-4 mr-2" />
-                    Email Support
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Phone className="w-4 h-4 mr-2" />
-                    Phone Support
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Schedule Consultation
-                  </Button>
-                </div>
-                
-                <div className="border-t pt-4">
-                  <h4 className="font-medium mb-2">Support Hours</h4>
-                  <div className="space-y-1 text-sm text-gray-600">
-                    <div className="flex justify-between">
-                      <span>Live Chat:</span>
-                      <span>24/7</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Phone Support:</span>
-                      <span>Mon-Fri 8AM-8PM EST</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Email Response:</span>
-                      <span>Within 2 hours</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Globe className="w-5 h-5" />
-                  Community & Resources
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <Button variant="outline" className="w-full justify-start">
-                    <Users className="w-4 h-4 mr-2" />
-                    Community Forum
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Blog & Updates
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Video className="w-4 h-4 mr-2" />
-                    Webinar Library
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <FileText className="w-4 h-4 mr-2" />
-                    White Papers
-                  </Button>
-                </div>
-
-                <div className="border-t pt-4">
-                  <h4 className="font-medium mb-2">System Status</h4>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">All Systems Operational</span>
-                    <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-xs text-green-600">Online</span>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm" className="w-full mt-2">
-                    <Monitor className="w-3 h-3 mr-1" />
-                    Status Page
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </TabsContent>
       </Tabs>
     </div>
   );
-} 
+}

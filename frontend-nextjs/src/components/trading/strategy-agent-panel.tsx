@@ -49,8 +49,8 @@ export function StrategyAgentPanel() {
 
   return (
     <AgentPanel
-      title="Strategy Agent (M4)"
-      subtitle="Active signals and execution feed"
+      title="عامل استراتژی (M4)"
+      subtitle="سیگنال‌های فعال و جریان اجرا"
       icon={<Target className="h-4 w-4 text-primary" />}
       agentId="M4"
     >

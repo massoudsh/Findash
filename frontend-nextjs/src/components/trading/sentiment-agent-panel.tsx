@@ -46,8 +46,8 @@ export function SentimentAgentPanel() {
 
   return (
     <AgentPanel
-      title="Sentiment Agent (M9)"
-      subtitle="News and social sentiment by asset"
+      title="عامل سنتیمنت (M9)"
+      subtitle="سنتیمنت اخبار و شبکه‌های اجتماعی"
       icon={<MessageSquare className="h-4 w-4 text-primary" />}
       agentId="M9"
     >

@@ -52,7 +52,7 @@ export function AgentPanel({
             type="button"
             onClick={() => setCollapsed(!collapsed)}
             className="p-1 rounded hover:bg-muted"
-            aria-label={collapsed ? 'Expand' : 'Collapse'}
+            aria-label={collapsed ? 'بازکردن' : 'بستن'}
           >
             {collapsed ? (
               <ChevronUp className="h-4 w-4 text-muted-foreground" />

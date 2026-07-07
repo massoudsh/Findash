@@ -6,17 +6,17 @@ import { cn } from '@/lib/utils';
 
 /** M3 Real-time Processing Agent: stream health and latency */
 const MOCK_STREAMS = [
-  { name: 'Market quotes', latency: '12 ms', status: 'active' as const },
-  { name: 'Order book', latency: '18 ms', status: 'active' as const },
-  { name: 'Trades', latency: '8 ms', status: 'active' as const },
-  { name: 'Alerts', latency: '—', status: 'idle' as const },
+  { name: 'قیمت‌های بازار', latency: '12 ms', status: 'active' as const },
+  { name: 'دفتر سفارشات', latency: '18 ms', status: 'active' as const },
+  { name: 'معاملات', latency: '8 ms', status: 'active' as const },
+  { name: 'هشدارها', latency: '—', status: 'idle' as const },
 ];
 
 export function RealtimeAgentPanel() {
   return (
     <AgentPanel
-      title="Real-time Processor (M3)"
-      subtitle="Stream health and latency"
+      title="پردازش بلادرنگ (M3)"
+      subtitle="سلامت جریان داده و تأخیر"
       icon={<Activity className="h-4 w-4 text-primary" />}
       agentId="M3"
     >

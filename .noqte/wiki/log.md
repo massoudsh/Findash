@@ -2,6 +2,8 @@
 
 > تاریخچه append-only — هر ورود با `## [YYYY-MM-DD] <type> | <خلاصه>` شروع می‌شود.
 
+## [2026-07-07] feature | مانوال فارسی کامل (help page 4 tab) + tab integration trading page + social/alerts headers
+## [2026-07-07] localization | فارسی‌سازی کامل پلتفرم — نام/شخصیت ۱۱ عامل (M1-M11) به فارسی، tabs و panel‌های trading، source labels، mock data، timestamp‌ها و aria-labels همه ترجمه شدند
 ## [2026-07-06] feature | قابلیت افزودن دارایی: AddAssetModal (15 نماد ایرانی، auto-calc، localStorage) + IranPortfolioSection (donut chart SVG، holdings list، تاریخچه) — وصل به portfolio tab
 ## [2026-07-04] health-check | بررسی تناقضات ویکی — رفع 4 مورد: agents count (11→M1-M5 documented+M6-M11 planned)، Redis TTL (clarify 300s vs 60s)، TASK-001b/f (open→done)، font (overview اصلاح شد)
 ## [2026-07-01] redesign | داشبورد `/dashboard` با سبک modern mill-flat و رنگ `#3B82F6` بازطراحی شد — grid KPI cards، SVG performance chart، donut allocation، positions table، widgets و activity timeline
