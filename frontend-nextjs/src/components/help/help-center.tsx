@@ -357,6 +357,15 @@ export function HelpCenter() {
                   btnColor: 'border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20',
                   url: 'https://github.com/massoudsh/Findash/blob/main/docs/guides/option-strategies/collar.md',
                 },
+                {
+                  title: 'کانورژن — آربیتراژ بدون ریسک بازار',
+                  desc: 'وقتی بازار قیمت‌گذاری اشتباه می‌کند. سه معامله همزمان — خرید سهام، فروش Call، خرید Put — و سود تضمینی از Put-Call Parity.',
+                  tags: ['Conversion', 'آربیتراژ', 'آپشن پیشرفته'],
+                  color: 'border-violet-500/20 bg-violet-500/[0.06]',
+                  tagColor: 'bg-violet-500/10 border-violet-500/20 text-violet-300',
+                  btnColor: 'border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20',
+                  url: 'https://github.com/massoudsh/Findash/blob/main/docs/guides/option-strategies/conversion.md',
+                },
               ].map((article) => (
                 <div key={article.title} className={`rounded-2xl border p-5 ${article.color}`}>
                   <div className="flex items-start justify-between gap-4">
