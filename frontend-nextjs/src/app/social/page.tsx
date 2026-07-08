@@ -6,9 +6,9 @@ export default function SocialPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Social Signals</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">سیگنال‌های اجتماعی</h1>
         <p className="text-muted-foreground mt-1">
-          Sentiment from Twitter, Reddit, Fear & Greed, and news — real-time when backend is available
+          سنتیمنت از توییتر، ردیت، شاخص ترس و طمع، و اخبار — بلادرنگ هنگام اتصال به بک‌اند
         </p>
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">

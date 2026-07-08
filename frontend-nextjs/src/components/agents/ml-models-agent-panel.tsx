@@ -6,16 +6,16 @@ import { cn } from '@/lib/utils';
 
 /** M5 ML Models Agent: model status and prediction feed */
 const MOCK_MODELS = [
-  { name: 'TCN Price', status: 'active' as const },
-  { name: 'Ensemble Regime', status: 'active' as const },
-  { name: 'Sentiment CNN', status: 'training' as const },
+  { name: 'TCN قیمت', status: 'active' as const },
+  { name: 'Ensemble رژیم', status: 'active' as const },
+  { name: 'CNN سنتیمنت', status: 'training' as const },
 ];
 
 export function MLModelsAgentPanel() {
   return (
     <AgentPanel
-      title="ML Models (M5)"
-      subtitle="Deep learning and prediction models"
+      title="مدل‌های هوش مصنوعی (M5)"
+      subtitle="یادگیری عمیق و مدل‌های پیش‌بینی"
       icon={<Brain className="h-4 w-4 text-primary" />}
       agentId="M5"
     >

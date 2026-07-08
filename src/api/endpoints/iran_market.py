@@ -15,7 +15,7 @@ router = APIRouter(prefix="/api/iran-market", tags=["Iran Market"])
 # ── Cache: 30-second TTL ──────────────────────────────────────────────────────
 _cache: Dict[str, Any] = {}
 _cache_ts: Dict[str, float] = {}
-CACHE_TTL = 30  # seconds
+CACHE_TTL = 60  # seconds — کاربر: بروزرسانی هر ۶۰ ثانیه
 
 
 def _is_fresh(key: str) -> bool:
@@ -171,6 +171,60 @@ async def get_prices(symbols: Optional[str] = None):
     wanted = set(symbols.upper().split(","))
     filtered = [item for item in overview["items"] if item["symbol"] in wanted]
     return {"items": filtered}
+
+
+@router.get("/assets")
+async def get_assets(category: Optional[str] = None):
+    """
+    لیست همه دارایی‌های ایرانی تعریف‌شده در AssetsConfig
+    category: currency | gold | coin | crypto | bourse (اختیاری — برای فیلتر)
+    """
+    from src.core.assets_config import AssetsConfig, Sector
+
+    SECTOR_TO_CATEGORY: dict = {
+        "currency": Sector.CURRENCY,
+        "gold": Sector.GOLD,
+        "crypto": Sector.IRAN_CRYPTO,
+        "bourse": Sector.IRAN_BOURSE,
+        "commodity": Sector.IRAN_COMMODITY,
+    }
+
+    iranian_syms = set(
+        AssetsConfig.IRANIAN_CURRENCY_ASSETS
+        + AssetsConfig.IRANIAN_GOLD_ASSETS
+        + AssetsConfig.IRANIAN_CRYPTO_ASSETS
+        + AssetsConfig.IRANIAN_BOURSE_ASSETS
+    )
+
+    result = []
+    for sym in iranian_syms:
+        asset = AssetsConfig.ASSETS.get(sym)
+        if not asset:
+            continue
+        cat = next(
+            (k for k, v in SECTOR_TO_CATEGORY.items() if asset.sector == v),
+            "other"
+        )
+        if category and cat != category:
+            continue
+        result.append({
+            "symbol": asset.symbol,
+            "name": asset.name,
+            "asset_type": asset.asset_type.value,
+            "sector": asset.sector.value,
+            "currency": asset.currency,
+            "category": cat,
+            "trading_hours": asset.trading_hours,
+            "volatility": asset.volatility_category,
+            "liquidity": asset.liquidity_category,
+            "tick_size": asset.tick_size,
+            "min_trade_size": asset.min_trade_size,
+        })
+
+    # sort: currency → gold → crypto → bourse
+    order = ["currency", "gold", "coin", "crypto", "bourse", "other"]
+    result.sort(key=lambda x: order.index(x["category"]) if x["category"] in order else 99)
+    return {"assets": result, "total": len(result)}
 
 
 @router.get("/ticker")

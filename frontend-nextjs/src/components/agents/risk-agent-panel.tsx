@@ -6,17 +6,17 @@ import { cn } from '@/lib/utils';
 
 /** M6 Risk Management Agent: risk metrics and compliance status */
 const MOCK_RISK = [
-  { label: 'Portfolio VaR (95%)', value: '1.2%', status: 'ok' as const },
-  { label: 'Max drawdown', value: '4.1%', status: 'ok' as const },
-  { label: 'Position limits', value: 'Within', status: 'ok' as const },
-  { label: 'Daily loss limit', value: '0.8% used', status: 'warn' as const },
+  { label: 'VaR پرتفولیو (۹۵٪)', value: '۱.۲٪', status: 'ok' as const },
+  { label: 'حداکثر افت', value: '۴.۱٪', status: 'ok' as const },
+  { label: 'سقف موقعیت', value: 'در محدوده', status: 'ok' as const },
+  { label: 'سقف زیان روزانه', value: '۰.۸٪ مصرف‌شده', status: 'warn' as const },
 ];
 
 export function RiskAgentPanel() {
   return (
     <AgentPanel
-      title="Risk Management (M6)"
-      subtitle="VaR, limits, and compliance"
+      title="مدیریت ریسک (M6)"
+      subtitle="VaR، سقف‌ها و انطباق"
       icon={<Shield className="h-4 w-4 text-primary" />}
       agentId="M6"
     >

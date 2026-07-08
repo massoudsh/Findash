@@ -14,7 +14,7 @@ export interface TickerItem {
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8011';
-const REFRESH_MS = 30_000;
+const REFRESH_MS = 60_000;
 
 export function useIranTicker() {
   const [items, setItems] = useState<TickerItem[]>([]);

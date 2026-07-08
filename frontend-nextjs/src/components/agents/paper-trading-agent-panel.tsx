@@ -6,16 +6,16 @@ import { cn } from '@/lib/utils';
 
 /** M8 Paper Trading Agent: sim performance summary */
 const MOCK_SIM = [
-  { label: 'Today P&L', value: '+$124.50', positive: true },
-  { label: 'Open positions', value: '5', positive: null },
-  { label: 'Orders (24h)', value: '12', positive: null },
+  { label: 'سود/زیان امروز', value: '+۱۲۴.۵۰$', positive: true },
+  { label: 'موقعیت‌های باز', value: '۵', positive: null },
+  { label: 'سفارشات (۲۴ساعت)', value: '۱۲', positive: null },
 ];
 
 export function PaperTradingAgentPanel() {
   return (
     <AgentPanel
-      title="Paper Trading (M8)"
-      subtitle="Simulated execution and performance"
+      title="معامله کاغذی (M8)"
+      subtitle="اجرای شبیه‌سازی‌شده و عملکرد"
       icon={<Copy className="h-4 w-4 text-primary" />}
       agentId="M8"
     >

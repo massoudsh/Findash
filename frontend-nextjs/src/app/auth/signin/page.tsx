@@ -93,6 +93,30 @@ function SignInForm() {
             حساب ندارید؟{' '}
             <Link href="/auth/signup" className="text-green-400 hover:underline font-medium">ثبت‌نام کنید</Link>
           </div>
+
+          {/* Demo accounts hint */}
+          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs text-muted-foreground space-y-2">
+            <p className="font-semibold text-foreground/70">حساب‌های آزمایشی:</p>
+            {[
+              { email: "trader@octopus.trading", pass: "TraderPro2025!" },
+              { email: "admin@octopus.trading", pass: "SecureAdmin2025!" },
+            ].map((a) => (
+              <button
+                key={a.email}
+                type="button"
+                onClick={() => {
+                  const form = document.querySelector("form")!;
+                  (form.elements.namedItem("email") as HTMLInputElement).value = a.email;
+                  (form.elements.namedItem("password") as HTMLInputElement).value = a.pass;
+                }}
+                className="w-full text-right rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2 hover:border-green-500/20 hover:text-green-400 transition-colors"
+                dir="ltr"
+              >
+                {a.email}
+              </button>
+            ))}
+            <p className="text-[10px] opacity-50">کلیک کن تا فیلدها پر شوند</p>
+          </div>
         </form>
       </section>
     </main>

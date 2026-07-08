@@ -6,16 +6,16 @@ import { cn } from '@/lib/utils';
 
 /** M10 Backtesting Agent: last run and queue */
 const MOCK_BACKTEST = [
-  { name: 'Momentum SPY', status: 'completed' as const, result: 'Sharpe 1.24' },
-  { name: 'Mean reversion QQQ', status: 'completed' as const, result: 'Win rate 58%' },
-  { name: 'Custom strategy', status: 'queued' as const, result: '—' },
+  { name: 'مومنتوم SPY', status: 'completed' as const, result: 'شارپ ۱.۲۴' },
+  { name: 'بازگشت به میانگین QQQ', status: 'completed' as const, result: 'نرخ برد ۵۸٪' },
+  { name: 'استراتژی سفارشی', status: 'queued' as const, result: '—' },
 ];
 
 export function BacktestAgentPanel() {
   return (
     <AgentPanel
-      title="Backtesting (M10)"
-      subtitle="Strategy validation and history"
+      title="بک‌تست (M10)"
+      subtitle="اعتبارسنجی استراتژی و سابقه"
       icon={<History className="h-4 w-4 text-primary" />}
       agentId="M10"
     >

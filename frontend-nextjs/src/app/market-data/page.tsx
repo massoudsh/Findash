@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Activity, DollarSign, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, DollarSign, BarChart3, Map } from 'lucide-react';
 import { DataCollectorAgentPanel } from '@/components/trading/data-collector-agent-panel';
+import { MarketMap } from '@/components/market/market-map';
 
 interface MarketDataItem {
   symbol: string;
@@ -109,6 +110,17 @@ export default function MarketDataPage() {
           Live market data across stocks, cryptocurrencies, stablecoins, and ETFs
         </p>
       </div>
+
+      {/* Market Map */}
+      <MarketMap
+        data={marketData.map((d) => ({
+          ...d,
+          marketCap: d.marketCap ? parseFloat(d.marketCap.replace(/[$,BMK]/g, '') || '0') * (
+            d.marketCap.includes('B') ? 1e9 : d.marketCap.includes('M') ? 1e6 : 1e3
+          ) : d.volume,
+        }))}
+        loading={loading}
+      />
 
       {/* Category Filter */}
       <Card>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PortfolioContent } from '@/components/portfolio/portfolio-content';
 import { TradeTracker } from '@/components/portfolio/trade-tracker';
@@ -8,6 +8,7 @@ import { RiskGauge } from '@/components/dashboard/risk-gauge';
 import { CreditScore } from '@/components/dashboard/credit-score';
 import { IranMarketOverview } from '@/components/market/iran-market-overview';
 import { AnalyticsOverview } from '@/components/analytics/analytics-overview';
+import { HelpCenter } from '@/components/help/help-center';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIranTicker } from '@/lib/hooks/use-iran-ticker';
 import {
@@ -32,17 +33,19 @@ import {
   TrendingDown,
   TrendingUp,
   WalletCards,
+  HelpCircle,
 } from 'lucide-react';
 
-type Tab = 'overview' | 'portfolio' | 'market' | 'trades' | 'analytics';
-const VALID_TABS: Tab[] = ['overview', 'portfolio', 'market', 'trades', 'analytics'];
+type Tab = 'overview' | 'portfolio' | 'market' | 'trades' | 'analytics' | 'help';
+const VALID_TABS: Tab[] = ['overview', 'portfolio', 'market', 'trades', 'analytics', 'help'];
 
 const TABS = [
-  { value: 'overview', icon: BarChart3, label: 'نمای کلی' },
-  { value: 'portfolio', icon: Briefcase, label: 'پرتفولیو' },
-  { value: 'market', icon: Globe, label: 'بازار' },
-  { value: 'trades', icon: ClipboardList, label: 'معاملات' },
-  { value: 'analytics', icon: LineChart, label: 'تحلیل' },
+  { value: 'overview',   icon: BarChart3,    label: 'نمای کلی' },
+  { value: 'portfolio',  icon: Briefcase,    label: 'پرتفولیو' },
+  { value: 'market',     icon: Globe,        label: 'بازار' },
+  { value: 'trades',     icon: ClipboardList,label: 'معاملات' },
+  { value: 'analytics',  icon: LineChart,    label: 'تحلیل' },
+  { value: 'help',       icon: HelpCircle,   label: 'راهنما' },
 ] as const;
 
 const stats = [
@@ -107,6 +110,46 @@ const activities = [
   { title: 'پرتفولیو rebalance شد', meta: 'کاهش وزن کریپتو به ۴۲٪', time: 'امروز ۱۰:۳۰', type: 'rebalance' },
 ];
 
+function TickerItem({ t }: { t: ReturnType<typeof useIranTicker>['items'][number] }) {
+  const [flash, setFlash] = useState<'up' | 'down' | null>(null);
+  const prevPrice = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (t.price === null) return;
+    if (prevPrice.current !== null && prevPrice.current !== t.price) {
+      setFlash(t.price > prevPrice.current ? 'up' : 'down');
+      const id = setTimeout(() => setFlash(null), 800);
+      prevPrice.current = t.price;
+      return () => clearTimeout(id);
+    }
+    prevPrice.current = t.price;
+  }, [t.price]);
+
+  return (
+    <div
+      key={t.symbol}
+      className={`flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 transition-colors duration-500 ${
+        flash === 'up'
+          ? 'border-emerald-400/40 bg-emerald-500/10'
+          : flash === 'down'
+          ? 'border-rose-400/40 bg-rose-500/10'
+          : 'border-white/10 bg-white/[0.04]'
+      }`}
+    >
+      <span className="text-[11px] text-slate-400">{t.label}</span>
+      <span className="text-xs font-black text-white" dir="ltr">
+        {t.price ? new Intl.NumberFormat('fa-IR').format(Math.round(t.price)) : '—'}
+      </span>
+      {t.change_pct !== null && (
+        <span className={`flex items-center gap-0.5 text-[10px] font-bold ${t.up ? 'text-emerald-400' : 'text-rose-400'}`} dir="ltr">
+          {t.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+          {t.up ? '+' : ''}{t.change_pct.toFixed(1)}٪
+        </span>
+      )}
+    </div>
+  );
+}
+
 function BlueTickerBar() {
   const { items, loading } = useIranTicker();
 
@@ -121,20 +164,7 @@ function BlueTickerBar() {
         ? Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="h-8 w-32 shrink-0 animate-pulse rounded-full bg-white/5" />
           ))
-        : items.map((t) => (
-            <div key={t.symbol} className="flex shrink-0 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5">
-              <span className="text-[11px] text-slate-400">{t.label}</span>
-              <span className="text-xs font-black text-white" dir="ltr">
-                {t.price ? new Intl.NumberFormat('fa-IR').format(Math.round(t.price)) : '—'}
-              </span>
-              {t.change_pct !== null && (
-                <span className={`flex items-center gap-0.5 text-[10px] font-bold ${t.up ? 'text-emerald-400' : 'text-rose-400'}`} dir="ltr">
-                  {t.up ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                  {t.up ? '+' : ''}{t.change_pct.toFixed(1)}٪
-                </span>
-              )}
-            </div>
-          ))}
+        : items.map((t) => <TickerItem key={t.symbol} t={t} />)}
     </div>
   );
 }
@@ -493,6 +523,12 @@ function DashboardPageContent() {
           <TabsContent value="analytics" className="mt-0 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
             <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-4 backdrop-blur-xl">
               <AnalyticsOverview />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="help" className="mt-0 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
+            <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl">
+              <HelpCenter />
             </div>
           </TabsContent>
         </Tabs>

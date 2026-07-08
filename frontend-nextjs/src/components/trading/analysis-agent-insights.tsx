@@ -38,37 +38,37 @@ const SOURCE_CONFIG: Record<
   InsightSource,
   { label: string; icon: React.ComponentType<{ className?: string }>; color: string }
 > = {
-  technical: { label: 'Technical', icon: Target, color: 'text-blue-500' },
-  fundamental: { label: 'Fundamental', icon: Brain, color: 'text-emerald-500' },
-  macro: { label: 'Macro', icon: TrendingUp, color: 'text-amber-500' },
-  'on-chain': { label: 'On-chain', icon: Database, color: 'text-violet-500' },
-  social: { label: 'Social', icon: MessageSquare, color: 'text-pink-500' },
-  'ai-models': { label: 'AI Models', icon: Cpu, color: 'text-cyan-500' },
+  technical: { label: 'تکنیکال', icon: Target, color: 'text-blue-500' },
+  fundamental: { label: 'بنیادی', icon: Brain, color: 'text-emerald-500' },
+  macro: { label: 'کلان', icon: TrendingUp, color: 'text-amber-500' },
+  'on-chain': { label: 'آن‌چین', icon: Database, color: 'text-violet-500' },
+  social: { label: 'اجتماعی', icon: MessageSquare, color: 'text-pink-500' },
+  'ai-models': { label: 'مدل‌های هوش مصنوعی', icon: Cpu, color: 'text-cyan-500' },
 };
 
 // Mock real-time insights stream (fallback when API unavailable)
 const MOCK_INSIGHTS: Omit<Insight, 'id' | 'timestamp'>[] = [
-  { source: 'technical', title: 'RSI divergence', summary: 'AAPL 4H RSI divergence suggests near-term pullback.', signal: 'bearish', symbol: 'AAPL' },
-  { source: 'fundamental', title: 'Earnings beat', summary: 'NVDA forward P/E supportive; institutional flow positive.', signal: 'bullish', symbol: 'NVDA' },
-  { source: 'macro', title: 'Rates hold', summary: 'Fed hold priced in; DXY weakness supports risk assets.', signal: 'bullish' },
-  { source: 'on-chain', title: 'Whale accumulation', summary: 'Large ETH wallets adding; exchange outflow rising.', signal: 'bullish', symbol: 'ETH' },
-  { source: 'social', title: 'Sentiment shift', summary: 'Twitter/X sentiment for BTC turned positive (7d).', signal: 'bullish', symbol: 'BTC' },
-  { source: 'ai-models', title: 'Regime: risk-on', summary: 'Ensemble model assigns 0.78 to risk-on regime next 5d.', signal: 'bullish' },
-  { source: 'technical', title: 'Support level', summary: 'SPY holding above 580; volume declining on pullbacks.', signal: 'neutral', symbol: 'SPY' },
-  { source: 'fundamental', title: 'Sector rotation', summary: 'Fund flows into tech; defensives outflow.', signal: 'bullish' },
-  { source: 'macro', title: 'CPI in focus', summary: 'Next CPI print key for rate path; vol elevated.', signal: 'neutral' },
-  { source: 'on-chain', title: 'Options flow', summary: 'Unusual call buying in TSLA; OI up 12%.', signal: 'bullish', symbol: 'TSLA' },
-  { source: 'social', title: 'Earnings chatter', summary: 'Mentions for AAPL up ahead of event.', signal: 'neutral', symbol: 'AAPL' },
-  { source: 'ai-models', title: 'Vol forecast', summary: 'VIX term structure implies lower vol in 2w.', signal: 'neutral' },
+  { source: 'technical', title: 'واگرایی RSI', summary: 'واگرایی RSI در تایم‌فریم ۴ساعته AAPL احتمال اصلاح کوتاه‌مدت را نشان می‌دهد.', signal: 'bearish', symbol: 'AAPL' },
+  { source: 'fundamental', title: 'سود بهتر از انتظار', summary: 'P/E آینده NVDA حمایتی است؛ جریان سرمایه نهادی مثبت.', signal: 'bullish', symbol: 'NVDA' },
+  { source: 'macro', title: 'ثبات نرخ بهره', summary: 'توقف فد در قیمت‌ها لحاظ شده؛ ضعف DXY از دارایی‌های پرریسک حمایت می‌کند.', signal: 'bullish' },
+  { source: 'on-chain', title: 'تجمیع نهنگ‌ها', summary: 'کیف‌پول‌های بزرگ ETH در حال خرید هستند؛ خروج از صرافی‌ها افزایش یافته.', signal: 'bullish', symbol: 'ETH' },
+  { source: 'social', title: 'چرخش سنتیمنت', summary: 'سنتیمنت توییتر/X برای BTC در ۷ روز گذشته مثبت شده.', signal: 'bullish', symbol: 'BTC' },
+  { source: 'ai-models', title: 'رژیم: ریسک‌پذیر', summary: 'مدل Ensemble احتمال ۰.۷۸ برای رژیم ریسک‌پذیر در ۵ روز آینده تخمین می‌زند.', signal: 'bullish' },
+  { source: 'technical', title: 'سطح حمایت', summary: 'SPY بالای ۵۸۰ تثبیت شده؛ حجم در اصلاح‌ها کاهشی است.', signal: 'neutral', symbol: 'SPY' },
+  { source: 'fundamental', title: 'چرخش سکتور', summary: 'جریان سرمایه به تکنولوژی؛ خروج از سکتورهای دفاعی.', signal: 'bullish' },
+  { source: 'macro', title: 'CPI در کانون توجه', summary: 'گزارش بعدی CPI برای مسیر نرخ بهره کلیدی است؛ نوسانات بالا.', signal: 'neutral' },
+  { source: 'on-chain', title: 'جریان اختیارات', summary: 'خرید call غیرعادی در TSLA؛ OI 12% افزایش یافته.', signal: 'bullish', symbol: 'TSLA' },
+  { source: 'social', title: 'بحث درباره سود', summary: 'اشاره‌ها به AAPL پیش از رویداد افزایش یافته.', signal: 'neutral', symbol: 'AAPL' },
+  { source: 'ai-models', title: 'پیش‌بینی نوسان', summary: 'ساختار ترم VIX نوسان کمتر در ۲ هفته آینده را نشان می‌دهد.', signal: 'neutral' },
 ];
 
 function generateTimestamp(offsetSeconds: number): string {
   const d = new Date(Date.now() - offsetSeconds * 1000);
   const now = new Date();
   const diff = Math.floor((now.getTime() - d.getTime()) / 1000);
-  if (diff < 60) return 'Just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 60) return 'همین الان';
+  if (diff < 3600) return `${Math.floor(diff / 60)} دقیقه پیش`;
+  return `${Math.floor(diff / 3600)} ساعت پیش`;
 }
 
 const API_BASE = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL || '' : '';
@@ -130,7 +130,7 @@ export function AnalysisAgentInsightsPanel() {
             type="button"
             onClick={() => setCollapsed(!collapsed)}
             className="p-1 rounded hover:bg-muted"
-            aria-label={collapsed ? 'Expand' : 'Collapse'}
+            aria-label={collapsed ? 'بازکردن' : 'بستن'}
           >
             {collapsed ? (
               <ChevronUp className="h-4 w-4 text-muted-foreground" />
@@ -140,7 +140,7 @@ export function AnalysisAgentInsightsPanel() {
           </button>
         </div>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Real-time insight from Technical, Fundamental, Macro, On-chain, Social & AI Models
+          بینش بلادرنگ از تکنیکال، بنیادی، کلان، آن‌چین، اجتماعی و هوش مصنوعی
         </p>
       </CardHeader>
       {!collapsed && (

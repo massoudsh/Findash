@@ -16,11 +16,11 @@ interface DataSource {
 }
 
 const MOCK_SOURCES: DataSource[] = [
-  { id: 'market', name: 'Market Data', type: 'market_data', status: 'active', lastSync: '12s ago', recordsToday: 15420 },
-  { id: 'news', name: 'News Feed', type: 'news', status: 'active', lastSync: '1m ago', recordsToday: 2847 },
-  { id: 'social', name: 'Social Sentiment', type: 'social', status: 'degraded', lastSync: '5m ago', recordsToday: 892 },
-  { id: 'fundamental', name: 'Fundamental', type: 'fundamental', status: 'active', lastSync: '2m ago', recordsToday: 1205 },
-  { id: 'onchain', name: 'On-chain', type: 'on_chain', status: 'active', lastSync: '45s ago', recordsToday: 3421 },
+  { id: 'market', name: 'داده بازار', type: 'market_data', status: 'active', lastSync: '۱۲ ثانیه پیش', recordsToday: 15420 },
+  { id: 'news', name: 'فید خبری', type: 'news', status: 'active', lastSync: '۱ دقیقه پیش', recordsToday: 2847 },
+  { id: 'social', name: 'سنتیمنت اجتماعی', type: 'social', status: 'degraded', lastSync: '۵ دقیقه پیش', recordsToday: 892 },
+  { id: 'fundamental', name: 'فاندامنتال', type: 'fundamental', status: 'active', lastSync: '۲ دقیقه پیش', recordsToday: 1205 },
+  { id: 'onchain', name: 'آن‌چین', type: 'on_chain', status: 'active', lastSync: '۴۵ ثانیه پیش', recordsToday: 3421 },
 ];
 
 const API_BASE = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL || '' : '';
@@ -64,8 +64,8 @@ export function DataCollectorAgentPanel() {
 
   return (
     <AgentPanel
-      title="Data Collector (M1)"
-      subtitle="Pipeline status and ingestion health"
+      title="گردآورنده داده (M1)"
+      subtitle="وضعیت پایپ‌لاین و سلامت دریافت داده"
       icon={<Database className="h-4 w-4 text-primary" />}
       agentId="M1"
     >
@@ -91,8 +91,8 @@ export function DataCollectorAgentPanel() {
               )}
             </div>
             <div className="flex justify-between mt-1 text-muted-foreground">
-              <span>Last sync: {src.lastSync}</span>
-              <span>{src.recordsToday.toLocaleString()} today</span>
+              <span>آخرین همگام‌سازی: {src.lastSync}</span>
+              <span>{src.recordsToday.toLocaleString()} امروز</span>
             </div>
           </li>
         ))}
