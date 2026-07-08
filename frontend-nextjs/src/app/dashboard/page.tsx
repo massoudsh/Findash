@@ -8,6 +8,7 @@ import { RiskGauge } from '@/components/dashboard/risk-gauge';
 import { CreditScore } from '@/components/dashboard/credit-score';
 import { IranMarketOverview } from '@/components/market/iran-market-overview';
 import { AnalyticsOverview } from '@/components/analytics/analytics-overview';
+import { HelpCenter } from '@/components/help/help-center';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useIranTicker } from '@/lib/hooks/use-iran-ticker';
 import {
@@ -32,17 +33,19 @@ import {
   TrendingDown,
   TrendingUp,
   WalletCards,
+  HelpCircle,
 } from 'lucide-react';
 
-type Tab = 'overview' | 'portfolio' | 'market' | 'trades' | 'analytics';
-const VALID_TABS: Tab[] = ['overview', 'portfolio', 'market', 'trades', 'analytics'];
+type Tab = 'overview' | 'portfolio' | 'market' | 'trades' | 'analytics' | 'help';
+const VALID_TABS: Tab[] = ['overview', 'portfolio', 'market', 'trades', 'analytics', 'help'];
 
 const TABS = [
-  { value: 'overview', icon: BarChart3, label: 'نمای کلی' },
-  { value: 'portfolio', icon: Briefcase, label: 'پرتفولیو' },
-  { value: 'market', icon: Globe, label: 'بازار' },
-  { value: 'trades', icon: ClipboardList, label: 'معاملات' },
-  { value: 'analytics', icon: LineChart, label: 'تحلیل' },
+  { value: 'overview',   icon: BarChart3,    label: 'نمای کلی' },
+  { value: 'portfolio',  icon: Briefcase,    label: 'پرتفولیو' },
+  { value: 'market',     icon: Globe,        label: 'بازار' },
+  { value: 'trades',     icon: ClipboardList,label: 'معاملات' },
+  { value: 'analytics',  icon: LineChart,    label: 'تحلیل' },
+  { value: 'help',       icon: HelpCircle,   label: 'راهنما' },
 ] as const;
 
 const stats = [
@@ -520,6 +523,12 @@ function DashboardPageContent() {
           <TabsContent value="analytics" className="mt-0 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
             <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-4 backdrop-blur-xl">
               <AnalyticsOverview />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="help" className="mt-0 animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
+            <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-5 backdrop-blur-xl">
+              <HelpCenter />
             </div>
           </TabsContent>
         </Tabs>
