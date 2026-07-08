@@ -47,12 +47,14 @@ const CATEGORIES = [
 ];
 
 const VIDEOS: VideoCard[] = [
-  { id: 'v1', title: 'ورود و راه‌اندازی حساب',            duration: '۳:۲۰', tag: 'شروع به کار',   url: '#' },
-  { id: 'v2', title: 'آشنایی با داشبورد اصلی',           duration: '۵:۴۵', tag: 'شروع به کار',   url: '#' },
-  { id: 'v3', title: 'افزودن دارایی به پرتفولیو',          duration: '۴:۱۰', tag: 'پرتفولیو',      url: '#' },
-  { id: 'v4', title: 'خواندن تیکر بازار زنده',            duration: '۲:۳۰', tag: 'بازار',         url: '#' },
-  { id: 'v5', title: 'استراتژی کاورد کال — مقدماتی',      duration: '۸:۵۵', tag: 'آپشن',          url: '#' },
-  { id: 'v6', title: 'مدیریت ریسک با گیج ریسک',           duration: '۶:۲۰', tag: 'ریسک',          url: '#' },
+  { id: 'v1', title: 'ورود و راه‌اندازی حساب',               duration: '۳:۲۰', tag: 'شروع به کار', url: '#' },
+  { id: 'v2', title: 'آشنایی با داشبورد اصلی',              duration: '۵:۴۵', tag: 'شروع به کار', url: '#' },
+  { id: 'v3', title: 'افزودن دارایی به پرتفولیو',            duration: '۴:۱۰', tag: 'پرتفولیو',    url: '#' },
+  { id: 'v4', title: 'خواندن تیکر بازار زنده',              duration: '۲:۳۰', tag: 'بازار',       url: '#' },
+  { id: 'v5', title: 'استراتژی کاورد کال — مقدماتی',        duration: '۸:۵۵', tag: 'آپشن',        url: '#' },
+  { id: 'v6', title: 'کَش‌سکیورد پوت — خرید ارزان‌تر سهام', duration: '۷:۱۵', tag: 'آپشن',        url: '#' },
+  { id: 'v7', title: 'کالر — بیمه رایگان برای سهام',        duration: '۹:۴۰', tag: 'آپشن',        url: '#' },
+  { id: 'v8', title: 'مدیریت ریسک با گیج ریسک',             duration: '۶:۲۰', tag: 'ریسک',        url: '#' },
 ];
 
 const FAQS: FaqItem[] = [
@@ -324,38 +326,68 @@ export function HelpCenter() {
               {VIDEOS.map((v) => <VideoCardItem key={v.id} v={v} />)}
             </div>
 
-            {/* Covered call article preview */}
-            <div className="rounded-2xl border border-blue-500/20 bg-blue-500/[0.06] p-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-500/15">
-                    <BookOpen className="h-5 w-5 text-blue-400" />
-                  </div>
-                  <div>
-                    <p className="font-black text-white">استراتژی کاورد کال — راهنمای کامل</p>
-                    <p className="mt-1 text-xs text-slate-400">
-                      چطور از سهام موجود در سبد، هر ماه درآمد پرمیوم کسب کنید.
-                      شامل مثال عددی با «فملی»، جدول OTM/ATM/ITM، و ریسک‌های خاص بازار ایران.
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {['کاورد کال', 'آپشن', 'بورس ایران', 'مدیریت ریسک'].map((tag) => (
-                        <span key={tag} className="rounded-full bg-blue-500/10 border border-blue-500/20 px-2.5 py-0.5 text-[10px] text-blue-300">
-                          {tag}
-                        </span>
-                      ))}
+            {/* Strategy article cards */}
+            <div className="space-y-3">
+              <p className="text-sm font-black text-white">مقالات استراتژی آپشن</p>
+              {[
+                {
+                  title: 'استراتژی کاورد کال — راهنمای کامل',
+                  desc: 'چطور از سهام موجود در سبد، هر ماه درآمد پرمیوم کسب کنید. شامل مثال عددی با «فملی» و ریسک‌های خاص بازار ایران.',
+                  tags: ['کاورد کال', 'آپشن', 'بورس ایران'],
+                  color: 'border-blue-500/20 bg-blue-500/[0.06]',
+                  tagColor: 'bg-blue-500/10 border-blue-500/20 text-blue-300',
+                  btnColor: 'border-blue-500/30 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20',
+                  url: 'https://github.com/massoudsh/Findash/blob/main/docs/guides/option-strategies/covered-call.md',
+                },
+                {
+                  title: 'کَش‌سکیورد پوت — خرید ارزان‌تر سهام',
+                  desc: 'نقدینگی دارید و می‌خواهید سهامی بخرید؟ پرمیوم بگیرید تا سهام را ارزان‌تر وارد پرتفولیو کنید.',
+                  tags: ['Cash-Secured Put', 'آپشن', 'بورس ایران'],
+                  color: 'border-emerald-500/20 bg-emerald-500/[0.06]',
+                  tagColor: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300',
+                  btnColor: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20',
+                  url: 'https://github.com/massoudsh/Findash/blob/main/docs/guides/option-strategies/cash-secured-put.md',
+                },
+                {
+                  title: 'کالر — بیمه رایگان برای سهام',
+                  desc: 'سهام دارید و نگران ریزش هستید؟ کالر هم کف زیان می‌گذارد هم سقف سود — و می‌تواند Zero-Cost باشد.',
+                  tags: ['Collar', 'آپشن', 'مدیریت ریسک'],
+                  color: 'border-amber-500/20 bg-amber-500/[0.06]',
+                  tagColor: 'bg-amber-500/10 border-amber-500/20 text-amber-300',
+                  btnColor: 'border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20',
+                  url: 'https://github.com/massoudsh/Findash/blob/main/docs/guides/option-strategies/collar.md',
+                },
+              ].map((article) => (
+                <div key={article.title} className={`rounded-2xl border p-5 ${article.color}`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.05]">
+                        <BookOpen className="h-5 w-5 text-white/60" />
+                      </div>
+                      <div>
+                        <p className="font-black text-white">{article.title}</p>
+                        <p className="mt-1 text-xs text-slate-400 leading-5">{article.desc}</p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {article.tags.map((tag) => (
+                            <span key={tag} className={`rounded-full border px-2.5 py-0.5 text-[10px] ${article.tagColor}`}>
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
+                    <a
+                      href={article.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex shrink-0 items-center gap-1 rounded-xl border px-3 py-2 text-xs font-bold transition ${article.btnColor}`}
+                    >
+                      <Play className="h-3.5 w-3.5" />
+                      مطالعه
+                    </a>
                   </div>
                 </div>
-                <a
-                  href="https://github.com/massoudsh/Findash/blob/main/docs/guides/option-strategies/covered-call.md"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex shrink-0 items-center gap-1 rounded-xl border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-xs font-bold text-blue-300 hover:bg-blue-500/20 transition"
-                >
-                  <Play className="h-3.5 w-3.5" />
-                  مطالعه
-                </a>
-              </div>
+              ))}
             </div>
           </div>
         )}
