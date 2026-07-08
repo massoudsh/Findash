@@ -2,53 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Vazirmatn — فونت اصلی پروژه (جانشین رسمی IRANYekan، آزاد و open-source)
-   فایل‌ها در public/fonts/ موجود هستند — v33.003 */
+/* Dana — فونت اصلی پروژه
+   فایل‌ها در public/fonts/ موجود هستند */
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/Vazirmatn[wght].woff2') format('woff2-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'IRANYekanX';
-  src: url('/fonts/Vazirmatn-Thin.woff2') format('woff2');
+  src: url('/fonts/dana-thin.woff2') format('woff2');
   font-weight: 100;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/Vazirmatn-Light.woff2') format('woff2');
+  src: url('/fonts/dana-thinitalic.woff2') format('woff2');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/dana-extralight.woff2') format('woff2');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/dana-light.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/Vazirmatn-Regular.woff2') format('woff2');
+  src: url('/fonts/dana-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/Vazirmatn-Medium.woff2') format('woff2');
+  src: url('/fonts/dana-regularitalic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/dana-medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/Vazirmatn-Bold.woff2') format('woff2');
+  src: url('/fonts/dana-demibold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/dana-bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/Vazirmatn-Black.woff2') format('woff2');
+  src: url('/fonts/dana-bolditalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/dana-extrabold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/dana-black.woff2') format('woff2');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -170,7 +205,7 @@
 
 /* Use Dana anywhere: add class font-dana */
 .font-dana {
-  font-family: 'Dana', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'IRANYekanX', 'Dana', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Professional Fintech Glassmorphism */

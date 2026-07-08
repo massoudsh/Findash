@@ -74,7 +74,7 @@ const config = {
       fontFamily: {
         'iran-yekan': ['IRANYekanX', 'var(--font-vazir)', 'Vazirmatn', 'Tahoma', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         vazir: ['var(--font-vazir)', 'Vazirmatn', 'Tahoma', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        dana: ['Dana', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        dana: ['IRANYekanX', 'Dana', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {
