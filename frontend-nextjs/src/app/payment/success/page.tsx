@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { CheckCircle2, ArrowLeft, ReceiptText } from 'lucide-react';
+import { CheckCircle2, ArrowLeft, Receipt } from 'lucide-react';
 import { Suspense } from 'react';
 
 function SuccessContent() {
@@ -60,7 +60,7 @@ function SuccessContent() {
               href={`/account?tab=payments`}
               className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl border border-border text-muted-foreground hover:text-foreground hover:border-green-500/40 transition-colors text-sm"
             >
-              <ReceiptText className="h-4 w-4" />
+              <Receipt className="h-4 w-4" />
               مشاهده تاریخچه پرداخت
             </Link>
           )}
