@@ -2,6 +2,7 @@
 
 > تاریخچه append-only — هر ورود با `## [YYYY-MM-DD] <type> | <خلاصه>` شروع می‌شود.
 
+## [2026-07-08] sync | وضعیت backlog sync شد — TASK-007,009-024 ✅ Done (commits 7641e3e & 8e6bcc3) | فقط TASK-008 (فونت IRANYekanX) باقی است
 ## [2026-07-07] feature | مانوال فارسی کامل (help page 4 tab) + tab integration trading page + social/alerts headers
 ## [2026-07-07] localization | فارسی‌سازی کامل پلتفرم — نام/شخصیت ۱۱ عامل (M1-M11) به فارسی، tabs و panel‌های trading، source labels، mock data، timestamp‌ها و aria-labels همه ترجمه شدند
 ## [2026-07-06] feature | قابلیت افزودن دارایی: AddAssetModal (15 نماد ایرانی، auto-calc، localStorage) + IranPortfolioSection (donut chart SVG، holdings list، تاریخچه) — وصل به portfolio tab

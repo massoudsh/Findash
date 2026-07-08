@@ -1,6 +1,6 @@
 # Backlog — فین‌دَش Trading Platform
 
-> آخرین آدیت: 2026-07-01 | آدیتور: نقطه Pro
+> آخرین آدیت: 2026-07-08 | آدیتور: نقطه Pro
 > بازار هدف: ایران 🇮🇷 | افق تحویل: ۳ ماه
 
 ---
@@ -31,7 +31,7 @@
 
 ### TASK-007 — Auth: وصل کردن NextAuth به Backend واقعی
 
-**وضعیت:** `🔴 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | route.ts از `BACKEND_URL` و `fetch` به `/api/auth/login` استفاده می‌کند
 **اندازه:** M
 **نوع:** Critical Bug
 **تیم:** Backend + Frontend
@@ -98,7 +98,7 @@ return null;
 
 ### TASK-009 — Market Tab: پیاده‌سازی تب بازار با داده زنده
 
-**وضعیت:** `🔴 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | کامپوننت `IranMarketOverview` در dashboard/page.tsx فعال است
 **اندازه:** XL
 **نوع:** Feature — Critical Gap
 **تیم:** Backend + Frontend
@@ -158,7 +158,7 @@ GET /api/iran-market/chart/{sym}  → تاریخچه قیمت
 
 ### TASK-010 — Assets Config: دارایی‌های ایرانی در Backend
 
-**وضعیت:** `🔴 Open`
+**وضعیت:** `✅ Done` — commit `7641e3e` | Iranian assets API پیاده‌سازی شده
 **اندازه:** M
 **نوع:** Data / Config
 **تیم:** Backend
@@ -200,7 +200,7 @@ GET /api/iran-market/chart/{sym}  → تاریخچه قیمت
 
 ### TASK-011 — Ticker Bar: داده زنده به جای hardcoded
 
-**وضعیت:** `🟠 Open`
+**وضعیت:** `✅ Done` — commit `7641e3e` | live ticker با flash animation پیاده‌سازی شده
 **اندازه:** S
 **نوع:** Feature
 **تیم:** Frontend + Backend
@@ -229,7 +229,7 @@ const TICKERS = [
 
 ### TASK-012 — Auth: احراز هویت با شماره موبایل + OTP
 
-**وضعیت:** `🟠 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | send-otp / verify-otp + صفحات /auth/phone و /auth/otp
 **اندازه:** L
 **نوع:** Feature
 **تیم:** Backend + Frontend
@@ -270,7 +270,7 @@ POST /api/auth/verify-otp  body: {phone, otp, device_id}
 
 ### TASK-013 — Calendar: تاریخ شمسی در سراسر اپ
 
-**وضعیت:** `🟠 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | jalali.ts با formatJalali و formatRelative
 **اندازه:** M
 **نوع:** Localization
 **تیم:** Frontend
@@ -301,7 +301,7 @@ POST /api/auth/verify-otp  body: {phone, otp, device_id}
 
 ### TASK-014 — Analytics Tab: صفحه تحلیل پیشرفته
 
-**وضعیت:** `🟠 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | analytics-overview.tsx پیاده‌سازی شده
 **اندازه:** L
 **نوع:** Feature
 **تیم:** Frontend + Backend
@@ -343,7 +343,7 @@ POST /api/auth/verify-otp  body: {phone, otp, device_id}
 
 ### TASK-015 — DB Migration: خودکارسازی migration در Docker
 
-**وضعیت:** `🟠 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | init-db.sql شامل payment_orders است
 **اندازه:** S
 **نوع:** DevOps
 **تیم:** DevOps / Backend
@@ -380,7 +380,7 @@ db-migrate:
 
 ### TASK-016 — PWA: قابلیت نصب اپ موبایل
 
-**وضعیت:** `🟡 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | manifest.json کامل است
 **اندازه:** S
 **نوع:** Enhancement
 **تیم:** Frontend
@@ -421,7 +421,7 @@ db-migrate:
 
 ### TASK-017 — Persian Digits: اعداد فارسی در همه جا
 
-**وضعیت:** `🟡 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | کامپوننت `<PNum>` ساخته شده
 **اندازه:** S
 **نوع:** Localization
 **تیم:** Frontend
@@ -446,7 +446,7 @@ db-migrate:
 
 ### TASK-018 — Dark/Light Mode: تغییر تم
 
-**وضعیت:** `🟡 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | next-themes + toggle در navigation
 **اندازه:** S
 **نوع:** Enhancement
 **تیم:** Frontend
@@ -467,7 +467,7 @@ db-migrate:
 
 ### TASK-019 — Portfolio: ثبت دارایی ایرانی و P&L تومانی
 
-**وضعیت:** `🟡 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | سوئیچ تومان/دلار/ریال در portfolio-content.tsx
 **اندازه:** M
 **نوع:** Feature
 **تیم:** Frontend + Backend
@@ -495,7 +495,7 @@ TradeTracker فعلی دارایی‌های ایرانی ندارد. P&L به د
 
 ### TASK-020 — CI/CD: دیپلوی واقعی (نه placeholder)
 
-**وضعیت:** `🔵 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | CI/CD hardening انجام شده
 **اندازه:** L
 **نوع:** DevOps
 **تیم:** DevOps
@@ -549,7 +549,7 @@ TradeTracker فعلی دارایی‌های ایرانی ندارد. P&L به د
 
 ### TASK-021 — Production Secrets: مدیریت امن متغیرهای محیطی
 
-**وضعیت:** `🔵 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | DevOps hardening انجام شده
 **اندازه:** M
 **نوع:** Security / DevOps
 **تیم:** DevOps + Backend
@@ -596,7 +596,7 @@ SMS_API_KEY=<kaveh_negar_key>
 
 ### TASK-022 — Nginx: Reverse Proxy و SSL
 
-**وضعیت:** `🔵 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | DevOps hardening انجام شده
 **اندازه:** M
 **نوع:** DevOps / Infrastructure
 **تیم:** DevOps
@@ -646,7 +646,7 @@ server {
 
 ### TASK-023 — Monitoring: Alert های Production
 
-**وضعیت:** `🔵 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | DevOps hardening انجام شده
 **اندازه:** S
 **نوع:** DevOps / Monitoring
 **تیم:** DevOps
@@ -680,7 +680,7 @@ receivers:
 
 ### TASK-024 — Backup: پشتیبان‌گیری خودکار Database
 
-**وضعیت:** `🔵 Open`
+**وضعیت:** `✅ Done` — commit `8e6bcc3` | DevOps hardening انجام شده
 **اندازه:** S
 **نوع:** DevOps
 **تیم:** DevOps
@@ -710,24 +710,24 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 
 | تسک | اندازه | اولویت | وضعیت | تیم |
 |-----|--------|--------|--------|-----|
-| TASK-007 Auth → Backend | M | 🔴 Critical | Open | Full-stack |
-| TASK-008 Font IRANYekanX | S | 🔴 Critical | Open | Frontend |
-| TASK-009 Market Tab | XL | 🔴 Critical | Open | Full-stack |
-| TASK-010 Iranian Assets Config | M | 🔴 Critical | Open | Backend |
-| TASK-011 Ticker Live Data | S | 🟠 High | Open | Full-stack |
-| TASK-012 SMS OTP Auth | L | 🟠 High | Open | Full-stack |
-| TASK-013 Jalali Calendar | M | 🟠 High | Open | Frontend |
-| TASK-014 Analytics Tab | L | 🟠 High | Open | Full-stack |
-| TASK-015 DB Migration Auto | S | 🟠 High | Open | DevOps |
-| TASK-016 PWA | S | 🟡 Medium | Open | Frontend |
-| TASK-017 Persian Digits | S | 🟡 Medium | Open | Frontend |
-| TASK-018 Dark/Light Mode | S | 🟡 Medium | Open | Frontend |
-| TASK-019 Portfolio Toman | M | 🟡 Medium | Open | Full-stack |
-| TASK-020 CI/CD Real Deploy | L | 🔵 DevOps | Open | DevOps |
-| TASK-021 Production Secrets | M | 🔵 DevOps | Open | DevOps |
-| TASK-022 Nginx + SSL | M | 🔵 DevOps | Open | DevOps |
-| TASK-023 Monitoring Alerts | S | 🔵 DevOps | Open | DevOps |
-| TASK-024 DB Backup | S | 🔵 DevOps | Open | DevOps |
+| TASK-007 Auth → Backend | M | 🔴 Critical | ✅ Done (`8e6bcc3`) | Full-stack |
+| TASK-008 Font IRANYekanX | S | 🔴 Critical | ❌ **Open** | Frontend |
+| TASK-009 Market Tab | XL | 🔴 Critical | ✅ Done (`8e6bcc3`) | Full-stack |
+| TASK-010 Iranian Assets Config | M | 🔴 Critical | ✅ Done (`7641e3e`) | Backend |
+| TASK-011 Ticker Live Data | S | 🟠 High | ✅ Done (`7641e3e`) | Full-stack |
+| TASK-012 SMS OTP Auth | L | 🟠 High | ✅ Done (`8e6bcc3`) | Full-stack |
+| TASK-013 Jalali Calendar | M | 🟠 High | ✅ Done (`8e6bcc3`) | Frontend |
+| TASK-014 Analytics Tab | L | 🟠 High | ✅ Done (`8e6bcc3`) | Full-stack |
+| TASK-015 DB Migration Auto | S | 🟠 High | ✅ Done (`8e6bcc3`) | DevOps |
+| TASK-016 PWA | S | 🟡 Medium | ✅ Done (`8e6bcc3`) | Frontend |
+| TASK-017 Persian Digits | S | 🟡 Medium | ✅ Done (`8e6bcc3`) | Frontend |
+| TASK-018 Dark/Light Mode | S | 🟡 Medium | ✅ Done (`8e6bcc3`) | Frontend |
+| TASK-019 Portfolio Toman | M | 🟡 Medium | ✅ Done (`8e6bcc3`) | Full-stack |
+| TASK-020 CI/CD Real Deploy | L | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
+| TASK-021 Production Secrets | M | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
+| TASK-022 Nginx + SSL | M | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
+| TASK-023 Monitoring Alerts | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
+| TASK-024 DB Backup | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 
 ---
 

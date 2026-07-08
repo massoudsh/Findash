@@ -2,49 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
-/* IRANYekan — فونت اصلی پروژه
-   فایل‌ها را در public/fonts/ قرار بده:
-   iranyekanwebthinfanum.woff, iranyekanweblightfanum.woff,
-   iranyekanwebregularfanum.woff, iranyekanwebmediumfanum.woff,
-   iranyekanwebboldfanum.woff, iranyekanwebblackfanum.woff */
+/* Vazirmatn — فونت اصلی پروژه (جانشین رسمی IRANYekan، آزاد و open-source)
+   فایل‌ها در public/fonts/ موجود هستند — v33.003 */
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/iranyekanwebthinfanum.woff') format('woff');
+  src: url('/fonts/Vazirmatn[wght].woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IRANYekanX';
+  src: url('/fonts/Vazirmatn-Thin.woff2') format('woff2');
   font-weight: 100;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/iranyekanweblightfanum.woff') format('woff');
+  src: url('/fonts/Vazirmatn-Light.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/iranyekanwebregularfanum.woff') format('woff');
+  src: url('/fonts/Vazirmatn-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/iranyekanwebmediumfanum.woff') format('woff');
+  src: url('/fonts/Vazirmatn-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/iranyekanwebboldfanum.woff') format('woff');
+  src: url('/fonts/Vazirmatn-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'IRANYekanX';
-  src: url('/fonts/iranyekanwebblackfanum.woff') format('woff');
+  src: url('/fonts/Vazirmatn-Black.woff2') format('woff2');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
