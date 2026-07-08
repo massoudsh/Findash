@@ -366,6 +366,15 @@ export function HelpCenter() {
                   btnColor: 'border-violet-500/30 bg-violet-500/10 text-violet-300 hover:bg-violet-500/20',
                   url: 'https://github.com/massoudsh/Findash/blob/main/docs/guides/option-strategies/conversion.md',
                 },
+                {
+                  title: 'لانگ استرادل — شرط روی نوسان، نه جهت',
+                  desc: 'می‌دانید بازار تکان می‌خورد ولی نمی‌دانید کجا؟ Call و Put بخرید — از هر کدام برنده شود سود می‌برید.',
+                  tags: ['Long Straddle', 'نوسان', 'رویداد خبری'],
+                  color: 'border-rose-500/20 bg-rose-500/[0.06]',
+                  tagColor: 'bg-rose-500/10 border-rose-500/20 text-rose-300',
+                  btnColor: 'border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20',
+                  url: 'https://github.com/massoudsh/Findash/blob/main/docs/guides/option-strategies/long-straddle.md',
+                },
               ].map((article) => (
                 <div key={article.title} className={`rounded-2xl border p-5 ${article.color}`}>
                   <div className="flex items-start justify-between gap-4">
