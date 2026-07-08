@@ -1,0 +1,83 @@
+# =========================================================
+# TASK-023 — Prometheus Alert Rules
+# =========================================================
+groups:
+  - name: findash_api
+    rules:
+      - alert: APIDown
+        expr: up{job="trading-platform-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API سرویس متوقف شده"
+          description: "سرویس API بیش از ۱ دقیقه در دسترس نیست."
+
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="trading-platform-api"}[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "زمان پاسخ API بالاست"
+          description: "P95 زمان پاسخ بیش از ۲ ثانیه است ({{ $value | humanizeDuration }})."
+
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{job="trading-platform-api", status=~"5.."}[5m]) / rate(http_requests_total{job="trading-platform-api"}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "نرخ خطای API بالاست"
+          description: "بیش از ۵٪ درخواست‌ها با خطای 5xx پاسخ می‌دهند."
+
+  - name: findash_database
+    rules:
+      - alert: DatabaseDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "دیتابیس متوقف شده"
+          description: "PostgreSQL در دسترس نیست."
+
+      - alert: DatabaseHighConnections
+        expr: pg_stat_activity_count > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "اتصالات دیتابیس زیاد است"
+          description: "تعداد اتصالات فعال: {{ $value }}"
+
+  - name: findash_payment
+    rules:
+      - alert: HighPaymentFailureRate
+        expr: rate(zarinpal_payment_failures_total[10m]) / rate(zarinpal_payment_requests_total[10m]) > 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "نرخ شکست پرداخت بالاست"
+          description: "بیش از ۵٪ پرداخت‌های زرین‌پال شکست می‌خورند."
+
+  - name: findash_system
+    rules:
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "مصرف RAM بالاست"
+          description: "{{ $value | humanizePercentage }} از RAM استفاده می‌شود."
+
+      - alert: HighDiskUsage
+        expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "دیسک پر شده"
+          description: "{{ $value | humanizePercentage }} از دیسک استفاده می‌شود."

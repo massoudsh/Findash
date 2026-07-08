@@ -211,10 +211,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Deploy placeholder
-        run: |
-          echo "Configure AWS/ECS or your dev target in repository secrets and update this step."
-          echo "Optional: aws ecs update-service --cluster dev-cluster --service trading-service --force-new-deployment"
+
+      - name: Deploy to Dev Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_SERVER_HOST }}
+          username: ${{ secrets.DEV_SERVER_USER }}
+          key: ${{ secrets.DEV_SERVER_SSH_KEY }}
+          port: ${{ secrets.DEV_SERVER_PORT || 22 }}
+          script: |
+            set -e
+            cd /opt/findash
+            git pull origin dev
+            docker compose -f docker-compose-core.yml pull || true
+            docker compose -f docker-compose-core.yml up -d --no-build
+            sleep 10
+            curl -sf http://localhost:8011/health || (echo "Health check failed" && exit 1)
+            echo "Dev deploy complete: $(date)"
 
   deploy-prod:
     name: Deploy (Production)
@@ -225,7 +238,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Deploy placeholder
-        run: |
-          echo "Configure AWS/ECS or your prod target in repository secrets and update this step."
-          echo "Optional: aws ecs update-service --cluster prod-cluster --service trading-service --force-new-deployment"
+
+      - name: Deploy to Production Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SERVER_HOST }}
+          username: ${{ secrets.PROD_SERVER_USER }}
+          key: ${{ secrets.PROD_SERVER_SSH_KEY }}
+          port: ${{ secrets.PROD_SERVER_PORT || 22 }}
+          script: |
+            set -e
+            cd /opt/findash
+            git pull origin main
+            docker compose -f docker-compose-core.yml pull
+            docker compose -f docker-compose-core.yml up -d --no-build
+            sleep 15
+            curl -sf http://localhost:8011/health || (echo "Health check failed" && exit 1)
+            echo "Production deploy complete: $(date)"

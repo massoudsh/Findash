@@ -184,6 +184,56 @@ services:
       - octopus-network
 
   # ============================================
+  # NGINX REVERSE PROXY (TASK-022)
+  # ============================================
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: octopus-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      frontend: { condition: service_started }
+      api: { condition: service_healthy }
+    networks:
+      - octopus-network
+    profiles:
+      - production
+
+  # ============================================
+  # DB BACKUP (TASK-024)
+  # ============================================
+
+  db-backup:
+    image: prodrigestivill/postgres-backup-local:15
+    container_name: octopus-db-backup
+    restart: unless-stopped
+    volumes:
+      - ./backups:/backups
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_DB=${DB_NAME:-trading_db}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - SCHEDULE=0 3 * * *
+      - BACKUP_KEEP_DAYS=30
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+      - HEALTHCHECK_PORT=8080
+    depends_on:
+      db: { condition: service_healthy }
+    networks:
+      - octopus-network
+    profiles:
+      - production
+
+  # ============================================
   # BASIC MONITORING
   # ============================================
 
@@ -282,6 +332,7 @@ volumes:
   prometheus_data:
   grafana_data:
   llm_data:
+  nginx_logs:
 
 networks:
   octopus-network:

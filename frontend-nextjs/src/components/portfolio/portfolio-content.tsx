@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, GlassCard } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { formatCurrency, formatPercentage } from '@/lib/utils';
+import { formatCurrency, formatPercentage, CurrencyUnit } from '@/lib/utils';
 import { getPortfolios, getPositions } from '@/lib/services/api';
 import { PortfolioChart } from '@/components/portfolio/portfolio-chart';
 import { IranPortfolioSection } from '@/components/portfolio/iran-portfolio-section';
@@ -91,11 +91,20 @@ function normalizePositions(raw: unknown, totalValue: number): Position[] {
   });
 }
 
+const CURRENCY_LABELS: Record<CurrencyUnit, string> = {
+  IRT: 'تومان',
+  IRR: 'ریال',
+  USD: 'دلار',
+};
+
 export function PortfolioContent() {
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
   const [positions, setPositions] = useState<Position[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currencyUnit, setCurrencyUnit] = useState<CurrencyUnit>('IRT');
+
+  const fmt = (v: number) => formatCurrency(v, currencyUnit);
 
   useEffect(() => {
     async function fetchPortfolios() {
@@ -185,15 +194,32 @@ export function PortfolioContent() {
         <CardContent className="p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
+              {/* Currency unit switcher */}
+              <div className="flex items-center gap-1 mb-3">
+                {(['IRT', 'IRR', 'USD'] as CurrencyUnit[]).map((u) => (
+                  <button
+                    key={u}
+                    onClick={() => setCurrencyUnit(u)}
+                    className={cn(
+                      'rounded-lg px-3 py-1 text-xs font-bold transition border',
+                      currencyUnit === u
+                        ? 'bg-green-500/15 border-green-500/30 text-green-400'
+                        : 'border-white/10 text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                    )}
+                  >
+                    {CURRENCY_LABELS[u]}
+                  </button>
+                ))}
+              </div>
               <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Portfolio value</p>
-              <p className="text-3xl font-bold tracking-tight text-foreground mt-1">{formatCurrency(totalValue)}</p>
+              <p className="text-3xl font-bold tracking-tight text-foreground mt-1">{fmt(totalValue)}</p>
               <div className="flex items-center gap-3 mt-2">
                 <span className={cn(
                   'inline-flex items-center gap-1 text-sm font-medium',
                   totalPnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                 )}>
                   {totalPnl >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                  {totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)} total P&L
+                  {totalPnl >= 0 ? '+' : ''}{fmt(totalPnl)} total P&L
                 </span>
                 <span className={cn(
                   'text-sm font-medium',
@@ -208,14 +234,14 @@ export function PortfolioContent() {
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">Cash</p>
                 <p className="text-lg font-semibold flex items-center gap-1.5 justify-end">
                   <Wallet className="h-4 w-4 text-muted-foreground" />
-                  {formatCurrency(cashBalance)}
+                  {fmt(cashBalance)}
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">Invested</p>
                 <p className="text-lg font-semibold flex items-center gap-1.5 justify-end">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  {formatCurrency(investedValue)}
+                  {fmt(investedValue)}
                 </p>
               </div>
               <div className="text-right">
@@ -272,20 +298,20 @@ export function PortfolioContent() {
           <CardContent className="space-y-4">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Initial capital</span>
-              <span className="font-medium">{formatCurrency(totalCost)}</span>
+              <span className="font-medium">{fmt(totalCost)}</span>
             </div>
             {topGainer && (
               <div className="rounded-lg bg-green-500/10 dark:bg-green-500/20 p-3 border border-green-500/20">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">Top gainer</p>
                 <p className="font-semibold text-green-600 dark:text-green-400">{topGainer.symbol}</p>
-                <p className="text-sm">+{formatCurrency(topGainer.unrealized_pnl)}</p>
+                <p className="text-sm">+{fmt(topGainer.unrealized_pnl)}</p>
               </div>
             )}
             {topLoser && topLoser.symbol !== topGainer?.symbol && (
               <div className="rounded-lg bg-red-500/10 dark:bg-red-500/20 p-3 border border-red-500/20">
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">Top loser</p>
                 <p className="font-semibold text-red-600 dark:text-red-400">{topLoser.symbol}</p>
-                <p className="text-sm">{formatCurrency(topLoser.unrealized_pnl)}</p>
+                <p className="text-sm">{fmt(topLoser.unrealized_pnl)}</p>
               </div>
             )}
             {selectedPortfolio?.risk_tolerance && (
@@ -334,11 +360,11 @@ export function PortfolioContent() {
                       <tr key={`${p.symbol}-${i}`} className="border-b last:border-0 hover:bg-muted/30">
                         <td className="py-3 px-4 font-medium">{p.symbol}</td>
                         <td className="text-right py-3 px-4">{p.quantity.toLocaleString()}</td>
-                        <td className="text-right py-3 px-4">{formatCurrency(p.average_cost ?? 0)}</td>
-                        <td className="text-right py-3 px-4">{formatCurrency(p.market_value)}</td>
+                        <td className="text-right py-3 px-4">{fmt(p.average_cost ?? 0)}</td>
+                        <td className="text-right py-3 px-4">{fmt(p.market_value)}</td>
                         <td className="text-right py-3 px-4 text-muted-foreground">{p.weight?.toFixed(1) ?? '—'}%</td>
                         <td className={cn('text-right py-3 px-4 font-medium', p.unrealized_pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
-                          {p.unrealized_pnl >= 0 ? '+' : ''}{formatCurrency(p.unrealized_pnl)}
+                          {p.unrealized_pnl >= 0 ? '+' : ''}{fmt(p.unrealized_pnl)}
                         </td>
                         <td className={cn('text-right py-3 px-4', p.unrealized_pnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
                           {p.unrealized_pnl_percent != null ? `${p.unrealized_pnl_percent >= 0 ? '+' : ''}${p.unrealized_pnl_percent.toFixed(2)}%` : '—'}

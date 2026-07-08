@@ -24,8 +24,10 @@ htmlcov/
 env.local
 .env
 .env.*
+!.env.example
 frontend-nextjs/.env
 frontend-nextjs/.env.*
+!.env.example
 
 # Data, models, logs, artifacts
 dataset/

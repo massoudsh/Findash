@@ -5,11 +5,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number): string {
+export type CurrencyUnit = 'IRT' | 'IRR' | 'USD';
+
+export function formatCurrency(amount: number, unit: CurrencyUnit = 'USD'): string {
+  if (unit === 'IRT') {
+    const formatted = new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 0 }).format(amount);
+    return `${formatted} تومان`;
+  }
+  if (unit === 'IRR') {
+    const formatted = new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 0 }).format(amount);
+    return `${formatted} ریال`;
+  }
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
-  }).format(amount)
+  }).format(amount);
 }
 
 export function formatPercentage(value: number): string {
@@ -39,4 +49,4 @@ export function formatDate(
         };
 
   return new Intl.DateTimeFormat('en-US', options).format(new Date(date));
-} 
+}
