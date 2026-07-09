@@ -6,7 +6,7 @@ from src.data_processing.ingestion.market_data import fetch_real_time_data
 from src.data_processing.ingestion.news_scraper import scrape_fintech_news
 from src.data_processing.ingestion.social_sentiment import analyze_reddit_sentiment
 from src.database.crud import create_market_data, create_news_article, create_reddit_sentiment
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text, inspect
 from sqlalchemy.orm import sessionmaker
 from src.database.models import Base
 import os
@@ -22,13 +22,13 @@ def create_time_series_table():
     """
     Creates the financial_time_series table and converts it to a hypertable.
     """
-    db = get_db()
-    try:
+    with get_db() as db:
         # Check if the table already exists
-        if not db.table_exists('financial_time_series'):
+        inspector = inspect(db)
+        if not inspector.has_table('financial_time_series'):
             logger.info("Creating 'financial_time_series' table.")
             # Create the table
-            db.execute_query("""
+            db.execute(text("""
                 CREATE TABLE financial_time_series (
                     time TIMESTAMPTZ NOT NULL,
                     symbol TEXT NOT NULL,
@@ -39,15 +39,14 @@ def create_time_series_table():
                     volume BIGINT,
                     PRIMARY KEY (time, symbol)
                 );
-            """)
+            """))
             
             # Convert the table to a hypertable
-            db.execute_query("SELECT create_hypertable('financial_time_series', 'time');")
+            db.execute(text("SELECT create_hypertable('financial_time_series', 'time');"))
+            db.commit()
             logger.info("'financial_time_series' table created and converted to hypertable.")
         else:
             logger.info("'financial_time_series' table already exists.")
-    finally:
-        db.close()
 
 @celery_app.task(name='data_processing.ingest_time_series_from_csv')
 def ingest_time_series_from_csv(symbol: str, file_path: str):
@@ -88,24 +87,28 @@ def ingest_time_series_from_csv(symbol: str, file_path: str):
         df = df[['time', 'symbol', 'price', 'open', 'high', 'low', 'volume']]
         
         # --- Database Insertion ---
-        db = get_db()
-        try:
+        with get_db() as db:
             # Use a more efficient method for bulk insertion if available
             # For simplicity, we'll iterate here
             for _, row in df.iterrows():
-                db.execute_query(
-                    """
-                    INSERT INTO financial_time_series (time, symbol, price, open, high, low, volume)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                    ON CONFLICT (time, symbol) DO NOTHING;
-                    """,
-                    params=tuple(row),
-                    commit=False 
+                db.execute(
+                    text("""
+                        INSERT INTO financial_time_series (time, symbol, price, open, high, low, volume)
+                        VALUES (:time, :symbol, :price, :open, :high, :low, :volume)
+                        ON CONFLICT (time, symbol) DO NOTHING;
+                    """),
+                    {
+                        "time": row["time"],
+                        "symbol": row["symbol"],
+                        "price": row["price"],
+                        "open": row["open"],
+                        "high": row["high"],
+                        "low": row["low"],
+                        "volume": row["volume"],
+                    }
                 )
             db.commit()
             logger.info(f"Successfully ingested {len(df)} records for {symbol}.")
-        finally:
-            db.close()
 
         return {"status": "success", "records_ingested": len(df)}
 

@@ -408,7 +408,7 @@ def create_test_user():
     return User(
         email="test@example.com",
         username="testuser",
-        hashed_password="hashedpassword",
+        password_hash="hashedpassword",
         full_name="Test User",
         is_active=True,
         is_verified=True

@@ -5,6 +5,7 @@ Central orchestrator for trading strategies, signal fusion, and decision making.
 
 import asyncio
 import logging
+logger = logging.getLogger(__name__)
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass

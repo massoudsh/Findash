@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -68,18 +68,33 @@ export function OptionCalculationPanel({ contract, onClose }: OptionCalculationP
   const maxLoss = premium * quantity * contractMultiplier;
   const maxProfit = type === 'call' ? Infinity : breakEven * quantity * contractMultiplier;
 
+  // Keep side in sync when user selects a different contract from the chain
+  useEffect(() => {
+    setSide(contract.type);
+  }, [contract.strike, contract.expiry, contract.type]);
+
   const chartData = useMemo(() => {
-    const minP = Math.min(spot, strike, breakEven) * 0.85;
-    const maxP = type === 'call' ? Math.max(spot, breakEven) * 1.2 : Math.max(spot, strike) * 1.05;
-    const steps = 50;
+    const minP = Math.min(spot, strike, breakEven, strike * 0.5) * 0.9;
+    const maxP = type === 'call' ? Math.max(spot, breakEven, strike * 1.5) * 1.15 : Math.max(spot, strike) * 1.1;
+    const steps = 60;
     const dx = (maxP - minP) / steps;
     const points: { price: number; pl: number }[] = [];
     for (let i = 0; i <= steps; i++) {
       const p = minP + i * dx;
-      points.push({ price: p, pl: payoffFn(spot, strike, premium, p) * quantity * contractMultiplier });
+      const pl = payoffFn(spot, strike, premium, p) * quantity * contractMultiplier;
+      points.push({ price: p, pl });
     }
     return points;
-  }, [spot, strike, premium, breakEven, type, quantity, contractMultiplier, payoffFn]);
+  }, [spot, strike, premium, breakEven, type, quantity, contractMultiplier]);
+
+  const yDomain = useMemo(() => {
+    if (chartData.length === 0) return [0, 0];
+    const pls = chartData.map((d) => d.pl);
+    const minPl = Math.min(...pls);
+    const maxPl = Math.max(...pls);
+    const padding = Math.max(2000, (maxPl - minPl) * 0.1);
+    return [minPl - padding, maxPl + padding];
+  }, [chartData]);
 
   const maxCost = premium * quantity * contractMultiplier;
   const currentPl = payoffFn(spot, strike, premium, spot) * quantity * contractMultiplier;
@@ -215,21 +230,26 @@ export function OptionCalculationPanel({ contract, onClose }: OptionCalculationP
                 </p>
               </div>
             </div>
-            <div className="h-[280px] w-full">
+            <div className="h-[280px] w-full" role="img" aria-label="Profit and loss at expiry chart">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 8, right: 8, left: 8, bottom: 8 }}>
+                <LineChart
+                  key={`payoff-${strike}-${type}-${quantity}-${premium}-${spot}`}
+                  data={chartData}
+                  margin={{ top: 8, right: 8, left: 8, bottom: 8 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis
                     dataKey="price"
                     type="number"
                     domain={['dataMin', 'dataMax']}
-                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                    tickFormatter={(v) => (v >= 1000 ? `$${(v / 1000).toFixed(0)}k` : `$${v}`)}
                     tick={{ fontSize: 10 }}
                   />
                   <YAxis
-                    tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
+                    type="number"
+                    domain={yDomain}
+                    tickFormatter={(v) => (Math.abs(v) >= 1000 ? `$${(v / 1000).toFixed(0)}k` : `$${v}`)}
                     tick={{ fontSize: 10 }}
-                    domain={['dataMin - 2000', 'dataMax + 2000']}
                   />
                   <Tooltip
                     formatter={(value: number) => [formatCurrency(value), 'P/L']}
@@ -242,6 +262,7 @@ export function OptionCalculationPanel({ contract, onClose }: OptionCalculationP
                     stroke="var(--chart-1)"
                     strokeWidth={2}
                     dot={false}
+                    isAnimationActive={true}
                     name="P/L at expiry"
                   />
                   <ReferenceLine y={0} stroke="var(--muted-foreground)" strokeDasharray="2 2" />

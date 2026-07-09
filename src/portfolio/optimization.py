@@ -15,6 +15,9 @@ This file will be removed in a future version.
 
 import pandas as pd
 import numpy as np
+from skfolio import Portfolio
+from skfolio.optimization import MeanRisk, ObjectiveFunction
+from skfolio.preprocessing import prices_to_returns
 from src.database.postgres_connection import get_db
 import logging
 
@@ -34,15 +37,16 @@ def load_multiple_assets_data(symbols: list[str], start_date: str, end_date: str
     Loads historical price data for multiple assets and pivots it into a single DataFrame.
     """
     logger.info(f"Loading data for symbols: {symbols} from {start_date} to {end_date}")
-    db = get_db()
-    try:
-        query = """
+    from sqlalchemy import text
+    with get_db() as db:
+        query = text("""
             SELECT time, symbol, price 
             FROM financial_time_series 
-            WHERE symbol = ANY(%s) AND time >= %s AND time <= %s
+            WHERE symbol = ANY(:symbols) AND time >= :start_date AND time <= :end_date
             ORDER BY time;
-        """
-        data = db.execute_query(query, params=(symbols, start_date, end_date), fetch='all')
+        """)
+        result = db.execute(query, {"symbols": symbols, "start_date": start_date, "end_date": end_date})
+        data = result.fetchall()
         if not data:
             raise ValueError("No data found for the given symbols in the specified date range.")
         
@@ -56,8 +60,6 @@ def load_multiple_assets_data(symbols: list[str], start_date: str, end_date: str
         
         logger.info(f"Successfully loaded and pivoted data for {len(symbols)} assets.")
         return price_df
-    finally:
-        db.close()
 
 # Re-export for backward compatibility - delegates to unified module
 def optimize_portfolio(symbols: list[str], start_date: str, end_date: str) -> dict:
@@ -86,22 +88,21 @@ def optimize_portfolio(symbols: list[str], start_date: str, end_date: str) -> di
 def _optimize_with_skfolio(prices: pd.DataFrame, symbols: list[str]) -> dict:
     """Optimize portfolio using skfolio library"""
     # 2. Preprocess prices to returns
-    preprocessor = PricesPreprocessor()
-    preprocessor.fit(prices)
+    returns = prices_to_returns(prices)
     
     # 3. Define the optimization model
-    model = MeanVarianceOptimization(
+    model = MeanRisk(
         objective_function=ObjectiveFunction.MAXIMIZE_SHARPE_RATIO
     )
     
-    # 4. Fit the model to the preprocessed data
-    model.fit(preprocessor)
+    # 4. Fit the model to the returns data
+    model.fit(returns)
     
     # 5. Get results
     weights = model.weights_
     
     portfolio = Portfolio(
-        returns=preprocessor.returns_,
+        X=returns,
         weights=weights
     )
 

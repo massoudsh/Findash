@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from src.database.models import Base, User, Portfolio, RiskLevel, MarketData, NewsArticle, RedditSentiment
-from src.core.security import get_password_hash
+from src.core.security import hash_password as get_password_hash
 
 # This is a synchronous example, consider using async for production
 DATABASE_URL = "postgresql://user:password@localhost/dbname"
@@ -15,7 +15,7 @@ def create_default_user(session):
         hashed_password = get_password_hash("admin")
         user = User(
             email="admin@example.com",
-            hashed_password=hashed_password,
+            password_hash=hashed_password,
             is_admin=True
         )
         session.add(user)

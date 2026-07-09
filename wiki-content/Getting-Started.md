@@ -63,8 +63,8 @@ source venv/bin/activate
 # Windows:
 venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install dependencies (from repo root)
+pip install -r requirements/requirements.txt
 ```
 
 #### Step 3: Frontend Setup
@@ -261,7 +261,7 @@ kill -9 <PID>
 pip install --upgrade pip
 
 # Install with verbose output
-pip install -r requirements.txt -v
+pip install -r requirements/requirements.txt -v
 ```
 
 #### 3. Node Modules Issues

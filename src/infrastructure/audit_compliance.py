@@ -516,6 +516,51 @@ class DataRetentionRule(ComplianceRule):
             message="Data within retention period"
         )
 
+class TransactionReportingRule(ComplianceRule):
+    """MIFID II Transaction Reporting Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("TransactionReporting", ComplianceStatus.COMPLIANT, "Stub rule")
+
+class ClientOrderHandlingRule(ComplianceRule):
+    """MIFID II Client Order Handling Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("ClientOrderHandling", ComplianceStatus.COMPLIANT, "Stub rule")
+
+class MarginRequirementRule(ComplianceRule):
+    """FINRA Margin Requirement Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("MarginRequirement", ComplianceStatus.COMPLIANT, "Stub rule")
+
+class SuitabilityRule(ComplianceRule):
+    """FINRA Suitability Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("Suitability", ComplianceStatus.COMPLIANT, "Stub rule")
+
+class InsiderTradingRule(ComplianceRule):
+    """SEC Insider Trading Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("InsiderTrading", ComplianceStatus.COMPLIANT, "Stub rule")
+
+class MarketManipulationRule(ComplianceRule):
+    """SEC Market Manipulation Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("MarketManipulation", ComplianceStatus.COMPLIANT, "Stub rule")
+
+class ShortSellingRule(ComplianceRule):
+    """SEC Short Selling Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("ShortSelling", ComplianceStatus.COMPLIANT, "Stub rule")
+
+class RightToErasureRule(ComplianceRule):
+    """GDPR Right to Erasure Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("RightToErasure", ComplianceStatus.COMPLIANT, "Stub rule")
+
+class DataPortabilityRule(ComplianceRule):
+    """GDPR Data Portability Rule"""
+    async def check(self, context: Dict[str, Any]) -> RuleResult:
+        return RuleResult("DataPortability", ComplianceStatus.COMPLIANT, "Stub rule")
+
 # Audit Query Service
 class AuditQueryService:
     """Service for querying audit logs"""

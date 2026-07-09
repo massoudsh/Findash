@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000';
+import { getBackendUrl } from '@/lib/backend-url';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json().catch(() => ({}));
-    const backendResponse = await fetch(`${BACKEND_URL}/llm/reports/generate-insights`, {
+    const backendResponse = await fetch(`${getBackendUrl()}/llm/reports/generate-insights`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     const isConnectionRefused =
       err?.code === 'ECONNREFUSED' || err?.cause?.code === 'ECONNREFUSED';
     const message = isConnectionRefused
-      ? 'Backend unreachable. Start the API (e.g. run Docker or uvicorn) and set BACKEND_URL if needed.'
+      ? 'Backend unreachable. Run ./scripts/start-dev.sh or start the API (e.g. python start.py) and set NEXT_PUBLIC_API_URL in .env.local if needed.'
       : error instanceof Error
         ? error.message
         : 'Internal Server Error';

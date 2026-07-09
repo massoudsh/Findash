@@ -23,19 +23,11 @@ celery_app = Celery(
     include=[
         "src.data_processing.tasks",
         "src.data_processing.market_data_tasks",
-        "src.training.tasks", 
         "src.prediction.tasks",
-        "src.backtesting.tasks",
-        "src.portfolio.tasks",
-        "src.risk.tasks",
         "src.strategies.tasks",
-        "src.analytics.service",
-        "src.generative.tasks",
         "src.data_processing.collection_tasks",
-        # LLM tasks disabled - too many optional dependencies
-        # Enable when all dependencies are installed: datasets, transformers, etc.
-        # "src.llm.tasks.finetuning_task",
-        # "src.llm.tasks.unsloth_finetuning_task",
+        "src.trading.bot_tasks",
+        "src.llm.tasks.finetuning_task",
     ]
 )
 
@@ -66,13 +58,8 @@ celery_app.conf.update(
     task_routes={
         'data_processing.*': {'queue': 'data_processing'},
         'market_data.*': {'queue': 'data_processing'},
-        'training.*': {'queue': 'ml_training'},
         'prediction.*': {'queue': 'prediction'},
-        'portfolio.*': {'queue': 'portfolio'},
-        'risk.*': {'queue': 'risk'},
         'strategies.*': {'queue': 'strategies'},
-        'analytics.*': {'queue': 'analytics'},
-        'generative.*': {'queue': 'generative'},
         'llm.*': {'queue': 'llm'},
     },
     # Beat schedule

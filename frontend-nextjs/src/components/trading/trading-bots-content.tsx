@@ -35,6 +35,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useBackendHealth } from '@/hooks/use-backend-health';
+import { BackendOfflineBanner } from '@/components/ui/backend-offline-banner';
 
 /** Best-practice strategy types (fin market aligned). */
 const STRATEGY_TYPES = [
@@ -160,10 +162,13 @@ function mapApiBotToConfig(b: {
   };
 }
 
+const DEFAULT_BACKEND_URL = typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000' : 'http://localhost:8000';
+
 export function TradingBotsContent() {
   const [bots, setBots] = useState<BotConfig[]>(MOCK_BOTS);
   const [botsLoading, setBotsLoading] = useState(true);
   const [botsError, setBotsError] = useState<string | null>(null);
+  const { ok: backendOk, backendUrl, loading: backendHealthLoading, refetch: refetchBackendHealth } = useBackendHealth();
 
   const fetchBots = useCallback(async () => {
     if (!API_BASE) {
@@ -305,6 +310,22 @@ export function TradingBotsContent() {
         </Button>
       </div>
 
+      {!backendHealthLoading && !API_BASE && (
+        <BackendOfflineBanner
+          backendUrl={DEFAULT_BACKEND_URL}
+          message="Connect backend: set NEXT_PUBLIC_API_URL in .env.local"
+          fallbackLabel="(e.g. http://localhost:8000). Using local mock data."
+          onRetry={refetchBackendHealth}
+        />
+      )}
+      {!backendHealthLoading && API_BASE && !backendOk && (
+        <BackendOfflineBanner
+          backendUrl={backendUrl}
+          message="Backend offline."
+          fallbackLabel="Showing fallback data."
+          onRetry={refetchBackendHealth}
+        />
+      )}
       {botsError && (
         <Card className="border-destructive/30 bg-destructive/5">
           <CardContent className="py-3 px-4 flex items-center gap-3">

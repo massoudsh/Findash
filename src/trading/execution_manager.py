@@ -606,14 +606,14 @@ class ExecutionManager:
         """Store order in database"""
         
         try:
-            async with get_db_connection() as conn:
+            with get_db() as conn:
                 # Store order
-                await conn.execute("""
+                conn.execute("""
                     INSERT INTO orders (
                         order_id, symbol, side, quantity, order_type, status,
                         submitted_time, completion_time, filled_quantity,
                         average_fill_price, slippage, market_impact
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (
                     order.order_id,
                     order.request.symbol,
@@ -631,11 +631,11 @@ class ExecutionManager:
                 
                 # Store fills
                 for fill in order.fills:
-                    await conn.execute("""
+                    conn.execute("""
                         INSERT INTO fills (
                             fill_id, order_id, symbol, side, quantity,
                             price, timestamp, commission
-                        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     """, (
                         fill.fill_id,
                         fill.order_id,

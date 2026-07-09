@@ -10,6 +10,7 @@ from datetime import datetime
 import logging
 
 from src.core.security import get_current_active_user, get_optional_user, TokenData
+from src.api.bots_persistence import load_bots, save_bots
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +77,15 @@ class TradingBotPerformance(BaseModel):
     max_drawdown: Optional[float] = None
 
 
-# Mock data storage (in production, use database)
-bots_db = {}
+# In-memory cache; persisted to JSON file (load on first access, save on every mutation)
+bots_db = None
+
+
+def _get_bots_db() -> dict:
+    global bots_db
+    if bots_db is None:
+        bots_db = load_bots()
+    return bots_db
 
 
 def _normalize_bot(bot: dict) -> dict:
@@ -101,7 +109,8 @@ async def get_trading_bots(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Get all trading bots for the current user (or default when unauthenticated)."""
-    user_bots = [_normalize_bot(bot) for bot in bots_db.values() if bot.get("user_id") == _user_id(current_user)]
+    db = _get_bots_db()
+    user_bots = [_normalize_bot(bot) for bot in db.values() if bot.get("user_id") == _user_id(current_user)]
     return user_bots
 
 
@@ -111,7 +120,8 @@ async def create_trading_bot(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Create a new trading bot (owned by current user or default when unauthenticated)."""
-    bot_id = f"bot_{len(bots_db) + 1}"
+    db = _get_bots_db()
+    bot_id = f"bot_{len(db) + 1}"
     uid = _user_id(current_user)
     _risk = bot_data.risk or RiskConfig()
     risk = _risk.model_dump() if hasattr(_risk, "model_dump") else _risk.dict()
@@ -133,11 +143,10 @@ async def create_trading_bot(
         "updated_at": datetime.now().isoformat(),
         "last_signal_at": None,
     }
-    
-    bots_db[bot_id] = new_bot
+    db[bot_id] = new_bot
+    save_bots(db)
     logger.info(f"Created trading bot {bot_id} for user {uid}")
-    
-    return new_bot
+    return _normalize_bot(new_bot)
 
 
 @router.patch("/{bot_id}", response_model=TradingBotResponse)
@@ -147,9 +156,10 @@ async def update_trading_bot(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Update bot config (Phase 2: execution_mode, symbols, agent_sources, risk)."""
-    if bot_id not in bots_db:
+    db = _get_bots_db()
+    if bot_id not in db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    bot = bots_db[bot_id]
+    bot = db[bot_id]
     if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
     if payload.name is not None:
@@ -166,6 +176,7 @@ async def update_trading_bot(
     if payload.parameters is not None:
         bot["parameters"] = payload.parameters
     bot["updated_at"] = datetime.now().isoformat()
+    save_bots(db)
     return _normalize_bot(bot)
 
 
@@ -175,9 +186,10 @@ async def get_trading_bot(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Get a specific trading bot."""
-    if bot_id not in bots_db:
+    db = _get_bots_db()
+    if bot_id not in db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    bot = bots_db[bot_id]
+    bot = db[bot_id]
     if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
     return _normalize_bot(bot)
@@ -189,15 +201,22 @@ async def start_trading_bot(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Start a trading bot. Execution uses bot's execution_mode (paper/live) when execution layer is connected."""
-    if bot_id not in bots_db:
+    db = _get_bots_db()
+    if bot_id not in db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    bot = bots_db[bot_id]
+    bot = db[bot_id]
     if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
     bot["status"] = "active"
     bot["updated_at"] = datetime.now().isoformat()
+    save_bots(db)
     execution_mode = bot.get("execution_mode") or "paper"
     logger.info(f"Started trading bot {bot_id} (execution_mode={execution_mode})")
+    try:
+        from src.trading.bot_tasks import run_bot_tick
+        run_bot_tick.apply_async(args=[bot_id], countdown=1)
+    except Exception as e:
+        logger.warning("Celery not available for bot execution: %s", e)
     return {"message": "Trading bot started", "bot_id": bot_id, "status": "active", "execution_mode": execution_mode}
 
 
@@ -207,13 +226,15 @@ async def pause_trading_bot(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Pause a trading bot."""
-    if bot_id not in bots_db:
+    db = _get_bots_db()
+    if bot_id not in db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    bot = bots_db[bot_id]
+    bot = db[bot_id]
     if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
     bot["status"] = "paused"
     bot["updated_at"] = datetime.now().isoformat()
+    save_bots(db)
     logger.info(f"Paused trading bot {bot_id}")
     return {"message": "Trading bot paused", "bot_id": bot_id, "status": "paused"}
 
@@ -224,13 +245,15 @@ async def stop_trading_bot(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Stop a trading bot."""
-    if bot_id not in bots_db:
+    db = _get_bots_db()
+    if bot_id not in db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    bot = bots_db[bot_id]
+    bot = db[bot_id]
     if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
     bot["status"] = "stopped"
     bot["updated_at"] = datetime.now().isoformat()
+    save_bots(db)
     logger.info(f"Stopped trading bot {bot_id}")
     return {"message": "Trading bot stopped", "bot_id": bot_id, "status": "stopped"}
 
@@ -241,12 +264,13 @@ async def delete_trading_bot(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Delete a trading bot."""
-    if bot_id not in bots_db:
+    db = _get_bots_db()
+    if bot_id not in db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    bot = bots_db[bot_id]
-    if bot.get("user_id") != _user_id(current_user):
+    if db[bot_id].get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
-    del bots_db[bot_id]
+    del db[bot_id]
+    save_bots(db)
     logger.info(f"Deleted trading bot {bot_id}")
     return {"message": "Trading bot deleted", "bot_id": bot_id}
 
@@ -257,9 +281,10 @@ async def get_bot_performance(
     current_user: Optional[TokenData] = Depends(get_optional_user),
 ):
     """Get performance metrics for a trading bot."""
-    if bot_id not in bots_db:
+    db = _get_bots_db()
+    if bot_id not in db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
-    bot = bots_db[bot_id]
+    bot = db[bot_id]
     if bot.get("user_id") != _user_id(current_user):
         raise HTTPException(status_code=403, detail="Access denied")
     return bot["performance"]

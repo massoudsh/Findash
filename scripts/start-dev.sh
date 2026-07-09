@@ -31,6 +31,8 @@ sleep 3
 
 echo "🌐 Starting Frontend Development Server (Next.js)..."
 cd frontend-nextjs
+# So frontend and API routes use the same backend URL (backend unreachable fix)
+export NEXT_PUBLIC_API_URL="${NEXT_PUBLIC_API_URL:-http://localhost:8000}"
 npm run dev &
 FRONTEND_PID=$!
 

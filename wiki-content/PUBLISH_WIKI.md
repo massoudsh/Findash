@@ -38,19 +38,23 @@ git push origin main
 
 Visit https://github.com/massoudsh/Findash/wiki to see your wiki!
 
-## Wiki Pages Created
+## Wiki Pages
 
 | Page | Description |
 |------|-------------|
-| Home.md | Main landing page with overview |
+| Home.md | Wiki hub and overview |
+| Onboarding.md | Step-by-step first-time user onboarding |
 | Getting-Started.md | Installation and setup guide |
+| Project-Structure.md | Repo layout and quick commands |
+| Configuration.md | Environment variables and config |
 | Architecture.md | System architecture diagrams |
 | AI-Agents.md | Documentation for 11 AI agents |
-| API-Reference.md | Complete REST API documentation |
 | Database.md | Database schema and models |
+| Data-Sources.md | Market/news providers and API keys |
+| API-Reference.md | REST API documentation |
 | Frontend.md | Frontend architecture |
 | Deployment.md | Production deployment guide |
-| Configuration.md | Environment variables |
+| Troubleshooting.md | Common issues and fixes |
 | Contributing.md | Contribution guidelines |
 | _Sidebar.md | Navigation sidebar |
 | _Footer.md | Page footer |

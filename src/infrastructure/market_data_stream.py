@@ -340,67 +340,6 @@ class IntegratedMarketDataService:
         self.consumer.stop()
 
 # ============================================
-# CELERY TASK - Process Market Data Updates
-# ============================================
-
-@celery_app.task(name='data_processing.update_market_data', bind=True)
-def update_market_data_task(self, symbol: str, market_data: Dict[str, Any]):
-    """
-    Celery task to process market data updates
-    Triggered via Redis Streams consumer (and optional Redis pub/sub fanout)
-    """
-    from src.monitoring.celery_metrics import (
-        track_task_execution,
-        track_pubsub_message
-    )
-    
-    start_time = time.time()
-    
-    try:
-        logger.info(f"Processing market data update for {symbol}")
-        
-        # Simulate processing (update database, calculate metrics, etc.)
-        price = market_data.get('price', 0)
-        volume = market_data.get('volume', 0)
-        
-        # Update Redis cache with processed data
-        redis_client = redis.from_url('redis://localhost:6379/0', decode_responses=True)
-        cache_key = f"processed_data:{symbol}:latest"
-        redis_client.setex(
-            cache_key,
-            600,  # 10 minute TTL
-            json.dumps({
-                'symbol': symbol,
-                'price': price,
-                'volume': volume,
-                'processed_at': datetime.utcnow().isoformat(),
-                'task_id': self.request.id
-            })
-        )
-        
-        # Track metrics
-        duration = time.time() - start_time
-        track_task_execution(
-            task_name='update_market_data',
-            queue='data_processing',
-            duration=duration,
-            status='success'
-        )
-        
-        logger.info(f"Successfully processed market data for {symbol}")
-        return {'status': 'success', 'symbol': symbol, 'price': price}
-        
-    except Exception as e:
-        logger.error(f"Error processing market data: {e}")
-        track_task_execution(
-            task_name='update_market_data',
-            queue='data_processing',
-            duration=time.time() - start_time,
-            status='failed'
-        )
-        raise
-
-# ============================================
 # USAGE EXAMPLE
 # ============================================
 

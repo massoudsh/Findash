@@ -921,17 +921,17 @@ class EnhancedBacktester:
         """Store backtest results in database"""
         
         try:
-            async with get_db_connection() as conn:
+            with get_db() as conn:
                 
                 # Store main results
                 result_id = str(hash(f"{results.config.start_date}{results.config.end_date}{results.config.symbols}"))
                 
-                await conn.execute("""
+                conn.execute("""
                     INSERT INTO backtest_results (
                         result_id, start_date, end_date, symbols, initial_capital,
                         total_return, annualized_return, volatility, sharpe_ratio,
                         max_drawdown, total_trades, win_rate, execution_time
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (result_id) DO UPDATE SET
                         total_return = EXCLUDED.total_return,
                         annualized_return = EXCLUDED.annualized_return,
@@ -959,11 +959,11 @@ class EnhancedBacktester:
                 
                 # Store trades
                 for trade in results.trades:
-                    await conn.execute("""
+                    conn.execute("""
                         INSERT INTO backtest_trades (
                             result_id, entry_date, symbol, side, entry_price,
                             quantity, pnl, return_pct, transaction_cost
-                        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """, (
                         result_id,
                         trade.entry_date,

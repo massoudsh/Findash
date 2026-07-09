@@ -9,8 +9,8 @@ Single source of truth for issue status and development phases.
 | Phase | Status | Description |
 |-------|--------|-------------|
 | **Phase 1** | ✅ Done | Core app (FastAPI + Next.js), Command Center, Dashboard, account cards, agent panels (M1/M4/M9/M11), CI/CD workflow |
-| **Phase 2** | In progress | Dashboard real data (#8); remaining bot/execution work (#10). [#3](https://github.com/massoudsh/Findash/issues/3) closed. |
-| **Phase 3** | TBD | Scale, observability, E2E tests, production hardening |
+| **Phase 2** | ✅ Done | Dashboard real data (#8) DB wiring + fallback; Trading bots (#10) persistence, Celery execution, backend-health UX. |
+| **Phase 3** | In progress | E2E tests, observability, production hardening |
 
 ---
 
@@ -29,7 +29,7 @@ Single source of truth for issue status and development phases.
 | # | Title | Priority |
 |---|--------|----------|
 | [8](https://github.com/massoudsh/Findash/issues/8) | ui: Dashboard real data wiring and API timeouts | Medium |
-| [9](https://github.com/massoudsh/Findash/issues/9) | feat: Technical page – wire Screener, Watchlist, Economic Calendar | Low |
+| [9](https://github.com/massoudsh/Findash/issues/9) | feat: Technical page – wire Screener, Watchlist, Economic Calendar | Low (Calendar wired to API; Screener/Watchlist already use real data / localStorage) |
 | [10](https://github.com/massoudsh/Findash/issues/10) | feat: Trading bots execution – wire backend and run on platform | High |
 | [11](https://github.com/massoudsh/Findash/issues/11) | docs: Development roadmap and phase checklist | Low |
 
@@ -43,11 +43,12 @@ Single source of truth for issue status and development phases.
 
 2. **Next 1–2 sprints**
    - Trading Bots run-on-platform refinements (#10); agent panels wired (#3 done).
-   - Optional: Technical page Screener/Watchlist/Calendar (#9).
+   - Technical page: Economic Calendar wired to backend via /api/economic-calendar (#9 partial).
 
-3. **Later**
-   - Roadmap doc in repo root and labels/milestones (#11).
-   - Phase 3: E2E tests, observability, production deploy.
+3. **Phase 3 (current)**
+   - E2E tests (Playwright) for critical flows: app load, dashboard, trading bots, backend health.
+   - Observability: structured logging, health aggregation; existing /health and /health/detailed.
+   - Production hardening: env validation, security headers, deploy placeholders.
 
 ---
 

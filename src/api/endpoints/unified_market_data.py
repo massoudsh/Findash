@@ -28,7 +28,7 @@ import numpy as np
 import time
 
 from src.database.postgres_connection import get_db
-from src.core.security import get_current_active_user, TokenData, rate_limit_dependency
+from src.core.security import get_current_active_user, TokenData
 from src.core.rate_limiter import standard_rate_limit
 from src.core.cache import CacheManager, CacheNamespace
 from src.core.config import get_settings
@@ -183,7 +183,7 @@ def calculate_technical_indicators(df: pd.DataFrame, symbol: str) -> TechnicalIn
 async def get_real_time_quote(
     symbol: str,
     current_user: TokenData = Depends(get_current_active_user),
-    _: bool = Depends(rate_limit_dependency)
+    _: bool = Depends(standard_rate_limit)
 ):
     """
     Get real-time market quote for a symbol

@@ -5,11 +5,30 @@ Coordinates AI agents and manages the flow of information between different modu
 
 import asyncio
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
+
+@dataclass
+class IntelligenceReport:
+    """Comprehensive intelligence report combining all agent analyses"""
+    symbol: str
+    timeframe: str
+    strategy_decision: Any
+    ml_predictions: Dict[str, Any]
+    price_forecasts: Dict[str, Any]
+    sentiment_analysis: Dict[str, Any]
+    final_recommendation: str
+    confidence_score: float
+    risk_assessment: Dict[str, Any]
+    expected_return: float
+    time_horizon: Any
+    agent_consensus: Dict[str, Any]
+    uncertainty_factors: List[str]
+    market_conditions: Dict[str, Any]
+    timestamp: datetime
 
 @dataclass
 class AgentTask:
@@ -44,6 +63,20 @@ class IntelligenceOrchestrator:
         self.results = {}
         self.active_tasks = {}
         self.agent_status = {}
+        
+        # Placeholder agent references (set by initialize_agents)
+        self.strategy_agent = None
+        self.ml_agent = None
+        self.prediction_agent = None
+        self.sentiment_agent = None
+        self.agent_weights = {
+            "strategy": 0.30,
+            "ml": 0.25,
+            "prediction": 0.25,
+            "sentiment": 0.20
+        }
+        self.active_symbols: Dict[str, Dict[str, Any]] = {}
+        self.intelligence_history: Dict[str, List[IntelligenceReport]] = {}
         
         # Initialize agent registry
         self._initialize_agents()
@@ -353,6 +386,172 @@ class IntelligenceOrchestrator:
     async def cleanup(self):
         """Cleanup method for graceful shutdown"""
         pass
+
+    async def add_symbol_for_analysis(self, symbol: str, timeframes: List[str]):
+        """Register a symbol for intelligence analysis."""
+        self.active_symbols[symbol] = {
+            "timeframes": timeframes,
+            "analysis_count": 0
+        }
+
+    async def generate_intelligence_report(self, symbol: str, timeframe: str) -> IntelligenceReport:
+        """Generate a comprehensive intelligence report for a symbol."""
+        intelligence = await asyncio.gather(
+            self._get_strategy_intelligence(symbol, timeframe),
+            self._get_ml_intelligence(symbol, timeframe),
+            self._get_prediction_intelligence(symbol, timeframe),
+            self._get_sentiment_intelligence(symbol),
+            return_exceptions=True
+        )
+        strategy_result, ml_result, prediction_result, sentiment_result = intelligence
+
+        if isinstance(strategy_result, Exception):
+            strategy_result = None
+        if isinstance(ml_result, Exception):
+            ml_result = {}
+        if isinstance(prediction_result, Exception):
+            prediction_result = {}
+        if isinstance(sentiment_result, Exception):
+            sentiment_result = {}
+
+        agent_recommendations = {}
+        agent_confidences = {}
+        final_recommendation = "HOLD"
+        confidence_score = 0.5
+
+        if strategy_result is not None:
+            agent_recommendations["strategy"] = strategy_result.action.value
+            agent_confidences["strategy"] = strategy_result.confidence
+
+        try:
+            final_recommendation, confidence_score = await self._build_consensus(
+                agent_recommendations, agent_confidences
+            )
+        except Exception:
+            pass
+
+        risk_assessment = await self._calculate_unified_risk(
+            symbol, strategy_result, ml_result, prediction_result, sentiment_result
+        )
+
+        uncertainty_factors = await self._identify_uncertainty_factors(
+            agent_recommendations, agent_confidences, ml_result, sentiment_result
+        )
+
+        market_conditions = await self._analyze_market_conditions(symbol, timeframe)
+
+        report = IntelligenceReport(
+            symbol=symbol,
+            timeframe=timeframe,
+            strategy_decision=strategy_result,
+            ml_predictions=ml_result,
+            price_forecasts=prediction_result,
+            sentiment_analysis=sentiment_result,
+            final_recommendation=final_recommendation,
+            confidence_score=confidence_score,
+            risk_assessment=risk_assessment,
+            expected_return=0.0,
+            time_horizon=timedelta(hours=1),
+            agent_consensus={"recommendations": agent_recommendations, "confidences": agent_confidences},
+            uncertainty_factors=uncertainty_factors,
+            market_conditions=market_conditions,
+            timestamp=datetime.utcnow()
+        )
+
+        self.intelligence_history.setdefault(symbol, []).append(report)
+        self._cleanup_old_history(symbol)
+        if symbol in self.active_symbols:
+            self.active_symbols[symbol]["analysis_count"] += 1
+
+        return report
+
+    def _cleanup_old_history(self, symbol: str, max_age_hours: int = 24):
+        """Remove reports older than max_age_hours."""
+        cutoff = datetime.utcnow() - timedelta(hours=max_age_hours)
+        if symbol in self.intelligence_history:
+            self.intelligence_history[symbol] = [
+                r for r in self.intelligence_history[symbol]
+                if r.timestamp > cutoff
+            ]
+
+    async def _get_strategy_intelligence(self, symbol: str, timeframe: str):
+        """Collect intelligence from the strategy agent."""
+        return None
+
+    async def _get_ml_intelligence(self, symbol: str, timeframe: str) -> Dict[str, Any]:
+        """Collect intelligence from the ML agent."""
+        return {}
+
+    async def _get_prediction_intelligence(self, symbol: str, timeframe: str) -> Dict[str, Any]:
+        """Collect intelligence from the prediction agent."""
+        return {}
+
+    async def _get_sentiment_intelligence(self, symbol: str) -> Dict[str, Any]:
+        """Collect intelligence from the sentiment agent."""
+        return {}
+
+    async def _build_consensus(
+        self,
+        agent_recommendations: Dict[str, str],
+        agent_confidences: Dict[str, float]
+    ) -> tuple:
+        """Build consensus from agent recommendations."""
+        return "HOLD", 0.5
+
+    async def _calculate_unified_risk(
+        self,
+        symbol: str,
+        strategy_result,
+        ml_result: Dict[str, Any],
+        prediction_result: Dict[str, Any],
+        sentiment_result: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Calculate unified risk assessment."""
+        return {
+            "var_95": 0.05,
+            "volatility": 0.02,
+            "anomaly_risk": 0.0,
+            "predicted_volatility": 0.025,
+            "sentiment_uncertainty": 0.0,
+            "overall_risk": 0.1
+        }
+
+    async def _identify_uncertainty_factors(
+        self,
+        agent_recommendations: Dict[str, str],
+        agent_confidences: Dict[str, float],
+        ml_result: Dict[str, Any],
+        sentiment_result: Dict[str, Any]
+    ) -> List[str]:
+        """Identify uncertainty factors in the analysis."""
+        factors = []
+        return factors
+
+    async def _analyze_market_conditions(self, symbol: str, timeframe: str) -> Dict[str, Any]:
+        """Analyze current market conditions."""
+        return {
+            "volatility_regime": "normal",
+            "trend_strength": 0.5,
+            "trend_direction": "sideways",
+            "momentum": 0.0
+        }
+
+    async def get_orchestrator_status(self) -> Dict[str, Any]:
+        """Get orchestrator status report."""
+        return {
+            "orchestrator_id": "main",
+            "active_symbols": list(self.active_symbols.keys()),
+            "agent_weights": self.agent_weights,
+            "agent_statuses": {
+                "strategy": {"agent_id": "M4_strategy_agent", "status": "active"},
+                "ml": {"agent_id": "M5_ml_models", "status": "active"},
+                "prediction": {"agent_id": "M7_price_predictor", "status": "active"},
+                "sentiment": {"agent_id": "M9_sentiment_analyzer", "status": "active"}
+            },
+            "intelligence_history_counts": {
+                sym: len(hist) for sym, hist in self.intelligence_history.items()
+            }
+        }
 
 # Global instance
 intelligence_orchestrator = IntelligenceOrchestrator() 

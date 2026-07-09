@@ -1,6 +1,7 @@
 """
 Portfolio Management API Routes for FastAPI service
-Handles portfolio operations, positions, and performance tracking
+Handles portfolio operations, positions, and performance tracking.
+Uses database when available; falls back to sample data otherwise.
 """
 
 from datetime import datetime, timedelta
@@ -9,7 +10,62 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 import random
 
+from src.database.postgres_connection import get_db_optional
+from src.database import crud as db_crud
+
 router = APIRouter()
+
+
+def _portfolio_orm_to_response(p) -> "PortfolioResponse":
+    """Map DB Portfolio to PortfolioResponse."""
+    initial = float(p.initial_cash)
+    current = float(p.total_value or p.initial_cash)
+    total_return = current - initial
+    total_return_pct = (total_return / initial * 100.0) if initial else 0.0
+    return PortfolioResponse(
+        id=str(p.id),
+        name=p.name,
+        description=p.description,
+        initial_capital=initial,
+        current_value=current,
+        cash_balance=float(p.current_cash),
+        total_return=total_return,
+        total_return_percent=total_return_pct,
+        risk_tolerance=p.risk_level or "moderate",
+        created_at=p.created_at.isoformat() if hasattr(p.created_at, "isoformat") else str(p.created_at),
+        updated_at=p.updated_at.isoformat() if hasattr(p.updated_at, "isoformat") else str(p.updated_at),
+    )
+
+
+def _trade_orm_to_response(t) -> "Trade":
+    """Map DB Trade to Trade model for API."""
+    return Trade(
+        id=str(t.id),
+        symbol=t.symbol,
+        side="buy" if (t.trade_type or "").upper() == "BUY" else "sell",
+        quantity=float(t.quantity),
+        price=float(t.price),
+        status="closed" if (t.status or "").lower() == "executed" else "open",
+        opened_at=t.trade_date.isoformat() if hasattr(t.trade_date, "isoformat") else str(t.trade_date),
+        closed_at=t.settlement_date.isoformat() if t.settlement_date and hasattr(t.settlement_date, "isoformat") else (str(t.settlement_date) if t.settlement_date else None),
+    )
+
+
+def _position_orm_to_response(pos, weight: float = 0.0) -> "Position":
+    """Map DB Position to Position model for API."""
+    mv = float(pos.market_value or 0)
+    cost = float(pos.average_price or 0) * float(pos.quantity or 0)
+    unrealized = float(pos.unrealized_pnl or 0)
+    pct = (unrealized / cost * 100.0) if cost else 0.0
+    return Position(
+        symbol=pos.symbol,
+        quantity=float(pos.quantity),
+        average_cost=float(pos.average_price),
+        market_value=mv,
+        unrealized_pnl=unrealized,
+        unrealized_pnl_percent=pct,
+        weight=weight,
+    )
 
 # Pydantic models
 class PortfolioCreate(BaseModel):
@@ -40,6 +96,19 @@ class Position(BaseModel):
     unrealized_pnl_percent: float
     weight: float
 
+
+class Trade(BaseModel):
+    """Single trade for dashboard active-trades count and portfolio history."""
+    id: str
+    symbol: str
+    side: str  # "buy" | "sell"
+    quantity: float
+    price: float
+    status: str  # "open" | "closed"
+    opened_at: str
+    closed_at: Optional[str] = None
+
+
 class PortfolioDetail(BaseModel):
     portfolio: PortfolioResponse
     positions: List[Position]
@@ -48,14 +117,22 @@ class PortfolioDetail(BaseModel):
 
 @router.get("/", response_model=List[PortfolioResponse])
 async def list_portfolios():
-    """Get list of all portfolios"""
-    
-    # In production, fetch from database
-    # For now, return sample portfolios
-    portfolios = [
+    """Get list of all portfolios. Uses DB when available, else sample data."""
+    db = get_db_optional()
+    if db:
+        try:
+            rows = db_crud.get_all_portfolios(db)
+            if rows:
+                return [_portfolio_orm_to_response(p) for p in rows]
+        except Exception:
+            pass
+        finally:
+            db.close()
+    # Fallback: sample portfolios
+    return [
         PortfolioResponse(
             id="portfolio_1",
-            name="Growth Portfolio", 
+            name="Growth Portfolio",
             description="Focused on high-growth technology stocks",
             initial_capital=100000.0,
             current_value=112500.0,
@@ -64,7 +141,7 @@ async def list_portfolios():
             total_return_percent=12.5,
             risk_tolerance="aggressive",
             created_at="2024-01-15T10:00:00Z",
-            updated_at=datetime.utcnow().isoformat()
+            updated_at=datetime.utcnow().isoformat(),
         ),
         PortfolioResponse(
             id="portfolio_2",
@@ -77,11 +154,9 @@ async def list_portfolios():
             total_return_percent=7.0,
             risk_tolerance="conservative",
             created_at="2024-02-01T14:30:00Z",
-            updated_at=datetime.utcnow().isoformat()
-        )
+            updated_at=datetime.utcnow().isoformat(),
+        ),
     ]
-    
-    return portfolios
 
 @router.post("/", response_model=PortfolioResponse)
 async def create_portfolio(portfolio_data: PortfolioCreate):
@@ -108,13 +183,57 @@ async def create_portfolio(portfolio_data: PortfolioCreate):
 
 @router.get("/{portfolio_id}", response_model=PortfolioDetail)
 async def get_portfolio_detail(portfolio_id: str):
-    """Get detailed information about a specific portfolio"""
-    
-    # In production, fetch from database
+    """Get detailed information about a specific portfolio. Uses DB when available."""
+    try:
+        pid = int(portfolio_id)
+    except ValueError:
+        pid = None
+    if pid is not None:
+        db = get_db_optional()
+        if db:
+            try:
+                p = db_crud.get_portfolio(db, pid)
+                if not p:
+                    raise HTTPException(status_code=404, detail="Portfolio not found")
+                portfolio_resp = _portfolio_orm_to_response(p)
+                positions_raw = db_crud.get_positions_by_portfolio(db, pid)
+                total_mv = sum(float(pos.market_value or 0) for pos in positions_raw)
+                positions = [
+                    _position_orm_to_response(pos, weight=(float(pos.market_value or 0) / total_mv * 100.0) if total_mv else 0)
+                    for pos in positions_raw
+                ]
+                allocation = {pos.symbol: (float(pos.market_value or 0) / total_mv * 100.0) if total_mv else 0 for pos in positions_raw}
+                if not allocation:
+                    allocation = {"Cash": 100.0}
+                r = getattr(p, "risk_metrics", None)
+                performance_metrics = {}
+                if r:
+                    performance_metrics = {
+                        "sharpe_ratio": float(r.sharpe_ratio or 0),
+                        "beta": float(r.beta or 0),
+                        "alpha": 0.0,
+                        "max_drawdown": float(r.max_drawdown or 0),
+                        "volatility": float(r.volatility or 0),
+                        "var_95": 0.0,
+                        "sortino_ratio": 0.0,
+                    }
+                if not performance_metrics:
+                    performance_metrics = {"sharpe_ratio": 0, "beta": 0, "alpha": 0, "max_drawdown": 0, "volatility": 0, "var_95": 0, "sortino_ratio": 0}
+                return PortfolioDetail(
+                    portfolio=portfolio_resp,
+                    positions=positions,
+                    allocation=allocation,
+                    performance_metrics=performance_metrics,
+                )
+            except HTTPException:
+                raise
+            except Exception:
+                pass
+            finally:
+                db.close()
     if not portfolio_id.startswith("portfolio_"):
         raise HTTPException(status_code=404, detail="Portfolio not found")
-    
-    # Sample portfolio data
+    # Fallback: sample portfolio data
     portfolio = PortfolioResponse(
         id=portfolio_id,
         name="Sample Portfolio",
@@ -221,12 +340,35 @@ async def delete_portfolio(portfolio_id: str):
 
 @router.get("/{portfolio_id}/positions", response_model=List[Position])
 async def get_portfolio_positions(portfolio_id: str):
-    """Get all positions in a portfolio"""
-    
+    """Get all positions in a portfolio. Uses DB when available."""
+    try:
+        pid = int(portfolio_id)
+    except ValueError:
+        pid = None
+    if pid is not None:
+        db = get_db_optional()
+        if db:
+            try:
+                p = db_crud.get_portfolio(db, pid)
+                if not p:
+                    raise HTTPException(status_code=404, detail="Portfolio not found")
+                positions_raw = db_crud.get_positions_by_portfolio(db, pid)
+                total_mv = sum(float(pos.market_value or 0) for pos in positions_raw)
+                result = [
+                    _position_orm_to_response(pos, (float(pos.market_value or 0) / total_mv * 100.0) if total_mv else 0)
+                    for pos in positions_raw
+                ]
+                db.close()
+                return result
+            except HTTPException:
+                raise
+            except Exception:
+                pass
+            finally:
+                db.close()
     if not portfolio_id.startswith("portfolio_"):
         raise HTTPException(status_code=404, detail="Portfolio not found")
-    
-    # Sample positions
+    # Fallback: sample positions
     positions = [
         Position(
             symbol="AAPL",
@@ -249,6 +391,67 @@ async def get_portfolio_positions(portfolio_id: str):
     ]
     
     return positions
+
+
+@router.get("/{portfolio_id}/trades/", response_model=List[Trade])
+async def get_portfolio_trades(portfolio_id: str):
+    """Get trades for a portfolio (dashboard uses this for active-trades count). Uses DB when available."""
+    try:
+        pid = int(portfolio_id)
+    except ValueError:
+        pid = None
+    if pid is not None:
+        db = get_db_optional()
+        if db:
+            try:
+                portfolio = db_crud.get_portfolio(db, pid)
+                if not portfolio:
+                    raise HTTPException(status_code=404, detail="Portfolio not found")
+                rows = db_crud.get_trades_by_portfolio(db, pid)
+                return [_trade_orm_to_response(t) for t in rows]
+            except HTTPException:
+                raise
+            except Exception:
+                pass
+            finally:
+                db.close()
+    if not portfolio_id.startswith("portfolio_") and pid is None:
+        raise HTTPException(status_code=404, detail="Portfolio not found")
+    # Fallback: sample trades
+    trades = [
+        Trade(
+            id="t1",
+            symbol="AAPL",
+            side="buy",
+            quantity=100,
+            price=175.50,
+            status="open",
+            opened_at=(datetime.utcnow() - timedelta(days=2)).isoformat() + "Z",
+            closed_at=None,
+        ),
+        Trade(
+            id="t2",
+            symbol="GOOGL",
+            side="buy",
+            quantity=25,
+            price=140.00,
+            status="open",
+            opened_at=(datetime.utcnow() - timedelta(days=5)).isoformat() + "Z",
+            closed_at=None,
+        ),
+        Trade(
+            id="t3",
+            symbol="NVDA",
+            side="sell",
+            quantity=50,
+            price=138.20,
+            status="closed",
+            opened_at=(datetime.utcnow() - timedelta(days=10)).isoformat() + "Z",
+            closed_at=(datetime.utcnow() - timedelta(days=1)).isoformat() + "Z",
+        ),
+    ]
+    return trades
+
 
 @router.get("/{portfolio_id}/performance", response_model=Dict[str, Any])
 async def get_portfolio_performance(

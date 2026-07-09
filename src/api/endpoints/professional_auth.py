@@ -9,8 +9,7 @@ from typing import Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr, Field, validator
-import bcrypt
-import jwt
+
 
 from src.core.security import (
     get_current_active_user,
@@ -88,12 +87,8 @@ def _get_professional_users() -> Dict[str, Any]:
     global _professional_users_cache
     if _professional_users_cache is not None:
         return _professional_users_cache
-    # Truncate to 72 bytes for bcrypt
     def _pwd(p: str) -> str:
-        b = p.encode("utf-8")
-        if len(b) > 72:
-            p = b[:72].decode("utf-8", errors="replace")
-        return bcrypt.hashpw(p.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        return hash_password(p)
     _professional_users_cache = {
         "admin@octopus.trading": {
             "id": "usr_admin_001",
@@ -133,18 +128,6 @@ def _get_professional_users() -> Dict[str, Any]:
         }
     }
     return _professional_users_cache
-
-def create_jwt_token(user_data: dict) -> str:
-    """Create JWT token for user"""
-    payload = {
-        "sub": user_data["id"],
-        "email": user_data["email"],
-        "role": user_data["role"],
-        "permissions": user_data["permissions"],
-        "iat": datetime.utcnow(),
-        "exp": datetime.utcnow() + timedelta(hours=24)
-    }
-    return jwt.encode(payload, settings.auth.jwt_secret_key, algorithm=settings.auth.jwt_algorithm)
 
 @router.post("/credentials", response_model=AuthResponse, dependencies=[Depends(auth_rate_limit)])
 async def authenticate_credentials(
@@ -208,7 +191,6 @@ async def authenticate_credentials(
         user["last_login"] = datetime.utcnow().isoformat() + "Z"
         
         # Create JWT tokens (access and refresh)
-        token = create_jwt_token(user)
         access_token = create_access_token({
             "sub": user["id"],
             "email": user["email"],
@@ -226,7 +208,7 @@ async def authenticate_credentials(
             "last_name": user["last_name"],
             "role": user["role"],
             "permissions": user["permissions"],
-            "token": token
+            "token": access_token
         }
         
         logger.info(f"Successful authentication for user: {credentials.email}")
@@ -234,7 +216,7 @@ async def authenticate_credentials(
         return AuthResponse(
             success=True,
             user=user_profile,
-            token=token,
+            token=access_token,
             access_token=access_token,
             refresh_token=refresh_token,
             expires_in=settings.auth.jwt_access_token_expire_minutes * 60,
@@ -267,7 +249,7 @@ async def register_user(
         
         # Create new user
         user_id = f"usr_{len(_get_professional_users()) + 1:06d}"
-        password_hash = bcrypt.hashpw(registration.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        password_hash = hash_password(registration.password)
         
         new_user = {
             "id": user_id,

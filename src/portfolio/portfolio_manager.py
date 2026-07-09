@@ -47,12 +47,12 @@ except (ImportError, AttributeError) as e:
 
 try:
     from skfolio import Portfolio
-    from skfolio.optimization import MeanVarianceOptimization, ObjectiveFunction
-    from skfolio.preprocessing import PricesPreprocessor
+    from skfolio.optimization import MeanRisk, ObjectiveFunction
+    from skfolio.preprocessing import prices_to_returns
     SKFOLIO_AVAILABLE = True
 except (ImportError, AttributeError) as e:
     SKFOLIO_AVAILABLE = False
-    logger.warning("skfolio not available, will use fallback optimization methods")
+    logger.warning(f"skfolio not available: {e}")
 
 from ..core.cache import CacheManager
 from ..database.postgres_connection import get_db
@@ -535,22 +535,21 @@ class PortfolioOptimizer:
         """Optimize portfolio using skfolio library"""
         try:
             # Preprocess prices to returns
-            preprocessor = PricesPreprocessor()
-            preprocessor.fit(prices)
+            returns = prices_to_returns(prices)
             
             # Define the optimization model
-            model = MeanVarianceOptimization(
+            model = MeanRisk(
                 objective_function=ObjectiveFunction.MAXIMIZE_SHARPE_RATIO
             )
             
-            # Fit the model to the preprocessed data
-            model.fit(preprocessor)
+            # Fit the model to the returns data
+            model.fit(returns)
             
             # Get results
             weights = model.weights_
             
             portfolio = Portfolio(
-                returns=preprocessor.returns_,
+                X=returns,
                 weights=weights
             )
             
@@ -648,15 +647,16 @@ async def load_multiple_assets_data(
     
     # If async DB session provided, use it; otherwise use sync get_db
     if db_session is None:
-        db = get_db()
-        try:
-            query = """
+        from sqlalchemy import text
+        with get_db() as db:
+            query = text("""
                 SELECT time, symbol, price 
                 FROM financial_time_series 
-                WHERE symbol = ANY(%s) AND time >= %s AND time <= %s
+                WHERE symbol = ANY(:symbols) AND time >= :start_date AND time <= :end_date
                 ORDER BY time;
-            """
-            data = db.execute_query(query, params=(symbols, start_date, end_date), fetch='all')
+            """)
+            result = db.execute(query, {"symbols": symbols, "start_date": start_date, "end_date": end_date})
+            data = result.fetchall()
             if not data:
                 raise ValueError("No data found for the given symbols in the specified date range.")
             
@@ -670,8 +670,6 @@ async def load_multiple_assets_data(
             
             logger.info(f"Successfully loaded and pivoted data for {len(symbols)} assets.")
             return price_df
-        finally:
-            db.close()
     else:
         # Async database session implementation
         # This would need to be adapted based on your async DB setup
@@ -1221,13 +1219,13 @@ class PortfolioManager:
         """Store portfolio in database"""
         
         try:
-            async with get_db_connection() as conn:
-                await conn.execute("""
+            with get_db() as conn:
+                conn.execute("""
                     INSERT INTO portfolios (
                         portfolio_id, name, cash, total_value, inception_date,
                         total_return, annualized_return, volatility, sharpe_ratio,
                         max_drawdown, last_updated
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (portfolio_id) DO UPDATE SET
                         cash = EXCLUDED.cash,
                         total_value = EXCLUDED.total_value,
@@ -1253,12 +1251,12 @@ class PortfolioManager:
                 
                 # Store positions
                 for symbol, position in portfolio.positions.items():
-                    await conn.execute("""
+                    conn.execute("""
                         INSERT INTO positions (
                             portfolio_id, symbol, quantity, average_cost,
                             current_price, market_value, unrealized_pnl,
                             realized_pnl, weight, entry_time, last_updated
-                        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         ON CONFLICT (portfolio_id, symbol) DO UPDATE SET
                             quantity = EXCLUDED.quantity,
                             average_cost = EXCLUDED.average_cost,
