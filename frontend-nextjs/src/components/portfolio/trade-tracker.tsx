@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/lib/utils';
 import { cn } from '@/lib/utils';
-import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, X } from 'lucide-react';
+import { useMarketWS } from '@/lib/hooks/use-market-ws';
+import { Plus, Trash2, TrendingUp, TrendingDown, Wallet, X, Radio } from 'lucide-react';
 
 export interface Trade {
   id: string;
@@ -75,7 +76,7 @@ interface TradeTrackerProps {
   prices?: Record<string, number>;
 }
 
-export function TradeTracker({ prices = {} }: TradeTrackerProps) {
+export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps) {
   const [trades, setTrades] = useState<Trade[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ symbol: '', side: 'buy' as 'buy' | 'sell', quantity: '', price: '', note: '' });
@@ -83,6 +84,21 @@ export function TradeTracker({ prices = {} }: TradeTrackerProps) {
   useEffect(() => {
     setTrades(loadTrades());
   }, []);
+
+  // Subscribe to live prices for every symbol currently held/traded.
+  const heldSymbols = useMemo(
+    () => Array.from(new Set(trades.map((t) => t.symbol))),
+    [trades]
+  );
+  const { ticks, status: wsStatus } = useMarketWS(heldSymbols);
+
+  const prices = useMemo(() => {
+    const merged: Record<string, number> = { ...externalPrices };
+    for (const symbol of heldSymbols) {
+      if (ticks[symbol]?.price != null) merged[symbol] = ticks[symbol].price;
+    }
+    return merged;
+  }, [externalPrices, ticks, heldSymbols]);
 
   const addTrade = useCallback(() => {
     if (!form.symbol || !form.quantity || !form.price) return;
@@ -149,6 +165,18 @@ export function TradeTracker({ prices = {} }: TradeTrackerProps) {
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
             <Wallet className="h-4 w-4" /> Positions
+            {heldSymbols.length > 0 && (
+              <Badge
+                variant="outline"
+                className={cn(
+                  'gap-1 text-[10px] font-normal',
+                  wsStatus === 'connected' ? 'text-green-600 border-green-500/40' : 'text-muted-foreground'
+                )}
+              >
+                <Radio className="h-2.5 w-2.5" />
+                {wsStatus === 'connected' ? 'Live' : wsStatus === 'polling' ? 'Polling' : 'Connecting'}
+              </Badge>
+            )}
           </CardTitle>
           <Button size="sm" onClick={() => setShowForm((v) => !v)}>
             {showForm ? <X className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}

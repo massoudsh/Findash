@@ -26,7 +26,7 @@
 |------|--------|
 | `src/components/dashboard/risk-gauge.tsx` | گیج ریسک SVG semicircle، ۴ سطح رنگی، live mode با drift |
 | `src/components/dashboard/credit-score.tsx` | امتیاز اعتباری ۳۰۰-۸۵۰، animated counter، progress bars |
-| `src/components/portfolio/trade-tracker.tsx` | ثبت خرید/فروش، محاسبه P&L واقعی |
+| `src/components/portfolio/trade-tracker.tsx` | ثبت خرید/فروش، محاسبه P&L واقعی، اکنون به‌صورت خودکار به `useMarketWS` وصل می‌شود و قیمت لحظه‌ای نمادهای معامله‌شده را می‌گیرد (نشانگر Live/Polling در هدر) — mount شده در تب «My Trades» داشبورد (`dashboard/page.tsx`) |
 | `src/components/portfolio/add-asset-modal.tsx` | مودال ثبت دارایی ایرانی — 15 نماد، auto-calculate، localStorage |
 | `src/components/portfolio/iran-portfolio-section.tsx` | سکشن «دارایی‌های من» — donut chart، holdings، تاریخچه |
 | `src/lib/hooks/use-market-ws.ts` | WebSocket hook با auto-reconnect و polling fallback |
