@@ -40,6 +40,24 @@ export const backtestStrategy = (id: number, data: any) => api.post(`/strategies
 // Strategy Performance endpoints
 export const getStrategyPerformance = (strategyId: number) => api.get(`/strategies/${strategyId}/performance/`);
 
+// --- Startup Tracker endpoints (internal/admin) ---
+export const getGTMHypotheses = () => api.get('/api/startup-tracker/hypotheses');
+export const createGTMHypothesis = (data: any) => api.post('/api/startup-tracker/hypotheses', data);
+export const updateGTMHypothesis = (id: number, data: any) => api.put(`/api/startup-tracker/hypotheses/${id}`, data);
+export const deleteGTMHypothesis = (id: number) => api.delete(`/api/startup-tracker/hypotheses/${id}`);
+
+export const getCustomerConversations = () => api.get('/api/startup-tracker/conversations');
+export const createCustomerConversation = (data: any) => api.post('/api/startup-tracker/conversations', data);
+export const updateCustomerConversation = (id: number, data: any) => api.put(`/api/startup-tracker/conversations/${id}`, data);
+export const deleteCustomerConversation = (id: number) => api.delete(`/api/startup-tracker/conversations/${id}`);
+
+export const getTractionMetrics = () => api.get('/api/startup-tracker/traction');
+export const createTractionMetric = (data: any) => api.post('/api/startup-tracker/traction', data);
+export const updateTractionMetric = (id: number, data: any) => api.put(`/api/startup-tracker/traction/${id}`, data);
+export const deleteTractionMetric = (id: number) => api.delete(`/api/startup-tracker/traction/${id}`);
+
+export const getStartupTrackerSummary = () => api.get('/api/startup-tracker/summary');
+
 // --- New Model Registry Endpoint ---
 export const getModels = () => api.get('/models');
 

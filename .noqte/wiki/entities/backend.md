@@ -23,6 +23,10 @@
 | `/api/payment/zarinpal/callback` | callback زرین‌پال + verify اجباری |
 | `/api/payment/zarinpal/status/{id}` | وضعیت سفارش پرداخت |
 | `/api/payment/zarinpal/history` | تاریخچه پرداخت کاربر |
+| `/api/startup-tracker/hypotheses` | CRUD فرضیه‌های GTM (داخلی/ادمین) |
+| `/api/startup-tracker/conversations` | CRUD مکالمات با مشتری، قابل لینک به یک فرضیه |
+| `/api/startup-tracker/traction` | CRUD داده‌های Traction (کاربر، درآمد، تعامل، نگه‌داشت) |
+| `/api/startup-tracker/summary` | آمار تجمیعی برای کارت‌های داشبورد استارتاپ‌تراکر |
 | `/docs` | Swagger UI |
 | `/redoc` | ReDoc |
 
@@ -40,5 +44,6 @@
 ## منابع کد
 - `src/main_refactored.py` — نقطه ورود اصلی و ثبت routerها
 - `src/api/endpoints/payment_zarinpal.py` — یکپارچه‌سازی زرین‌پال: create/callback/verify/status/history
+- `src/api/endpoints/startup_tracker.py` — استارتاپ‌تراکر: hypotheses/conversations/traction/summary (in-memory store، همان الگوی `strategies_crud.py`)
 - `database/schemas/payment_orders.sql` — schema جدول payment_orders
 - پورت پیش‌فرض: `localhost:8000`

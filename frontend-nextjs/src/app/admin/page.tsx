@@ -63,6 +63,7 @@ import {
   Square,
   MoreHorizontal
 } from 'lucide-react';
+import { StartupTrackerPanel } from '@/components/admin/startup-tracker-panel';
 
 interface AdminUser {
   id: string;
@@ -447,13 +448,14 @@ export default function AdminPage() {
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="system">System Health</TabsTrigger>
           <TabsTrigger value="audit">Audit Logs</TabsTrigger>
           <TabsTrigger value="config">Configuration</TabsTrigger>
           <TabsTrigger value="tools">Tools</TabsTrigger>
+          <TabsTrigger value="startup">استارتاپ‌تراکر</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -901,7 +903,11 @@ export default function AdminPage() {
             </Card>
           </div>
         </TabsContent>
+
+        <TabsContent value="startup" className="space-y-4">
+          <StartupTrackerPanel />
+        </TabsContent>
       </Tabs>
     </div>
   );
-} 
+}

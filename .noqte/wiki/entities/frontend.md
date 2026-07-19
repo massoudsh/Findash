@@ -20,6 +20,7 @@
 | `/payment/callback/zarinpal` | bridge برگشت از زرین‌پال به backend verify |
 | `/payment/success` | نتیجه پرداخت موفق |
 | `/payment/failed` | نتیجه پرداخت ناموفق |
+| `/admin` | پنل ادمین (کاربران، سلامت سیستم، آدیت‌لاگ، تنظیمات، ابزارها) — تب «استارتاپ‌تراکر» شامل فرضیه GTM، مکالمه با مشتری، داده Traction |
 
 ## کامپوننت‌های اصلی
 | فایل | عملکرد |
@@ -33,6 +34,7 @@
 | `src/lib/hooks/use-price-alerts.ts` | هشدار قیمت در localStorage + trigger callback |
 | `src/components/alerts/alerts-panel.tsx` | پنل ایجاد و مدیریت هشدار قیمت |
 | `src/app/news/page.tsx` | صفحه اخبار ایران با RSS feed |
+| `src/components/admin/startup-tracker-panel.tsx` | پنل داخلی/ادمین «استارتاپ‌تراکر» — ۳ تب: فرضیه‌های GTM، مکالمات با مشتری (با لینک به فرضیه)، داده‌های Traction؛ CRUD کامل روی `/api/startup-tracker/*` — mount شده در `/admin` (تب «استارتاپ‌تراکر») |
 
 ## طراحی بصری فعلی
 - داشبورد `/dashboard`: سبک modern mill-flat با پس‌زمینه تیره، glass cards، رنگ اصلی `#3B82F6`، grid layout، کارت‌های KPI، نمودار عملکرد SVG، donut allocation، جدول دارایی‌ها، insight widget و activity timeline
