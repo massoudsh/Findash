@@ -11,15 +11,23 @@ import { RiskAgentPanel } from '@/components/agents/risk-agent-panel';
 import { StrategiesContent } from '@/components/strategies/strategies-content';
 import { BacktestRunner } from '@/components/backtesting/backtest-runner';
 import { BacktestAgentPanel } from '@/components/agents/backtest-agent-panel';
-import { Brain, DollarSign, Shield, Target, FlaskConical } from 'lucide-react';
+import { Brain, DollarSign, Shield, Target, FlaskConical, Activity, LineChart, Database, MessageSquare, Cpu } from 'lucide-react';
 import { ErrorBoundary } from '@/components/error-boundary';
 
 const OptionsPageContent = lazy(() =>
   import('@/app/options/options-page-content').then((m) => ({ default: m.OptionsPageContent }))
 );
+const TechnicalPageContent = lazy(() => import('@/app/technical/page'));
+const MacroPageContent = lazy(() => import('@/app/macro/page'));
+const FundamentalPageContent = lazy(() => import('@/app/fundamental-data/page'));
+const OnChainPageContent = lazy(() => import('@/app/on-chain/page'));
+const SocialPageContent = lazy(() => import('@/app/social/page'));
+const AIModelsPageContent = lazy(() => import('@/app/ai-models/page'));
 
-type TradingTab = 'bots' | 'options' | 'risk' | 'strategies';
+type TradingTab = 'bots' | 'options' | 'risk' | 'strategies' | 'analysis';
 type StrategiesSubTab = 'strategies' | 'backtesting';
+type AnalysisSubTab = 'technical' | 'macro' | 'fundamental' | 'onchain' | 'social' | 'ai-models';
+const ANALYSIS_SUBTABS: AnalysisSubTab[] = ['technical', 'macro', 'fundamental', 'onchain', 'social', 'ai-models'];
 
 function TradingCenterContent() {
   const searchParams = useSearchParams();
@@ -27,16 +35,20 @@ function TradingCenterContent() {
   const tabParam = searchParams.get('tab');
   const subtabParam = searchParams.get('subtab');
   const [activeTab, setActiveTab] = useState<TradingTab>(() => {
-    if (tabParam === 'bots' || tabParam === 'options' || tabParam === 'risk' || tabParam === 'strategies') return tabParam;
+    if (tabParam === 'bots' || tabParam === 'options' || tabParam === 'risk' || tabParam === 'strategies' || tabParam === 'analysis') return tabParam;
     return 'options'; // default landing: Options with decision tools
   });
   const [strategiesSubTab, setStrategiesSubTab] = useState<StrategiesSubTab>(() => {
     if (subtabParam === 'backtesting') return 'backtesting';
     return 'strategies';
   });
+  const [analysisSubTab, setAnalysisSubTab] = useState<AnalysisSubTab>(() => {
+    if (subtabParam && (ANALYSIS_SUBTABS as string[]).includes(subtabParam)) return subtabParam as AnalysisSubTab;
+    return 'technical';
+  });
 
   useEffect(() => {
-    if (tabParam === 'bots' || tabParam === 'options' || tabParam === 'risk' || tabParam === 'strategies') {
+    if (tabParam === 'bots' || tabParam === 'options' || tabParam === 'risk' || tabParam === 'strategies' || tabParam === 'analysis') {
       setActiveTab(tabParam);
     }
   }, [tabParam]);
@@ -44,6 +56,12 @@ function TradingCenterContent() {
   useEffect(() => {
     if (subtabParam === 'backtesting' || subtabParam === 'strategies') {
       setStrategiesSubTab(subtabParam);
+    }
+  }, [subtabParam]);
+
+  useEffect(() => {
+    if (subtabParam && (ANALYSIS_SUBTABS as string[]).includes(subtabParam)) {
+      setAnalysisSubTab(subtabParam as AnalysisSubTab);
     }
   }, [subtabParam]);
 
@@ -56,7 +74,7 @@ function TradingCenterContent() {
       params.delete('subtab');
     } else {
       params.set('tab', tab);
-      if (tab !== 'strategies') params.delete('subtab');
+      if (tab !== 'strategies' && tab !== 'analysis') params.delete('subtab');
     }
     const query = params.toString();
     router.replace(query ? `/trading?${query}` : '/trading', { scroll: false });
@@ -68,6 +86,16 @@ function TradingCenterContent() {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', 'strategies');
     if (subtab === 'strategies') params.delete('subtab');
+    else params.set('subtab', subtab);
+    router.replace(`/trading?${params.toString()}`, { scroll: false });
+  }
+
+  function handleAnalysisSubTabChange(value: string) {
+    const subtab = value as AnalysisSubTab;
+    setAnalysisSubTab(subtab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', 'analysis');
+    if (subtab === 'technical') params.delete('subtab');
     else params.set('subtab', subtab);
     router.replace(`/trading?${params.toString()}`, { scroll: false });
   }
@@ -86,10 +114,14 @@ function TradingCenterContent() {
         className="w-full"
       >
         <div className="border-b bg-background/95 px-4 py-2 rounded-lg">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+          <TabsList className="grid w-full max-w-3xl grid-cols-5">
             <TabsTrigger value="options" className="flex items-center gap-2">
               <DollarSign className="h-4 w-4" />
               اختیار معامله
+            </TabsTrigger>
+            <TabsTrigger value="analysis" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              تحلیل بازار
             </TabsTrigger>
             <TabsTrigger value="strategies" className="flex items-center gap-2">
               <Target className="h-4 w-4" />
@@ -123,6 +155,78 @@ function TradingCenterContent() {
               </div>
             </aside>
           </div>
+        </TabsContent>
+        <TabsContent value="analysis" className="mt-6">
+          <Tabs value={analysisSubTab} onValueChange={handleAnalysisSubTabChange} className="w-full">
+            <TabsList className="grid w-full max-w-3xl grid-cols-3 md:grid-cols-6 mb-4">
+              <TabsTrigger value="technical" className="flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                تکنیکال
+              </TabsTrigger>
+              <TabsTrigger value="macro" className="flex items-center gap-2">
+                <LineChart className="h-4 w-4" />
+                کلان
+              </TabsTrigger>
+              <TabsTrigger value="fundamental" className="flex items-center gap-2">
+                <Brain className="h-4 w-4" />
+                بنیادی
+              </TabsTrigger>
+              <TabsTrigger value="onchain" className="flex items-center gap-2">
+                <Database className="h-4 w-4" />
+                آن‌چین
+              </TabsTrigger>
+              <TabsTrigger value="social" className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                اجتماعی
+              </TabsTrigger>
+              <TabsTrigger value="ai-models" className="flex items-center gap-2">
+                <Cpu className="h-4 w-4" />
+                مدل‌های AI
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="technical" className="mt-0">
+              <ErrorBoundary>
+                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">در حال بارگذاری تحلیل تکنیکال...</div>}>
+                  <TechnicalPageContent />
+                </Suspense>
+              </ErrorBoundary>
+            </TabsContent>
+            <TabsContent value="macro" className="mt-0">
+              <ErrorBoundary>
+                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">در حال بارگذاری تحلیل کلان...</div>}>
+                  <MacroPageContent />
+                </Suspense>
+              </ErrorBoundary>
+            </TabsContent>
+            <TabsContent value="fundamental" className="mt-0">
+              <ErrorBoundary>
+                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">در حال بارگذاری تحلیل بنیادی...</div>}>
+                  <FundamentalPageContent />
+                </Suspense>
+              </ErrorBoundary>
+            </TabsContent>
+            <TabsContent value="onchain" className="mt-0">
+              <ErrorBoundary>
+                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">در حال بارگذاری داده‌های آن‌چین...</div>}>
+                  <OnChainPageContent />
+                </Suspense>
+              </ErrorBoundary>
+            </TabsContent>
+            <TabsContent value="social" className="mt-0">
+              <ErrorBoundary>
+                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">در حال بارگذاری سیگنال‌های اجتماعی...</div>}>
+                  <SocialPageContent />
+                </Suspense>
+              </ErrorBoundary>
+            </TabsContent>
+            <TabsContent value="ai-models" className="mt-0">
+              <ErrorBoundary>
+                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">در حال بارگذاری مدل‌های هوش مصنوعی...</div>}>
+                  <AIModelsPageContent />
+                </Suspense>
+              </ErrorBoundary>
+            </TabsContent>
+          </Tabs>
         </TabsContent>
         <TabsContent value="strategies" className="mt-6">
           <Tabs value={strategiesSubTab} onValueChange={handleStrategiesSubTabChange} className="w-full">
