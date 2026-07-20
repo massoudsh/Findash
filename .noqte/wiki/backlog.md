@@ -72,27 +72,29 @@ return null;
 
 ### TASK-008 — Font: دانلود و آپلود IRANYekanX
 
-**وضعیت:** `🔴 Open`
+**وضعیت:** `✅ Done` — commit `<PENDING>` | رفع شد به روش جایگزین (نه دانلود IRANYekanX، بلکه رفع نام‌گذاری گمراه‌کننده)
 **اندازه:** S
 **نوع:** Critical Asset
 **تیم:** DevOps / Frontend
 
-**مشکل:**
-پوشه `frontend-nextjs/public/fonts/` فقط یک `README.md` دارد. فایل‌های `IRANYekanX.woff2` و `IRANYekanX.woff` وجود ندارند. همه متن‌های فارسی با system font (Tahoma/Arial) نمایش می‌یابند — UX بسیار ضعیف.
+**مشکل اصلی (تاریخی):**
+پوشه `frontend-nextjs/public/fonts/` فقط یک `README.md` داشت. فایل‌های `IRANYekanX.woff2`/`.woff` هرگز دانلود نشدند.
 
-**مراحل:**
-1. از [rastikerdar/iranyekan releases](https://github.com/rastikerdar/iranyekan/releases) آخرین نسخه را دانلود کن
-2. فایل‌ها را در `frontend-nextjs/public/fonts/` قرار بده:
-   - `IRANYekanX.woff2`
-   - `IRANYekanX.woff`
-3. (اختیاری) فونت Dana نیز اگر در globals.css تعریف شده، فایل آن هم اضافه شود
-4. Build frontend را اجرا کن و در DevTools تأیید کن font load می‌شود
+**آنچه واقعاً اتفاق افتاد (راستی‌آزمایی این جلسه):**
+در یک migration قبلی (خارج از این backlog)، فونت **Dana** (۱۲ وزن کامل، شامل italic) در `public/fonts/` اضافه شد و `@font-face` هایی در `globals.css` (خط ۷–۹۰) با فایل‌های واقعی `dana-*.woff2` تعریف شدند — اما `font-family` آن‌ها اشتباهاً هنوز `'IRANYekanX'` نام‌گذاری شده بود (یک نام مستعار گمراه‌کننده، نه فایل گمشده). یعنی فونت واقعاً لود می‌شد، صرفاً اسمش گمراه‌کننده بود.
 
-**نکته:** فونت‌ها در `.gitignore` نباشند — باید commit شوند یا از CDN ایرانی serve شوند.
+**اصلاح انجام‌شده:**
+1. تمام ۱۷ ارجاع `font-family: 'IRANYekanX'` در `globals.css` (خط‌های ۸ تا ۸۵ و usageهای ۱۹۴، ۲۰۸، ۶۱۰، ۶۹۷، ۷۲۲) به `'Dana'` تغییر نام یافت — بدون تغییر فایل‌های src (که از قبل درست و موجود بودند)
+2. `tailwind.config.ts` (کلیدهای `iran-yekan` و `dana`) هم‌راستا اصلاح شد
+3. `src/components/dashboard/risk-gauge.tsx` (SVG inline fontFamily) هم اصلاح شد
+4. ترتیب fallback حفظ شد: `Dana → var(--font-vazir) → Vazirmatn → Tahoma → system` — یعنی Dana (فونت رسمی پروژه طبق تصمیم قبلی) همچنان اولویت اول است و به‌درستی لود می‌شود، نه fallback به Vazirmatn
+
+**نکته برای تیم:** اگر تصمیم محصول عوض شده و `Vazirmatn` باید فونت اصلی شود (نه Dana)، این یک تصمیم طراحی جداست و نیاز به تأیید صریح دارد — در این اصلاح فقط باگ نام‌گذاری رفع شد، فونت رندرشده تغییر نکرد.
 
 **معیار پذیرش:**
-- [ ] در Chrome DevTools → Network → Fonts: `IRANYekanX.woff2` با status 200
-- [ ] متن‌ها با کرنینگ و وزن‌های درست نمایش می‌یابند
+- [x] هیچ ارجاع `IRANYekanX` در کدبیس frontend باقی نمانده
+- [x] فایل‌های src در @font-face همگی در `public/fonts/` موجودند (تأیید شد)
+- [ ] تأیید بصری در مرورگر (نیازمند build واقعی روی سرور — طبق محدودیت build.md در کانتینر انجام نشد)
 
 ---
 
@@ -711,7 +713,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 | تسک | اندازه | اولویت | وضعیت | تیم |
 |-----|--------|--------|--------|-----|
 | TASK-007 Auth → Backend | M | 🔴 Critical | ✅ Done (`8e6bcc3`) | Full-stack |
-| TASK-008 Font IRANYekanX | S | 🔴 Critical | ❌ **Open** | Frontend |
+| TASK-008 Font IRANYekanX | S | 🔴 Critical | ✅ Done (`<PENDING>`) | Frontend |
 | TASK-009 Market Tab | XL | 🔴 Critical | ✅ Done (`8e6bcc3`) | Full-stack |
 | TASK-010 Iranian Assets Config | M | 🔴 Critical | ✅ Done (`7641e3e`) | Backend |
 | TASK-011 Ticker Live Data | S | 🟠 High | ✅ Done (`7641e3e`) | Full-stack |

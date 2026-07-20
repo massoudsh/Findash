@@ -149,10 +149,10 @@ export function RiskGauge({ value: propValue, className, live = false }: RiskGau
           <circle cx={cx} cy={cy} r="4" fill="rgba(148,163,184,0.3)" />
 
           {/* Center value */}
-          <text x={cx} y={cy + 18} textAnchor="middle" fill={level.color} fontSize="20" fontWeight="700" fontFamily="IRANYekanX,Vazirmatn,sans-serif">
+          <text x={cx} y={cy + 18} textAnchor="middle" fill={level.color} fontSize="20" fontWeight="700" fontFamily="Dana,Vazirmatn,sans-serif">
             {Math.round(value)}
           </text>
-          <text x={cx} y={cy + 30} textAnchor="middle" fill="rgba(148,163,184,0.7)" fontSize="7" fontFamily="IRANYekanX,Vazirmatn,sans-serif">
+          <text x={cx} y={cy + 30} textAnchor="middle" fill="rgba(148,163,184,0.7)" fontSize="7" fontFamily="Dana,Vazirmatn,sans-serif">
             از ۱۰۰
           </text>
         </svg>

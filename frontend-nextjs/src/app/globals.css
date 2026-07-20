@@ -2,87 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Dana — فونت اصلی پروژه
-   فایل‌ها در public/fonts/ موجود هستند */
+/* Dana — فونت اصلی پروژه (فارسی کامل)
+   فایل‌ها در public/fonts/ موجود هستند و به‌درستی بارگذاری می‌شوند */
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-thin.woff2') format('woff2');
   font-weight: 100;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-thinitalic.woff2') format('woff2');
   font-weight: 100;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-extralight.woff2') format('woff2');
   font-weight: 200;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-light.woff2') format('woff2');
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-regularitalic.woff2') format('woff2');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-demibold.woff2') format('woff2');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-bolditalic.woff2') format('woff2');
   font-weight: 700;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-extrabold.woff2') format('woff2');
   font-weight: 800;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'IRANYekanX';
+  font-family: 'Dana';
   src: url('/fonts/dana-black.woff2') format('woff2');
   font-weight: 900;
   font-style: normal;
@@ -191,7 +191,7 @@
     @apply bg-background text-foreground;
     color: hsl(var(--foreground));
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-    font-family: 'IRANYekanX', var(--font-vazir), 'Vazirmatn', Tahoma, ui-sans-serif, system-ui, sans-serif;
+    font-family: 'Dana', var(--font-vazir), 'Vazirmatn', Tahoma, ui-sans-serif, system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -205,7 +205,7 @@
 
 /* Use Dana anywhere: add class font-dana */
 .font-dana {
-  font-family: 'IRANYekanX', 'Dana', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Dana', ui-sans-serif, system-ui, sans-serif;
 }
 
 /* Professional Fintech Glassmorphism */
@@ -607,7 +607,7 @@ nextjs-portal > * {
 
 /* فونت ایران یکان */
 .font-iran-yekan {
-  font-family: 'IRANYekanX', var(--font-vazir), 'Vazirmatn', sans-serif;
+  font-family: 'Dana', var(--font-vazir), 'Vazirmatn', sans-serif;
 }
 
 /* بوردر تزئینی ایرانی — سبک اسلیمی */
@@ -694,7 +694,7 @@ nextjs-portal > * {
   color: #fff;
   border: none;
   border-radius: 12px;
-  font-family: 'IRANYekanX', var(--font-vazir), sans-serif;
+  font-family: 'Dana', var(--font-vazir), sans-serif;
   font-weight: 600;
   padding: 10px 24px;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -719,7 +719,7 @@ nextjs-portal > * {
   font-size: 11px;
   font-weight: 600;
   padding: 2px 10px;
-  font-family: 'IRANYekanX', var(--font-vazir), sans-serif;
+  font-family: 'Dana', var(--font-vazir), sans-serif;
 }
 
 /* RTL (Persian / Farsi) support */

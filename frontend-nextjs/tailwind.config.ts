@@ -72,9 +72,9 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        'iran-yekan': ['IRANYekanX', 'var(--font-vazir)', 'Vazirmatn', 'Tahoma', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        'iran-yekan': ['Dana', 'var(--font-vazir)', 'Vazirmatn', 'Tahoma', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         vazir: ['var(--font-vazir)', 'Vazirmatn', 'Tahoma', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        dana: ['IRANYekanX', 'Dana', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        dana: ['Dana', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {
