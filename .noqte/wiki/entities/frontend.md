@@ -39,7 +39,7 @@
 
 ## طراحی بصری فعلی
 - داشبورد `/dashboard`: سبک modern mill-flat با پس‌زمینه تیره، glass cards، رنگ اصلی `#3B82F6`، grid layout، کارت‌های KPI، نمودار عملکرد SVG، donut allocation، جدول دارایی‌ها، insight widget و activity timeline
-- تم عمومی پروژه: فونت IRANYekanX با fallback به Vazirmatn؛ صفحات دیگر هنوز از CSS classes فارسی مثل `.persian-card`, `.persian-border`, `.persian-pattern-bg`, `.btn-persian`, `.persian-badge` استفاده می‌کنند
+- تم عمومی پروژه: فونت اصلی **Dana** (۱۲ وزن کامل + italic، در `public/fonts/dana-*.woff2`) با fallback به `var(--font-vazir)` → `Vazirmatn` → سیستم؛ `font-family` قبلاً به‌اشتباه با نام `IRANYekanX` تعریف شده بود (نامی گمراه‌کننده چون هیچ فایل IRANYekanX واقعی وجود نداشت) — در commit `335019e` به `Dana` تغییر نام یافت (بدون تغییر فایل src یا رفتار رندر)؛ صفحات دیگر هنوز از CSS classes فارسی مثل `.persian-card`, `.persian-border`, `.persian-pattern-bg`, `.btn-persian`, `.persian-badge` استفاده می‌کنند
 - داشبورد: 5 تب یکپارچه (overview/portfolio/market/trades/analytics) — تب state در URL
 - موبایل: bottom navigation bar با 5 آیتم، `pb-24 lg:pb-6` برای clearance
 

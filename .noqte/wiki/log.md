@@ -2,6 +2,7 @@
 
 > تاریخچه append-only — هر ورود با `## [YYYY-MM-DD] <type> | <خلاصه>` شروع می‌شود.
 
+## [2026-07-20] fix | TASK-008 رفع شد (`335019e`) — font-family اشتباه `IRANYekanX` (که فایل واقعی‌اش هرگز وجود نداشت) به `Dana` تغییر نام یافت در globals.css/tailwind.config.ts/risk-gauge.tsx؛ فایل‌های src از قبل به‌درستی Dana بودند، فقط نام گمراه‌کننده بود. راستی‌آزمایی: TASK-009/014 placeholder strings واقعاً حذف شده‌اند (dashboard از IranMarketOverview/AnalyticsOverview واقعی استفاده می‌کند)
 ## [2026-07-19] feature | تب «تحلیل بازار» به `/trading` (مرکز فرماندهی) اضافه شد — ۶ زیرتب (تکنیکال/کلان/بنیادی/آن‌چین/اجتماعی/مدل‌های AI) که صفحات مستقل موجود را با `lazy()`+`Suspense` بارگذاری می‌کنند؛ صفحات مستقل حذف نشدند (additive). ترجمه فارسی متن داخل آن صفحات هنوز انجام نشده
 ## [2026-07-19] feature | ماژول داخلی «استارتاپ‌تراکر» ساخته شد — backend `src/api/endpoints/startup_tracker.py` (CRUD فرضیه GTM/مکالمه مشتری/traction + summary، in-memory) + tab جدید در `/admin` با `startup-tracker-panel.tsx` (فرم‌ها، لیست، حذف، لینک مکالمه به فرضیه)؛ API smoke-test شده با TestClient
 ## [2026-07-08] sync | وضعیت backlog sync شد — TASK-007,009-024 ✅ Done (commits 7641e3e & 8e6bcc3) | فقط TASK-008 (فونت IRANYekanX) باقی است

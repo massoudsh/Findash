@@ -72,7 +72,7 @@ return null;
 
 ### TASK-008 — Font: دانلود و آپلود IRANYekanX
 
-**وضعیت:** `✅ Done` — commit `<PENDING>` | رفع شد به روش جایگزین (نه دانلود IRANYekanX، بلکه رفع نام‌گذاری گمراه‌کننده)
+**وضعیت:** `✅ Done` — commit `335019e` | رفع شد به روش جایگزین (نه دانلود IRANYekanX، بلکه رفع نام‌گذاری گمراه‌کننده)
 **اندازه:** S
 **نوع:** Critical Asset
 **تیم:** DevOps / Frontend
@@ -713,7 +713,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 | تسک | اندازه | اولویت | وضعیت | تیم |
 |-----|--------|--------|--------|-----|
 | TASK-007 Auth → Backend | M | 🔴 Critical | ✅ Done (`8e6bcc3`) | Full-stack |
-| TASK-008 Font IRANYekanX | S | 🔴 Critical | ✅ Done (`<PENDING>`) | Frontend |
+| TASK-008 Font IRANYekanX | S | 🔴 Critical | ✅ Done (`335019e`) | Frontend |
 | TASK-009 Market Tab | XL | 🔴 Critical | ✅ Done (`8e6bcc3`) | Full-stack |
 | TASK-010 Iranian Assets Config | M | 🔴 Critical | ✅ Done (`7641e3e`) | Backend |
 | TASK-011 Ticker Live Data | S | 🟠 High | ✅ Done (`7641e3e`) | Full-stack |
