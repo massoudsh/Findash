@@ -57,6 +57,8 @@ class AuthResponse(BaseModel):
     token_type: str = "bearer"
     expires_in: Optional[int] = None
     message: str
+    user_id: Optional[str] = None
+    email: Optional[str] = None
 
 class UserProfile(BaseModel):
     """User profile information"""
@@ -162,18 +164,18 @@ async def authenticate_credentials(
         if not user:
             logger.warning(f"Authentication attempt with non-existent email: {credentials.email}")
             rate_limiter.record_failed_login(client_id)
-            return AuthResponse(
-                success=False,
-                message="Invalid email or password"
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
             )
-        
+
         # Verify password
         if not verify_password(credentials.password, user["password_hash"]):
             logger.warning(f"Failed password attempt for user: {credentials.email}")
             rate_limiter.record_failed_login(client_id)
-            return AuthResponse(
-                success=False,
-                message="Invalid email or password"
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
             )
         
         # Check if user is active
@@ -222,7 +224,9 @@ async def authenticate_credentials(
             expires_in=settings.auth.jwt_access_token_expire_minutes * 60,
             message="Authentication successful"
         )
-        
+
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Authentication error: {str(e)}")
         return AuthResponse(
@@ -242,15 +246,15 @@ async def register_user(
     try:
         # Check if user already exists
         if registration.email in _get_professional_users():
-            return AuthResponse(
-                success=False,
-                message="Email already registered"
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already registered"
             )
-        
+
         # Create new user
         user_id = f"usr_{len(_get_professional_users()) + 1:06d}"
         password_hash = hash_password(registration.password)
-        
+
         new_user = {
             "id": user_id,
             "email": registration.email,
@@ -263,17 +267,21 @@ async def register_user(
             "role": "trader",
             "permissions": ["trade", "view_portfolio", "view_analytics"]
         }
-        
+
         # Add to database
         _get_professional_users()[registration.email] = new_user
-        
+
         logger.info(f"New user registered: {registration.email}")
-        
+
         return AuthResponse(
             success=True,
-            message="Registration successful"
+            message="User created successfully",
+            user_id=user_id,
+            email=registration.email
         )
-        
+
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Registration error: {str(e)}")
         return AuthResponse(
@@ -289,7 +297,7 @@ async def list_users(
     List all users (admin only)
     """
     # Check admin permissions
-    if "admin" not in current_user.get("permissions", []):
+    if "admin" not in current_user.permissions:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
@@ -319,7 +327,7 @@ async def get_user_profile(
     """
     Get current user profile
     """
-    user = _get_professional_users().get(current_user["email"])
+    user = _get_professional_users().get(current_user.email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -357,16 +365,16 @@ async def refresh_token_endpoint(
         # Verify refresh token
         payload = verify_token(refresh_token, token_type="refresh")
         if not payload:
-            return AuthResponse(
-                success=False,
-                message="Invalid refresh token"
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid refresh token"
             )
-        
-        user_id = payload.get("sub")
+
+        user_id = payload.user_id
         if not user_id:
-            return AuthResponse(
-                success=False,
-                message="Invalid refresh token"
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid refresh token"
             )
         
         # Find user
@@ -398,7 +406,9 @@ async def refresh_token_endpoint(
             expires_in=settings.auth.jwt_access_token_expire_minutes * 60,
             message="Token refreshed successfully"
         )
-        
+
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Token refresh error: {e}")
         return AuthResponse(
@@ -414,7 +424,7 @@ async def logout(
     User logout endpoint
     In production, this would invalidate tokens
     """
-    logger.info(f"User logged out: {current_user.get('email')}")
+    logger.info(f"User logged out: {current_user.email}")
     return {"message": "Successfully logged out"}
 
 @router.post("/change-password")
@@ -442,24 +452,24 @@ async def change_password(
                 detail="New passwords do not match"
             )
         
-        user = _get_professional_users().get(current_user["email"])
+        user = _get_professional_users().get(current_user.email)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found"
             )
-        
+
         # Verify current password
         if not verify_password(current_password, user["password_hash"]):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Current password is incorrect"
             )
-        
+
         # Update password
         user["password_hash"] = hash_password(new_password)
-        
-        logger.info(f"Password changed for user: {current_user.get('email')}")
+
+        logger.info(f"Password changed for user: {current_user.email}")
         return {"message": "Password changed successfully"}
         
     except HTTPException:
@@ -483,9 +493,9 @@ async def create_api_key(
         name = api_key_data.get("name", "Default API Key")
         
         # Generate API key
-        api_key = api_key_manager.generate_api_key(current_user["id"], name)
-        
-        key_id = f"key_{current_user['id']}_{len(name)}"
+        api_key = api_key_manager.generate_api_key(current_user.user_id, name)
+
+        key_id = f"key_{current_user.user_id}_{len(name)}"
         
         return {
             "key_id": key_id,

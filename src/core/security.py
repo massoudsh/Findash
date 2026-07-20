@@ -101,25 +101,32 @@ def create_refresh_token(data: Dict[str, Any]) -> str:
     
     return jwt.encode(to_encode, settings.auth.jwt_secret_key, algorithm=settings.auth.jwt_algorithm)
 
-def verify_token(token: str) -> Optional[TokenData]:
-    """Verify and decode a JWT token"""
+def verify_token(token: str, token_type: str = "access") -> Optional[TokenData]:
+    """Verify and decode a JWT token.
+
+    Args:
+        token: encoded JWT
+        token_type: expected token type ("access" or "refresh"); the token is
+            rejected if its embedded ``type`` claim doesn't match
+    """
     try:
         payload = jwt.decode(token, settings.auth.jwt_secret_key, algorithms=[settings.auth.jwt_algorithm])
-        
+
         # Validate token type
-        token_type = payload.get("type")
-        if token_type != "access":
+        actual_type = payload.get("type")
+        if actual_type != token_type:
             return None
-            
+
         # Extract user data
         user_id = payload.get("sub")
-        email = payload.get("email")
+        # Refresh tokens only carry "sub" (no email/roles/permissions)
+        email = payload.get("email", "")
         roles = payload.get("roles", [])
         permissions = payload.get("permissions", [])
-        
-        if user_id is None or email is None:
+
+        if user_id is None:
             return None
-            
+
         return TokenData(
             user_id=user_id,
             email=email,

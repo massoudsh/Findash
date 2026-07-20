@@ -455,14 +455,21 @@ def cached(
                 return cached_result
             
             # Execute function and cache result
-            result = await func(*args, **kwargs)
+            if asyncio.iscoroutinefunction(func):
+                result = await func(*args, **kwargs)
+            else:
+                result = func(*args, **kwargs)
             await cache_manager.set(namespace, cache_key, result, ttl, tags)
             return result
         
         @wraps(func)
         def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             # For sync functions, we need to run in an event loop
-            loop = asyncio.get_event_loop()
+            try:
+                loop = asyncio.get_event_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
             return loop.run_until_complete(async_wrapper(*args, **kwargs))
         
         # Return appropriate wrapper based on function type

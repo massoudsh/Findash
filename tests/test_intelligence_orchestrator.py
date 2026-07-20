@@ -28,7 +28,7 @@ async def mock_cache():
 @pytest.fixture
 async def sample_market_data():
     """Create sample market data for testing."""
-    dates = pd.date_range(start="2024-01-01", periods=100, freq='H')
+    dates = pd.date_range(start="2024-01-01", periods=100, freq='h')
     
     # Generate realistic price data
     base_price = 150.0

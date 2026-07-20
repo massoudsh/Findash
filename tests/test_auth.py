@@ -70,9 +70,8 @@ class TestJWTTokens:
         
         payload = verify_token(token, "access")
         assert payload is not None
-        assert payload["sub"] == "user123"
-        assert payload["email"] == "test@example.com"
-        assert payload["type"] == "access"
+        assert payload.user_id == "user123"
+        assert payload.email == "test@example.com"
     
     def test_verify_invalid_token(self):
         """Test invalid token verification"""
@@ -99,8 +98,7 @@ class TestJWTTokens:
         
         payload = verify_token(token, "refresh")
         assert payload is not None
-        assert payload["sub"] == "user123"
-        assert payload["type"] == "refresh"
+        assert payload.user_id == "user123"
 
 
 class TestAuthenticationEndpoints:
@@ -109,8 +107,8 @@ class TestAuthenticationEndpoints:
     def test_login_success(self):
         """Test successful login"""
         login_data = {
-            "email": "demo@quantumtrading.com",
-            "password": "demo123"
+            "email": "demo@octopus.trading",
+            "password": "DemoUser2025!"
         }
         
         response = client.post("/api/auth/login", json=login_data)
@@ -126,31 +124,31 @@ class TestAuthenticationEndpoints:
         """Test login with invalid email"""
         login_data = {
             "email": "nonexistent@example.com",
-            "password": "demo123"
+            "password": "DemoUser2025!"
         }
         
         response = client.post("/api/auth/login", json=login_data)
         
         assert response.status_code == 401
-        assert "Invalid email or password" in response.json()["detail"]
+        assert "Invalid email or password" in response.json()["message"]
     
     def test_login_invalid_password(self):
         """Test login with invalid password"""
         login_data = {
-            "email": "demo@quantumtrading.com",
+            "email": "demo@octopus.trading",
             "password": "wrong_password"
         }
         
         response = client.post("/api/auth/login", json=login_data)
         
         assert response.status_code == 401
-        assert "Invalid email or password" in response.json()["detail"]
+        assert "Invalid email or password" in response.json()["message"]
     
     def test_login_invalid_email_format(self):
         """Test login with invalid email format"""
         login_data = {
             "email": "invalid-email-format",
-            "password": "demo123"
+            "password": "DemoUser2025!"
         }
         
         response = client.post("/api/auth/login", json=login_data)
@@ -178,7 +176,7 @@ class TestAuthenticationEndpoints:
     def test_register_existing_email(self):
         """Test registration with existing email"""
         register_data = {
-            "email": "demo@quantumtrading.com",  # Already exists
+            "email": "demo@octopus.trading",  # Already exists
             "password": "newpassword123",
             "confirm_password": "newpassword123",
             "first_name": "Demo",
@@ -188,7 +186,7 @@ class TestAuthenticationEndpoints:
         response = client.post("/api/auth/register", json=register_data)
         
         assert response.status_code == 400
-        assert "Email already registered" in response.json()["detail"]
+        assert "Email already registered" in response.json()["message"]
     
     def test_register_password_mismatch(self):
         """Test registration with mismatched passwords"""
@@ -208,8 +206,8 @@ class TestAuthenticationEndpoints:
         """Test successful token refresh"""
         # First login to get refresh token
         login_data = {
-            "email": "demo@quantumtrading.com",
-            "password": "demo123"
+            "email": "demo@octopus.trading",
+            "password": "DemoUser2025!"
         }
         
         login_response = client.post("/api/auth/login", json=login_data)
@@ -232,14 +230,14 @@ class TestAuthenticationEndpoints:
         response = client.post("/api/auth/refresh", json=refresh_data)
         
         assert response.status_code == 401
-        assert "Invalid refresh token" in response.json()["detail"]
+        assert "Invalid refresh token" in response.json()["message"]
     
     def test_get_current_user_profile(self):
         """Test getting current user profile"""
         # Login and get access token
         login_data = {
-            "email": "demo@quantumtrading.com",
-            "password": "demo123"
+            "email": "demo@octopus.trading",
+            "password": "DemoUser2025!"
         }
         
         login_response = client.post("/api/auth/login", json=login_data)
@@ -251,7 +249,7 @@ class TestAuthenticationEndpoints:
         
         assert response.status_code == 200
         data = response.json()
-        assert data["email"] == "demo@quantumtrading.com"
+        assert data["email"] == "demo@octopus.trading"
         assert data["first_name"] == "Demo"
         assert data["last_name"] == "User"
         assert data["is_active"] is True
@@ -273,8 +271,8 @@ class TestAuthenticationEndpoints:
         """Test user logout"""
         # Login first
         login_data = {
-            "email": "demo@quantumtrading.com",
-            "password": "demo123"
+            "email": "demo@octopus.trading",
+            "password": "DemoUser2025!"
         }
         
         login_response = client.post("/api/auth/login", json=login_data)
@@ -294,8 +292,8 @@ class TestRateLimiting:
     def test_rate_limiting_enforcement(self):
         """Test that rate limiting is enforced"""
         login_data = {
-            "email": "demo@quantumtrading.com",
-            "password": "demo123"
+            "email": "demo@octopus.trading",
+            "password": "DemoUser2025!"
         }
         
         # Make requests up to the limit
@@ -386,8 +384,8 @@ class TestAPIKeyManagement:
         """Test API key creation"""
         # Login first
         login_data = {
-            "email": "demo@quantumtrading.com",
-            "password": "demo123"
+            "email": "demo@octopus.trading",
+            "password": "DemoUser2025!"
         }
         
         login_response = client.post("/api/auth/login", json=login_data)
@@ -415,8 +413,8 @@ class TestAPIKeyManagement:
 def authenticated_client():
     """Fixture that provides an authenticated test client"""
     login_data = {
-        "email": "demo@quantumtrading.com",
-        "password": "demo123"
+        "email": "demo@octopus.trading",
+        "password": "DemoUser2025!"
     }
     
     response = client.post("/api/auth/login", json=login_data)

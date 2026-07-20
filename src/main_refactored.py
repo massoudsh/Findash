@@ -23,7 +23,7 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from src.core.initialization import SystemInitializer
 from src.core.config import get_settings
-from src.core.middleware import ErrorHandlingMiddleware, RequestLoggingMiddleware
+from src.core.middleware import ErrorHandlingMiddleware, RequestLoggingMiddleware, SecurityHeadersMiddleware
 from src.core.middleware_metrics import MetricsMiddleware
 from src.monitoring.metrics import metrics_collector
 
@@ -121,6 +121,7 @@ app = FastAPI(
 app.add_middleware(MetricsMiddleware)
 app.add_middleware(ErrorHandlingMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 # Add secure CORS middleware
 app.add_middleware(
