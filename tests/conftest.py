@@ -2,6 +2,13 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# تست‌ها باید بدون نیاز به `.env` یا export دستی متغیر محیطی قابل اجرا باشند.
+# بدون این خط، import زیر (`src.main_refactored`) با ValidationError روی
+# SECRET_KEY/JWT_SECRET_KEY fail می‌شود مگر اینکه کاربر از قبل
+# `ENVIRONMENT=development` ست کرده باشد (همان چیزی که باعث می‌شد
+# `pytest --tb=short -q` بدون آن env var با exit code 4 خارج شود).
+os.environ.setdefault("ENVIRONMENT", "development")
+
 import pytest
 
 # Add the project root and 'src' directory to the Python path
