@@ -45,5 +45,6 @@
 - `src/main_refactored.py` — نقطه ورود اصلی و ثبت routerها
 - `src/api/endpoints/payment_zarinpal.py` — یکپارچه‌سازی زرین‌پال: create/callback/verify/status/history
 - `src/api/endpoints/startup_tracker.py` — استارتاپ‌تراکر: hypotheses/conversations/traction/summary (in-memory store، همان الگوی `strategies_crud.py`)
+- `src/api/bots_persistence.py` — persistence ساده JSON برای Trading Bots (`load_bots`/`save_bots`, فایل در `data/trading_bots.json`)؛ قبلاً این فایل مفقود بود و کل `src.main_refactored` (و در نتیجه کل pytest suite) را می‌شکست — در TASK-025 اضافه شد
 - `database/schemas/payment_orders.sql` — schema جدول payment_orders
 - پورت پیش‌فرض: `localhost:8000`

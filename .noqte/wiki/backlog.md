@@ -708,6 +708,43 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 
 ---
 
+### TASK-025 — رفع اجرای test suite بک‌اند (pytest/make exit 127)
+
+**وضعیت:** `✅ Done (partial)` — commit `7094617` | ابزار تست کار می‌کند؛ ۳۴ تست failed + ۱۱ error باقی مانده (خارج از scope این تسک)
+**اندازه:** M
+**نوع:** DevOps / Test Infra
+**تیم:** Backend
+
+**علت اصلی exit 127:**
+- `pytest` و `fastapi`/`sqlalchemy`/... اصلاً در محیط pip نصب نبودند (`ModuleNotFoundError`), و باینری `pytest`/`make` در PATH نبود
+- در این کانتینر دسترسی root/sudo نیست → نصب `make` از طریق apt ممکن نشد (`make: command not found` باقی می‌ماند). راه‌حل موقت: به‌جای `make test` از `ENVIRONMENT=development python3 -m pytest tests/ -v --cov=src` استفاده شود (روی سرور واقعی که `make` نصب است، `make test` طبق معمول کار می‌کند)
+- `Settings()` بدون `.env` و بدون `SECRET_KEY`/`JWT_SECRET_KEY` (حداقل ۳۲ کاراکتر) خطای validation می‌داد؛ با `ENVIRONMENT=development` مقدار dev-fallback داخلی کد فعال می‌شود (نیازی به `.env` جدید در محیط تست نبود)
+
+**باگ واقعی کشف‌شده (بلوکر کل اپ، نه فقط تست):**
+`src/api/endpoints/trading_bots.py` از `src.api.bots_persistence` (`load_bots`, `save_bots`) import می‌کرد ولی این فایل **اصلاً در ریپو وجود نداشت** → کل `src.main_refactored` (و در نتیجه کل test suite، چون `conftest.py` آن را import می‌کند) با `ModuleNotFoundError` fail می‌شد. فایل `src/api/bots_persistence.py` با پیاده‌سازی ساده JSON persistence (سازگار با الگوی `data_dir` پروژه، مسیر `data/trading_bots.json` که در `.gitignore` است) ساخته شد.
+
+**نتیجه بعد از رفع (`python3 -m pytest tests/ --ignore=tests/test_options_trading.py --ignore=tests/test_websocket.py`):**
+- ۱۶۵ تست collect شدند (قبل از رفع باگ بالا، صفر تست collect می‌شد)
+- **۱۲۱ passed / ۳۴ failed / ۱۱ error**
+
+**۲ فایل تست کاملاً stale (خارج از scope این تسک — نیاز به rewrite جدا دارند):**
+- `tests/test_options_trading.py` → `from src.main import app` (ماژول `src/main.py` دیگر وجود ندارد، جایگزین شده با `src/main_refactored.py`)
+- `tests/test_websocket.py` → `from src.core.websocket import (...)` (ماژول وجود ندارد؛ معادل فعلی احتمالاً `src/realtime/websockets.py` است ولی API متفاوت است)
+
+**۳۴ failed / ۱۱ error باقی‌مانده (خارج از scope این تسک، عمدتاً):**
+- `test_auth.py` (اکثر موارد) — به نظر مربوط به تغییر signature یا response شکل JWT/auth بعد از refactor است
+- `test_intelligence_orchestrator.py`, `test_main_endpoints.py`, `test_phase4_integration.py` — نیاز به بررسی جداگانه
+- `test_ingestion_pipeline.py` — به یک دیتابیس Postgres واقعی نیاز دارد (در این کانتینر موجود نیست)
+
+**معیار پذیرش:**
+- [x] `pytest`/`python3 -m pytest` بدون exit 127 اجرا می‌شود
+- [x] باگ import-breaking (`bots_persistence`) رفع شد
+- [ ] ۳۴ failed + ۱۱ error باقی‌مانده (تسک جدا لازم دارد)
+- [ ] ۲ فایل تست stale نیاز به rewrite کامل دارند (تسک جدا لازم دارد)
+- [ ] نصب `make` روی این کانتینر ممکن نیست (بدون root) — باید روی سرور SSH بررسی شود
+
+---
+
 ## وضعیت کلی Backlog
 
 | تسک | اندازه | اولویت | وضعیت | تیم |
@@ -730,6 +767,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 | TASK-022 Nginx + SSL | M | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-023 Monitoring Alerts | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-024 DB Backup | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
+| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`) | Backend |
 
 ---
 
