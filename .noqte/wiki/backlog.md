@@ -749,9 +749,30 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 - [x] باگ import-breaking (`bots_persistence`) رفع شد
 - [x] دستور لفظی `pytest --tb=short -q` (بدون فلگ) دیگر با collection-abort متوقف نمی‌شود (`pytest.ini` رفع شد)
 - [x] دستور لفظی `pytest --tb=short -q` بدون export دستی `ENVIRONMENT` دیگر exit code 4 نمی‌دهد (`conftest.py` رفع شد، commit `e4a15ca`)
-- [ ] ۳۴ failed + ۱۱ error باقی‌مانده (تسک جدا لازم دارد)
+- [x] بخش بزرگی از ۳۴ failed + ۱۱ error رفع شد (commit `17094cf`، جزئیات زیر) — ۲۰ failed + ۱ error باقی مانده، مستند در زیر
 - [ ] ۲ فایل تست stale نیاز به rewrite کامل دارند (تسک جدا لازم دارد)
 - [ ] نصب `make` روی این کانتینر ممکن نیست (بدون root، exit 127 برای `make test` باقی می‌ماند) — باید روی سرور SSH بررسی شود
+
+**ادامه رفع (commit `17094cf`) — از ۱۲۱ passed/۳۴ failed/۱۱ error به ۱۳۹ passed/۲۰ failed/۱ error:**
+
+باگ‌های واقعی اپلیکیشن (نه فقط تست) که کشف و رفع شدند:
+- `verify_token()` در `src/core/security.py` پارامتر `token_type` را از دست داده بود؛ `professional_auth.py` برای رفرش توکن با `verify_token(token, token_type="refresh")` صدا زده می‌شد که همیشه `TypeError` می‌داد (توسط یک `except Exception` عمومی خاموش می‌شد) → یعنی **رفرش توکن در production هرگز کار نمی‌کرد**. پارامتر `token_type: str = "access"` برگردانده شد.
+- مسیرهای شکست auth (`login`/`register`/`refresh` در `professional_auth.py`) به‌جای کد وضعیت صحیح (401/400) همیشه HTTP 200 با `success=False` برمی‌گرداندند؛ به `raise HTTPException(...)` تغییر یافت و گارد `except HTTPException: raise` قبل از `except Exception` عمومی هر تابع اضافه شد (بدون این گارد، exception raise‌شده دوباره توسط catch عمومی به 200 تبدیل می‌شد).
+- `SecurityHeadersMiddleware` در `src/core/middleware.py` تعریف شده بود ولی هرگز در `main_refactored.py` با `add_middleware` ثبت نشده بود → هدرهای امنیتی (`X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Referrer-Policy`, HSTS) هرگز واقعاً در پاسخ‌های production ارسال نمی‌شدند. اکنون ثبت شده.
+- چند endpoint در `professional_auth.py` (`profile`, `logout`, `change-password`, `api-keys`, `users`) با dict-style (`.get()`/`["key"]`) به `current_user` (یک آبجکت pydantic از نوع `TokenData`) دسترسی می‌دادند → این در production همیشه با 500 fail می‌شد. به attribute access (`current_user.email`, `current_user.user_id`, `current_user.permissions`) تغییر یافت.
+- دکوریتور `cached()` در `src/core/cache.py` همیشه `await func(...)` می‌کرد حتی برای توابع sync (نتیجه‌اش `TypeError: object X can't be used in 'await' expression`)؛ و `sync_wrapper` از `asyncio.get_event_loop()` حذف‌شده در Python 3.10+ استفاده می‌کرد. هر دو رفع شدند.
+
+رفع‌های فقط-تست (test alignment، نه باگ اپ):
+- `test_auth.py`: ایمیل/پسورد demo قدیمی (`demo@quantumtrading.com`/`demo123`) به حساب demo واقعی فعلی (`demo@octopus.trading`/`DemoUser2025!`) به‌روزرسانی شد؛ assertion های JWT به attribute access روی `TokenData` تغییر یافت؛ assertion های بدنه خطا از `["detail"]` به `["message"]` (فرمت واقعی exception handler سراسری اپ) تغییر یافت.
+- `tests/conftest.py`: fixture `test_user` یک kwarg نامعتبر (`full_name`، ستونی که در مدل `User` وجود ندارد) داشت که حذف شد.
+- `tests/test_intelligence_orchestrator.py`: `pd.date_range(freq='H')` منسوخ شده در pandas جدید → به `'h'` تغییر یافت.
+- نصب پکیج گم‌شده `statsmodels` (برای `test_phase4_integration.py`).
+
+**۲۰ failed + ۱ error باقی‌مانده (بعد از commit `17094cf`، هرکدام مستند و خارج از scope):**
+- `test_auth.py` (۶ مورد): `test_get_current_user_profile`, `test_get_profile_without_auth`, `test_get_profile_invalid_token`, `test_complete_auth_flow` به route غیرموجود `/api/auth/me` می‌زنند (فقط `/api/auth/profile` وجود دارد؛ هیچ کد یا فرانت‌اندی به `/me` رفرنس نمی‌دهد، پس این یک route جعلی در تست است، نه باگ اپ)؛ `test_rate_limiting_enforcement` نیازمند زیرساخت rate-limit واقعی (احتمالاً Redis) است که در این کانتینر فعال/قابل تست نیست؛ `test_create_api_key` انتظار فیلدهای اضافه (`description`, پیشوند `qtm_`) دارد که schema فعلی endpoint ندارد.
+- `test_intelligence_orchestrator.py` (۹ مورد): `IntelligenceOrchestrator.__init__` عمداً `strategy_agent`/`ml_agent`/`prediction_agent`/`sentiment_agent` را `None` می‌گذارد و `initialize_agents()` صرفاً `pass` است (stub کامل). کلاس‌های واقعی این ۴ ایجنت شناسایی شدند (`StrategyAgent`, `DeepLearningAgent`, `AdvancedPredictionAgent`, `MarketSentimentAgent`) و متدهای مورد انتظار تست (`generate_trading_decision`, `ensemble_predict`, `get_sentiment_summary`, ...) دقیقاً با API واقعی این کلاس‌ها مطابقت دارد — یعنی wiring از نظر منطقی ساده است. اما `DeepLearningAgent` (`src/training/transformer_models.py`) و `MarketSentimentAgent` (`src/analytics/sentiment_agent.py`) هر دو در سطح ماژول `import torch` دارند و `torch` روی این کانتینر sandbox نصب نیست (دانلود wheel آن بیش از ۲۰ ثانیه طول کشید و timeout شد — پکیج بسیار سنگین است)؛ `AdvancedPredictionAgent` هم به `prophet` نیاز دارد که نصبش شامل کامپایل Stan model است (طبق قوانین پروژه، بیلد سنگین باید روی سرور SSH انجام شود، نه در کانتینر). **این یک gap معماری/وابستگی جدی است، نه یک باگ ساده تست** — نیاز به تسک جداگانه (نصب `torch`/`prophet` روی سرور واقعی + پیاده‌سازی واقعی متدهای `_get_*_intelligence`/`_build_consensus`/`_identify_uncertainty_factors` که فعلاً stub هستند).
+- `test_main_endpoints.py` (۱۱ مورد، همه fail/error): کل فایل کاملاً stale است — route های `/auth/token`, `/strategies/backtest`, `/strategies/results/{id}` و mock targetهای `api.endpoints.strategies.run_backtest_task`/`AsyncResult` هیچکدام در اپ فعلی وجود ندارند (روتر مربوطه اصلاً در `main_refactored.py` mount نشده). این سومین فایل تست کاملاً stale پروژه است (در کنار `test_options_trading.py`/`test_websocket.py`) — نیاز به rewrite کامل یا حذف دارد، نه patch.
+- `test_ingestion_pipeline.py` (۱ error، بدون تغییر نسبت به قبل): همچنان نیازمند PostgreSQL واقعی است.
 
 ---
 
@@ -777,7 +798,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 | TASK-022 Nginx + SSL | M | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-023 Monitoring Alerts | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-024 DB Backup | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
-| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`, `bd3edfc`, `e4a15ca`) | Backend |
+| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`, `bd3edfc`, `e4a15ca`, `17094cf`) | Backend |
 
 ---
 
