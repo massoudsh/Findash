@@ -710,7 +710,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 
 ### TASK-025 — رفع اجرای test suite بک‌اند (pytest/make exit 127)
 
-**وضعیت:** `✅ Done (partial)` — commit `7094617`, `bd3edfc` | ابزار تست کار می‌کند؛ ۳۴ تست failed + ۱۱ error باقی مانده (خارج از scope این تسک)
+**وضعیت:** `✅ Done (partial)` — commit `7094617`, `bd3edfc`, `e4a15ca` | ابزار تست کار می‌کند؛ ۳۴ تست failed + ۱۱ error باقی مانده (خارج از scope این تسک)
 **اندازه:** M
 **نوع:** DevOps / Test Infra
 **تیم:** Backend
@@ -727,7 +727,13 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 - ۱۶۵ تست collect شدند (قبل از رفع باگ بالا، صفر تست collect می‌شد)
 - **۱۲۱ passed / ۳۴ failed / ۱۱ error**
 
-**رفع نهایی (commit `bd3edfc`):** حتی بعد از رفع باگ `bots_persistence.py`، اجرای *لفظی* `pytest --tb=short -q` (بدون هیچ فلگی) هنوز کل collection را abort می‌کرد، چون pytest به‌صورت پیش‌فرض با هر ImportError در collection کل run را متوقف می‌کند و این ۲ فایل stale همیشه ImportError می‌دهند. راه‌حل: در `pytest.ini` (که از قبل در ریپو وجود داشت) به `addopts` موجود دو فلگ `--ignore=tests/test_options_trading.py --ignore=tests/test_websocket.py` اضافه شد. نتیجه: حالا حتی دستور لخت `pytest`/`pytest --tb=short -q` بدون exit 127 و بدون collection-abort اجرا می‌شود و مستقیماً به نتیجه‌ی نهایی (۱۲۱ passed / ۳۴ failed / ۱۱ error) می‌رسد.
+**رفع (commit `bd3edfc`):** حتی بعد از رفع باگ `bots_persistence.py`، اجرای *لفظی* `pytest --tb=short -q` (بدون هیچ فلگی) هنوز کل collection را abort می‌کرد، چون pytest به‌صورت پیش‌فرض با هر ImportError در collection کل run را متوقف می‌کند و این ۲ فایل stale همیشه ImportError می‌دهند. راه‌حل: در `pytest.ini` (که از قبل در ریپو وجود داشت) به `addopts` موجود دو فلگ `--ignore=tests/test_options_trading.py --ignore=tests/test_websocket.py` اضافه شد.
+
+**رفع (commit `e4a15ca`):** حتی بعد از رفع بالا، اجرای *کاملاً لفظی* `pytest --tb=short -q` در یک شل تازه (بدون export دستی `ENVIRONMENT=development`) با **exit code 4** (usage/config error، نه 127) خارج می‌شد: `conftest.py` هنگام `from src.main_refactored import app` باعث اجرای `Settings()` می‌شود و بدون `ENVIRONMENT=development` این validator یک `pydantic.ValidationError` روی طول `SECRET_KEY`/`JWT_SECRET_KEY` می‌دهد که کل test session را قبل از هر test واقعی fail می‌کند. راه‌حل: در `tests/conftest.py`، خط `os.environ.setdefault("ENVIRONMENT", "development")` **قبل از** import ماژول‌های `src.*` اضافه شد تا suite تست بدون نیاز به هیچ تنظیم محیطی بیرونی self-contained و قابل اجرا باشد.
+
+**نتیجه نهایی تأییدشده:** دستور کاملاً لخت `pytest --tb=short -q` (بدون هیچ env var یا فلگ اضافه) اکنون با **exit code 1** (یعنی خود pytest عادی اجرا شده و صرفاً برخی تست fail شده‌اند) خارج می‌شود، نه ۱۲۷ و نه ۴: **۱۲۱ passed / ۳۴ failed / ۱۱ error** از ۱۶۵ تست.
+
+**`make test` (بدون تغییر، همچنان محدودیت محیط):** با exit code **127** خارج می‌شود چون باینری `make` اصلاً روی این کانتینر نصب نیست و بدون دسترسی root/sudo قابل نصب نیست (`apt-get install` با خطای دسترسی به dpkg lock مواجه می‌شود). این یک محدودیت این کانتینر sandbox است، نه باگ کد؛ روی سرور واقعی SSH که `make` نصب است، `make test` طبق معمول کار می‌کند.
 
 **۲ فایل تست کاملاً stale (خارج از scope این تسک — نیاز به rewrite جدا دارند):**
 - `tests/test_options_trading.py` → `from src.main import app` (ماژول `src/main.py` دیگر وجود ندارد، جایگزین شده با `src/main_refactored.py`)
@@ -742,9 +748,10 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 - [x] `pytest`/`python3 -m pytest` بدون exit 127 اجرا می‌شود
 - [x] باگ import-breaking (`bots_persistence`) رفع شد
 - [x] دستور لفظی `pytest --tb=short -q` (بدون فلگ) دیگر با collection-abort متوقف نمی‌شود (`pytest.ini` رفع شد)
+- [x] دستور لفظی `pytest --tb=short -q` بدون export دستی `ENVIRONMENT` دیگر exit code 4 نمی‌دهد (`conftest.py` رفع شد، commit `e4a15ca`)
 - [ ] ۳۴ failed + ۱۱ error باقی‌مانده (تسک جدا لازم دارد)
 - [ ] ۲ فایل تست stale نیاز به rewrite کامل دارند (تسک جدا لازم دارد)
-- [ ] نصب `make` روی این کانتینر ممکن نیست (بدون root) — باید روی سرور SSH بررسی شود
+- [ ] نصب `make` روی این کانتینر ممکن نیست (بدون root، exit 127 برای `make test` باقی می‌ماند) — باید روی سرور SSH بررسی شود
 
 ---
 
@@ -770,7 +777,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 | TASK-022 Nginx + SSL | M | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-023 Monitoring Alerts | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-024 DB Backup | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
-| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`, `bd3edfc`) | Backend |
+| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`, `bd3edfc`, `e4a15ca`) | Backend |
 
 ---
 
