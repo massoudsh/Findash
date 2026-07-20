@@ -710,7 +710,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 
 ### TASK-025 — رفع اجرای test suite بک‌اند (pytest/make exit 127)
 
-**وضعیت:** `✅ Done (partial)` — commit `7094617` | ابزار تست کار می‌کند؛ ۳۴ تست failed + ۱۱ error باقی مانده (خارج از scope این تسک)
+**وضعیت:** `✅ Done (partial)` — commit `7094617`, `bd3edfc` | ابزار تست کار می‌کند؛ ۳۴ تست failed + ۱۱ error باقی مانده (خارج از scope این تسک)
 **اندازه:** M
 **نوع:** DevOps / Test Infra
 **تیم:** Backend
@@ -727,6 +727,8 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 - ۱۶۵ تست collect شدند (قبل از رفع باگ بالا، صفر تست collect می‌شد)
 - **۱۲۱ passed / ۳۴ failed / ۱۱ error**
 
+**رفع نهایی (commit `bd3edfc`):** حتی بعد از رفع باگ `bots_persistence.py`، اجرای *لفظی* `pytest --tb=short -q` (بدون هیچ فلگی) هنوز کل collection را abort می‌کرد، چون pytest به‌صورت پیش‌فرض با هر ImportError در collection کل run را متوقف می‌کند و این ۲ فایل stale همیشه ImportError می‌دهند. راه‌حل: در `pytest.ini` (که از قبل در ریپو وجود داشت) به `addopts` موجود دو فلگ `--ignore=tests/test_options_trading.py --ignore=tests/test_websocket.py` اضافه شد. نتیجه: حالا حتی دستور لخت `pytest`/`pytest --tb=short -q` بدون exit 127 و بدون collection-abort اجرا می‌شود و مستقیماً به نتیجه‌ی نهایی (۱۲۱ passed / ۳۴ failed / ۱۱ error) می‌رسد.
+
 **۲ فایل تست کاملاً stale (خارج از scope این تسک — نیاز به rewrite جدا دارند):**
 - `tests/test_options_trading.py` → `from src.main import app` (ماژول `src/main.py` دیگر وجود ندارد، جایگزین شده با `src/main_refactored.py`)
 - `tests/test_websocket.py` → `from src.core.websocket import (...)` (ماژول وجود ندارد؛ معادل فعلی احتمالاً `src/realtime/websockets.py` است ولی API متفاوت است)
@@ -739,6 +741,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 **معیار پذیرش:**
 - [x] `pytest`/`python3 -m pytest` بدون exit 127 اجرا می‌شود
 - [x] باگ import-breaking (`bots_persistence`) رفع شد
+- [x] دستور لفظی `pytest --tb=short -q` (بدون فلگ) دیگر با collection-abort متوقف نمی‌شود (`pytest.ini` رفع شد)
 - [ ] ۳۴ failed + ۱۱ error باقی‌مانده (تسک جدا لازم دارد)
 - [ ] ۲ فایل تست stale نیاز به rewrite کامل دارند (تسک جدا لازم دارد)
 - [ ] نصب `make` روی این کانتینر ممکن نیست (بدون root) — باید روی سرور SSH بررسی شود
@@ -767,7 +770,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 | TASK-022 Nginx + SSL | M | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-023 Monitoring Alerts | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-024 DB Backup | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
-| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`) | Backend |
+| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`, `bd3edfc`) | Backend |
 
 ---
 
