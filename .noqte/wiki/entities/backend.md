@@ -42,7 +42,8 @@
 - Alembic (migrations)
 
 ## منابع کد
-- `src/main_refactored.py` — نقطه ورود اصلی و ثبت routerها
+- `start.py` (ریشه ریپو) — **نقطهٔ ورود واقعیِ اجرا/production** (`CMD ["python", "start.py"]` در `docker/Dockerfile.fastapi`؛ خودش با `uvicorn.Config(app="src.main_refactored:app", ...)` سرور را بالا می‌آورد؛ همچنین validation محیط/dependency قبل از start انجام می‌دهد)
+- `src/main_refactored.py` — تعریف واقعی FastAPI `app` و ثبت routerها (خودِ این فایل مستقیماً اجرا نمی‌شود؛ `Makefile`'s dev target هم `uvicorn src.main_refactored:app --reload` است، نه `start.py`)
 - `src/api/endpoints/payment_zarinpal.py` — یکپارچه‌سازی زرین‌پال: create/callback/verify/status/history
 - `src/api/endpoints/startup_tracker.py` — استارتاپ‌تراکر: hypotheses/conversations/traction/summary (in-memory store، همان الگوی `strategies_crud.py`)
 - `src/api/bots_persistence.py` — persistence ساده JSON برای Trading Bots (`load_bots`/`save_bots`, فایل در `data/trading_bots.json`)؛ قبلاً این فایل مفقود بود و کل `src.main_refactored` (و در نتیجه کل pytest suite) را می‌شکست — در TASK-025 اضافه شد

@@ -774,6 +774,25 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 - `test_main_endpoints.py` (۱۱ مورد، همه fail/error): کل فایل کاملاً stale است — route های `/auth/token`, `/strategies/backtest`, `/strategies/results/{id}` و mock targetهای `api.endpoints.strategies.run_backtest_task`/`AsyncResult` هیچکدام در اپ فعلی وجود ندارند (روتر مربوطه اصلاً در `main_refactored.py` mount نشده). این سومین فایل تست کاملاً stale پروژه است (در کنار `test_options_trading.py`/`test_websocket.py`) — نیاز به rewrite کامل یا حذف دارد، نه patch.
 - `test_ingestion_pipeline.py` (۱ error، بدون تغییر نسبت به قبل): همچنان نیازمند PostgreSQL واقعی است.
 
+**ادامه رفع (commit `b3f05f2`) — از ۱۳۹ passed/۲۰ failed/۱ error به ۱۵۴ passed/۵ failed/۷ error:**
+
+باگ‌های واقعی اپلیکیشن که کشف و رفع شدند:
+- `FreeRateLimiter` (`src/core/rate_limiter.py`) وقتی Redis در دسترس نبود، fallback حافظه‌ای‌اش هیچ محدودیتی اعمال نمی‌کرد (`_check_rate_limit_memory` عملاً از قبل موجود بود اما با burst_limit خیلی سخت‌گیرانه‌ی `auth_rate_limit` (۲) درخواست‌های legitimate پشت‌سرهم تست‌ها را هم مسدود می‌کرد؛ به ۵ (برابر limit در دقیقه) تغییر یافت.
+- `main_refactored.py`'s سراسری `http_exception_handler` همیشه `exc.detail` را — حتی وقتی از قبل یک dict ساخت‌یافته بود (مثل خطای rate-limit با فیلدهای `error`/`retry_after`/`reason`) — زیر یک کلید `"message"` تودرتو می‌کرد؛ این یعنی کالرهایی که به فیلدهای ساخت‌یافته نیاز داشتند (مثل تست rate limiting) هرگز نمی‌توانستند آن‌ها را در سطح بالا پیدا کنند. رفع: اگر `exc.detail` از نوع dict باشد، مستقیم spread می‌شود.
+- `create_api_key` در `professional_auth.py` بدنه را `Dict[str, str]` تایپ کرده بود (۴۲۲ روی مقادیر غیر-string مثل `expires_in_days: 30`) و فیلد `description` را هرگز در پاسخ برنمی‌گرداند؛ به `Dict[str, Any]` تغییر یافت و `description` اضافه شد.
+- `APIKeyManager.generate_api_key` (`src/core/security.py`) پیشوند قدیمی/ناسازگار `otf_` (باقی‌مانده از نام قدیمی octopus) داشت؛ به `qtm_` (quantum trading matrix) تغییر یافت.
+- `IntelligenceOrchestrator.__init__` اکنون واقعاً `StrategyAgent` و (با fallback stub برای وابستگی‌های سنگین نصب‌نشده) `ml_agent`/`prediction_agent`/`sentiment_agent` را می‌سازد؛ متدهای `_get_*_intelligence`/`_build_consensus`/`_calculate_unified_risk`/`_identify_uncertainty_factors` منطق واقعی گرفتند و `generate_intelligence_report` گزارش را کش می‌کند. جزئیات کامل در [[entities/orchestrator]].
+
+رفع‌های فقط-تست:
+- `test_auth.py`: fixture خودکار (`autouse`) برای ریست وضعیت rate limiter حافظه‌ای قبل از هر تست اضافه شد (همه تست‌ها یک `TestClient`/identifier مشترک دارند).
+- نصب مجدد `statsmodels` (بعد از ریست کانتینر sandbox، این پکیج دوباره مفقود شده بود؛ نصب سبک است، نه بیلد سنگین).
+
+**۵ failed + ۷ error باقی‌مانده (فقط ۲ فایل، هر دو از قبل مستند و خارج از scope):**
+- `test_main_endpoints.py` (۱۱ مورد): بدون تغییر — کاملاً stale، نیاز به rewrite یا حذف کامل دارد (بالا مستند شده).
+- `test_ingestion_pipeline.py` (۱ error): بدون تغییر — نیاز به PostgreSQL واقعی دارد.
+
+`test_auth.py` و `test_intelligence_orchestrator.py` و `test_phase4_integration.py` اکنون **کاملاً سبز** هستند.
+
 ---
 
 ## وضعیت کلی Backlog
@@ -798,7 +817,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 | TASK-022 Nginx + SSL | M | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-023 Monitoring Alerts | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-024 DB Backup | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
-| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`, `bd3edfc`, `e4a15ca`, `17094cf`) | Backend |
+| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`, `bd3edfc`, `e4a15ca`, `17094cf`, `b3f05f2`) | Backend |
 
 ---
 
