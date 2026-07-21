@@ -49,3 +49,7 @@
 - `src/api/bots_persistence.py` — persistence ساده JSON برای Trading Bots (`load_bots`/`save_bots`, فایل در `data/trading_bots.json`)؛ قبلاً این فایل مفقود بود و کل `src.main_refactored` (و در نتیجه کل pytest suite) را می‌شکست — در TASK-025 اضافه شد
 - `database/schemas/payment_orders.sql` — schema جدول payment_orders
 - پورت پیش‌فرض: `localhost:8000`
+
+## ✅ رفع‌شده: ناسازگاری bcrypt/passlib در auth (`professional_auth.py`, `security.py`)
+`bcrypt>=5.0.0` ویژگی `__about__` را که `passlib==1.7.4` برای تشخیص نسخه به آن وابسته است حذف کرده؛ در نتیجه `hash_password()`/`verify_password()` در `src/core/security.py` استثنا پرتاب می‌کردند. این استثنا در بلاک‌های `except Exception` عمومی endpointهای `professional_auth.py` (login/register/refresh/profile/logout/api-keys) بلعیده می‌شد و `AuthResponse(success=False)` با کد `200` برمی‌گشت — یعنی login نامعتبر به‌جای `401` کد `200` می‌داد، register همیشه «Registration failed» می‌داد و مسیرهای احرازشده به‌طور غیرمنتظره fail می‌شدند.
+رفع: پین کردن `bcrypt==4.1.2` (سازگار با `passlib==1.7.4`) در `requirements/requirements.txt` و `requirements/requirements-basic.txt` (هم‌راستا با `requirements-quickstart.txt` که همین pin را از قبل داشت) + نصب واقعی در محیط. بعد از رفع: `tests/test_auth.py` کامل ۲۷/۲۷ pass می‌شود.
