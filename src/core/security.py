@@ -350,7 +350,7 @@ class APIKeyManager:
         
     def generate_api_key(self, user_id: str, name: str = "") -> str:
         """Generate a new API key"""
-        api_key = f"otf_{generate_secure_token(32)}"  # otf = octopus trading platform
+        api_key = f"qtm_{generate_secure_token(32)}"  # qtm = quantum trading matrix
         
         # Store API key metadata
         if self.redis:

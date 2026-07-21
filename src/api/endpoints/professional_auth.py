@@ -321,6 +321,7 @@ async def list_users(
     return profiles
 
 @router.get("/profile", response_model=UserProfile)
+@router.get("/me", response_model=UserProfile)
 async def get_user_profile(
     current_user: dict = Depends(get_current_active_user)
 ):
@@ -333,7 +334,7 @@ async def get_user_profile(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
-    
+
     return UserProfile(
         id=user["id"],
         email=user["email"],
@@ -483,7 +484,7 @@ async def change_password(
 
 @router.post("/api-keys", dependencies=[Depends(get_current_active_user)])
 async def create_api_key(
-    api_key_data: Dict[str, str],
+    api_key_data: Dict[str, Any],
     current_user: dict = Depends(get_current_active_user)
 ):
     """
@@ -491,16 +492,18 @@ async def create_api_key(
     """
     try:
         name = api_key_data.get("name", "Default API Key")
-        
+        description = api_key_data.get("description", "")
+
         # Generate API key
         api_key = api_key_manager.generate_api_key(current_user.user_id, name)
 
         key_id = f"key_{current_user.user_id}_{len(name)}"
-        
+
         return {
             "key_id": key_id,
             "api_key": api_key,
             "name": name,
+            "description": description,
             "created_at": datetime.utcnow().isoformat() + "Z"
         }
         

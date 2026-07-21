@@ -276,13 +276,20 @@ async def root():
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):
     """Handle HTTP exceptions"""
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
+    if isinstance(exc.detail, dict):
+        # Endpoints/dependencies that already build a structured error body
+        # (e.g. rate limiting, account lockout) should surface it as-is
+        # instead of being nested under a generic "http_error" wrapper.
+        content = {**exc.detail, "request_id": getattr(request.state, "request_id", None)}
+    else:
+        content = {
             "error": "http_error",
             "message": exc.detail,
             "request_id": getattr(request.state, "request_id", None)
         }
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=content
     )
 
 @app.exception_handler(Exception)

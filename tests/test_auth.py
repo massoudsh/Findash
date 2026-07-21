@@ -25,6 +25,24 @@ settings = get_settings()
 client = TestClient(app)
 
 
+@pytest.fixture(autouse=True)
+def _reset_rate_limiter_state():
+    """
+    All tests in this module share a single TestClient, which means they all
+    share the same rate-limiting identifier (Starlette's test client always
+    reports the client host as "testclient"). Now that the in-memory rate
+    limiter fallback actually enforces limits (instead of always allowing
+    requests when Redis is unavailable), state accumulated by one test would
+    otherwise bleed into unrelated tests. Reset it before each test so tests
+    remain independent; test_rate_limiting_enforcement still exercises the
+    real enforcement logic within its own run.
+    """
+    from src.core.rate_limiter import rate_limiter as _rl
+    _rl._memory_requests.clear()
+    _rl._memory_burst.clear()
+    yield
+
+
 class TestPasswordSecurity:
     """Test password hashing and verification"""
     
@@ -257,8 +275,8 @@ class TestAuthenticationEndpoints:
     def test_get_profile_without_auth(self):
         """Test getting profile without authentication"""
         response = client.get("/api/auth/me")
-        
-        assert response.status_code == 403  # No authorization header
+
+        assert response.status_code == 401  # No authorization header (FastAPI HTTPBearer default)
     
     def test_get_profile_invalid_token(self):
         """Test getting profile with invalid token"""

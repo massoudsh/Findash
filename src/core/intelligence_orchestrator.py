@@ -9,7 +9,83 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
 
+from ..strategies.strategy_agent import StrategyAgent
+
 logger = logging.getLogger(__name__)
+
+# The ML/prediction/sentiment agents depend on heavy optional packages
+# (torch, prophet, cv2, transformers). Import them lazily and fall back to
+# lightweight stub agents (exposing the same async method names) when those
+# packages aren't installed, following the same pattern used for optional
+# dependencies elsewhere in the codebase (see src/portfolio/portfolio_manager.py).
+try:
+    from ..training.transformer_models import DeepLearningAgent
+    ML_AGENT_AVAILABLE = True
+except ImportError as e:
+    DeepLearningAgent = None
+    ML_AGENT_AVAILABLE = False
+    logger.warning("DeepLearningAgent not available, using stub ML agent: %s", e)
+
+try:
+    from ..prediction.advanced_prediction_agent import AdvancedPredictionAgent
+    PREDICTION_AGENT_AVAILABLE = True
+except ImportError as e:
+    AdvancedPredictionAgent = None
+    PREDICTION_AGENT_AVAILABLE = False
+    logger.warning("AdvancedPredictionAgent not available, using stub prediction agent: %s", e)
+
+try:
+    from ..analytics.sentiment_agent import MarketSentimentAgent
+    SENTIMENT_AGENT_AVAILABLE = True
+except ImportError as e:
+    MarketSentimentAgent = None
+    SENTIMENT_AGENT_AVAILABLE = False
+    logger.warning("MarketSentimentAgent not available, using stub sentiment agent: %s", e)
+
+
+class _StubMLAgent:
+    """Fallback used when DeepLearningAgent's dependencies (torch) aren't installed."""
+
+    def __init__(self, cache=None):
+        self.cache = cache
+
+    async def ensemble_predict(self, *args, **kwargs):
+        return None
+
+    async def detect_anomalies(self, *args, **kwargs) -> Dict[str, Any]:
+        return {"anomaly_detected": False, "reconstruction_error": 0.0}
+
+    async def get_agent_status(self) -> Dict[str, Any]:
+        return {"agent_id": "M5_ml_models", "status": "unavailable", "reason": "torch not installed"}
+
+
+class _StubPredictionAgent:
+    """Fallback used when AdvancedPredictionAgent's dependencies (prophet, cv2) aren't installed."""
+
+    def __init__(self, cache=None):
+        self.cache = cache
+
+    async def generate_comprehensive_prediction(self, *args, **kwargs):
+        return None
+
+    async def get_pattern_signals(self, *args, **kwargs) -> List[Any]:
+        return []
+
+    async def get_agent_status(self) -> Dict[str, Any]:
+        return {"agent_id": "M7_price_predictor", "status": "unavailable", "reason": "prophet/cv2 not installed"}
+
+
+class _StubSentimentAgent:
+    """Fallback used when MarketSentimentAgent's dependencies (torch, transformers) aren't installed."""
+
+    def __init__(self, cache=None):
+        self.cache = cache
+
+    async def get_sentiment_summary(self, *args, **kwargs) -> Dict[str, Any]:
+        return {}
+
+    async def get_agent_status(self) -> Dict[str, Any]:
+        return {"agent_id": "M9_sentiment_analyzer", "status": "unavailable", "reason": "torch/transformers not installed"}
 
 @dataclass
 class IntelligenceReport:
@@ -64,11 +140,13 @@ class IntelligenceOrchestrator:
         self.active_tasks = {}
         self.agent_status = {}
         
-        # Placeholder agent references (set by initialize_agents)
-        self.strategy_agent = None
-        self.ml_agent = None
-        self.prediction_agent = None
-        self.sentiment_agent = None
+        # Real agent instances. StrategyAgent only needs sklearn (always
+        # available); ml/prediction/sentiment agents need heavy optional
+        # dependencies and fall back to lightweight stubs when unavailable.
+        self.strategy_agent = StrategyAgent(self.cache)
+        self.ml_agent = DeepLearningAgent(self.cache) if ML_AGENT_AVAILABLE else _StubMLAgent(self.cache)
+        self.prediction_agent = AdvancedPredictionAgent(self.cache) if PREDICTION_AGENT_AVAILABLE else _StubPredictionAgent(self.cache)
+        self.sentiment_agent = MarketSentimentAgent(self.cache) if SENTIMENT_AGENT_AVAILABLE else _StubSentimentAgent(self.cache)
         self.agent_weights = {
             "strategy": 0.30,
             "ml": 0.25,
@@ -463,6 +541,12 @@ class IntelligenceOrchestrator:
         if symbol in self.active_symbols:
             self.active_symbols[symbol]["analysis_count"] += 1
 
+        if self.cache:
+            try:
+                await self.cache.set(f"intelligence_report:{symbol}:{timeframe}", report, ttl=300)
+            except Exception:
+                logger.warning("Failed to cache intelligence report for %s", symbol, exc_info=True)
+
         return report
 
     def _cleanup_old_history(self, symbol: str, max_age_hours: int = 24):
@@ -476,27 +560,75 @@ class IntelligenceOrchestrator:
 
     async def _get_strategy_intelligence(self, symbol: str, timeframe: str):
         """Collect intelligence from the strategy agent."""
-        return None
+        return await self.strategy_agent.generate_trading_decision(symbol, timeframe)
 
     async def _get_ml_intelligence(self, symbol: str, timeframe: str) -> Dict[str, Any]:
         """Collect intelligence from the ML agent."""
-        return {}
+        prediction = await self.ml_agent.ensemble_predict(symbol, timeframe)
+        anomaly = await self.ml_agent.detect_anomalies(symbol, timeframe)
+        return {
+            "ensemble_prediction": prediction.to_dict() if prediction is not None else None,
+            "anomaly_detection": anomaly
+        }
 
     async def _get_prediction_intelligence(self, symbol: str, timeframe: str) -> Dict[str, Any]:
         """Collect intelligence from the prediction agent."""
-        return {}
+        comprehensive = await self.prediction_agent.generate_comprehensive_prediction(symbol)
+        patterns = await self.prediction_agent.get_pattern_signals(symbol, timeframe)
+        return {
+            "comprehensive_prediction": comprehensive.to_dict() if comprehensive is not None else None,
+            "pattern_signals": patterns
+        }
 
     async def _get_sentiment_intelligence(self, symbol: str) -> Dict[str, Any]:
         """Collect intelligence from the sentiment agent."""
-        return {}
+        return await self.sentiment_agent.get_sentiment_summary(symbol)
 
     async def _build_consensus(
         self,
         agent_recommendations: Dict[str, str],
         agent_confidences: Dict[str, float]
     ) -> tuple:
-        """Build consensus from agent recommendations."""
-        return "HOLD", 0.5
+        """Build a weighted consensus recommendation from agent votes."""
+        if not agent_recommendations:
+            return "HOLD", 0.5
+
+        action_map = {"buy": 1, "sell": -1, "hold": 0}
+        weighted_conf_sum = sum(
+            self.agent_weights.get(agent, 0.0) * agent_confidences.get(agent, 0.0)
+            for agent in agent_recommendations
+        )
+        total_weight = sum(self.agent_weights.get(agent, 0.0) for agent in agent_recommendations)
+
+        if weighted_conf_sum == 0 or total_weight == 0:
+            return "HOLD", 0.5
+
+        vote_score = sum(
+            self.agent_weights.get(agent, 0.0)
+            * agent_confidences.get(agent, 0.0)
+            * action_map.get(rec.lower(), 0)
+            for agent, rec in agent_recommendations.items()
+        ) / weighted_conf_sum
+
+        if vote_score > 0.2:
+            final_recommendation, target = "BUY", 1
+        elif vote_score < -0.2:
+            final_recommendation, target = "SELL", -1
+        else:
+            final_recommendation, target = "HOLD", 0
+
+        if final_recommendation == "HOLD":
+            confidence_score = (weighted_conf_sum / total_weight) * (1 - abs(vote_score))
+        else:
+            supporting_weight = sum(
+                self.agent_weights.get(agent, 0.0) * agent_confidences.get(agent, 0.0)
+                for agent, rec in agent_recommendations.items()
+                if action_map.get(rec.lower(), 0) == target
+            )
+            confidence_score = supporting_weight / total_weight
+
+        confidence_score = max(0.0, min(1.0, confidence_score))
+        return final_recommendation, confidence_score
 
     async def _calculate_unified_risk(
         self,
@@ -506,14 +638,37 @@ class IntelligenceOrchestrator:
         prediction_result: Dict[str, Any],
         sentiment_result: Dict[str, Any]
     ) -> Dict[str, Any]:
-        """Calculate unified risk assessment."""
+        """Calculate unified risk assessment from all agent outputs."""
+        risk_metrics = getattr(strategy_result, "risk_metrics", None) or {}
+        var_95 = risk_metrics.get("var_95", 0.05)
+        volatility = risk_metrics.get("volatility", 0.02)
+
+        anomaly_detection = (ml_result or {}).get("anomaly_detection") or {}
+        anomaly_risk = 1.0 if anomaly_detection.get("anomaly_detected") else anomaly_detection.get("reconstruction_error", 0.0)
+
+        comprehensive_prediction = (prediction_result or {}).get("comprehensive_prediction") or {}
+        predicted_volatility = comprehensive_prediction.get("volatility_forecast", volatility)
+
+        current_sentiment = ((sentiment_result or {}).get("sentiment_summary") or {}).get("current_sentiment") or {}
+        sentiment_confidence = current_sentiment.get("confidence", 0.5)
+        sentiment_uncertainty = max(0.0, 1 - sentiment_confidence)
+
+        overall_risk = (
+            0.35 * min(var_95, 1.0)
+            + 0.25 * min(volatility, 1.0)
+            + 0.15 * min(anomaly_risk, 1.0)
+            + 0.15 * min(predicted_volatility, 1.0)
+            + 0.10 * min(sentiment_uncertainty, 1.0)
+        )
+        overall_risk = max(0.0, min(1.0, overall_risk))
+
         return {
-            "var_95": 0.05,
-            "volatility": 0.02,
-            "anomaly_risk": 0.0,
-            "predicted_volatility": 0.025,
-            "sentiment_uncertainty": 0.0,
-            "overall_risk": 0.1
+            "var_95": var_95,
+            "volatility": volatility,
+            "anomaly_risk": anomaly_risk,
+            "predicted_volatility": predicted_volatility,
+            "sentiment_uncertainty": sentiment_uncertainty,
+            "overall_risk": overall_risk
         }
 
     async def _identify_uncertainty_factors(
@@ -525,6 +680,23 @@ class IntelligenceOrchestrator:
     ) -> List[str]:
         """Identify uncertainty factors in the analysis."""
         factors = []
+
+        distinct_recommendations = {rec.lower() for rec in agent_recommendations.values()}
+        if len(distinct_recommendations) > 1:
+            factors.append(f"Conflicting agent recommendations: {agent_recommendations}")
+
+        low_confidence_agents = [agent for agent, conf in agent_confidences.items() if conf < 0.5]
+        if low_confidence_agents:
+            factors.append(f"Low confidence from agents: {', '.join(low_confidence_agents)}")
+
+        anomaly_detection = (ml_result or {}).get("anomaly_detection") or {}
+        if anomaly_detection.get("anomaly_detected"):
+            factors.append("ML anomaly detected in market data")
+
+        current_sentiment = ((sentiment_result or {}).get("sentiment_summary") or {}).get("current_sentiment") or {}
+        if current_sentiment.get("confidence", 1.0) < 0.5:
+            factors.append("Low sentiment confidence indicates sentiment uncertainty")
+
         return factors
 
     async def _analyze_market_conditions(self, symbol: str, timeframe: str) -> Dict[str, Any]:

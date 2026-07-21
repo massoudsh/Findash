@@ -5,8 +5,9 @@ Protects APIs from abuse without using paid services
 
 import redis
 import time
+import threading
 import logging
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta
 from fastapi import HTTPException, Request
 import json
@@ -14,8 +15,10 @@ import json
 logger = logging.getLogger(__name__)
 
 class FreeRateLimiter:
-    """Simple Redis-based rate limiter using free tier"""
-    
+    """Simple Redis-based rate limiter using free tier, with an in-memory
+    fallback so enforcement still works (single-process only) when Redis
+    is unreachable instead of silently allowing every request."""
+
     def __init__(self, redis_url: str = "redis://localhost:6379/0"):
         try:
             self.redis_client = redis.from_url(redis_url, decode_responses=True)
@@ -25,6 +28,11 @@ class FreeRateLimiter:
         except Exception as e:
             logger.warning(f"⚠️ Redis not available for rate limiting: {e}")
             self.redis_client = None
+
+        # In-memory fallback state (used only when self.redis_client is None)
+        self._memory_requests: Dict[str, List[float]] = {}
+        self._memory_burst: Dict[str, List[float]] = {}
+        self._memory_lock = threading.Lock()
     
     def check_rate_limit(self, 
                         identifier: str, 
@@ -45,14 +53,10 @@ class FreeRateLimiter:
         """
         
         if not self.redis_client:
-            # If Redis is not available, allow all requests
-            return {
-                "allowed": True,
-                "remaining": limit,
-                "reset_time": int(time.time()) + window_seconds,
-                "retry_after": None
-            }
-        
+            # Redis is not available: enforce limits using the in-memory fallback
+            # (single-process only) instead of silently allowing every request.
+            return self._check_rate_limit_memory(identifier, limit, window_seconds, burst_limit)
+
         current_time = int(time.time())
         window_start = current_time - window_seconds
         
@@ -145,7 +149,61 @@ class FreeRateLimiter:
                 "reset_time": current_time + window_seconds,
                 "retry_after": None
             }
-    
+
+    def _check_rate_limit_memory(self,
+                                  identifier: str,
+                                  limit: int,
+                                  window_seconds: int,
+                                  burst_limit: int) -> Dict[str, Any]:
+        """In-memory sliding-window rate limit check, used as a fallback when
+        Redis is unavailable. Single-process only, but still enforces limits
+        instead of silently allowing every request."""
+
+        current_time = time.time()
+        burst_window = 10  # seconds, matches the Redis-backed burst window
+
+        with self._memory_lock:
+            requests = self._memory_requests.setdefault(identifier, [])
+            burst = self._memory_burst.setdefault(identifier, [])
+
+            # Drop entries outside their respective windows
+            requests[:] = [t for t in requests if t > current_time - window_seconds]
+            burst[:] = [t for t in burst if t > current_time - burst_window]
+
+            # Check burst limit first (short-term protection)
+            if len(burst) >= burst_limit:
+                retry_after = max(1, int(burst_window - (current_time - burst[0])) + 1)
+                return {
+                    "allowed": False,
+                    "remaining": 0,
+                    "reset_time": int(current_time) + retry_after,
+                    "retry_after": retry_after,
+                    "reason": "burst_limit_exceeded"
+                }
+
+            # Check regular rate limit
+            if len(requests) >= limit:
+                reset_time = int(requests[0] + window_seconds)
+                retry_after = max(1, reset_time - int(current_time))
+                return {
+                    "allowed": False,
+                    "remaining": 0,
+                    "reset_time": reset_time,
+                    "retry_after": retry_after,
+                    "reason": "rate_limit_exceeded"
+                }
+
+            # Allow the request - record it
+            requests.append(current_time)
+            burst.append(current_time)
+
+            return {
+                "allowed": True,
+                "remaining": max(0, limit - len(requests)),
+                "reset_time": int(current_time) + window_seconds,
+                "retry_after": None
+            }
+
     def check_login_attempts(self, identifier: str, max_attempts: int = 5) -> Dict[str, Any]:
         """Check failed login attempts with exponential backoff"""
         
@@ -292,4 +350,10 @@ def create_rate_limit_dependency(requests_per_minute: int = 30, burst_limit: int
 # Standard rate limit dependencies
 standard_rate_limit = create_rate_limit_dependency(30, 10)  # 30/min, 10 burst
 strict_rate_limit = create_rate_limit_dependency(10, 5)    # 10/min, 5 burst
-auth_rate_limit = create_rate_limit_dependency(5, 2)       # 5/min, 2 burst for auth endpoints 
+auth_rate_limit = create_rate_limit_dependency(5, 5)       # 5/min, burst matches the per-minute
+                                                            # quota so legitimate back-to-back
+                                                            # requests (e.g. register -> login ->
+                                                            # refresh) within the same minute
+                                                            # aren't blocked by the separate
+                                                            # 10-second burst window; abuse is
+                                                            # still capped at 5 requests/min. 
