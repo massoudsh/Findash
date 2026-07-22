@@ -714,35 +714,35 @@ export default function PaperTradingPage() {
                             {order.status.toUpperCase()}
                           </Badge>
                           {order.status === 'pending' && (
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               size="sm"
                               onClick={() => handleCancelOrder(order.id)}
                             >
-                              Cancel
+                              لغو
                             </Button>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-500">Type</div>
+                          <div className="text-gray-500">نوع</div>
                           <div className="font-medium">{order.type.toUpperCase()}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Price</div>
+                          <div className="text-gray-500">قیمت</div>
                           <div className="font-medium">
-                            {order.price ? formatCurrency(order.price) : 'Market'}
+                            {order.price ? formatCurrency(order.price) : 'بازار'}
                           </div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Time in Force</div>
+                          <div className="text-gray-500">اعتبار زمانی</div>
                           <div className="font-medium">{order.timeInForce}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Placed At</div>
-                          <div className="font-medium">{new Date(order.placedAt).toLocaleTimeString()}</div>
+                          <div className="text-gray-500">زمان ثبت</div>
+                          <div className="font-medium">{new Date(order.placedAt).toLocaleTimeString('fa-IR')}</div>
                         </div>
                       </div>
                     </div>
@@ -758,13 +758,13 @@ export default function PaperTradingPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="w-5 h-5" />
-                Trade History
+                تاریخچه معاملات
               </CardTitle>
             </CardHeader>
             <CardContent>
               {trades.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  No trades executed
+                  هیچ معامله‌ای انجام نشده است
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -794,8 +794,8 @@ export default function PaperTradingPage() {
                       </div>
                       
                       <div className="flex justify-between text-sm text-gray-500">
-                        <span>Fee: {formatCurrency(trade.fee)}</span>
-                        <span>{new Date(trade.executedAt).toLocaleString()}</span>
+                        <span>کارمزد: {formatCurrency(trade.fee)}</span>
+                        <span>{new Date(trade.executedAt).toLocaleString('fa-IR')}</span>
                       </div>
                     </div>
                   ))}
@@ -809,32 +809,32 @@ export default function PaperTradingPage() {
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle>Performance Metrics</CardTitle>
+                <CardTitle>معیارهای عملکرد</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm text-gray-500">Total Trades</div>
+                    <div className="text-sm text-gray-500">کل معاملات</div>
                     <div className="text-2xl font-bold">{accountStats.totalTrades}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Win Rate</div>
+                    <div className="text-sm text-gray-500">نرخ برد</div>
                     <div className="text-2xl font-bold text-green-600">{accountStats.winRate}%</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Avg Win</div>
+                    <div className="text-sm text-gray-500">میانگین سود</div>
                     <div className="text-lg font-bold text-green-600">{formatCurrency(accountStats.avgWin)}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Avg Loss</div>
+                    <div className="text-sm text-gray-500">میانگین زیان</div>
                     <div className="text-lg font-bold text-red-600">{formatCurrency(accountStats.avgLoss)}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Max Drawdown</div>
+                    <div className="text-sm text-gray-500">حداکثر افت سرمایه</div>
                     <div className="text-lg font-bold text-red-600">{formatCurrency(accountStats.maxDrawdown)}</div>
                   </div>
                   <div>
-                    <div className="text-sm text-gray-500">Sharpe Ratio</div>
+                    <div className="text-sm text-gray-500">نسبت شارپ</div>
                     <div className="text-lg font-bold">{accountStats.sharpeRatio}</div>
                   </div>
                 </div>
@@ -843,24 +843,24 @@ export default function PaperTradingPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Account Actions</CardTitle>
+                <CardTitle>عملیات حساب</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button className="w-full" variant="outline">
                   <Download className="w-4 h-4 mr-2" />
-                  Export Trade History
+                  خروجی تاریخچه معاملات
                 </Button>
                 <Button className="w-full" variant="outline">
                   <Upload className="w-4 h-4 mr-2" />
-                  Import Portfolio
+                  ورودی پورتفولیو
                 </Button>
                 <Button className="w-full" variant="outline">
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  Reset Account
+                  بازنشانی حساب
                 </Button>
                 <Button className="w-full" variant="outline">
                   <Settings className="w-4 h-4 mr-2" />
-                  Trading Settings
+                  تنظیمات معاملاتی
                 </Button>
               </CardContent>
             </Card>
@@ -869,10 +869,10 @@ export default function PaperTradingPage() {
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <div>
-              <h4 className="font-semibold">Paper Trading Disclaimer</h4>
+              <h4 className="font-semibold">سلب مسئولیت معاملات آزمایشی</h4>
               <p className="text-sm">
-                This is a simulated trading environment. All trades are virtual and no real money is involved. 
-                Market data may be delayed. Past performance does not guarantee future results.
+                این یک محیط معاملاتی شبیه‌سازی‌شده است. تمام معاملات مجازی هستند و هیچ پول واقعی درگیر نیست.
+                داده‌های بازار ممکن است با تأخیر باشند. عملکرد گذشته تضمینی برای نتایج آینده نیست.
               </p>
             </div>
           </Alert>

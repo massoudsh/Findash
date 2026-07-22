@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Bell, 
+import {
+  Bell,
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -150,10 +150,10 @@ function formatTimestamp(timestamp: string) {
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  return `${diffDays}d ago`;
+  if (diffMins < 1) return 'همین الان';
+  if (diffMins < 60) return `${diffMins} دقیقه پیش`;
+  if (diffHours < 24) return `${diffHours} ساعت پیش`;
+  return `${diffDays} روز پیش`;
 }
 
 export default function NotificationsPage() {
@@ -228,7 +228,7 @@ export default function NotificationsPage() {
     const matchesSearch = notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          notification.message.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesReadFilter = !showOnlyUnread || !notification.read;
-    
+
     return matchesFilter && matchesSearch && matchesReadFilter;
   });
 
@@ -284,13 +284,13 @@ export default function NotificationsPage() {
   };
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => prev.map(n => 
+    setNotifications(prev => prev.map(n =>
       n.id === id ? { ...n, read: true } : n
     ));
   };
 
   const markAsAcknowledged = (id: string) => {
-    setNotifications(prev => prev.map(n => 
+    setNotifications(prev => prev.map(n =>
       n.id === id ? { ...n, acknowledged: true } : n
     ));
   };
@@ -308,7 +308,7 @@ export default function NotificationsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <Bell className="w-8 h-8 text-blue-600" />
-            Notifications & Alerts
+            اعلان‌ها و هشدارها
             {unreadCount > 0 && (
               <Badge className="bg-red-500 text-white">
                 {unreadCount}
@@ -316,28 +316,28 @@ export default function NotificationsPage() {
             )}
           </h1>
           <p className="text-muted-foreground">
-            Real-time monitoring and alert management system with Prometheus integration
+            سیستم پایش و مدیریت هشدار به‌صورت لحظه‌ای با یکپارچگی Prometheus
           </p>
         </div>
-        
+
         {/* Quick Stats */}
         <div className="flex gap-4">
           <Card className="w-40">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-orange-600">{unreadCount}</div>
-              <div className="text-xs text-gray-500">Unread</div>
+              <div className="text-xs text-gray-500">خوانده‌نشده</div>
             </CardContent>
           </Card>
           <Card className="w-40">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-red-600">{criticalCount}</div>
-              <div className="text-xs text-gray-500">Critical</div>
+              <div className="text-xs text-gray-500">بحرانی</div>
             </CardContent>
           </Card>
           <Card className="w-40">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-green-600">{alertRules.filter(r => r.enabled).length}</div>
-              <div className="text-xs text-gray-500">Active Rules</div>
+              <div className="text-xs text-gray-500">قوانین فعال</div>
             </CardContent>
           </Card>
         </div>
@@ -348,7 +348,7 @@ export default function NotificationsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5" />
-            Live System Metrics
+            معیارهای زنده سیستم
             <Badge variant="outline" className="ml-auto">
               <Activity className="w-3 h-3 mr-1" />
               Prometheus
@@ -377,16 +377,16 @@ export default function NotificationsPage() {
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="alerts" className="flex items-center gap-2">
             <Bell className="w-4 h-4" />
-            Alerts
+            هشدارها
             {unreadCount > 0 && (
               <Badge className="bg-red-500 text-white text-xs">
                 {unreadCount}
               </Badge>
             )}
           </TabsTrigger>
-          <TabsTrigger value="rules">Rules</TabsTrigger>
-          <TabsTrigger value="channels">Channels</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="rules">قوانین</TabsTrigger>
+          <TabsTrigger value="channels">کانال‌ها</TabsTrigger>
+          <TabsTrigger value="settings">تنظیمات</TabsTrigger>
         </TabsList>
 
         <TabsContent value="alerts" className="space-y-4">
@@ -396,7 +396,7 @@ export default function NotificationsPage() {
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Filter className="w-5 h-5" />
-                  Filters
+                  فیلترها
                 </div>
                 <div className="flex items-center gap-2">
                   <Button
@@ -406,11 +406,11 @@ export default function NotificationsPage() {
                     className="flex items-center gap-2"
                   >
                     {showOnlyUnread ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                    {showOnlyUnread ? 'Show All' : 'Unread Only'}
+                    {showOnlyUnread ? 'نمایش همه' : 'فقط خوانده‌نشده'}
                   </Button>
                   <Button variant="outline" size="sm">
                     <Archive className="w-4 h-4 mr-1" />
-                    Archive Read
+                    بایگانی خوانده‌شده‌ها
                   </Button>
                 </div>
               </CardTitle>
@@ -421,25 +421,25 @@ export default function NotificationsPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
-                      placeholder="Search notifications..."
+                      placeholder="جستجوی اعلان‌ها..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
                     />
                   </div>
                 </div>
-                <select 
-                  value={filter} 
+                <select
+                  value={filter}
                   onChange={(e) => setFilter(e.target.value)}
                   className="px-3 py-2 border rounded-md"
                 >
-                  <option value="all">All Categories</option>
-                  <option value="trading">Trading</option>
-                  <option value="system">System</option>
-                  <option value="risk">Risk</option>
-                  <option value="market">Market</option>
-                  <option value="portfolio">Portfolio</option>
-                  <option value="security">Security</option>
+                  <option value="all">همه دسته‌ها</option>
+                  <option value="trading">معاملات</option>
+                  <option value="system">سیستم</option>
+                  <option value="risk">ریسک</option>
+                  <option value="market">بازار</option>
+                  <option value="portfolio">پرتفوی</option>
+                  <option value="security">امنیت</option>
                 </select>
               </div>
             </CardContent>
@@ -450,13 +450,13 @@ export default function NotificationsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <AlertCircle className="w-5 h-5" />
-                Alert History
+                تاریخچه هشدارها
               </CardTitle>
             </CardHeader>
             <CardContent>
               {filteredNotifications.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  No notifications match your filters
+                  اعلانی مطابق فیلترهای شما یافت نشد
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -485,24 +485,24 @@ export default function NotificationsPage() {
                               </Badge>
                             </div>
                             <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
-                            
+
                             {notification.metadata && (
                               <div className="flex gap-4 text-xs text-gray-500 mb-2">
                                 {notification.metadata.symbol && (
-                                  <span>Symbol: {notification.metadata.symbol}</span>
+                                  <span>نماد: {notification.metadata.symbol}</span>
                                 )}
                                 {notification.metadata.value && (
-                                  <span>Value: {notification.metadata.value.toLocaleString()}</span>
+                                  <span>مقدار: {notification.metadata.value.toLocaleString()}</span>
                                 )}
                                 {notification.metadata.threshold && (
-                                  <span>Threshold: {notification.metadata.threshold.toLocaleString()}</span>
+                                  <span>آستانه: {notification.metadata.threshold.toLocaleString()}</span>
                                 )}
                                 {notification.metadata.instance && (
-                                  <span>Instance: {notification.metadata.instance}</span>
+                                  <span>نمونه: {notification.metadata.instance}</span>
                                 )}
                               </div>
                             )}
-                            
+
                             <div className="flex gap-2 flex-wrap">
                               {notification.tags.map(tag => (
                                 <Badge key={tag} variant="outline" className="text-xs">
@@ -512,7 +512,7 @@ export default function NotificationsPage() {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-2 ml-4">
                           <div className="text-xs text-gray-500">
                             {formatTimestamp(notification.timestamp)}
@@ -562,11 +562,11 @@ export default function NotificationsPage() {
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Settings className="w-5 h-5" />
-                  Alert Rules
+                  قوانین هشدار
                 </div>
                 <Button className="flex items-center gap-2">
                   <Zap className="w-4 h-4" />
-                  Create Rule
+                  ایجاد قانون
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -601,34 +601,34 @@ export default function NotificationsPage() {
                           onClick={() => handleToggleAlertRule(rule)}
                         >
                           {rule.enabled ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                          {rule.enabled ? 'Disable' : 'Enable'}
+                          {rule.enabled ? 'غیرفعال‌سازی' : 'فعال‌سازی'}
                         </Button>
                         <Button variant="outline" size="sm">
                           <Settings className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
-                    
+
                     <p className="text-sm text-gray-600 mb-3">{rule.description}</p>
-                    
+
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
-                        <h4 className="font-medium text-sm mb-2">Conditions</h4>
+                        <h4 className="font-medium text-sm mb-2">شرایط</h4>
                         <div className="text-sm text-gray-600">
                           <code className="bg-gray-100 px-2 py-1 rounded text-xs">
                             {rule.conditions?.metric} {rule.conditions?.operator} {rule.conditions?.threshold}
                           </code>
-                          <span className="ml-2">for {rule.conditions?.duration}</span>
+                          <span className="ml-2">به مدت {rule.conditions?.duration}</span>
                         </div>
                       </div>
-                      
+
                       <div>
-                        <h4 className="font-medium text-sm mb-2">Notification Channels</h4>
+                        <h4 className="font-medium text-sm mb-2">کانال‌های اعلان</h4>
                         <div className="flex gap-2">
-                          {rule.notifications.email && <Badge variant="outline"><Mail className="w-3 h-3 mr-1" />Email</Badge>}
-                          {rule.notifications.sms && <Badge variant="outline"><Smartphone className="w-3 h-3 mr-1" />SMS</Badge>}
-                          {rule.notifications.push && <Badge variant="outline"><Bell className="w-3 h-3 mr-1" />Push</Badge>}
-                          {rule.notifications.webhook && <Badge variant="outline"><Zap className="w-3 h-3 mr-1" />Webhook</Badge>}
+                          {rule.notifications.email && <Badge variant="outline"><Mail className="w-3 h-3 mr-1" />ایمیل</Badge>}
+                          {rule.notifications.sms && <Badge variant="outline"><Smartphone className="w-3 h-3 mr-1" />پیامک</Badge>}
+                          {rule.notifications.push && <Badge variant="outline"><Bell className="w-3 h-3 mr-1" />پوش</Badge>}
+                          {rule.notifications.webhook && <Badge variant="outline"><Zap className="w-3 h-3 mr-1" />وبهوک</Badge>}
                         </div>
                       </div>
                     </div>
@@ -645,32 +645,32 @@ export default function NotificationsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Mail className="w-5 h-5" />
-                  Email Notifications
+                  اعلان‌های ایمیلی
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Email Address</Label>
+                  <Label>آدرس ایمیل</Label>
                   <Input placeholder="alerts@yourcompany.com" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Notification Types</Label>
+                  <Label>انواع اعلان</Label>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked />
-                      <span className="text-sm">Critical alerts</span>
+                      <span className="text-sm">هشدارهای بحرانی</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked />
-                      <span className="text-sm">System alerts</span>
+                      <span className="text-sm">هشدارهای سیستم</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" />
-                      <span className="text-sm">Trading notifications</span>
+                      <span className="text-sm">اعلان‌های معاملاتی</span>
                     </label>
                   </div>
                 </div>
-                <Button className="w-full">Update Email Settings</Button>
+                <Button className="w-full">به‌روزرسانی تنظیمات ایمیل</Button>
               </CardContent>
             </Card>
 
@@ -678,28 +678,28 @@ export default function NotificationsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Smartphone className="w-5 h-5" />
-                  SMS Notifications
+                  اعلان‌های پیامکی
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Phone Number</Label>
+                  <Label>شماره تلفن</Label>
                   <Input placeholder="+1 (555) 123-4567" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Emergency Only</Label>
+                  <Label>فقط موارد اضطراری</Label>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked />
-                      <span className="text-sm">Critical system failures</span>
+                      <span className="text-sm">خرابی‌های بحرانی سیستم</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked />
-                      <span className="text-sm">Risk limit breaches</span>
+                      <span className="text-sm">نقض محدودیت ریسک</span>
                     </label>
                   </div>
                 </div>
-                <Button className="w-full">Update SMS Settings</Button>
+                <Button className="w-full">به‌روزرسانی تنظیمات پیامک</Button>
               </CardContent>
             </Card>
 
@@ -707,20 +707,20 @@ export default function NotificationsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="w-5 h-5" />
-                  Webhook Integration
+                  یکپارچگی وبهوک
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Webhook URL</Label>
+                  <Label>آدرس وبهوک</Label>
                   <Input placeholder="https://your-system.com/webhooks/alerts" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Secret Token</Label>
+                  <Label>توکن محرمانه</Label>
                   <Input type="password" placeholder="webhook-secret-token" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Payload Format</Label>
+                  <Label>قالب Payload</Label>
                   <select className="w-full p-2 border rounded-md">
                     <option>JSON</option>
                     <option>Slack</option>
@@ -728,7 +728,7 @@ export default function NotificationsPage() {
                     <option>Teams</option>
                   </select>
                 </div>
-                <Button className="w-full">Test Webhook</Button>
+                <Button className="w-full">تست وبهوک</Button>
               </CardContent>
             </Card>
 
@@ -736,31 +736,31 @@ export default function NotificationsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Database className="w-5 h-5" />
-                  Prometheus Integration
+                  یکپارچگی Prometheus
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Prometheus Endpoint</Label>
+                  <Label>آدرس Prometheus</Label>
                   <Input value="http://prometheus:9090" readOnly />
                 </div>
                 <div className="space-y-2">
-                  <Label>AlertManager URL</Label>
+                  <Label>آدرس AlertManager</Label>
                   <Input value="http://alertmanager:9093" readOnly />
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" className="flex-1">
                     <RefreshCw className="w-4 h-4 mr-1" />
-                    Sync Rules
+                    همگام‌سازی قوانین
                   </Button>
                   <Button variant="outline" className="flex-1">
                     <Download className="w-4 h-4 mr-1" />
-                    Export Config
+                    خروجی تنظیمات
                   </Button>
                 </div>
                 <div className="text-sm text-green-600 dark:text-green-400 flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
-                  Connected — scraping API, trading, risk, DB, Redis, Celery & system metrics
+                  متصل — دریافت داده از API، معاملات، ریسک، دیتابیس، Redis، Celery و معیارهای سیستم
                 </div>
               </CardContent>
             </Card>
@@ -773,14 +773,14 @@ export default function NotificationsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Volume2 className="w-5 h-5" />
-                  Sound & Visual
+                  صدا و نمایش
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Sound Notifications</div>
-                    <div className="text-sm text-gray-500">Play sound for new alerts</div>
+                    <div className="font-medium">اعلان‌های صوتی</div>
+                    <div className="text-sm text-gray-500">پخش صدا برای هشدارهای جدید</div>
                   </div>
                   <Button
                     variant="outline"
@@ -790,27 +790,27 @@ export default function NotificationsPage() {
                     {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
                   </Button>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label>Alert Sound</Label>
+                  <Label>صدای هشدار</Label>
                   <select className="w-full p-2 border rounded-md">
-                    <option>Default Chime</option>
-                    <option>Urgent Beep</option>
-                    <option>Soft Ding</option>
-                    <option>Trading Bell</option>
+                    <option>زنگ پیش‌فرض</option>
+                    <option>بوق فوری</option>
+                    <option>زنگ ملایم</option>
+                    <option>زنگ معاملاتی</option>
                   </select>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label>Desktop Notifications</Label>
+                  <Label>اعلان‌های دسکتاپ</Label>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked />
-                      <span className="text-sm">Show browser notifications</span>
+                      <span className="text-sm">نمایش اعلان‌های مرورگر</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked />
-                      <span className="text-sm">Badge count on tab</span>
+                      <span className="text-sm">نمایش تعداد روی تب</span>
                     </label>
                   </div>
                 </div>
@@ -821,38 +821,38 @@ export default function NotificationsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
-                  Timing & Frequency
+                  زمان‌بندی و تناوب
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Quiet Hours</Label>
+                  <Label>ساعات سکوت</Label>
                   <div className="grid grid-cols-2 gap-2">
                     <Input type="time" defaultValue="22:00" />
                     <Input type="time" defaultValue="08:00" />
                   </div>
                   <div className="text-xs text-gray-500">
-                    Only critical alerts during quiet hours
+                    فقط هشدارهای بحرانی در ساعات سکوت
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label>Notification Grouping</Label>
+                  <Label>گروه‌بندی اعلان‌ها</Label>
                   <select className="w-full p-2 border rounded-md">
-                    <option>Real-time</option>
-                    <option>Every 5 minutes</option>
-                    <option>Every 15 minutes</option>
-                    <option>Hourly digest</option>
+                    <option>لحظه‌ای</option>
+                    <option>هر ۵ دقیقه</option>
+                    <option>هر ۱۵ دقیقه</option>
+                    <option>خلاصه ساعتی</option>
                   </select>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label>Auto-acknowledge</Label>
+                  <Label>تأیید خودکار</Label>
                   <select className="w-full p-2 border rounded-md">
-                    <option>Never</option>
-                    <option>After 1 hour</option>
-                    <option>After 24 hours</option>
-                    <option>After 7 days</option>
+                    <option>هرگز</option>
+                    <option>بعد از ۱ ساعت</option>
+                    <option>بعد از ۲۴ ساعت</option>
+                    <option>بعد از ۷ روز</option>
                   </select>
                 </div>
               </CardContent>
@@ -862,33 +862,33 @@ export default function NotificationsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
-                  Alert Escalation
+                  تشدید هشدار
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
                   <div>
-                    <Label className="text-sm font-medium">Level 1 - Primary</Label>
+                    <Label className="text-sm font-medium">سطح ۱ - اصلی</Label>
                     <Input placeholder="primary-oncall@company.com" className="mt-1" />
                   </div>
                   <div>
-                    <Label className="text-sm font-medium">Level 2 - Secondary (15 min)</Label>
+                    <Label className="text-sm font-medium">سطح ۲ - ثانویه (۱۵ دقیقه)</Label>
                     <Input placeholder="secondary-oncall@company.com" className="mt-1" />
                   </div>
                   <div>
-                    <Label className="text-sm font-medium">Level 3 - Manager (30 min)</Label>
+                    <Label className="text-sm font-medium">سطح ۳ - مدیر (۳۰ دقیقه)</Label>
                     <Input placeholder="manager@company.com" className="mt-1" />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="flex items-center gap-2">
                     <input type="checkbox" defaultChecked />
-                    <span className="text-sm">Enable escalation for critical alerts</span>
+                    <span className="text-sm">فعال‌سازی تشدید برای هشدارهای بحرانی</span>
                   </label>
                   <label className="flex items-center gap-2">
                     <input type="checkbox" />
-                    <span className="text-sm">Include context in escalation</span>
+                    <span className="text-sm">افزودن جزئیات در تشدید</span>
                   </label>
                 </div>
               </CardContent>
@@ -898,32 +898,32 @@ export default function NotificationsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5" />
-                  Personal Preferences
+                  تنظیمات شخصی
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Time Zone</Label>
+                  <Label>منطقه زمانی</Label>
                   <select className="w-full p-2 border rounded-md">
-                    <option>UTC-8 (Pacific Time)</option>
-                    <option>UTC-5 (Eastern Time)</option>
+                    <option>UTC-8 (وقت اقیانوس آرام)</option>
+                    <option>UTC-5 (وقت شرقی)</option>
                     <option>UTC+0 (GMT)</option>
                     <option>UTC+1 (CET)</option>
                   </select>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label>Language</Label>
+                  <Label>زبان</Label>
                   <select className="w-full p-2 border rounded-md">
-                    <option>English</option>
-                    <option>Spanish</option>
-                    <option>French</option>
-                    <option>German</option>
+                    <option>انگلیسی</option>
+                    <option>اسپانیایی</option>
+                    <option>فرانسوی</option>
+                    <option>آلمانی</option>
                   </select>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label>Date Format</Label>
+                  <Label>قالب تاریخ</Label>
                   <select className="w-full p-2 border rounded-md">
                     <option>MM/DD/YYYY</option>
                     <option>DD/MM/YYYY</option>
@@ -937,4 +937,4 @@ export default function NotificationsPage() {
       </Tabs>
     </div>
   );
-} 
+}

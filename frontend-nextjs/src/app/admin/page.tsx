@@ -8,8 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Shield, 
+import {
+  Shield,
   Users,
   Settings,
   Monitor,
@@ -121,6 +121,26 @@ const AuditLogPage = dynamic(
   { ssr: false, loading: () => <div className="p-6 text-muted-foreground">در حال بارگذاری لاگ ممیزی…</div> }
 );
 
+const STATUS_LABELS: Record<string, string> = {
+  healthy: 'سالم',
+  warning: 'هشدار',
+  critical: 'بحرانی',
+  offline: 'آفلاین',
+  active: 'فعال',
+  inactive: 'غیرفعال',
+  suspended: 'معلق',
+  pending: 'در انتظار',
+  success: 'موفق',
+  failure: 'ناموفق',
+};
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'مدیر',
+  trader: 'معامله‌گر',
+  analyst: 'تحلیل‌گر',
+  viewer: 'بیننده',
+};
+
 export default function AdminPage() {
   const [selectedTab, setSelectedTab] = useState('overview');
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -136,8 +156,8 @@ export default function AdminPage() {
     const sampleUsers: AdminUser[] = [
       {
         id: 'user-1',
-        name: 'John Anderson',
-        email: 'john.anderson@company.com',
+        name: 'علی احمدی',
+        email: 'ali.ahmadi@company.com',
         role: 'admin',
         status: 'active',
         lastLogin: '2024-01-20T14:30:00Z',
@@ -146,13 +166,13 @@ export default function AdminPage() {
         portfolioValue: 2500000,
         riskLevel: 'medium',
         permissions: ['USER_MANAGEMENT', 'SYSTEM_CONFIG', 'AUDIT_LOGS', 'TRADING_OVERRIDE'],
-        location: 'New York, NY',
-        department: 'Trading Operations'
+        location: 'تهران، ایران',
+        department: 'عملیات معاملاتی'
       },
       {
         id: 'user-2',
-        name: 'Sarah Chen',
-        email: 'sarah.chen@company.com',
+        name: 'سارا کریمی',
+        email: 'sara.karimi@company.com',
         role: 'trader',
         status: 'active',
         lastLogin: '2024-01-20T15:45:00Z',
@@ -161,13 +181,13 @@ export default function AdminPage() {
         portfolioValue: 1800000,
         riskLevel: 'high',
         permissions: ['PORTFOLIO_MANAGEMENT', 'ORDER_EXECUTION', 'RISK_OVERRIDE'],
-        location: 'London, UK',
-        department: 'Equity Trading'
+        location: 'لندن، انگلستان',
+        department: 'معاملات سهام'
       },
       {
         id: 'user-3',
-        name: 'Michael Rodriguez',
-        email: 'michael.rodriguez@company.com',
+        name: 'محمد رضایی',
+        email: 'mohammad.rezaei@company.com',
         role: 'analyst',
         status: 'active',
         lastLogin: '2024-01-20T12:15:00Z',
@@ -176,13 +196,13 @@ export default function AdminPage() {
         portfolioValue: 750000,
         riskLevel: 'low',
         permissions: ['ANALYTICS_ACCESS', 'REPORT_GENERATION', 'DATA_EXPORT'],
-        location: 'Singapore',
-        department: 'Research & Analytics'
+        location: 'سنگاپور',
+        department: 'پژوهش و تحلیل'
       },
       {
         id: 'user-4',
-        name: 'Emily Davis',
-        email: 'emily.davis@company.com',
+        name: 'مریم داوودی',
+        email: 'maryam.davoodi@company.com',
         role: 'viewer',
         status: 'suspended',
         lastLogin: '2024-01-18T09:30:00Z',
@@ -191,14 +211,14 @@ export default function AdminPage() {
         portfolioValue: 0,
         riskLevel: 'low',
         permissions: ['READ_ONLY_ACCESS'],
-        location: 'Toronto, CA',
-        department: 'Compliance'
+        location: 'تورنتو، کانادا',
+        department: 'انطباق'
       }
     ];
 
     const sampleSystemHealth: SystemHealth[] = [
       {
-        service: 'Trading Engine',
+        service: 'موتور معاملات',
         status: 'healthy',
         uptime: '99.98%',
         cpu: 45.2,
@@ -208,7 +228,7 @@ export default function AdminPage() {
         version: 'v2.4.1'
       },
       {
-        service: 'Market Data Feed',
+        service: 'فید داده بازار',
         status: 'healthy',
         uptime: '99.95%',
         cpu: 32.1,
@@ -218,7 +238,7 @@ export default function AdminPage() {
         version: 'v1.8.3'
       },
       {
-        service: 'Risk Manager',
+        service: 'مدیریت ریسک',
         status: 'warning',
         uptime: '99.12%',
         cpu: 78.9,
@@ -228,7 +248,7 @@ export default function AdminPage() {
         version: 'v3.1.0'
       },
       {
-        service: 'Database Cluster',
+        service: 'خوشه پایگاه‌داده',
         status: 'healthy',
         uptime: '99.99%',
         cpu: 23.4,
@@ -238,7 +258,7 @@ export default function AdminPage() {
         version: 'PostgreSQL 15.2'
       },
       {
-        service: 'API Gateway',
+        service: 'دروازه API',
         status: 'healthy',
         uptime: '99.87%',
         cpu: 38.7,
@@ -248,7 +268,7 @@ export default function AdminPage() {
         version: 'v1.2.8'
       },
       {
-        service: 'Analytics Engine',
+        service: 'موتور تحلیل',
         status: 'critical',
         uptime: '87.23%',
         cpu: 95.4,
@@ -263,10 +283,10 @@ export default function AdminPage() {
       {
         id: 'log-1',
         timestamp: '2024-01-20T15:45:23Z',
-        user: 'john.anderson@company.com',
+        user: 'ali.ahmadi@company.com',
         action: 'USER_SUSPENDED',
-        resource: 'users/emily.davis',
-        details: 'User suspended due to policy violation',
+        resource: 'users/maryam.davoodi',
+        details: 'کاربر به دلیل نقض سیاست‌ها معلق شد',
         ipAddress: '192.168.1.145',
         result: 'success',
         severity: 'high'
@@ -274,10 +294,10 @@ export default function AdminPage() {
       {
         id: 'log-2',
         timestamp: '2024-01-20T15:30:12Z',
-        user: 'sarah.chen@company.com',
+        user: 'sara.karimi@company.com',
         action: 'LARGE_ORDER_EXECUTED',
         resource: 'orders/ord-789456',
-        details: 'Executed order for 50,000 shares of AAPL',
+        details: 'سفارش خرید ۵۰,۰۰۰ سهم AAPL اجرا شد',
         ipAddress: '10.0.0.234',
         result: 'success',
         severity: 'medium'
@@ -288,7 +308,7 @@ export default function AdminPage() {
         user: 'system',
         action: 'CONFIG_CHANGED',
         resource: 'settings/risk_limits',
-        details: 'Updated portfolio VaR limit from $45K to $50K',
+        details: 'حد VaR پرتفوی از ۴۵ هزار دلار به ۵۰ هزار دلار تغییر یافت',
         ipAddress: '127.0.0.1',
         result: 'success',
         severity: 'medium'
@@ -296,10 +316,10 @@ export default function AdminPage() {
       {
         id: 'log-4',
         timestamp: '2024-01-20T14:58:33Z',
-        user: 'michael.rodriguez@company.com',
+        user: 'mohammad.rezaei@company.com',
         action: 'LOGIN_FAILED',
         resource: 'auth/login',
-        details: 'Failed login attempt - invalid credentials',
+        details: 'تلاش ناموفق برای ورود - اطلاعات نامعتبر',
         ipAddress: '203.45.67.89',
         result: 'failure',
         severity: 'low'
@@ -313,9 +333,9 @@ export default function AdminPage() {
         key: 'max_order_size',
         value: '1000000',
         type: 'number',
-        description: 'Maximum order size in USD',
+        description: 'حداکثر حجم سفارش به دلار',
         modified: '2024-01-20T10:30:00Z',
-        modifiedBy: 'john.anderson@company.com',
+        modifiedBy: 'ali.ahmadi@company.com',
         requiresRestart: false
       },
       {
@@ -324,7 +344,7 @@ export default function AdminPage() {
         key: 'portfolio_var_limit',
         value: '50000',
         type: 'number',
-        description: 'Portfolio Value at Risk limit in USD',
+        description: 'حد ارزش در معرض ریسک پرتفوی به دلار',
         modified: '2024-01-20T15:15:00Z',
         modifiedBy: 'system',
         requiresRestart: false
@@ -335,9 +355,9 @@ export default function AdminPage() {
         key: 'session_timeout',
         value: '3600',
         type: 'number',
-        description: 'User session timeout in seconds',
+        description: 'مهلت زمانی نشست کاربر به ثانیه',
         modified: '2024-01-19T14:20:00Z',
-        modifiedBy: 'john.anderson@company.com',
+        modifiedBy: 'ali.ahmadi@company.com',
         requiresRestart: true
       },
       {
@@ -346,7 +366,7 @@ export default function AdminPage() {
         key: 'enable_2fa',
         value: 'true',
         type: 'boolean',
-        description: 'Require two-factor authentication',
+        description: 'الزام تأیید دومرحله‌ای',
         modified: '2024-01-18T09:45:00Z',
         modifiedBy: 'security-admin@company.com',
         requiresRestart: false
@@ -397,7 +417,7 @@ export default function AdminPage() {
   };
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString();
+    return new Date(timestamp).toLocaleString('fa-IR');
   };
 
   const totalUsers = users.length;
@@ -411,37 +431,37 @@ export default function AdminPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <Shield className="w-8 h-8 text-purple-600" />
-            Admin Panel
+            پنل مدیریت
           </h1>
           <p className="text-muted-foreground">
-            System administration, user management, and platform configuration
+            مدیریت سیستم، مدیریت کاربران و پیکربندی پلتفرم
           </p>
         </div>
-        
+
         {/* Quick Stats */}
         <div className="flex gap-4">
           <Card className="w-32">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-blue-600">{totalUsers}</div>
-              <div className="text-xs text-gray-500">Total Users</div>
+              <div className="text-xs text-gray-500">کل کاربران</div>
             </CardContent>
           </Card>
           <Card className="w-32">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-green-600">{activeUsers}</div>
-              <div className="text-xs text-gray-500">Active</div>
+              <div className="text-xs text-gray-500">فعال</div>
             </CardContent>
           </Card>
           <Card className="w-32">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-green-600">{healthyServices}</div>
-              <div className="text-xs text-gray-500">Healthy Services</div>
+              <div className="text-xs text-gray-500">سرویس‌های سالم</div>
             </CardContent>
           </Card>
           <Card className="w-32">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-red-600">{criticalIssues}</div>
-              <div className="text-xs text-gray-500">Critical Issues</div>
+              <div className="text-xs text-gray-500">مشکلات بحرانی</div>
             </CardContent>
           </Card>
         </div>
@@ -449,12 +469,12 @@ export default function AdminPage() {
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-7">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="system">System Health</TabsTrigger>
-          <TabsTrigger value="audit">Audit Logs</TabsTrigger>
-          <TabsTrigger value="config">Configuration</TabsTrigger>
-          <TabsTrigger value="tools">Tools</TabsTrigger>
+          <TabsTrigger value="overview">نمای کلی</TabsTrigger>
+          <TabsTrigger value="users">کاربران</TabsTrigger>
+          <TabsTrigger value="system">سلامت سیستم</TabsTrigger>
+          <TabsTrigger value="audit">لاگ‌های ممیزی</TabsTrigger>
+          <TabsTrigger value="config">پیکربندی</TabsTrigger>
+          <TabsTrigger value="tools">ابزارها</TabsTrigger>
           <TabsTrigger value="startup">استارتاپ‌تراکر</TabsTrigger>
         </TabsList>
 
@@ -465,7 +485,7 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Monitor className="w-5 h-5" />
-                  System Status
+                  وضعیت سیستم
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -481,7 +501,7 @@ export default function AdminPage() {
                         <span className="font-medium text-sm">{service.service}</span>
                       </div>
                       <Badge className={getStatusColor(service.status)}>
-                        {service.status}
+                        {STATUS_LABELS[service.status] ?? service.status}
                       </Badge>
                     </div>
                   ))}
@@ -493,26 +513,26 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="w-5 h-5" />
-                  User Activity
+                  فعالیت کاربران
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Active Users</span>
+                    <span className="text-sm text-gray-600">کاربران فعال</span>
                     <span className="font-medium">{activeUsers} / {totalUsers}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Suspended</span>
+                    <span className="text-sm text-gray-600">معلق</span>
                     <span className="font-medium">{users.filter(u => u.status === 'suspended').length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Pending</span>
+                    <span className="text-sm text-gray-600">در انتظار</span>
                     <span className="font-medium">{users.filter(u => u.status === 'pending').length}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Total Trades Today</span>
-                    <span className="font-medium">2,337</span>
+                    <span className="text-sm text-gray-600">کل معاملات امروز</span>
+                    <span className="font-medium">۲,۳۳۷</span>
                   </div>
                 </div>
               </CardContent>
@@ -524,7 +544,7 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="w-5 h-5" />
-                Recent Administrative Activity
+                فعالیت‌های مدیریتی اخیر
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -543,7 +563,7 @@ export default function AdminPage() {
                       </div>
                     </div>
                     <Badge className={log.result === 'success' ? getStatusColor('healthy') : getStatusColor('critical')}>
-                      {log.result}
+                      {STATUS_LABELS[log.result] ?? log.result}
                     </Badge>
                   </div>
                 ))}
@@ -559,11 +579,11 @@ export default function AdminPage() {
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5" />
-                  User Management
+                  مدیریت کاربران
                 </div>
                 <Button className="flex items-center gap-2">
                   <Plus className="w-4 h-4" />
-                  Add User
+                  افزودن کاربر
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -573,34 +593,34 @@ export default function AdminPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
-                      placeholder="Search users..."
+                      placeholder="جستجوی کاربران..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
                     />
                   </div>
                 </div>
-                <select 
-                  value={selectedRole} 
+                <select
+                  value={selectedRole}
                   onChange={(e) => setSelectedRole(e.target.value)}
                   className="px-3 py-2 border rounded-md"
                 >
-                  <option value="all">All Roles</option>
-                  <option value="admin">Admin</option>
-                  <option value="trader">Trader</option>
-                  <option value="analyst">Analyst</option>
-                  <option value="viewer">Viewer</option>
+                  <option value="all">همه نقش‌ها</option>
+                  <option value="admin">مدیر</option>
+                  <option value="trader">معامله‌گر</option>
+                  <option value="analyst">تحلیل‌گر</option>
+                  <option value="viewer">بیننده</option>
                 </select>
-                <select 
-                  value={selectedStatus} 
+                <select
+                  value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
                   className="px-3 py-2 border rounded-md"
                 >
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="suspended">Suspended</option>
-                  <option value="pending">Pending</option>
+                  <option value="all">همه وضعیت‌ها</option>
+                  <option value="active">فعال</option>
+                  <option value="inactive">غیرفعال</option>
+                  <option value="suspended">معلق</option>
+                  <option value="pending">در انتظار</option>
                 </select>
               </div>
             </CardContent>
@@ -622,10 +642,10 @@ export default function AdminPage() {
                           <div className="text-sm text-gray-500">{user.email}</div>
                         </div>
                         <Badge className={getRoleColor(user.role)}>
-                          {user.role}
+                          {ROLE_LABELS[user.role] ?? user.role}
                         </Badge>
                         <Badge className={getStatusColor(user.status)}>
-                          {user.status}
+                          {STATUS_LABELS[user.status] ?? user.status}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2">
@@ -640,26 +660,26 @@ export default function AdminPage() {
                         </Button>
                       </div>
                     </div>
-                    
+
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 text-sm">
                       <div>
-                        <div className="text-gray-500">Department</div>
+                        <div className="text-gray-500">واحد</div>
                         <div className="font-medium">{user.department}</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Location</div>
+                        <div className="text-gray-500">موقعیت</div>
                         <div className="font-medium">{user.location}</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Total Trades</div>
+                        <div className="text-gray-500">کل معاملات</div>
                         <div className="font-medium">{user.totalTrades.toLocaleString()}</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Portfolio Value</div>
+                        <div className="text-gray-500">ارزش پرتفوی</div>
                         <div className="font-medium">{formatCurrency(user.portfolioValue)}</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Last Login</div>
+                        <div className="text-gray-500">آخرین ورود</div>
                         <div className="font-medium">{formatTimestamp(user.lastLogin)}</div>
                       </div>
                     </div>
@@ -676,11 +696,11 @@ export default function AdminPage() {
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Monitor className="w-5 h-5" />
-                  System Health Monitor
+                  پایش سلامت سیستم
                 </div>
                 <Button variant="outline" size="sm">
                   <RefreshCw className="w-4 h-4 mr-1" />
-                  Refresh
+                  بازخوانی
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -697,34 +717,34 @@ export default function AdminPage() {
                         }`} />
                         <h3 className="font-medium">{service.service}</h3>
                         <Badge className={getStatusColor(service.status)}>
-                          {service.status}
+                          {STATUS_LABELS[service.status] ?? service.status}
                         </Badge>
                         <Badge variant="outline">{service.version}</Badge>
                       </div>
                       <div className="text-sm text-gray-500">
-                        Last check: {formatTimestamp(service.lastCheck)}
+                        آخرین بررسی: {formatTimestamp(service.lastCheck)}
                       </div>
                     </div>
-                    
+
                     <div className="grid gap-4 md:grid-cols-5 text-sm">
                       <div>
-                        <div className="text-gray-500">Uptime</div>
+                        <div className="text-gray-500">زمان فعالیت</div>
                         <div className="font-medium">{service.uptime}</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">CPU Usage</div>
+                        <div className="text-gray-500">مصرف CPU</div>
                         <div className="font-medium">{service.cpu}%</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Memory</div>
+                        <div className="text-gray-500">حافظه</div>
                         <div className="font-medium">{service.memory}%</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Response Time</div>
+                        <div className="text-gray-500">زمان پاسخ</div>
                         <div className="font-medium">{service.responseTime}ms</div>
                       </div>
                       <div>
-                        <div className="text-gray-500">Actions</div>
+                        <div className="text-gray-500">عملیات</div>
                         <div className="flex gap-1">
                           <Button variant="outline" size="sm">
                             <Eye className="w-3 h-3" />
@@ -754,7 +774,7 @@ export default function AdminPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="w-5 h-5" />
-                System Configuration
+                پیکربندی سیستم
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -768,7 +788,7 @@ export default function AdminPage() {
                         <Badge variant="outline">{setting.type}</Badge>
                         {setting.requiresRestart && (
                           <Badge className="bg-orange-100 text-orange-800">
-                            Requires Restart
+                            نیاز به راه‌اندازی مجدد
                           </Badge>
                         )}
                       </div>
@@ -782,7 +802,7 @@ export default function AdminPage() {
                         {setting.value}
                       </span>
                       <span className="text-gray-500">
-                        Modified: {formatTimestamp(setting.modified)} by {setting.modifiedBy}
+                        تغییر در {formatTimestamp(setting.modified)} توسط {setting.modifiedBy}
                       </span>
                     </div>
                   </div>
@@ -798,25 +818,25 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Database className="w-5 h-5" />
-                  Database Tools
+                  ابزارهای پایگاه‌داده
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button className="w-full justify-start">
                   <Download className="w-4 h-4 mr-2" />
-                  Export Database Backup
+                  خروجی پشتیبان پایگاه‌داده
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Upload className="w-4 h-4 mr-2" />
-                  Import Data
+                  وارد کردن داده
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Wrench className="w-4 h-4 mr-2" />
-                  Database Maintenance
+                  نگه‌داری پایگاه‌داده
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <BarChart3 className="w-4 h-4 mr-2" />
-                  Performance Analytics
+                  تحلیل عملکرد
                 </Button>
               </CardContent>
             </Card>
@@ -825,25 +845,25 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
-                  Security Tools
+                  ابزارهای امنیتی
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button className="w-full justify-start">
                   <Key className="w-4 h-4 mr-2" />
-                  Rotate API Keys
+                  چرخش کلیدهای API
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Lock className="w-4 h-4 mr-2" />
-                  Force Password Reset
+                  اجبار بازنشانی رمز عبور
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <AlertTriangle className="w-4 h-4 mr-2" />
-                  Security Scan
+                  اسکن امنیتی
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <FileText className="w-4 h-4 mr-2" />
-                  Security Report
+                  گزارش امنیتی
                 </Button>
               </CardContent>
             </Card>
@@ -852,25 +872,25 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Monitor className="w-5 h-5" />
-                  System Tools
+                  ابزارهای سیستم
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button className="w-full justify-start">
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  Restart Services
+                  راه‌اندازی مجدد سرویس‌ها
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Activity className="w-4 h-4 mr-2" />
-                  Health Check
+                  بررسی سلامت
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Archive className="w-4 h-4 mr-2" />
-                  Archive Old Logs
+                  آرشیو لاگ‌های قدیمی
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Target className="w-4 h-4 mr-2" />
-                  Performance Test
+                  تست عملکرد
                 </Button>
               </CardContent>
             </Card>
@@ -879,25 +899,25 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5" />
-                  Notification Tools
+                  ابزارهای اعلان
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button className="w-full justify-start">
                   <Mail className="w-4 h-4 mr-2" />
-                  Send System Notice
+                  ارسال اعلان سیستمی
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <AlertCircle className="w-4 h-4 mr-2" />
-                  Emergency Alert
+                  هشدار اضطراری
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Bell className="w-4 h-4 mr-2" />
-                  Test Notifications
+                  آزمایش اعلان‌ها
                 </Button>
                 <Button className="w-full justify-start" variant="outline">
                   <Settings className="w-4 h-4 mr-2" />
-                  Alert Settings
+                  تنظیمات هشدار
                 </Button>
               </CardContent>
             </Card>

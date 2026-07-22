@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import {
   Settings,
   Monitor,
   Globe,
@@ -135,11 +135,11 @@ export default function SettingsPage() {
 
   const [appSettings, setAppSettings] = useState<AppSettings>({
     theme: 'dark',
-    language: 'en',
-    timezone: 'America/New_York',
-    dateFormat: 'MM/dd/yyyy',
-    numberFormat: 'en-US',
-    currency: 'USD',
+    language: 'fa',
+    timezone: 'Asia/Tehran',
+    dateFormat: 'yyyy-MM-dd',
+    numberFormat: 'fa-IR',
+    currency: 'IRT',
     soundEnabled: true,
     animationsEnabled: true,
     autoSave: true,
@@ -219,7 +219,7 @@ export default function SettingsPage() {
       security: securitySettings,
       system: systemSettings
     };
-    
+
     const blob = new Blob([JSON.stringify(allSettings, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -235,21 +235,21 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <Settings className="w-8 h-8 text-blue-600" />
-            Settings
+            تنظیمات
           </h1>
           <p className="text-muted-foreground">
-            Configure your application preferences and system settings
+            تنظیمات برنامه و پیکربندی سیستم را مدیریت کنید
           </p>
         </div>
-        
+
         <div className="flex gap-3">
           <Button variant="outline" onClick={exportSettings}>
             <Download className="w-4 h-4 mr-2" />
-            Export
+            خروجی
           </Button>
           <Button variant="outline" onClick={handleResetToDefaults}>
             <RefreshCw className="w-4 h-4 mr-2" />
-            Reset
+            بازنشانی
           </Button>
           <Button onClick={handleSaveSettings} disabled={!hasChanges || saving}>
             {saving ? (
@@ -257,7 +257,7 @@ export default function SettingsPage() {
             ) : (
               <Save className="w-4 h-4 mr-2" />
             )}
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? 'در حال ذخیره...' : 'ذخیره تغییرات'}
           </Button>
         </div>
       </div>
@@ -266,18 +266,18 @@ export default function SettingsPage() {
         <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div className="flex items-center gap-2 text-yellow-800">
             <AlertTriangle className="w-5 h-5" />
-            <span>You have unsaved changes. Remember to save before leaving this page.</span>
+            <span>تغییرات ذخیره‌نشده دارید. قبل از خروج از این صفحه، آن‌ها را ذخیره کنید.</span>
           </div>
         </div>
       )}
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="trading">Trading</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="system">System</TabsTrigger>
+          <TabsTrigger value="general">عمومی</TabsTrigger>
+          <TabsTrigger value="trading">معاملات</TabsTrigger>
+          <TabsTrigger value="notifications">اعلان‌ها</TabsTrigger>
+          <TabsTrigger value="security">امنیت</TabsTrigger>
+          <TabsTrigger value="system">سیستم</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">
@@ -286,13 +286,13 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Palette className="w-5 h-5" />
-                  Appearance
+                  ظاهر
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Theme</label>
-                  <select 
+                  <label className="text-sm font-medium">پوسته</label>
+                  <select
                     value={appSettings.theme}
                     onChange={(e) => {
                       setAppSettings({...appSettings, theme: e.target.value as any});
@@ -300,19 +300,19 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                    <option value="auto">Auto (System)</option>
+                    <option value="light">روشن</option>
+                    <option value="dark">تیره</option>
+                    <option value="auto">خودکار (سیستم)</option>
                   </select>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Animations</div>
-                    <div className="text-sm text-gray-600">Enable smooth transitions</div>
+                    <div className="font-medium">انیمیشن‌ها</div>
+                    <div className="text-sm text-gray-600">فعال‌سازی انتقال‌های نرم</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={appSettings.animationsEnabled}
                     onChange={(e) => {
                       setAppSettings({...appSettings, animationsEnabled: e.target.checked});
@@ -321,14 +321,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Compact Mode</div>
-                    <div className="text-sm text-gray-600">Reduce spacing and padding</div>
+                    <div className="font-medium">حالت فشرده</div>
+                    <div className="text-sm text-gray-600">کاهش فاصله‌گذاری و پدینگ</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={appSettings.compactMode}
                     onChange={(e) => {
                       setAppSettings({...appSettings, compactMode: e.target.checked});
@@ -337,17 +337,17 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       {appSettings.soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-                      Sound Effects
+                      جلوه‌های صوتی
                     </div>
-                    <div className="text-sm text-gray-600">Enable audio notifications</div>
+                    <div className="text-sm text-gray-600">فعال‌سازی اعلان‌های صوتی</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={appSettings.soundEnabled}
                     onChange={(e) => {
                       setAppSettings({...appSettings, soundEnabled: e.target.checked});
@@ -363,13 +363,13 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Globe className="w-5 h-5" />
-                  Localization
+                  محلی‌سازی
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Language</label>
-                  <select 
+                  <label className="text-sm font-medium">زبان</label>
+                  <select
                     value={appSettings.language}
                     onChange={(e) => {
                       setAppSettings({...appSettings, language: e.target.value});
@@ -377,17 +377,15 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
+                    <option value="fa">فارسی</option>
                     <option value="en">English</option>
                     <option value="es">Español</option>
-                    <option value="fr">Français</option>
-                    <option value="de">Deutsch</option>
-                    <option value="ja">日本語</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Timezone</label>
-                  <select 
+                  <label className="text-sm font-medium">منطقه زمانی</label>
+                  <select
                     value={appSettings.timezone}
                     onChange={(e) => {
                       setAppSettings({...appSettings, timezone: e.target.value});
@@ -395,19 +393,18 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="America/New_York">Eastern Time (ET)</option>
-                    <option value="America/Chicago">Central Time (CT)</option>
-                    <option value="America/Denver">Mountain Time (MT)</option>
-                    <option value="America/Los_Angeles">Pacific Time (PT)</option>
-                    <option value="Europe/London">London (GMT)</option>
-                    <option value="Europe/Frankfurt">Frankfurt (CET)</option>
-                    <option value="Asia/Tokyo">Tokyo (JST)</option>
+                    <option value="Asia/Tehran">تهران (UTC+3:30)</option>
+                    <option value="America/New_York">وقت شرقی آمریکا (ET)</option>
+                    <option value="America/Chicago">وقت مرکزی آمریکا (CT)</option>
+                    <option value="Europe/London">لندن (GMT)</option>
+                    <option value="Europe/Frankfurt">فرانکفورت (CET)</option>
+                    <option value="Asia/Tokyo">توکیو (JST)</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Date Format</label>
-                  <select 
+                  <label className="text-sm font-medium">قالب تاریخ</label>
+                  <select
                     value={appSettings.dateFormat}
                     onChange={(e) => {
                       setAppSettings({...appSettings, dateFormat: e.target.value});
@@ -415,15 +412,15 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="MM/dd/yyyy">MM/dd/yyyy (US)</option>
-                    <option value="dd/MM/yyyy">dd/MM/yyyy (EU)</option>
-                    <option value="yyyy-MM-dd">yyyy-MM-dd (ISO)</option>
+                    <option value="yyyy-MM-dd">yyyy-MM-dd (شمسی/میلادی ISO)</option>
+                    <option value="MM/dd/yyyy">MM/dd/yyyy (آمریکایی)</option>
+                    <option value="dd/MM/yyyy">dd/MM/yyyy (اروپایی)</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Currency</label>
-                  <select 
+                  <label className="text-sm font-medium">واحد پول</label>
+                  <select
                     value={appSettings.currency}
                     onChange={(e) => {
                       setAppSettings({...appSettings, currency: e.target.value});
@@ -431,11 +428,10 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="USD">US Dollar (USD)</option>
-                    <option value="EUR">Euro (EUR)</option>
-                    <option value="GBP">British Pound (GBP)</option>
-                    <option value="JPY">Japanese Yen (JPY)</option>
-                    <option value="CAD">Canadian Dollar (CAD)</option>
+                    <option value="IRT">تومان (IRT)</option>
+                    <option value="USD">دلار آمریکا (USD)</option>
+                    <option value="EUR">یورو (EUR)</option>
+                    <option value="GBP">پوند انگلیس (GBP)</option>
                   </select>
                 </div>
               </CardContent>
@@ -446,18 +442,18 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="w-5 h-5" />
-                Performance
+                عملکرد
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Auto-save</div>
-                    <div className="text-sm text-gray-600">Automatically save changes</div>
+                    <div className="font-medium">ذخیره خودکار</div>
+                    <div className="text-sm text-gray-600">ذخیره خودکار تغییرات</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={appSettings.autoSave}
                     onChange={(e) => {
                       setAppSettings({...appSettings, autoSave: e.target.checked});
@@ -466,14 +462,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Auto-refresh</div>
-                    <div className="text-sm text-gray-600">Automatically refresh data</div>
+                    <div className="font-medium">به‌روزرسانی خودکار</div>
+                    <div className="text-sm text-gray-600">به‌روزرسانی خودکار داده‌ها</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={appSettings.autoRefresh}
                     onChange={(e) => {
                       setAppSettings({...appSettings, autoRefresh: e.target.checked});
@@ -482,10 +478,10 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Refresh Interval (seconds)</label>
-                  <Input 
+                  <label className="text-sm font-medium">بازه به‌روزرسانی (ثانیه)</label>
+                  <Input
                     type="number"
                     min="1"
                     max="60"
@@ -509,13 +505,13 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5" />
-                  Order Settings
+                  تنظیمات سفارش
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Default Order Type</label>
-                  <select 
+                  <label className="text-sm font-medium">نوع سفارش پیش‌فرض</label>
+                  <select
                     value={tradingSettings.defaultOrderType}
                     onChange={(e) => {
                       setTradingSettings({...tradingSettings, defaultOrderType: e.target.value});
@@ -523,20 +519,20 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="market">Market</option>
-                    <option value="limit">Limit</option>
-                    <option value="stop">Stop</option>
-                    <option value="stop-limit">Stop Limit</option>
+                    <option value="market">بازار</option>
+                    <option value="limit">محدود</option>
+                    <option value="stop">استاپ</option>
+                    <option value="stop-limit">استاپ محدود</option>
                   </select>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium">تأیید سفارش‌ها</div>
-                    <div className="text-sm text-gray-600">Show confirmation dialog</div>
+                    <div className="text-sm text-gray-600">نمایش دیالوگ تأیید</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={tradingSettings.confirmOrders}
                     onChange={(e) => {
                       setTradingSettings({...tradingSettings, confirmOrders: e.target.checked});
@@ -545,14 +541,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Risk Warnings</div>
-                    <div className="text-sm text-gray-600">Show risk alerts</div>
+                    <div className="font-medium">هشدارهای ریسک</div>
+                    <div className="text-sm text-gray-600">نمایش هشدارهای ریسک</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={tradingSettings.riskWarnings}
                     onChange={(e) => {
                       setTradingSettings({...tradingSettings, riskWarnings: e.target.checked});
@@ -561,14 +557,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Paper Trading Mode</div>
-                    <div className="text-sm text-gray-600">Use virtual money</div>
+                    <div className="font-medium">حالت معاملات آزمایشی</div>
+                    <div className="text-sm text-gray-600">استفاده از پول مجازی</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={tradingSettings.paperTradingMode}
                     onChange={(e) => {
                       setTradingSettings({...tradingSettings, paperTradingMode: e.target.checked});
@@ -584,13 +580,13 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="w-5 h-5" />
-                  Risk Management
+                  مدیریت ریسک
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Max Positions</label>
-                  <Input 
+                  <label className="text-sm font-medium">حداکثر پوزیشن‌ها</label>
+                  <Input
                     type="number"
                     min="1"
                     max="50"
@@ -602,10 +598,10 @@ export default function SettingsPage() {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Default Leverage</label>
-                  <select 
+                  <label className="text-sm font-medium">اهرم پیش‌فرض</label>
+                  <select
                     value={tradingSettings.defaultLeverage}
                     onChange={(e) => {
                       setTradingSettings({...tradingSettings, defaultLeverage: Number(e.target.value)});
@@ -613,17 +609,17 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="1">1:1 (No Leverage)</option>
-                    <option value="2">1:2</option>
-                    <option value="5">1:5</option>
-                    <option value="10">1:10</option>
-                    <option value="20">1:20</option>
+                    <option value="1">۱:۱ (بدون اهرم)</option>
+                    <option value="2">۱:۲</option>
+                    <option value="5">۱:۵</option>
+                    <option value="10">۱:۱۰</option>
+                    <option value="20">۱:۲۰</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Default Stop Loss (%)</label>
-                  <Input 
+                  <label className="text-sm font-medium">حد ضرر پیش‌فرض (٪)</label>
+                  <Input
                     type="number"
                     min="0.1"
                     max="10"
@@ -636,10 +632,10 @@ export default function SettingsPage() {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Default Take Profit (%)</label>
-                  <Input 
+                  <label className="text-sm font-medium">حد سود پیش‌فرض (٪)</label>
+                  <Input
                     type="number"
                     min="0.1"
                     max="20"
@@ -663,7 +659,7 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Bell className="w-5 h-5" />
-                  Notification Channels
+                  کانال‌های اعلان
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -671,12 +667,12 @@ export default function SettingsPage() {
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       <Mail className="w-4 h-4" />
-                      Email Notifications
+                      اعلان‌های ایمیلی
                     </div>
-                    <div className="text-sm text-gray-600">Receive alerts via email</div>
+                    <div className="text-sm text-gray-600">دریافت هشدارها از طریق ایمیل</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={notificationSettings.emailNotifications}
                     onChange={(e) => {
                       setNotificationSettings({...notificationSettings, emailNotifications: e.target.checked});
@@ -685,17 +681,17 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       <Smartphone className="w-4 h-4" />
-                      Push Notifications
+                      اعلان‌های پوش
                     </div>
-                    <div className="text-sm text-gray-600">Browser push notifications</div>
+                    <div className="text-sm text-gray-600">اعلان‌های پوش مرورگر</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={notificationSettings.pushNotifications}
                     onChange={(e) => {
                       setNotificationSettings({...notificationSettings, pushNotifications: e.target.checked});
@@ -704,17 +700,17 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       <Phone className="w-4 h-4" />
-                      SMS Notifications
+                      پیامک
                     </div>
-                    <div className="text-sm text-gray-600">Text message alerts</div>
+                    <div className="text-sm text-gray-600">هشدار از طریق پیامک</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={notificationSettings.smsNotifications}
                     onChange={(e) => {
                       setNotificationSettings({...notificationSettings, smsNotifications: e.target.checked});
@@ -723,17 +719,17 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       <Monitor className="w-4 h-4" />
-                      Desktop Notifications
+                      اعلان‌های دسکتاپ
                     </div>
-                    <div className="text-sm text-gray-600">System desktop alerts</div>
+                    <div className="text-sm text-gray-600">هشدارهای دسکتاپ سیستم</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={notificationSettings.desktopNotifications}
                     onChange={(e) => {
                       setNotificationSettings({...notificationSettings, desktopNotifications: e.target.checked});
@@ -747,16 +743,16 @@ export default function SettingsPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Alert Types</CardTitle>
+                <CardTitle>انواع هشدار</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Trade Alerts</div>
-                    <div className="text-sm text-gray-600">Order executions and fills</div>
+                    <div className="font-medium">هشدار معاملات</div>
+                    <div className="text-sm text-gray-600">اجرا و تکمیل سفارش‌ها</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={notificationSettings.tradeAlerts}
                     onChange={(e) => {
                       setNotificationSettings({...notificationSettings, tradeAlerts: e.target.checked});
@@ -765,14 +761,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Price Alerts</div>
-                    <div className="text-sm text-gray-600">Price movement notifications</div>
+                    <div className="font-medium">هشدار قیمت</div>
+                    <div className="text-sm text-gray-600">اعلان تغییرات قیمت</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={notificationSettings.priceAlerts}
                     onChange={(e) => {
                       setNotificationSettings({...notificationSettings, priceAlerts: e.target.checked});
@@ -781,14 +777,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">News Alerts</div>
-                    <div className="text-sm text-gray-600">Market news and updates</div>
+                    <div className="font-medium">هشدار اخبار</div>
+                    <div className="text-sm text-gray-600">اخبار و به‌روزرسانی‌های بازار</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={notificationSettings.newsAlerts}
                     onChange={(e) => {
                       setNotificationSettings({...notificationSettings, newsAlerts: e.target.checked});
@@ -797,14 +793,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">System Alerts</div>
-                    <div className="text-sm text-gray-600">Platform status updates</div>
+                    <div className="font-medium">هشدار سیستم</div>
+                    <div className="text-sm text-gray-600">به‌روزرسانی وضعیت پلتفرم</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={notificationSettings.systemAlerts}
                     onChange={(e) => {
                       setNotificationSettings({...notificationSettings, systemAlerts: e.target.checked});
@@ -821,19 +817,19 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                Quiet Hours
+                ساعات سکوت
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium">Start Time</label>
-                  <Input 
+                  <label className="text-sm font-medium">زمان شروع</label>
+                  <Input
                     type="time"
                     value={notificationSettings.quietHours.start}
                     onChange={(e) => {
                       setNotificationSettings({
-                        ...notificationSettings, 
+                        ...notificationSettings,
                         quietHours: {...notificationSettings.quietHours, start: e.target.value}
                       });
                       setHasChanges(true);
@@ -842,13 +838,13 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">End Time</label>
-                  <Input 
+                  <label className="text-sm font-medium">زمان پایان</label>
+                  <Input
                     type="time"
                     value={notificationSettings.quietHours.end}
                     onChange={(e) => {
                       setNotificationSettings({
-                        ...notificationSettings, 
+                        ...notificationSettings,
                         quietHours: {...notificationSettings.quietHours, end: e.target.value}
                       });
                       setHasChanges(true);
@@ -858,7 +854,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <p className="text-sm text-gray-600 mt-2">
-                Notifications will be silenced during these hours
+                در این بازه زمانی اعلان‌ها بی‌صدا خواهند شد
               </p>
             </CardContent>
           </Card>
@@ -870,23 +866,23 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
-                  Authentication
+                  احراز هویت
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Two-Factor Authentication</div>
-                    <div className="text-sm text-gray-600">Enhanced security layer</div>
+                    <div className="font-medium">تأیید دومرحله‌ای</div>
+                    <div className="text-sm text-gray-600">لایه امنیتی افزوده</div>
                   </div>
                   <Badge className={securitySettings.twoFactorAuth ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                    {securitySettings.twoFactorAuth ? 'Enabled' : 'Disabled'}
+                    {securitySettings.twoFactorAuth ? 'فعال' : 'غیرفعال'}
                   </Badge>
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Session Timeout (minutes)</label>
-                  <Input 
+                  <label className="text-sm font-medium">مهلت زمانی نشست (دقیقه)</label>
+                  <Input
                     type="number"
                     min="5"
                     max="480"
@@ -898,10 +894,10 @@ export default function SettingsPage() {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Password Expiry (days)</label>
-                  <Input 
+                  <label className="text-sm font-medium">انقضای رمز عبور (روز)</label>
+                  <Input
                     type="number"
                     min="30"
                     max="365"
@@ -913,14 +909,14 @@ export default function SettingsPage() {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Login Alerts</div>
-                    <div className="text-sm text-gray-600">Notify on new logins</div>
+                    <div className="font-medium">هشدار ورود</div>
+                    <div className="text-sm text-gray-600">اطلاع‌رسانی ورودهای جدید</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={securitySettings.loginAlerts}
                     onChange={(e) => {
                       setSecuritySettings({...securitySettings, loginAlerts: e.target.checked});
@@ -936,17 +932,17 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lock className="w-5 h-5" />
-                  Access Control
+                  کنترل دسترسی
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">IP Restrictions</div>
-                    <div className="text-sm text-gray-600">Limit access by IP address</div>
+                    <div className="font-medium">محدودیت IP</div>
+                    <div className="text-sm text-gray-600">محدود کردن دسترسی بر اساس آدرس IP</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={securitySettings.ipRestrictions}
                     onChange={(e) => {
                       setSecuritySettings({...securitySettings, ipRestrictions: e.target.checked});
@@ -955,14 +951,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">API Access</div>
-                    <div className="text-sm text-gray-600">Allow API key usage</div>
+                    <div className="font-medium">دسترسی API</div>
+                    <div className="text-sm text-gray-600">مجاز بودن استفاده از کلید API</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={securitySettings.apiAccess}
                     onChange={(e) => {
                       setSecuritySettings({...securitySettings, apiAccess: e.target.checked});
@@ -971,14 +967,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Audit Logging</div>
-                    <div className="text-sm text-gray-600">Log all user actions</div>
+                    <div className="font-medium">ثبت لاگ ممیزی</div>
+                    <div className="text-sm text-gray-600">ثبت همه فعالیت‌های کاربر</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={securitySettings.auditLogging}
                     onChange={(e) => {
                       setSecuritySettings({...securitySettings, auditLogging: e.target.checked});
@@ -987,14 +983,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Device Tracking</div>
-                    <div className="text-sm text-gray-600">Track login devices</div>
+                    <div className="font-medium">ردیابی دستگاه</div>
+                    <div className="text-sm text-gray-600">ردیابی دستگاه‌های ورود</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={securitySettings.deviceTracking}
                     onChange={(e) => {
                       setSecuritySettings({...securitySettings, deviceTracking: e.target.checked});
@@ -1014,13 +1010,13 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Database className="w-5 h-5" />
-                  Data Management
+                  مدیریت داده
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium">Data Retention (days)</label>
-                  <Input 
+                  <label className="text-sm font-medium">نگه‌داری داده (روز)</label>
+                  <Input
                     type="number"
                     min="30"
                     max="2555"
@@ -1032,10 +1028,10 @@ export default function SettingsPage() {
                     className="mt-1"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Backup Frequency</label>
-                  <select 
+                  <label className="text-sm font-medium">تناوب پشتیبان‌گیری</label>
+                  <select
                     value={systemSettings.backupFrequency}
                     onChange={(e) => {
                       setSystemSettings({...systemSettings, backupFrequency: e.target.value});
@@ -1043,16 +1039,16 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="hourly">Hourly</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
+                    <option value="hourly">ساعتی</option>
+                    <option value="daily">روزانه</option>
+                    <option value="weekly">هفتگی</option>
+                    <option value="monthly">ماهانه</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Log Level</label>
-                  <select 
+                  <label className="text-sm font-medium">سطح لاگ</label>
+                  <select
                     value={systemSettings.logLevel}
                     onChange={(e) => {
                       setSystemSettings({...systemSettings, logLevel: e.target.value});
@@ -1060,10 +1056,10 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="error">Error</option>
-                    <option value="warn">Warning</option>
-                    <option value="info">Info</option>
-                    <option value="debug">Debug</option>
+                    <option value="error">خطا</option>
+                    <option value="warn">هشدار</option>
+                    <option value="info">اطلاعات</option>
+                    <option value="debug">دیباگ</option>
                   </select>
                 </div>
               </CardContent>
@@ -1073,17 +1069,17 @@ export default function SettingsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="w-5 h-5" />
-                  Performance
+                  عملکرد
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Performance Mode</div>
-                    <div className="text-sm text-gray-600">Optimize for speed</div>
+                    <div className="font-medium">حالت عملکرد بالا</div>
+                    <div className="text-sm text-gray-600">بهینه‌سازی برای سرعت</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={systemSettings.performanceMode}
                     onChange={(e) => {
                       setSystemSettings({...systemSettings, performanceMode: e.target.checked});
@@ -1092,14 +1088,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Cache Enabled</div>
-                    <div className="text-sm text-gray-600">Enable data caching</div>
+                    <div className="font-medium">کش فعال</div>
+                    <div className="text-sm text-gray-600">فعال‌سازی کش داده</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={systemSettings.cacheEnabled}
                     onChange={(e) => {
                       setSystemSettings({...systemSettings, cacheEnabled: e.target.checked});
@@ -1108,14 +1104,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Compression</div>
-                    <div className="text-sm text-gray-600">Compress data transfers</div>
+                    <div className="font-medium">فشرده‌سازی</div>
+                    <div className="text-sm text-gray-600">فشرده‌سازی انتقال داده‌ها</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={systemSettings.compressionEnabled}
                     onChange={(e) => {
                       setSystemSettings({...systemSettings, compressionEnabled: e.target.checked});
@@ -1124,14 +1120,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">Analytics</div>
-                    <div className="text-sm text-gray-600">Collect usage analytics</div>
+                    <div className="font-medium">تحلیل مصرف</div>
+                    <div className="text-sm text-gray-600">جمع‌آوری آمار استفاده</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={systemSettings.analyticsEnabled}
                     onChange={(e) => {
                       setSystemSettings({...systemSettings, analyticsEnabled: e.target.checked});
@@ -1148,18 +1144,18 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
-                Advanced Options
+                گزینه‌های پیشرفته
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-orange-600">Maintenance Mode</div>
-                    <div className="text-sm text-gray-600">Enable maintenance mode</div>
+                    <div className="font-medium text-orange-600">حالت تعمیر و نگهداری</div>
+                    <div className="text-sm text-gray-600">فعال‌سازی حالت تعمیر و نگهداری</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={systemSettings.maintenanceMode}
                     onChange={(e) => {
                       setSystemSettings({...systemSettings, maintenanceMode: e.target.checked});
@@ -1168,14 +1164,14 @@ export default function SettingsPage() {
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-red-600">Debug Mode</div>
-                    <div className="text-sm text-gray-600">Enable debug logging</div>
+                    <div className="font-medium text-red-600">حالت دیباگ</div>
+                    <div className="text-sm text-gray-600">فعال‌سازی لاگ‌های دیباگ</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={systemSettings.debugMode}
                     onChange={(e) => {
                       setSystemSettings({...systemSettings, debugMode: e.target.checked});
@@ -1185,13 +1181,13 @@ export default function SettingsPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <div className="flex items-start gap-2 text-yellow-800">
                   <AlertTriangle className="w-5 h-5 mt-0.5" />
                   <div>
-                    <div className="font-medium">Warning</div>
-                    <div className="text-sm">These advanced options may affect system performance and should only be changed by administrators.</div>
+                    <div className="font-medium">هشدار</div>
+                    <div className="text-sm">این گزینه‌های پیشرفته می‌توانند بر عملکرد سیستم اثر بگذارند و فقط باید توسط مدیران تغییر داده شوند.</div>
                   </div>
                 </div>
               </div>
@@ -1201,4 +1197,4 @@ export default function SettingsPage() {
       </Tabs>
     </div>
   );
-} 
+}

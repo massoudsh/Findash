@@ -142,7 +142,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
   const [symbolPickerOpen, setSymbolPickerOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
-  const [selectedExpiry, setSelectedExpiry] = useState({ label: '25 days', matures: '27 Feb 2026' });
+  const [selectedExpiry, setSelectedExpiry] = useState({ label: '۲۵ روز', matures: '۲۷ فوریه ۲۰۲۶' });
   const [chartType, setChartType] = useState<'line' | 'area'>('line');
   const [chartSettingsOpen, setChartSettingsOpen] = useState(false);
   const [orderbookSpread, setOrderbookSpread] = useState('0.1%');
@@ -178,10 +178,10 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
 
   const timeframes = ['5m', '1H', '4H', '1D', '1W'];
   const expiryOptions = [
-    { label: '7 days', matures: '6 Feb 2026' },
-    { label: '14 days', matures: '13 Feb 2026' },
-    { label: '25 days', matures: '27 Feb 2026' },
-    { label: '30 days', matures: '2 Mar 2026' },
+    { label: '۷ روز', matures: '۶ فوریه ۲۰۲۶' },
+    { label: '۱۴ روز', matures: '۱۳ فوریه ۲۰۲۶' },
+    { label: '۲۵ روز', matures: '۲۷ فوریه ۲۰۲۶' },
+    { label: '۳۰ روز', matures: '۲ مارس ۲۰۲۶' },
   ];
   const spreadOptions = ['0.05%', '0.1%', '0.25%', '0.5%'];
   const depthOptions = [10, 25, 50];
@@ -236,7 +236,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
         markApr: annualized,
       }));
     } catch (e) {
-      setFundingError(e instanceof Error ? e.message : 'Network error');
+      setFundingError(e instanceof Error ? e.message : 'خطای شبکه');
       setMetrics(DEFAULT_METRICS);
     } finally {
       setLoadingFunding(false);
@@ -299,9 +299,9 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
       const next = favs.includes(symbol) ? favs.filter((s) => s !== symbol) : [...favs, symbol];
       localStorage.setItem(key, JSON.stringify(next));
       setIsFavorite(next.includes(symbol));
-      toast({ title: next.includes(symbol) ? 'Added to favorites' : 'Removed from favorites', type: 'success' });
+      toast({ title: next.includes(symbol) ? 'به علاقه‌مندی‌ها اضافه شد' : 'از علاقه‌مندی‌ها حذف شد', type: 'success' });
     } catch {
-      toast({ title: 'Could not update favorites', type: 'error' });
+      toast({ title: 'به‌روزرسانی علاقه‌مندی‌ها ممکن نشد', type: 'error' });
     }
   };
 
@@ -319,11 +319,11 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
 
   const handlePlaceOrder = () => {
     if (notionalEth <= 0) {
-      toast({ title: 'Enter notional size', type: 'warning' });
+      toast({ title: 'حجم اسمی را وارد کنید', type: 'warning' });
       return;
     }
     if (!canOpen) {
-      toast({ title: 'Insufficient balance', type: 'error' });
+      toast({ title: 'موجودی ناکافی', type: 'error' });
       return;
     }
     setPlacingOrder(true);
@@ -342,8 +342,8 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
       setPositions((prev) => [newPos, ...prev]);
       setPlacingOrder(false);
       toast({
-        title: 'Order placed (simulated)',
-        description: `${tradeDirection === 'long' ? 'Long' : 'Short'} ${notionalEth} ETH @ ${metrics.impliedApr.toFixed(2)}% APR`,
+        title: 'سفارش ثبت شد (شبیه‌سازی‌شده)',
+        description: `${tradeDirection === 'long' ? 'لانگ' : 'شورت'} ${notionalEth} ETH با نرخ سود ${metrics.impliedApr.toFixed(2)}٪`,
         type: 'success',
       });
     }, 800);
@@ -352,7 +352,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
   const closePosition = (pos: FundingPosition) => {
     setPositions((prev) => prev.filter((p) => p.id !== pos.id));
     setSelectedPosition(null);
-    toast({ title: 'Position closed (simulated)', description: `${pos.symbol} ${pos.direction}`, type: 'success' });
+    toast({ title: 'پوزیشن بسته شد (شبیه‌سازی‌شده)', description: `${pos.symbol} ${pos.direction === 'long' ? 'لانگ' : 'شورت'}`, type: 'success' });
   };
 
   // Build chart path from series (annualized %) — viewBox 0 0 500 280; area = line + close to bottom
@@ -379,18 +379,18 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-2 px-4 bg-primary/10 border-b text-sm flex-wrap">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <Target className="h-4 w-4 shrink-0 text-primary" />
-            <span className="font-medium truncate">Trading with strategy: {selectedStrategy.name}</span>
+            <span className="font-medium truncate">معامله با استراتژی: {selectedStrategy.name}</span>
             {selectedStrategy.description && (
               <span className="text-muted-foreground truncate hidden sm:inline">— {selectedStrategy.description}</span>
             )}
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <span className={`font-semibold tabular-nums ${strategyPnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-              Strategy PnL: {strategyPnl >= 0 ? '+' : ''}${strategyPnl.toFixed(2)}
+              سود/زیان استراتژی: {strategyPnl >= 0 ? '+' : ''}${strategyPnl.toFixed(2)}
             </span>
             {onClearStrategy && (
               <Button variant="ghost" size="sm" className="shrink-0" onClick={onClearStrategy}>
-                Clear
+                پاک کردن
               </Button>
             )}
           </div>
@@ -403,7 +403,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
             type="button"
             onClick={toggleFavorite}
             className="p-1 rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
-            aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={isFavorite ? 'حذف از علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی‌ها'}
           >
             <Star className={`h-4 w-4 ${isFavorite ? 'fill-yellow-500 text-yellow-500' : 'text-muted-foreground hover:text-yellow-500'}`} />
           </button>
@@ -449,7 +449,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
             type="button"
             onClick={() => setInfoOpen(true)}
             className="p-1 rounded-md hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring"
-            aria-label="Pair info"
+            aria-label="اطلاعات جفت‌ارز"
           >
             <Info className="h-4 w-4 text-muted-foreground hover:text-foreground" />
           </button>
@@ -459,7 +459,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
             className="h-8 w-8 shrink-0"
             onClick={() => fetchFunding()}
             disabled={loadingFunding}
-            aria-label="Refresh funding"
+            aria-label="بازخوانی نرخ فاندینگ"
           >
             <RefreshCw className={`h-4 w-4 ${loadingFunding ? 'animate-spin' : ''}`} />
           </Button>
@@ -477,7 +477,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                 className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-muted text-left focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <span className="text-lg font-semibold">{selectedExpiry.label}</span>
-                <span className="text-sm text-muted-foreground">(Matures {selectedExpiry.matures})</span>
+                <span className="text-sm text-muted-foreground">(سررسید {selectedExpiry.matures})</span>
                 <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
               </button>
             </DropdownMenuTrigger>
@@ -487,7 +487,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   key={opt.label}
                   onClick={() => setSelectedExpiry(opt)}
                 >
-                  {opt.label} (Matures {opt.matures})
+                  {opt.label} (سررسید {opt.matures})
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -499,10 +499,10 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
       <Dialog open={infoOpen} onOpenChange={setInfoOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>{symbol} — Funding rate option</DialogTitle>
+            <DialogTitle>{symbol} — قرارداد نرخ فاندینگ</DialogTitle>
             <DialogDescription>
-              Perpetual funding rate option. Implied APR reflects the fixed rate; underlying APR is the floating reference.
-              Settlement every 8h. Long = pay fixed, receive floating; Short = pay floating, receive fixed.
+              قرارداد نرخ فاندینگ دائمی. نرخ سود ضمنی نمایانگر نرخ ثابت است؛ نرخ سود دارایی پایه مرجع شناور است.
+              تسویه هر ۸ ساعت یک‌بار. لانگ = پرداخت نرخ ثابت، دریافت شناور؛ شورت = پرداخت شناور، دریافت نرخ ثابت.
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
@@ -512,14 +512,14 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
       <Dialog open={chartSettingsOpen} onOpenChange={setChartSettingsOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Chart settings</DialogTitle>
+            <DialogTitle>تنظیمات نمودار</DialogTitle>
             <DialogDescription>
-              Display options for the APR chart. More indicators can be added when connected to a full charting library.
+              گزینه‌های نمایش برای نمودار نرخ سود. با اتصال به یک کتابخانه نمودار کامل، شاخص‌های بیشتری قابل افزودن است.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 text-sm text-muted-foreground">
-            <p>Chart type: <span className="text-foreground font-medium">{chartType}</span></p>
-            <p>Timeframe: <span className="text-foreground font-medium">{selectedTimeframe}</span></p>
+            <p>نوع نمودار: <span className="text-foreground font-medium">{chartType === 'line' ? 'خطی' : 'ناحیه‌ای'}</span></p>
+            <p>بازه زمانی: <span className="text-foreground font-medium">{selectedTimeframe}</span></p>
           </div>
         </DialogContent>
       </Dialog>
@@ -534,46 +534,46 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
               ) : (
                 <TrendingDown className="h-5 w-5 text-red-500" />
               )}
-              Position — {selectedPosition?.symbol} {selectedPosition?.direction.toUpperCase()}
+              پوزیشن — {selectedPosition?.symbol} {selectedPosition?.direction === 'long' ? 'لانگ' : 'شورت'}
             </DialogTitle>
-            <DialogDescription>Full position details. Close position to realize PnL (simulated).</DialogDescription>
+            <DialogDescription>جزئیات کامل پوزیشن. برای محقق‌کردن سود/زیان (شبیه‌سازی‌شده) پوزیشن را ببندید.</DialogDescription>
           </DialogHeader>
           {selectedPosition && (
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="col-span-2 flex justify-between border-b pb-2">
-                <span className="text-muted-foreground">Symbol</span>
+                <span className="text-muted-foreground">نماد</span>
                 <span className="font-semibold">{selectedPosition.symbol}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Direction</span>
-                <span className={selectedPosition.direction === 'long' ? 'text-green-600' : 'text-red-600'}>{selectedPosition.direction.toUpperCase()}</span>
+                <span className="text-muted-foreground">جهت</span>
+                <span className={selectedPosition.direction === 'long' ? 'text-green-600' : 'text-red-600'}>{selectedPosition.direction === 'long' ? 'لانگ' : 'شورت'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Notional</span>
+                <span className="text-muted-foreground">حجم اسمی</span>
                 <span className="tabular-nums">{selectedPosition.notionalEth} ETH</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Entry APR</span>
+                <span className="text-muted-foreground">نرخ سود ورود</span>
                 <span className="tabular-nums">{selectedPosition.entryApr.toFixed(2)}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Current APR</span>
+                <span className="text-muted-foreground">نرخ سود فعلی</span>
                 <span className="tabular-nums">{selectedPosition.currentApr.toFixed(2)}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Margin mode</span>
+                <span className="text-muted-foreground">حالت مارجین</span>
                 <span>{selectedPosition.marginMode}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Reduce only</span>
-                <span>{selectedPosition.reduceOnly ? 'Yes' : 'No'}</span>
+                <span className="text-muted-foreground">فقط کاهش پوزیشن</span>
+                <span>{selectedPosition.reduceOnly ? 'بله' : 'خیر'}</span>
               </div>
               <div className="col-span-2 flex justify-between border-t pt-2">
-                <span className="text-muted-foreground">Opened</span>
-                <span className="tabular-nums">{new Date(selectedPosition.openTime).toLocaleString()}</span>
+                <span className="text-muted-foreground">زمان باز شدن</span>
+                <span className="tabular-nums">{new Date(selectedPosition.openTime).toLocaleString('fa-IR')}</span>
               </div>
               <div className="col-span-2 flex justify-between">
-                <span className="text-muted-foreground">Est. unrealized (per 8h)</span>
+                <span className="text-muted-foreground">سود/زیان تحقق‌نیافته تخمینی (هر ۸ ساعت)</span>
                 <span className={selectedPosition.direction === 'long' ? 'text-red-500' : 'text-green-500'}>
                   {selectedPosition.direction === 'long'
                     ? (selectedPosition.notionalEth * (selectedPosition.currentApr - selectedPosition.entryApr) / 100 * (8 / (365 * 24))).toFixed(4)
@@ -585,8 +585,8 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
           )}
           {selectedPosition && (
             <div className="flex gap-2 justify-end pt-2 border-t">
-              <Button variant="outline" onClick={() => setSelectedPosition(null)}>Done</Button>
-              <Button variant="destructive" onClick={() => closePosition(selectedPosition)}>Close position</Button>
+              <Button variant="outline" onClick={() => setSelectedPosition(null)}>تمام</Button>
+              <Button variant="destructive" onClick={() => closePosition(selectedPosition)}>بستن پوزیشن</Button>
             </div>
           )}
         </DialogContent>
@@ -598,28 +598,28 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
           <div className="text-3xl font-bold text-green-500">
             {loadingFunding ? '…' : `${metrics.impliedApr.toFixed(2)}%`}
           </div>
-          <div className="text-xs text-muted-foreground">Implied APR</div>
+          <div className="text-xs text-muted-foreground">نرخ سود ضمنی</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">Mark APR</div>
+          <div className="text-sm text-muted-foreground">نرخ سود مارک</div>
           <div className="text-sm font-semibold">{metrics.markApr.toFixed(2)}%</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">Underlying APR</div>
+          <div className="text-sm text-muted-foreground">نرخ سود دارایی پایه</div>
           <div className="text-sm font-semibold text-red-500">
             {metrics.underlyingApr.toFixed(2)}% <ExternalLink className="h-3 w-3 inline" />
           </div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">Notional OI</div>
+          <div className="text-sm text-muted-foreground">حجم قرارداد باز</div>
           <div className="text-sm font-semibold">{metrics.notionalOi}</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">24h Volume</div>
+          <div className="text-sm text-muted-foreground">حجم ۲۴ ساعته</div>
           <div className="text-sm font-semibold">{metrics.volume24h}</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">Next Settlement</div>
+          <div className="text-sm text-muted-foreground">تسویه بعدی</div>
           <div className="text-sm font-semibold tabular-nums">
             {formatCountdown(countdownSeconds)}
           </div>
@@ -719,15 +719,15 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                       <button
                         type="button"
                         className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                        aria-label="Chart type"
+                        aria-label="نوع نمودار"
                       >
                         <BarChart3 className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuRadioGroup value={chartType} onValueChange={(v) => setChartType(v as 'line' | 'area')}>
-                        <DropdownMenuRadioItem value="line">Line</DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="area">Area</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="line">خطی</DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="area">ناحیه‌ای</DropdownMenuRadioItem>
                       </DropdownMenuRadioGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -735,7 +735,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                     type="button"
                     onClick={() => setChartSettingsOpen(true)}
                     className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                    aria-label="Chart settings"
+                    aria-label="تنظیمات نمودار"
                   >
                     <Settings className="h-4 w-4" />
                   </button>
@@ -744,7 +744,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                     onClick={() => refetchChart()}
                     disabled={chartLoading}
                     className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted/50 disabled:opacity-50"
-                    aria-label="Refresh chart"
+                    aria-label="بازخوانی نمودار"
                   >
                     <RefreshCw className={`h-4 w-4 ${chartLoading ? 'animate-spin' : ''}`} />
                   </button>
@@ -758,27 +758,27 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   size="sm"
                   onClick={() => setChartTab('apr')}
                 >
-                  APR Chart
+                  نمودار نرخ سود
                 </Button>
                 <Button
                   variant={chartTab === 'pnl' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setChartTab('pnl')}
                 >
-                  My PnL
+                  سود/زیان من
                 </Button>
               </div>
               {chartTab === 'apr' && (
                 <>
                   <div className="flex items-center gap-3 text-xs flex-wrap">
-                    <span className="text-muted-foreground">Implied APR</span>
+                    <span className="text-muted-foreground">نرخ سود ضمنی</span>
                     <span className="text-green-500">O{metrics.impliedApr.toFixed(2)}%</span>
                     <span className="text-green-500">H{metrics.impliedApr.toFixed(2)}%</span>
                     <span className="text-green-500">L{metrics.impliedApr.toFixed(2)}%</span>
                     <span className="text-green-500">C{metrics.impliedApr.toFixed(2)}%</span>
                   </div>
                   <div className="text-xs text-red-500">
-                    Underlying APR <span className="ml-2">{metrics.underlyingApr.toFixed(2)}%</span>
+                    نرخ سود دارایی پایه <span className="ml-2">{metrics.underlyingApr.toFixed(2)}%</span>
                   </div>
                 </>
               )}
@@ -799,14 +799,14 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   className={`text-sm pb-1 border-b-2 ${orderbookTab === 'orderbook' ? 'border-primary font-medium' : 'border-transparent text-muted-foreground'}`}
                   onClick={() => setOrderbookTab('orderbook')}
                 >
-                  Orderbook
+                  دفتر سفارش
                 </button>
                 <button
                   type="button"
                   className={`text-sm pb-1 border-b-2 ${orderbookTab === 'trades' ? 'border-primary font-medium' : 'border-transparent text-muted-foreground'}`}
                   onClick={() => setOrderbookTab('trades')}
                 >
-                  Market Trades
+                  معاملات بازار
                 </button>
               </div>
             </CardHeader>
@@ -835,16 +835,16 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                     <button
                       type="button"
                       className="flex items-center gap-1 p-1 rounded hover:bg-muted text-muted-foreground"
-                      aria-label="Order book depth"
+                      aria-label="عمق دفتر سفارش"
                     >
-                      {orderbookDepth} levels
+                      {orderbookDepth} سطح
                       <ChevronDown className="h-3 w-3" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     {depthOptions.map((d) => (
                       <DropdownMenuItem key={d} onClick={() => setOrderbookDepth(d)}>
-                        {d} levels
+                        {d} سطح
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -852,27 +852,27 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    title="Full orderbook view"
+                    title="نمای کامل دفتر سفارش"
                     className={`w-8 h-6 rounded text-[10px] font-medium transition-colors ${!orderbookCompact ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
                     onClick={() => setOrderbookCompact(false)}
                   >
-                    Full
+                    کامل
                   </button>
                   <button
                     type="button"
-                    title="Compact orderbook view"
+                    title="نمای فشرده دفتر سفارش"
                     className={`w-8 h-6 rounded text-[10px] font-medium transition-colors ${orderbookCompact ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'}`}
                     onClick={() => setOrderbookCompact(true)}
                   >
-                    Compact
+                    فشرده
                   </button>
                 </div>
               </div>
               <div className="mb-4">
-                <div className="text-xs text-red-500 font-semibold mb-2">SHORT RATE</div>
+                <div className="text-xs text-red-500 font-semibold mb-2">نرخ شورت</div>
                 <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                  <span>Implied APR (%)</span>
-                  <span>Size (ETH YU)</span>
+                  <span>نرخ سود ضمنی (%)</span>
+                  <span>حجم (ETH YU)</span>
                 </div>
                 <div className={`space-y-1 ${orderbookCompact ? 'space-y-0' : ''}`}>
                   {(orderbookCompact ? SHORT_RATE_ORDERS.slice(0, 5) : SHORT_RATE_ORDERS).map((order, i) => (
@@ -888,13 +888,13 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                 </div>
               </div>
               <div className="flex justify-between text-xs py-2 border-y my-2">
-                <span className="text-muted-foreground">{orderbookSpread} Spread</span>
+                <span className="text-muted-foreground">اسپرد {orderbookSpread}</span>
               </div>
               <div>
-                <div className="text-xs text-green-500 font-semibold mb-2">LONG RATE</div>
+                <div className="text-xs text-green-500 font-semibold mb-2">نرخ لانگ</div>
                 <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                  <span>Implied APR (%)</span>
-                  <span>Size (ETH YU)</span>
+                  <span>نرخ سود ضمنی (%)</span>
+                  <span>حجم (ETH YU)</span>
                 </div>
                 <div className={`space-y-1 ${orderbookCompact ? 'space-y-0' : ''}`}>
                   {(orderbookCompact ? LONG_RATE_ORDERS.slice(0, 5) : LONG_RATE_ORDERS).map((order, i) => (
@@ -922,14 +922,14 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   <button
                     type="button"
                     className="flex-1 flex items-center gap-2 text-left hover:opacity-90 transition-opacity"
-                    onClick={() => toast({ title: 'Opening Maker Rewards…', description: 'Rewards program details coming soon.', type: 'success' })}
+                    onClick={() => toast({ title: 'در حال باز کردن پاداش سازندگان بازار…', description: 'جزئیات برنامه پاداش به‌زودی.', type: 'success' })}
                   >
                     <Gift className="h-4 w-4 text-amber-400 shrink-0" />
-                    <span className="text-sm text-amber-200">Maker Order Rewards Live!</span>
+                    <span className="text-sm text-amber-200">پاداش سفارش‌های سازنده بازار فعال شد!</span>
                   </button>
                   <button
                     type="button"
-                    aria-label="Dismiss"
+                    aria-label="بستن"
                     className="p-1 rounded hover:bg-amber-500/30 text-amber-200"
                     onClick={() => setMakerRewardsBannerDismissed(true)}
                   >
@@ -955,14 +955,14 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   size="sm"
                   onClick={() => setOrderType('market')}
                 >
-                  Market
+                  بازار
                 </Button>
                 <Button
                   variant={orderType === 'limit' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setOrderType('limit')}
                 >
-                  Limit
+                  محدود
                 </Button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4">
@@ -974,8 +974,8 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                 >
                   <TrendingUp className="h-4 w-4 shrink-0" />
                   <div className="text-left min-w-0">
-                    <div className="text-xs font-semibold">Long Rates</div>
-                    <div className="text-[10px] opacity-70 truncate">Pay Fixed, Rcv. Underlying</div>
+                    <div className="text-xs font-semibold">نرخ لانگ</div>
+                    <div className="text-[10px] opacity-70 truncate">پرداخت ثابت، دریافت دارایی پایه</div>
                   </div>
                 </Button>
                 <Button
@@ -986,23 +986,23 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                 >
                   <TrendingDown className="h-4 w-4 shrink-0" />
                   <div className="text-left min-w-0">
-                    <div className="text-xs font-semibold">Short Rates</div>
-                    <div className="text-[10px] opacity-70 truncate">Pay Underlying, Rcv. Fixed</div>
+                    <div className="text-xs font-semibold">نرخ شورت</div>
+                    <div className="text-[10px] opacity-70 truncate">پرداخت دارایی پایه، دریافت ثابت</div>
                   </div>
                 </Button>
               </div>
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">My Notional Size</span>
+                  <span className="text-muted-foreground">حجم اسمی من</span>
                   <span className="text-cyan-500">{notionalEth} ETH</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Available to Trade</span>
+                  <span className="text-muted-foreground">موجودی قابل معامله</span>
                   <span>{MOCK_AVAILABLE_ETH} ETH</span>
                 </div>
               </div>
               <div className="mb-4">
-                <Label className="text-sm text-muted-foreground">Notional Size (ETH)</Label>
+                <Label className="text-sm text-muted-foreground">حجم اسمی (ETH)</Label>
                 <div className="flex items-center gap-2 mt-1">
                   <Input
                     type="number"
@@ -1030,34 +1030,34 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
               <div className="mb-4 rounded-lg border bg-muted/30 p-3 space-y-2">
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <Calculator className="h-4 w-4 text-primary" />
-                  Order preview
+                  پیش‌نمایش سفارش
                 </div>
                 <div className="text-xs space-y-1.5">
                   <p>
-                    <span className="text-muted-foreground">Margin mode:</span>{' '}
+                    <span className="text-muted-foreground">حالت مارجین:</span>{' '}
                     <span className="font-medium">
                       {leverage === 'Cross'
-                        ? 'Cross — your full balance backs this position (shared collateral).'
+                        ? 'Cross — کل موجودی شما پشتوانه این پوزیشن است (وثیقه مشترک).'
                         : leverage === '2x'
-                          ? '2x — isolated margin, 50% of notional required.'
-                          : 'One-way — isolated, full notional as margin (1x).'}
+                          ? '2x — مارجین جدا، ۵۰٪ از حجم اسمی لازم است.'
+                          : 'One-way — جدا، کل حجم اسمی به‌عنوان مارجین (۱x).'}
                     </span>
                   </p>
                   <p>
-                    <span className="text-muted-foreground">Direction:</span>{' '}
+                    <span className="text-muted-foreground">جهت:</span>{' '}
                     <span className="font-medium">
                       {tradeDirection === 'long'
-                        ? 'Long — you pay fixed rate (~' + metrics.impliedApr.toFixed(2) + '% APR), receive floating (underlying).'
-                        : 'Short — you pay floating (underlying), receive fixed rate.'}
+                        ? 'لانگ — شما نرخ ثابت (~' + metrics.impliedApr.toFixed(2) + '٪ سود سالانه) پرداخت می‌کنید و شناور (دارایی پایه) دریافت می‌کنید.'
+                        : 'شورت — شما شناور (دارایی پایه) پرداخت می‌کنید و نرخ ثابت دریافت می‌کنید.'}
                     </span>
                   </p>
                   <p>
-                    <span className="text-muted-foreground">Notional:</span>{' '}
+                    <span className="text-muted-foreground">حجم اسمی:</span>{' '}
                     <span className="font-medium">{notionalEth} ETH</span>
                     {notionalEth > 0 && (
                       <>
                         {' • '}
-                        <span className="text-muted-foreground">Margin required:</span>{' '}
+                        <span className="text-muted-foreground">مارجین مورد نیاز:</span>{' '}
                         <span className={canOpen ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
                           {marginRequiredEth.toFixed(2)} ETH
                         </span>
@@ -1066,17 +1066,17 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   </p>
                   {notionalEth > 0 && (
                     <p>
-                      <span className="text-muted-foreground">Est. funding per 8h:</span>{' '}
+                      <span className="text-muted-foreground">سود فاندینگ تخمینی هر ۸ ساعت:</span>{' '}
                       <span className="font-medium">
                         {tradeDirection === 'long' ? '−' : '+'}{estFundingPer8h.toFixed(4)} ETH
                       </span>
-                      {' (you '}
-                      {tradeDirection === 'long' ? 'pay' : 'receive'} fixed)
+                      {' ('}
+                      {tradeDirection === 'long' ? 'شما پرداخت می‌کنید' : 'شما دریافت می‌کنید'} نرخ ثابت)
                     </p>
                   )}
                   {notionalEth > 0 && !canOpen && (
                     <p className="text-red-600 dark:text-red-400 font-medium">
-                      Insufficient balance. Need {marginRequiredEth.toFixed(2)} ETH, have {MOCK_AVAILABLE_ETH} ETH.
+                      موجودی ناکافی. نیاز به {marginRequiredEth.toFixed(2)} ETH دارید، {MOCK_AVAILABLE_ETH} ETH دارید.
                     </p>
                   )}
                 </div>
@@ -1088,7 +1088,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                   onCheckedChange={(c) => setReduceOnly(c === true)}
                 />
                 <Label htmlFor="reduce-only" className="text-sm text-muted-foreground cursor-pointer">
-                  Reduce Only
+                  فقط کاهش پوزیشن
                 </Label>
               </div>
               <Button
@@ -1097,24 +1097,24 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                 onClick={handlePlaceOrder}
                 disabled={notionalEth <= 0 || !canOpen || placingOrder}
               >
-                {placingOrder ? 'Placing…' : orderType === 'market' ? 'Place Market Order' : 'Place Limit Order'}
+                {placingOrder ? 'در حال ثبت…' : orderType === 'market' ? 'ثبت سفارش بازار' : 'ثبت سفارش محدود'}
               </Button>
               <div className="space-y-2 text-sm border-t pt-4 mt-auto">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Liquidation Implied APR</span>
-                  <span>NA</span>
+                  <span className="text-muted-foreground">نرخ سود ضمنی انحلال</span>
+                  <span>—</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Margin Required</span>
-                  <span>NA</span>
+                  <span className="text-muted-foreground">مارجین مورد نیاز</span>
+                  <span>—</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Fees</span>
+                  <span className="text-muted-foreground">کارمزدها</span>
                   <span>0 ETH ($0.00)</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Slippage</span>
-                  <span>Est: 0% / Max: <span className="text-cyan-500">0.5%</span></span>
+                  <span className="text-muted-foreground">لغزش قیمت</span>
+                  <span>تخمینی: 0% / حداکثر: <span className="text-cyan-500">0.5%</span></span>
                 </div>
               </div>
             </CardContent>
@@ -1125,18 +1125,18 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
       {/* Open Positions — click row for full detail */}
       {positions.length > 0 && (
         <div className="px-4 py-3 border-t">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Open Positions</h3>
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">پوزیشن‌های باز</h3>
           <div className="rounded-lg border bg-card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b bg-muted/30">
-                    <th className="text-left py-2 px-3 font-medium">Symbol</th>
-                    <th className="text-left py-2 px-3 font-medium">Side</th>
-                    <th className="text-right py-2 px-3 font-medium">Size</th>
-                    <th className="text-right py-2 px-3 font-medium">Entry APR</th>
-                    <th className="text-right py-2 px-3 font-medium">Current APR</th>
-                    <th className="text-left py-2 px-3 font-medium">Margin</th>
+                    <th className="text-left py-2 px-3 font-medium">نماد</th>
+                    <th className="text-left py-2 px-3 font-medium">جهت</th>
+                    <th className="text-right py-2 px-3 font-medium">حجم</th>
+                    <th className="text-right py-2 px-3 font-medium">نرخ سود ورود</th>
+                    <th className="text-right py-2 px-3 font-medium">نرخ سود فعلی</th>
+                    <th className="text-left py-2 px-3 font-medium">مارجین</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1149,7 +1149,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                       <td className="py-2.5 px-3 font-medium">{pos.symbol}</td>
                       <td className="py-2.5 px-3">
                         <span className={pos.direction === 'long' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
-                          {pos.direction.toUpperCase()}
+                          {pos.direction === 'long' ? 'لانگ' : 'شورت'}
                         </span>
                       </td>
                       <td className="py-2.5 px-3 text-right tabular-nums">{pos.notionalEth} ETH</td>
@@ -1161,7 +1161,7 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-muted-foreground px-3 py-2 border-t">Click a row to view full details</p>
+            <p className="text-xs text-muted-foreground px-3 py-2 border-t">برای مشاهده جزئیات کامل روی یک ردیف کلیک کنید</p>
           </div>
         </div>
       )}
@@ -1171,24 +1171,24 @@ export function OptionTradingTerminal({ selectedStrategy, strategyPnl = 0, onCle
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span>Online</span>
+            <span>آنلاین</span>
           </div>
-          <span>Gas: $0.02</span>
+          <span>گس: $0.02</span>
         </div>
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-          <button type="button" onClick={() => toast({ title: 'Docs', description: 'Documentation coming soon.', type: 'info' })} className="hover:text-foreground">
-            Docs
+          <button type="button" onClick={() => toast({ title: 'مستندات', description: 'مستندات به‌زودی در دسترس خواهد بود.', type: 'info' })} className="hover:text-foreground">
+            مستندات
           </button>
-          <button type="button" onClick={() => toast({ title: 'Support', description: 'Support page coming soon.', type: 'info' })} className="hover:text-foreground">
-            Support
+          <button type="button" onClick={() => toast({ title: 'پشتیبانی', description: 'صفحه پشتیبانی به‌زودی در دسترس خواهد بود.', type: 'info' })} className="hover:text-foreground">
+            پشتیبانی
           </button>
-          <button type="button" onClick={() => toast({ title: 'Terms', description: 'Terms of service coming soon.', type: 'info' })} className="hover:text-foreground">
-            Terms
+          <button type="button" onClick={() => toast({ title: 'شرایط استفاده', description: 'شرایط استفاده به‌زودی در دسترس خواهد بود.', type: 'info' })} className="hover:text-foreground">
+            شرایط استفاده
           </button>
-          <button type="button" onClick={() => toast({ title: 'Policy', description: 'Privacy policy coming soon.', type: 'info' })} className="hover:text-foreground">
-            Policy
+          <button type="button" onClick={() => toast({ title: 'حریم خصوصی', description: 'سیاست حریم خصوصی به‌زودی در دسترس خواهد بود.', type: 'info' })} className="hover:text-foreground">
+            حریم خصوصی
           </button>
-          <a href="https://docs.findash.example/help" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-500">Help & Support</a>
+          <a href="https://docs.findash.example/help" target="_blank" rel="noopener noreferrer" className="hover:text-cyan-500">راهنما و پشتیبانی</a>
         </div>
       </div>
     </div>

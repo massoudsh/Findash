@@ -10,10 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  AlertTriangle, 
-  ShieldCheck, 
-  TrendingDown, 
+import {
+  AlertTriangle,
+  ShieldCheck,
+  TrendingDown,
   TrendingUp,
   BarChart3,
   PieChart,
@@ -37,40 +37,40 @@ interface SkfolioRiskMetrics {
   var_99: number;
   cvar_95: number;
   cvar_99: number;
-  
+
   // Performance Metrics
   sharpe_ratio: number;
   sortino_ratio: number;
   calmar_ratio: number;
   omega_ratio: number;
-  
+
   // Risk-Return Metrics
   max_drawdown: number;
   volatility: number;
   skewness: number;
   kurtosis: number;
-  
+
   // Portfolio Construction Metrics
   diversification_ratio: number;
   effective_number_assets: number;
   concentration_risk: number;
   turnover: number;
-  
+
   // Risk Budgeting
   risk_contribution: Record<string, number>;
   marginal_var: Record<string, number>;
   component_var: Record<string, number>;
-  
+
   // Factor Exposures
   factor_loadings: Record<string, number>;
   factor_var_decomposition: Record<string, number>;
-  
+
   // Tail Risk
   tail_ratio: number;
   gain_loss_ratio: number;
   pain_index: number;
   ulcer_index: number;
-  
+
   // Optimization Metrics
   risk_parity_distance: number;
   mean_variance_efficiency: number;
@@ -154,7 +154,7 @@ export function RiskContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(optimizationTarget)
       });
-      
+
       if (response.ok) {
         const recommendation = await response.json();
         setRebalancingRec(recommendation);
@@ -180,7 +180,7 @@ export function RiskContent() {
   }
 
   if (!metrics) {
-    return <div className="text-center text-red-600">Could not load risk metrics.</div>;
+    return <div className="text-center text-red-600">بارگذاری معیارهای ریسک ممکن نشد.</div>;
   }
 
   return (
@@ -189,55 +189,55 @@ export function RiskContent() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="glass-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Portfolio Value</CardTitle>
+            <CardTitle className="text-sm font-medium">ارزش پورتفولیو</CardTitle>
             <DollarSign className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${metrics.portfolioValue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Total market value</p>
+            <p className="text-xs text-muted-foreground">ارزش کل بازار</p>
           </CardContent>
         </Card>
 
         <Card className="glass-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sharpe Ratio</CardTitle>
+            <CardTitle className="text-sm font-medium">نسبت شارپ</CardTitle>
             <Target className="h-4 w-4 text-blue-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.sharpe_ratio.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Risk-adjusted return</p>
+            <p className="text-xs text-muted-foreground">بازده تعدیل‌شده با ریسک</p>
           </CardContent>
         </Card>
 
         <Card className="glass-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">VaR (95%)</CardTitle>
+            <CardTitle className="text-sm font-medium">ارزش در معرض ریسک (۹۵٪)</CardTitle>
             <AlertTriangle className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${metrics.var_95.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">1-day potential loss</p>
+            <p className="text-xs text-muted-foreground">زیان احتمالی ۱ روزه</p>
           </CardContent>
         </Card>
 
         <Card className="glass-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Diversification</CardTitle>
+            <CardTitle className="text-sm font-medium">تنوع‌بخشی</CardTitle>
             <PieChart className="h-4 w-4 text-purple-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.diversification_ratio.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">Portfolio diversification</p>
+            <p className="text-xs text-muted-foreground">تنوع پورتفولیو</p>
           </CardContent>
         </Card>
       </div>
 
       <Tabs defaultValue="metrics" className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="metrics">Risk Metrics</TabsTrigger>
-          <TabsTrigger value="optimization">Optimization</TabsTrigger>
-          <TabsTrigger value="risk-budgeting">Risk Budgeting</TabsTrigger>
-          <TabsTrigger value="factor-analysis">Factor Analysis</TabsTrigger>
+          <TabsTrigger value="metrics">معیارهای ریسک</TabsTrigger>
+          <TabsTrigger value="optimization">بهینه‌سازی</TabsTrigger>
+          <TabsTrigger value="risk-budgeting">بودجه‌بندی ریسک</TabsTrigger>
+          <TabsTrigger value="factor-analysis">تحلیل عوامل</TabsTrigger>
         </TabsList>
 
         <TabsContent value="metrics" className="space-y-4">
@@ -247,25 +247,25 @@ export function RiskContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5" />
-                  Performance Metrics
+                  معیارهای عملکرد
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm text-muted-foreground">Sharpe Ratio</Label>
+                    <Label className="text-sm text-muted-foreground">نسبت شارپ</Label>
                     <div className="text-lg font-semibold">{metrics.sharpe_ratio.toFixed(3)}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Sortino Ratio</Label>
+                    <Label className="text-sm text-muted-foreground">نسبت سورتینو</Label>
                     <div className="text-lg font-semibold">{metrics.sortino_ratio.toFixed(3)}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Calmar Ratio</Label>
+                    <Label className="text-sm text-muted-foreground">نسبت کالمار</Label>
                     <div className="text-lg font-semibold">{metrics.calmar_ratio.toFixed(3)}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Omega Ratio</Label>
+                    <Label className="text-sm text-muted-foreground">نسبت اُمگا</Label>
                     <div className="text-lg font-semibold">{metrics.omega_ratio.toFixed(3)}</div>
                   </div>
                 </div>
@@ -277,25 +277,25 @@ export function RiskContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ShieldCheck className="h-5 w-5" />
-                  Risk Metrics
+                  معیارهای ریسک
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm text-muted-foreground">VaR 95%</Label>
+                    <Label className="text-sm text-muted-foreground">ارزش در معرض ریسک ۹۵٪</Label>
                     <div className="text-lg font-semibold text-red-600">${metrics.var_95.toLocaleString()}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">CVaR 95%</Label>
+                    <Label className="text-sm text-muted-foreground">CVaR ۹۵٪</Label>
                     <div className="text-lg font-semibold text-red-600">${metrics.cvar_95.toLocaleString()}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Max Drawdown</Label>
+                    <Label className="text-sm text-muted-foreground">حداکثر افت سرمایه</Label>
                     <div className="text-lg font-semibold text-red-600">{(metrics.max_drawdown * 100).toFixed(1)}%</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Volatility</Label>
+                    <Label className="text-sm text-muted-foreground">نوسان‌پذیری</Label>
                     <div className="text-lg font-semibold">{(metrics.volatility * 100).toFixed(1)}%</div>
                   </div>
                 </div>
@@ -307,25 +307,25 @@ export function RiskContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingDown className="h-5 w-5" />
-                  Tail Risk Analysis
+                  تحلیل ریسک دنباله
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm text-muted-foreground">Skewness</Label>
+                    <Label className="text-sm text-muted-foreground">چولگی</Label>
                     <div className="text-lg font-semibold">{metrics.skewness.toFixed(3)}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Kurtosis</Label>
+                    <Label className="text-sm text-muted-foreground">کشیدگی</Label>
                     <div className="text-lg font-semibold">{metrics.kurtosis.toFixed(3)}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Tail Ratio</Label>
+                    <Label className="text-sm text-muted-foreground">نسبت دنباله</Label>
                     <div className="text-lg font-semibold">{metrics.tail_ratio.toFixed(3)}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Ulcer Index</Label>
+                    <Label className="text-sm text-muted-foreground">شاخص اولسر</Label>
                     <div className="text-lg font-semibold">{metrics.ulcer_index.toFixed(3)}</div>
                   </div>
                 </div>
@@ -337,25 +337,25 @@ export function RiskContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Settings className="h-5 w-5" />
-                  Portfolio Construction
+                  ساختار پورتفولیو
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label className="text-sm text-muted-foreground">Effective # Assets</Label>
+                    <Label className="text-sm text-muted-foreground">تعداد مؤثر دارایی‌ها</Label>
                     <div className="text-lg font-semibold">{metrics.effective_number_assets.toFixed(1)}</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Concentration Risk</Label>
+                    <Label className="text-sm text-muted-foreground">ریسک تمرکز</Label>
                     <div className="text-lg font-semibold">{(metrics.concentration_risk * 100).toFixed(1)}%</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Turnover</Label>
+                    <Label className="text-sm text-muted-foreground">گردش معاملات</Label>
                     <div className="text-lg font-semibold">{(metrics.turnover * 100).toFixed(1)}%</div>
                   </div>
                   <div>
-                    <Label className="text-sm text-muted-foreground">Risk Parity Distance</Label>
+                    <Label className="text-sm text-muted-foreground">فاصله برابری ریسک</Label>
                     <div className="text-lg font-semibold">{metrics.risk_parity_distance.toFixed(3)}</div>
                   </div>
                 </div>
@@ -371,13 +371,13 @@ export function RiskContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Brain className="h-5 w-5" />
-                  Portfolio Optimization
+                  بهینه‌سازی پورتفولیو
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Optimization Objective</Label>
-                  <Select 
+                  <Label>هدف بهینه‌سازی</Label>
+                  <Select
                     value={optimizationTarget.objective}
                     onValueChange={(value: any) => setOptimizationTarget(prev => ({ ...prev, objective: value }))}
                   >
@@ -385,20 +385,20 @@ export function RiskContent() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="max_sharpe">Maximize Sharpe Ratio</SelectItem>
-                      <SelectItem value="min_variance">Minimize Variance</SelectItem>
-                      <SelectItem value="risk_parity">Risk Parity</SelectItem>
-                      <SelectItem value="max_diversification">Max Diversification</SelectItem>
-                      <SelectItem value="black_litterman">Black-Litterman</SelectItem>
+                      <SelectItem value="max_sharpe">حداکثر‌سازی نسبت شارپ</SelectItem>
+                      <SelectItem value="min_variance">حداقل‌سازی واریانس</SelectItem>
+                      <SelectItem value="risk_parity">برابری ریسک</SelectItem>
+                      <SelectItem value="max_diversification">حداکثر تنوع‌بخشی</SelectItem>
+                      <SelectItem value="black_litterman">بلک-لیترمن</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Max Weight (%)</Label>
-                    <Input 
-                      type="number" 
+                    <Label>حداکثر وزن (%)</Label>
+                    <Input
+                      type="number"
                       value={(optimizationTarget.constraints.max_weight || 0) * 100}
                       onChange={(e) => setOptimizationTarget(prev => ({
                         ...prev,
@@ -407,9 +407,9 @@ export function RiskContent() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Min Weight (%)</Label>
-                    <Input 
-                      type="number" 
+                    <Label>حداقل وزن (%)</Label>
+                    <Input
+                      type="number"
                       value={(optimizationTarget.constraints.min_weight || 0) * 100}
                       onChange={(e) => setOptimizationTarget(prev => ({
                         ...prev,
@@ -420,8 +420,8 @@ export function RiskContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Rebalancing Frequency</Label>
-                  <Select 
+                  <Label>دوره تعادل‌بخشی مجدد</Label>
+                  <Select
                     value={optimizationTarget.rebalancing_frequency}
                     onValueChange={(value: any) => setOptimizationTarget(prev => ({ ...prev, rebalancing_frequency: value }))}
                   >
@@ -429,15 +429,15 @@ export function RiskContent() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="monthly">Monthly</SelectItem>
-                      <SelectItem value="quarterly">Quarterly</SelectItem>
+                      <SelectItem value="daily">روزانه</SelectItem>
+                      <SelectItem value="weekly">هفتگی</SelectItem>
+                      <SelectItem value="monthly">ماهانه</SelectItem>
+                      <SelectItem value="quarterly">فصلی</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <Button 
+                <Button
                   onClick={runOptimization}
                   disabled={isOptimizing}
                   className="w-full"
@@ -445,12 +445,12 @@ export function RiskContent() {
                   {isOptimizing ? (
                     <>
                       <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                      Optimizing...
+                      در حال بهینه‌سازی...
                     </>
                   ) : (
                     <>
                       <Zap className="mr-2 h-4 w-4" />
-                      Run Optimization
+                      اجرای بهینه‌سازی
                     </>
                   )}
                 </Button>
@@ -463,27 +463,27 @@ export function RiskContent() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <RefreshCw className="h-5 w-5" />
-                    Rebalancing Recommendations
+                    پیشنهادهای تعادل‌بخشی مجدد
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <div className="text-sm text-muted-foreground">Sharpe Δ</div>
+                      <div className="text-sm text-muted-foreground">Δ شارپ</div>
                       <div className={`text-lg font-semibold ${rebalancingRec.expected_improvement.sharpe_delta > 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {rebalancingRec.expected_improvement.sharpe_delta > 0 ? '+' : ''}
                         {rebalancingRec.expected_improvement.sharpe_delta.toFixed(3)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">VaR Δ</div>
+                      <div className="text-sm text-muted-foreground">Δ ارزش در معرض ریسک</div>
                       <div className={`text-lg font-semibold ${rebalancingRec.expected_improvement.var_delta < 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {rebalancingRec.expected_improvement.var_delta > 0 ? '+' : ''}
                         ${rebalancingRec.expected_improvement.var_delta.toLocaleString()}
                       </div>
                     </div>
                     <div>
-                      <div className="text-sm text-muted-foreground">Diversification Δ</div>
+                      <div className="text-sm text-muted-foreground">Δ تنوع‌بخشی</div>
                       <div className={`text-lg font-semibold ${rebalancingRec.expected_improvement.diversification_delta > 0 ? 'text-green-600' : 'text-red-600'}`}>
                         {rebalancingRec.expected_improvement.diversification_delta > 0 ? '+' : ''}
                         {rebalancingRec.expected_improvement.diversification_delta.toFixed(3)}
@@ -492,13 +492,13 @@ export function RiskContent() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Required Trades</Label>
+                    <Label>معاملات مورد نیاز</Label>
                     <div className="max-h-32 overflow-y-auto space-y-1">
                       {rebalancingRec.trades_required.map((trade, index) => (
                         <div key={index} className="flex justify-between items-center p-2 bg-muted rounded">
                           <span className="font-medium">{trade.symbol}</span>
                           <Badge variant={trade.action === 'buy' ? 'default' : 'destructive'}>
-                            {trade.action.toUpperCase()} ${trade.value.toLocaleString()}
+                            {trade.action === 'buy' ? 'خرید' : 'فروش'} ${trade.value.toLocaleString()}
                           </Badge>
                         </div>
                       ))}
@@ -506,7 +506,7 @@ export function RiskContent() {
                   </div>
 
                   <div className="text-sm text-muted-foreground">
-                    Implementation Cost: ${rebalancingRec.implementation_cost.toLocaleString()}
+                    هزینه اجرا: ${rebalancingRec.implementation_cost.toLocaleString()}
                   </div>
                 </CardContent>
               </Card>
@@ -519,7 +519,7 @@ export function RiskContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Calculator className="h-5 w-5" />
-                Risk Contribution Analysis
+                تحلیل سهم ریسک
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -546,7 +546,7 @@ export function RiskContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5" />
-                  Factor Loadings
+                  بارهای عاملی
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -567,7 +567,7 @@ export function RiskContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <PieChart className="h-5 w-5" />
-                  Factor VaR Decomposition
+                  تجزیه ارزش در معرض ریسک بر اساس عوامل
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -594,8 +594,8 @@ export function RiskContent() {
       <Alert>
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription>
-          <strong>Risk Alert:</strong> Portfolio concentration risk is above optimal levels. 
-          Consider rebalancing to improve diversification.
+          <strong>هشدار ریسک:</strong> ریسک تمرکز پورتفولیو بالاتر از سطح بهینه است.
+          برای بهبود تنوع‌بخشی، تعادل‌بخشی مجدد را در نظر بگیرید.
         </AlertDescription>
       </Alert>
     </div>
@@ -697,11 +697,11 @@ function generateMockRebalancingRec(): RebalancingRecommendation {
       'NVDA': 0.110
     },
     trades_required: [
-      { symbol: 'AAPL', action: 'sell', quantity: 45, value: 8100, reason: 'Reduce concentration' },
-      { symbol: 'MSFT', action: 'buy', quantity: 28, value: 9240, reason: 'Increase allocation' },
-      { symbol: 'GOOGL', action: 'buy', quantity: 12, value: 3360, reason: 'Rebalance to target' },
-      { symbol: 'TSLA', action: 'sell', quantity: 18, value: 3780, reason: 'Reduce volatility' },
-      { symbol: 'NVDA', action: 'buy', quantity: 15, value: 4200, reason: 'Increase tech exposure' }
+      { symbol: 'AAPL', action: 'sell', quantity: 45, value: 8100, reason: 'کاهش تمرکز' },
+      { symbol: 'MSFT', action: 'buy', quantity: 28, value: 9240, reason: 'افزایش تخصیص' },
+      { symbol: 'GOOGL', action: 'buy', quantity: 12, value: 3360, reason: 'تعادل‌بخشی به سمت هدف' },
+      { symbol: 'TSLA', action: 'sell', quantity: 18, value: 3780, reason: 'کاهش نوسان‌پذیری' },
+      { symbol: 'NVDA', action: 'buy', quantity: 15, value: 4200, reason: 'افزایش قرارگیری در حوزه فناوری' }
     ],
     expected_improvement: {
       sharpe_delta: 0.043,
@@ -710,4 +710,4 @@ function generateMockRebalancingRec(): RebalancingRecommendation {
     },
     implementation_cost: 450
   };
-} 
+}

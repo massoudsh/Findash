@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import {
   FileText,
   Search,
   Filter,
@@ -87,6 +87,29 @@ interface AuditSummary {
   severityBreakdown: { severity: string; count: number }[];
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  Authentication: 'احراز هویت',
+  Trading: 'معاملات',
+  Account: 'حساب کاربری',
+  System: 'سیستم',
+  Compliance: 'انطباق',
+  Security: 'امنیت',
+  API: 'API',
+};
+
+const SEVERITY_LABELS: Record<string, string> = {
+  low: 'کم',
+  medium: 'متوسط',
+  high: 'زیاد',
+  critical: 'بحرانی',
+};
+
+const RESULT_LABELS: Record<string, string> = {
+  success: 'موفق',
+  failure: 'ناموفق',
+  warning: 'هشدار',
+};
+
 export default function AuditLogPage() {
   const [selectedTab, setSelectedTab] = useState('events');
   const [events, setEvents] = useState<AuditEvent[]>([]);
@@ -113,12 +136,12 @@ export default function AuditLogPage() {
         action: 'ORDER_PLACED',
         category: 'Trading',
         resource: 'orders/ord-789456',
-        details: 'Market order placed for 1000 shares of AAPL at $185.50',
+        details: 'ثبت سفارش بازار برای ۱۰۰۰ سهم AAPL با قیمت ۱۸۵.۵۰ دلار',
         severity: 'medium',
         result: 'success',
         ipAddress: '192.168.1.145',
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        location: 'New York, NY, USA',
+        location: 'نیویورک، آمریکا',
         sessionId: 'sess-abc123',
         metadata: { symbol: 'AAPL', quantity: 1000, price: 185.50, orderType: 'market' },
         riskScore: 65,
@@ -133,12 +156,12 @@ export default function AuditLogPage() {
         action: 'USER_ROLE_CHANGED',
         category: 'Security',
         resource: 'users/user-789',
-        details: 'User role changed from viewer to trader for emily.davis@company.com',
+        details: 'نقش کاربر emily.davis@company.com از viewer به trader تغییر یافت',
         severity: 'high',
         result: 'success',
         ipAddress: '10.0.0.234',
         userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
-        location: 'London, UK',
+        location: 'لندن، انگلستان',
         sessionId: 'sess-def456',
         metadata: { targetUser: 'emily.davis@company.com', oldRole: 'viewer', newRole: 'trader' },
         riskScore: 85,
@@ -153,12 +176,12 @@ export default function AuditLogPage() {
         action: 'LOGIN_FAILED',
         category: 'Authentication',
         resource: 'auth/login',
-        details: 'Failed login attempt - invalid password',
+        details: 'تلاش ورود ناموفق - رمز عبور نامعتبر',
         severity: 'medium',
         result: 'failure',
         ipAddress: '203.45.67.89',
         userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
-        location: 'Singapore',
+        location: 'سنگاپور',
         sessionId: '',
         metadata: { attemptNumber: 3, lockoutTriggered: false },
         riskScore: 45,
@@ -173,12 +196,12 @@ export default function AuditLogPage() {
         action: 'RISK_LIMIT_EXCEEDED',
         category: 'Compliance',
         resource: 'risk/portfolio-var',
-        details: 'Portfolio VaR limit exceeded: $52,000 (limit: $50,000)',
+        details: 'محدودیت VaR پرتفوی نقض شد: ۵۲,۰۰۰ دلار (محدودیت: ۵۰,۰۰۰ دلار)',
         severity: 'critical',
         result: 'warning',
         ipAddress: '127.0.0.1',
         userAgent: 'System/Internal',
-        location: 'System',
+        location: 'سیستم',
         sessionId: 'sys-001',
         metadata: { currentVaR: 52000, limit: 50000, portfolioId: 'port-123' },
         riskScore: 95,
@@ -193,12 +216,12 @@ export default function AuditLogPage() {
         action: 'POSITION_CLOSED',
         category: 'Trading',
         resource: 'positions/pos-456789',
-        details: 'Position closed: TSLA 500 shares, P&L: +$12,500',
+        details: 'پوزیشن بسته شد: ۵۰۰ سهم TSLA، سود و زیان: +۱۲,۵۰۰ دلار',
         severity: 'low',
         result: 'success',
         ipAddress: '192.168.1.145',
         userAgent: 'TradingApp/1.0 (Mobile)',
-        location: 'New York, NY, USA',
+        location: 'نیویورک، آمریکا',
         sessionId: 'sess-abc123',
         metadata: { symbol: 'TSLA', quantity: 500, pnl: 12500, reason: 'manual' },
         riskScore: 25,
@@ -213,12 +236,12 @@ export default function AuditLogPage() {
         action: 'API_RATE_LIMIT_EXCEEDED',
         category: 'API',
         resource: 'api/market-data',
-        details: 'API rate limit exceeded: 1000 requests in 1 minute (limit: 500)',
+        details: 'محدودیت نرخ API نقض شد: ۱۰۰۰ درخواست در ۱ دقیقه (محدودیت: ۵۰۰)',
         severity: 'high',
         result: 'failure',
         ipAddress: '45.67.89.123',
         userAgent: 'Python/requests',
-        location: 'Unknown',
+        location: 'نامشخص',
         sessionId: 'api-xyz789',
         metadata: { requestCount: 1000, timeWindow: '1m', endpoint: '/api/market-data' },
         riskScore: 78,
@@ -233,12 +256,12 @@ export default function AuditLogPage() {
         action: 'CONFIG_UPDATED',
         category: 'System',
         resource: 'config/trading-limits',
-        details: 'Updated maximum order size from $500K to $1M',
+        details: 'حداکثر حجم سفارش از ۵۰۰ هزار به ۱ میلیون دلار افزایش یافت',
         severity: 'medium',
         result: 'success',
         ipAddress: '10.0.0.234',
         userAgent: 'Chrome/120.0.0.0',
-        location: 'London, UK',
+        location: 'لندن، انگلستان',
         sessionId: 'sess-def456',
         metadata: { setting: 'max_order_size', oldValue: 500000, newValue: 1000000 },
         riskScore: 55,
@@ -253,12 +276,12 @@ export default function AuditLogPage() {
         action: 'REPORT_GENERATED',
         category: 'Compliance',
         resource: 'reports/daily-trading',
-        details: 'Daily trading compliance report generated for 2024-01-20',
+        details: 'گزارش انطباق معاملات روزانه برای تاریخ ۲۰۲۴-۰۱-۲۰ تولید شد',
         severity: 'low',
         result: 'success',
         ipAddress: '172.16.0.100',
         userAgent: 'Safari/17.2',
-        location: 'Toronto, CA',
+        location: 'تورنتو، کانادا',
         sessionId: 'sess-comp001',
         metadata: { reportType: 'daily-trading', period: '2024-01-20', recordCount: 2847 },
         riskScore: 10,
@@ -358,18 +381,18 @@ export default function AuditLogPage() {
   };
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString();
+    return new Date(timestamp).toLocaleString('fa-IR');
   };
 
   const getRiskLevel = (score: number) => {
-    if (score >= 80) return { level: 'Critical', color: 'text-red-600' };
-    if (score >= 60) return { level: 'High', color: 'text-orange-600' };
-    if (score >= 30) return { level: 'Medium', color: 'text-yellow-600' };
-    return { level: 'Low', color: 'text-green-600' };
+    if (score >= 80) return { level: 'بحرانی', color: 'text-red-600' };
+    if (score >= 60) return { level: 'زیاد', color: 'text-orange-600' };
+    if (score >= 30) return { level: 'متوسط', color: 'text-yellow-600' };
+    return { level: 'کم', color: 'text-green-600' };
   };
 
   const exportToCSV = () => {
-    const headers = ['Timestamp', 'User', 'Action', 'Category', 'Result', 'Details', 'IP Address', 'Risk Score'];
+    const headers = ['زمان', 'کاربر', 'عملیات', 'دسته', 'نتیجه', 'جزئیات', 'آدرس IP', 'امتیاز ریسک'];
     const csvContent = [
       headers.join(','),
       ...filteredEvents.map(event => [
@@ -404,21 +427,21 @@ export default function AuditLogPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <FileText className="w-8 h-8 text-blue-600" />
-            Audit Log
+            لاگ ممیزی
           </h1>
           <p className="text-muted-foreground">
-            Comprehensive tracking of user activities and system events for compliance and security
+            ردیابی جامع فعالیت‌های کاربران و رویدادهای سیستم برای انطباق و امنیت
           </p>
         </div>
-        
+
         <div className="flex gap-3">
           <Button variant="outline" onClick={exportToCSV} className="flex items-center gap-2">
             <Download className="w-4 h-4" />
-            Export CSV
+            خروجی CSV
           </Button>
           <Button className="flex items-center gap-2">
             <RefreshCw className="w-4 h-4" />
-            Refresh
+            بازخوانی
           </Button>
         </div>
       </div>
@@ -430,67 +453,67 @@ export default function AuditLogPage() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Events</p>
+                  <p className="text-sm text-gray-600">کل رویدادها</p>
                   <p className="text-2xl font-bold">{summary.totalEvents.toLocaleString()}</p>
                 </div>
                 <Activity className="w-8 h-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Today</p>
+                  <p className="text-sm text-gray-600">امروز</p>
                   <p className="text-2xl font-bold">{summary.todayEvents}</p>
                 </div>
                 <Calendar className="w-8 h-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Failed Actions</p>
+                  <p className="text-sm text-gray-600">اقدامات ناموفق</p>
                   <p className="text-2xl font-bold">{summary.failedActions}</p>
                 </div>
                 <XCircle className="w-8 h-8 text-red-600" />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">High Risk</p>
+                  <p className="text-sm text-gray-600">ریسک بالا</p>
                   <p className="text-2xl font-bold">{summary.highRiskEvents}</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Unique Users</p>
+                  <p className="text-sm text-gray-600">کاربران یکتا</p>
                   <p className="text-2xl font-bold">{summary.uniqueUsers}</p>
                 </div>
                 <Users className="w-8 h-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Compliance</p>
+                  <p className="text-sm text-gray-600">انطباق</p>
                   <p className="text-2xl font-bold text-green-600">✓</p>
                 </div>
                 <Shield className="w-8 h-8 text-green-600" />
@@ -502,10 +525,10 @@ export default function AuditLogPage() {
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="events">Audit Events</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="compliance">Compliance</TabsTrigger>
-          <TabsTrigger value="alerts">Security Alerts</TabsTrigger>
+          <TabsTrigger value="events">رویدادهای ممیزی</TabsTrigger>
+          <TabsTrigger value="analytics">تحلیل</TabsTrigger>
+          <TabsTrigger value="compliance">انطباق</TabsTrigger>
+          <TabsTrigger value="alerts">هشدارهای امنیتی</TabsTrigger>
         </TabsList>
 
         <TabsContent value="events" className="space-y-4">
@@ -517,83 +540,83 @@ export default function AuditLogPage() {
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                     <Input
-                      placeholder="Search events..."
+                      placeholder="جستجوی رویدادها..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
                     />
                   </div>
                 </div>
-                
-                <select 
-                  value={selectedCategory} 
+
+                <select
+                  value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="px-3 py-2 border rounded-md"
                 >
-                  <option value="all">All Categories</option>
-                  <option value="Authentication">Authentication</option>
-                  <option value="Trading">Trading</option>
-                  <option value="Account">Account</option>
-                  <option value="System">System</option>
-                  <option value="Compliance">Compliance</option>
-                  <option value="Security">Security</option>
+                  <option value="all">همه دسته‌ها</option>
+                  <option value="Authentication">احراز هویت</option>
+                  <option value="Trading">معاملات</option>
+                  <option value="Account">حساب کاربری</option>
+                  <option value="System">سیستم</option>
+                  <option value="Compliance">انطباق</option>
+                  <option value="Security">امنیت</option>
                   <option value="API">API</option>
                 </select>
-                
-                <select 
-                  value={selectedSeverity} 
+
+                <select
+                  value={selectedSeverity}
                   onChange={(e) => setSelectedSeverity(e.target.value)}
                   className="px-3 py-2 border rounded-md"
                 >
-                  <option value="all">All Severity</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                  <option value="critical">Critical</option>
+                  <option value="all">همه سطوح شدت</option>
+                  <option value="low">کم</option>
+                  <option value="medium">متوسط</option>
+                  <option value="high">زیاد</option>
+                  <option value="critical">بحرانی</option>
                 </select>
-                
-                <select 
-                  value={selectedResult} 
+
+                <select
+                  value={selectedResult}
                   onChange={(e) => setSelectedResult(e.target.value)}
                   className="px-3 py-2 border rounded-md"
                 >
-                  <option value="all">All Results</option>
-                  <option value="success">Success</option>
-                  <option value="failure">Failure</option>
-                  <option value="warning">Warning</option>
+                  <option value="all">همه نتایج</option>
+                  <option value="success">موفق</option>
+                  <option value="failure">ناموفق</option>
+                  <option value="warning">هشدار</option>
                 </select>
-                
-                <select 
-                  value={dateRange} 
+
+                <select
+                  value={dateRange}
                   onChange={(e) => setDateRange(e.target.value)}
                   className="px-3 py-2 border rounded-md"
                 >
-                  <option value="today">Today</option>
-                  <option value="week">This Week</option>
-                  <option value="month">This Month</option>
-                  <option value="all">All Time</option>
+                  <option value="today">امروز</option>
+                  <option value="week">این هفته</option>
+                  <option value="month">این ماه</option>
+                  <option value="all">همه زمان‌ها</option>
                 </select>
               </div>
-              
+
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-sm text-gray-600">
-                  Showing {startIndex + 1}-{Math.min(startIndex + eventsPerPage, filteredEvents.length)} of {filteredEvents.length} events
+                  نمایش {startIndex + 1}-{Math.min(startIndex + eventsPerPage, filteredEvents.length)} از {filteredEvents.length} رویداد
                 </div>
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </Button>
                   <span className="px-3 py-1 text-sm">
-                    {currentPage} of {totalPages}
+                    {currentPage} از {totalPages}
                   </span>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
                   >
@@ -610,7 +633,7 @@ export default function AuditLogPage() {
               <div className="space-y-1">
                 {paginatedEvents.map((event) => (
                   <div key={event.id} className="border-b last:border-b-0">
-                    <div 
+                    <div
                       className="p-4 hover:bg-gray-50 cursor-pointer"
                       onClick={() => setExpandedEvent(expandedEvent === event.id ? null : event.id)}
                     >
@@ -618,17 +641,17 @@ export default function AuditLogPage() {
                         <div className="flex items-center gap-4 flex-1">
                           <div className="flex items-center gap-2">
                             {getCategoryIcon(event.category)}
-                            <span className="text-xs text-gray-500">{event.category}</span>
+                            <span className="text-xs text-gray-500">{CATEGORY_LABELS[event.category] ?? event.category}</span>
                           </div>
-                          
+
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <span className="font-medium truncate">{event.action.replace('_', ' ')}</span>
                               <Badge className={getSeverityColor(event.severity)}>
-                                {event.severity}
+                                {SEVERITY_LABELS[event.severity] ?? event.severity}
                               </Badge>
                               <Badge className={getResultColor(event.result)}>
-                                {event.result}
+                                {RESULT_LABELS[event.result] ?? event.result}
                               </Badge>
                             </div>
                             <div className="text-sm text-gray-600 truncate">{event.details}</div>
@@ -637,79 +660,79 @@ export default function AuditLogPage() {
                               <span>{formatTimestamp(event.timestamp)}</span>
                               <span>{event.ipAddress}</span>
                               <span className={getRiskLevel(event.riskScore).color}>
-                                Risk: {getRiskLevel(event.riskScore).level}
+                                ریسک: {getRiskLevel(event.riskScore).level}
                               </span>
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           {event.complianceFlags.length > 0 && (
                             <Badge variant="outline" className="text-orange-600">
-                              {event.complianceFlags.length} flags
+                              {event.complianceFlags.length} پرچم
                             </Badge>
                           )}
-                          {expandedEvent === event.id ? 
-                            <ChevronDown className="w-4 h-4" /> : 
+                          {expandedEvent === event.id ?
+                            <ChevronDown className="w-4 h-4" /> :
                             <ChevronRight className="w-4 h-4" />
                           }
                         </div>
                       </div>
                     </div>
-                    
+
                     {expandedEvent === event.id && (
                       <div className="px-4 pb-4 bg-gray-50 border-t">
                         <div className="grid gap-4 md:grid-cols-2 mt-4">
                           <div className="space-y-2">
-                            <h4 className="font-medium text-sm">Event Details</h4>
+                            <h4 className="font-medium text-sm">جزئیات رویداد</h4>
                             <div className="space-y-1 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Event ID:</span>
+                                <span className="text-gray-600">شناسه رویداد:</span>
                                 <span className="font-mono">{event.id}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Resource:</span>
+                                <span className="text-gray-600">منبع:</span>
                                 <span className="font-mono">{event.resource}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Session ID:</span>
+                                <span className="text-gray-600">شناسه جلسه:</span>
                                 <span className="font-mono">{event.sessionId}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Risk Score:</span>
+                                <span className="text-gray-600">امتیاز ریسک:</span>
                                 <span className={getRiskLevel(event.riskScore).color}>
                                   {event.riskScore}/100
                                 </span>
                               </div>
                             </div>
                           </div>
-                          
+
                           <div className="space-y-2">
-                            <h4 className="font-medium text-sm">User & Location</h4>
+                            <h4 className="font-medium text-sm">کاربر و موقعیت</h4>
                             <div className="space-y-1 text-sm">
                               <div className="flex justify-between">
-                                <span className="text-gray-600">User:</span>
+                                <span className="text-gray-600">کاربر:</span>
                                 <span>{event.username}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Role:</span>
+                                <span className="text-gray-600">نقش:</span>
                                 <span className="capitalize">{event.userRole}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">Location:</span>
+                                <span className="text-gray-600">موقعیت:</span>
                                 <span>{event.location}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span className="text-gray-600">User Agent:</span>
+                                <span className="text-gray-600">مرورگر/دستگاه:</span>
                                 <span className="truncate">{event.userAgent.split(' ')[0]}</span>
                               </div>
                             </div>
                           </div>
                         </div>
-                        
+
                         {event.complianceFlags.length > 0 && (
                           <div className="mt-4">
-                            <h4 className="font-medium text-sm mb-2">Compliance Flags</h4>
+                            <h4 className="font-medium text-sm mb-2">پرچم‌های انطباق</h4>
                             <div className="flex gap-2 flex-wrap">
                               {event.complianceFlags.map(flag => (
                                 <Badge key={flag} variant="outline" className="text-orange-600">
@@ -719,10 +742,10 @@ export default function AuditLogPage() {
                             </div>
                           </div>
                         )}
-                        
+
                         {Object.keys(event.metadata).length > 0 && (
                           <div className="mt-4">
-                            <h4 className="font-medium text-sm mb-2">Metadata</h4>
+                            <h4 className="font-medium text-sm mb-2">فراداده</h4>
                             <div className="bg-gray-100 p-3 rounded text-xs font-mono">
                               {JSON.stringify(event.metadata, null, 2)}
                             </div>
@@ -745,7 +768,7 @@ export default function AuditLogPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <BarChart3 className="w-5 h-5" />
-                      Top Actions
+                      پراستفاده‌ترین عملیات‌ها
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -767,7 +790,7 @@ export default function AuditLogPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Target className="w-5 h-5" />
-                      Severity Breakdown
+                      تفکیک بر اساس شدت
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -776,7 +799,7 @@ export default function AuditLogPage() {
                         <div key={item.severity} className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Badge className={getSeverityColor(item.severity)}>
-                              {item.severity}
+                              {SEVERITY_LABELS[item.severity] ?? item.severity}
                             </Badge>
                           </div>
                           <span className="text-sm font-semibold">{item.count}</span>
@@ -795,33 +818,33 @@ export default function AuditLogPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="w-5 h-5" />
-                Compliance Dashboard
+                داشبورد انطباق
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">98.5%</div>
-                  <div className="text-sm text-gray-600">Compliance Score</div>
+                  <div className="text-2xl font-bold text-green-600">۹۸.۵٪</div>
+                  <div className="text-sm text-gray-600">امتیاز انطباق</div>
                 </div>
                 <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">247</div>
-                  <div className="text-sm text-gray-600">Flagged Events</div>
+                  <div className="text-2xl font-bold text-blue-600">۲۴۷</div>
+                  <div className="text-sm text-gray-600">رویدادهای پرچم‌گذاری‌شده</div>
                 </div>
                 <div className="text-center p-4 border rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">12</div>
-                  <div className="text-sm text-gray-600">Open Issues</div>
+                  <div className="text-2xl font-bold text-orange-600">۱۲</div>
+                  <div className="text-sm text-gray-600">موارد باز</div>
                 </div>
               </div>
-              
+
               <div className="space-y-3">
-                <h3 className="font-medium">Recent Compliance Flags</h3>
+                <h3 className="font-medium">پرچم‌های انطباق اخیر</h3>
                 {events.filter(e => e.complianceFlags.length > 0).slice(0, 5).map(event => (
                   <div key={event.id} className="p-3 border rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-medium">{event.action.replace('_', ' ')}</span>
                       <Badge className={getSeverityColor(event.severity)}>
-                        {event.severity}
+                        {SEVERITY_LABELS[event.severity] ?? event.severity}
                       </Badge>
                     </div>
                     <div className="text-sm text-gray-600 mb-2">{event.details}</div>
@@ -844,7 +867,7 @@ export default function AuditLogPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <AlertTriangle className="w-5 h-5" />
-                Security Alerts
+                هشدارهای امنیتی
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -853,42 +876,42 @@ export default function AuditLogPage() {
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
                     <div className="flex-1">
-                      <div className="font-medium text-red-800">Critical Risk Event Detected</div>
+                      <div className="font-medium text-red-800">رویداد ریسک بحرانی شناسایی شد</div>
                       <div className="text-sm text-red-700 mt-1">
-                        Portfolio VaR limit exceeded by 4%. Automatic position closure initiated.
+                        محدودیت VaR پرتفوی به میزان ۴٪ نقض شد. بستن خودکار پوزیشن آغاز شد.
                       </div>
                       <div className="text-xs text-red-600 mt-2">
-                        15:35 UTC • Risk Score: 95/100
+                        ۱۵:۳۵ UTC • امتیاز ریسک: ۹۵/۱۰۰
                       </div>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-4 border border-orange-200 bg-orange-50 rounded-lg">
                   <div className="flex items-start gap-3">
                     <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5" />
                     <div className="flex-1">
-                      <div className="font-medium text-orange-800">Suspicious API Activity</div>
+                      <div className="font-medium text-orange-800">فعالیت مشکوک API</div>
                       <div className="text-sm text-orange-700 mt-1">
-                        API rate limit exceeded from external IP. Potential abuse detected.
+                        محدودیت نرخ API از یک IP خارجی نقض شد. احتمال سوءاستفاده شناسایی شد.
                       </div>
                       <div className="text-xs text-orange-600 mt-2">
-                        15:25 UTC • Risk Score: 78/100
+                        ۱۵:۲۵ UTC • امتیاز ریسک: ۷۸/۱۰۰
                       </div>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
                   <div className="flex items-start gap-3">
                     <Info className="w-5 h-5 text-yellow-600 mt-0.5" />
                     <div className="flex-1">
-                      <div className="font-medium text-yellow-800">Privilege Escalation</div>
+                      <div className="font-medium text-yellow-800">تشدید سطح دسترسی</div>
                       <div className="text-sm text-yellow-700 mt-1">
-                        Admin user granted trader role to viewer account. Review recommended.
+                        کاربر ادمین نقش trader را به یک حساب viewer اعطا کرد. بررسی توصیه می‌شود.
                       </div>
                       <div className="text-xs text-yellow-600 mt-2">
-                        15:42 UTC • Risk Score: 85/100
+                        ۱۵:۴۲ UTC • امتیاز ریسک: ۸۵/۱۰۰
                       </div>
                     </div>
                   </div>
@@ -900,4 +923,4 @@ export default function AuditLogPage() {
       </Tabs>
     </div>
   );
-} 
+}

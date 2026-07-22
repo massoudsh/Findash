@@ -68,45 +68,45 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
   const [errors, setErrors] = useState<Partial<NewStrategyForm>>({});
 
   const strategyTypes = [
-    { value: 'momentum', label: 'Momentum Strategy', description: 'Follows price trends and momentum' },
-    { value: 'technical', label: 'Technical Analysis', description: 'Uses RSI, Bollinger Bands, and other indicators' },
-    { value: 'risk_aware', label: 'Risk-Aware Strategy', description: 'Focuses on risk management and drawdown control' },
-    { value: 'mean_reversion', label: 'Mean Reversion', description: 'Trades against price extremes' },
-    { value: 'breakout', label: 'Breakout Strategy', description: 'Trades on price breakouts from ranges' },
-    { value: 'volatility_spread', label: 'Volatility Spread', description: 'Options strategy based on IV/HV spread' },
+    { value: 'momentum', label: 'استراتژی مومنتوم', description: 'روند و مومنتوم قیمت را دنبال می‌کند' },
+    { value: 'technical', label: 'تحلیل تکنیکال', description: 'از RSI، باندهای بولینگر و سایر شاخص‌ها استفاده می‌کند' },
+    { value: 'risk_aware', label: 'استراتژی ریسک‌محور', description: 'بر مدیریت ریسک و کنترل افت سرمایه تمرکز دارد' },
+    { value: 'mean_reversion', label: 'بازگشت به میانگین', description: 'بر خلاف نقاط اوج و کف قیمت معامله می‌کند' },
+    { value: 'breakout', label: 'استراتژی شکست قیمتی', description: 'بر اساس شکست قیمت از محدوده معامله می‌کند' },
+    { value: 'volatility_spread', label: 'اسپرد نوسان', description: 'استراتژی اختیار معامله بر اساس اسپرد نوسان ضمنی/تاریخی' },
   ];
 
   const rebalanceFrequencies = [
-    { value: 'daily', label: 'Daily' },
-    { value: 'weekly', label: 'Weekly' },
-    { value: 'monthly', label: 'Monthly' },
-    { value: 'quarterly', label: 'Quarterly' },
+    { value: 'daily', label: 'روزانه' },
+    { value: 'weekly', label: 'هفتگی' },
+    { value: 'monthly', label: 'ماهانه' },
+    { value: 'quarterly', label: 'فصلی' },
   ];
 
   const timeHorizons = [
-    { value: '1m', label: '1 Minute' },
-    { value: '5m', label: '5 Minutes' },
-    { value: '15m', label: '15 Minutes' },
-    { value: '1h', label: '1 Hour' },
-    { value: '4h', label: '4 Hours' },
-    { value: '1d', label: '1 Day' },
-    { value: '1w', label: '1 Week' },
+    { value: '1m', label: '۱ دقیقه' },
+    { value: '5m', label: '۵ دقیقه' },
+    { value: '15m', label: '۱۵ دقیقه' },
+    { value: '1h', label: '۱ ساعت' },
+    { value: '4h', label: '۴ ساعت' },
+    { value: '1d', label: '۱ روز' },
+    { value: '1w', label: '۱ هفته' },
   ];
 
   function handleInputChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value, type } = e.target;
     let processedValue: any = value;
-    
+
     if (type === 'number') {
       processedValue = value === '' ? 0 : parseFloat(value);
       if (isNaN(processedValue)) processedValue = 0;
     }
-    
-    setForm((prev) => ({ 
-      ...prev, 
+
+    setForm((prev) => ({
+      ...prev,
       [name]: processedValue
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name as keyof NewStrategyForm]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
@@ -128,20 +128,20 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
   function validateForm(): boolean {
     const newErrors: Partial<NewStrategyForm> = {};
 
-    if (!form.name.trim()) newErrors.name = 'Strategy name is required';
-    if (!form.description.trim()) newErrors.description = 'Description is required';
-    if (!form.strategy_type) newErrors.strategy_type = 'Strategy type is required';
-    if (!form.symbols.trim()) newErrors.symbols = 'At least one symbol is required';
-    if (Number(form.initial_capital) <= 0) newErrors.initial_capital = 'Initial capital must be positive' as any;
-    if (Number(form.risk_budget) <= 0 || Number(form.risk_budget) > 1) newErrors.risk_budget = 'Risk budget must be between 0 and 1' as any;
-    if (Number(form.max_drawdown_limit) <= 0 || Number(form.max_drawdown_limit) > 1) newErrors.max_drawdown_limit = 'Max drawdown must be between 0 and 1' as any;
-    if (Number(form.target_sharpe) <= 0) newErrors.target_sharpe = 'Target Sharpe ratio must be positive' as any;
+    if (!form.name.trim()) newErrors.name = 'نام استراتژی الزامی است';
+    if (!form.description.trim()) newErrors.description = 'توضیحات الزامی است';
+    if (!form.strategy_type) newErrors.strategy_type = 'نوع استراتژی الزامی است';
+    if (!form.symbols.trim()) newErrors.symbols = 'حداقل یک نماد الزامی است';
+    if (Number(form.initial_capital) <= 0) newErrors.initial_capital = 'سرمایه اولیه باید مثبت باشد' as any;
+    if (Number(form.risk_budget) <= 0 || Number(form.risk_budget) > 1) newErrors.risk_budget = 'بودجه ریسک باید بین ۰ و ۱ باشد' as any;
+    if (Number(form.max_drawdown_limit) <= 0 || Number(form.max_drawdown_limit) > 1) newErrors.max_drawdown_limit = 'حداکثر افت سرمایه باید بین ۰ و ۱ باشد' as any;
+    if (Number(form.target_sharpe) <= 0) newErrors.target_sharpe = 'نسبت شارپ هدف باید مثبت باشد' as any;
 
     // Strategy-specific validations
     if (form.strategy_type === 'technical' || form.strategy_type === 'momentum') {
-      if (Number(form.rsi_period) <= 0) newErrors.rsi_period = 'RSI period must be positive' as any;
-      if (Number(form.rsi_oversold) <= 0 || Number(form.rsi_oversold) >= 50) newErrors.rsi_oversold = 'RSI oversold must be between 0 and 50' as any;
-      if (Number(form.rsi_overbought) <= 50 || Number(form.rsi_overbought) >= 100) newErrors.rsi_overbought = 'RSI overbought must be between 50 and 100' as any;
+      if (Number(form.rsi_period) <= 0) newErrors.rsi_period = 'دوره RSI باید مثبت باشد' as any;
+      if (Number(form.rsi_oversold) <= 0 || Number(form.rsi_oversold) >= 50) newErrors.rsi_oversold = 'سطح اشباع فروش RSI باید بین ۰ و ۵۰ باشد' as any;
+      if (Number(form.rsi_overbought) <= 50 || Number(form.rsi_overbought) >= 100) newErrors.rsi_overbought = 'سطح اشباع خرید RSI باید بین ۵۰ و ۱۰۰ باشد' as any;
     }
 
     setErrors(newErrors);
@@ -156,7 +156,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
     try {
       // Prepare strategy parameters based on type
       const strategyParams: Record<string, any> = {};
-      
+
       if (form.strategy_type === 'technical') {
         strategyParams.rsi_period = form.rsi_period;
         strategyParams.bb_period = form.bb_period;
@@ -192,8 +192,8 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
       await createStrategy(strategyData);
 
       toast({
-        title: 'Strategy Created',
-        description: `${form.name} has been created successfully.`,
+        title: 'استراتژی ایجاد شد',
+        description: `${form.name} با موفقیت ایجاد شد.`,
       });
 
       onSuccess?.();
@@ -224,8 +224,8 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
       onSuccess?.();
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'Failed to create strategy. Please try again.',
+        title: 'خطا',
+        description: 'ایجاد استراتژی ناموفق بود. دوباره تلاش کنید.',
       });
     } finally {
       setIsSubmitting(false);
@@ -240,31 +240,31 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <Settings className="h-4 w-4" />
-          <h3 className="text-lg font-medium">Basic Information</h3>
+          <h3 className="text-lg font-medium">اطلاعات پایه</h3>
         </div>
-        
+
         <div className="grid grid-cols-1 gap-4">
           <div>
-            <Label htmlFor="name">Strategy Name *</Label>
+            <Label htmlFor="name">نام استراتژی *</Label>
             <Input
               id="name"
               name="name"
               value={form.name}
               onChange={handleInputChange}
-              placeholder="e.g., My Momentum Strategy"
+              placeholder="مثلاً استراتژی مومنتوم من"
               className={errors.name ? 'border-red-500' : ''}
             />
             {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
           </div>
 
           <div>
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">توضیحات *</Label>
             <Textarea
               id="description"
               name="description"
               value={form.description}
               onChange={handleInputChange}
-              placeholder="Describe your strategy's approach and goals..."
+              placeholder="رویکرد و اهداف استراتژی خود را شرح دهید..."
               className={errors.description ? 'border-red-500' : ''}
               rows={3}
             />
@@ -272,10 +272,10 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
           </div>
 
           <div>
-            <Label htmlFor="strategy_type">Strategy Type *</Label>
+            <Label htmlFor="strategy_type">نوع استراتژی *</Label>
             <Select value={form.strategy_type} onValueChange={(value) => handleSelectChange('strategy_type', value)}>
               <SelectTrigger className={errors.strategy_type ? 'border-red-500' : ''}>
-                <SelectValue placeholder="Select strategy type" />
+                <SelectValue placeholder="نوع استراتژی را انتخاب کنید" />
               </SelectTrigger>
               <SelectContent>
                 {strategyTypes.map((type) => (
@@ -300,12 +300,12 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <DollarSign className="h-4 w-4" />
-          <h3 className="text-lg font-medium">Portfolio Settings</h3>
+          <h3 className="text-lg font-medium">تنظیمات پورتفولیو</h3>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="symbols">Symbols (comma-separated) *</Label>
+            <Label htmlFor="symbols">نمادها (جدا شده با کاما) *</Label>
             <Input
               id="symbols"
               name="symbols"
@@ -318,7 +318,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
           </div>
 
           <div>
-            <Label htmlFor="initial_capital">Initial Capital ($) *</Label>
+            <Label htmlFor="initial_capital">سرمایه اولیه ($) *</Label>
             <Input
               id="initial_capital"
               name="initial_capital"
@@ -333,7 +333,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
           </div>
 
           <div>
-            <Label htmlFor="rebalance_frequency">Rebalance Frequency</Label>
+            <Label htmlFor="rebalance_frequency">دوره تعادل‌بخشی مجدد</Label>
             <Select value={form.rebalance_frequency} onValueChange={(value) => handleSelectChange('rebalance_frequency', value)}>
               <SelectTrigger>
                 <SelectValue />
@@ -349,7 +349,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
           </div>
 
           <div>
-            <Label htmlFor="time_horizon">Time Horizon</Label>
+            <Label htmlFor="time_horizon">بازه زمانی</Label>
             <Select value={form.time_horizon} onValueChange={(value) => handleSelectChange('time_horizon', value)}>
               <SelectTrigger>
                 <SelectValue />
@@ -370,12 +370,12 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4" />
-          <h3 className="text-lg font-medium">Risk Management</h3>
+          <h3 className="text-lg font-medium">مدیریت ریسک</h3>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <Label htmlFor="risk_budget">Risk Budget (0-1) *</Label>
+            <Label htmlFor="risk_budget">بودجه ریسک (۰ تا ۱) *</Label>
             <Input
               id="risk_budget"
               name="risk_budget"
@@ -388,11 +388,11 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
               className={errors.risk_budget ? 'border-red-500' : ''}
             />
             {errors.risk_budget && <p className="text-sm text-red-500 mt-1">{errors.risk_budget}</p>}
-            <p className="text-xs text-gray-500 mt-1">Maximum portfolio risk (5% = 0.05)</p>
+            <p className="text-xs text-gray-500 mt-1">حداکثر ریسک پورتفولیو (۵٪ = 0.05)</p>
           </div>
 
           <div>
-            <Label htmlFor="max_drawdown_limit">Max Drawdown (0-1) *</Label>
+            <Label htmlFor="max_drawdown_limit">حداکثر افت سرمایه (۰ تا ۱) *</Label>
             <Input
               id="max_drawdown_limit"
               name="max_drawdown_limit"
@@ -405,11 +405,11 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
               className={errors.max_drawdown_limit ? 'border-red-500' : ''}
             />
             {errors.max_drawdown_limit && <p className="text-sm text-red-500 mt-1">{errors.max_drawdown_limit}</p>}
-            <p className="text-xs text-gray-500 mt-1">Maximum acceptable drawdown (15% = 0.15)</p>
+            <p className="text-xs text-gray-500 mt-1">حداکثر افت سرمایه قابل قبول (۱۵٪ = 0.15)</p>
           </div>
 
           <div>
-            <Label htmlFor="target_sharpe">Target Sharpe Ratio *</Label>
+            <Label htmlFor="target_sharpe">نسبت شارپ هدف *</Label>
             <Input
               id="target_sharpe"
               name="target_sharpe"
@@ -421,7 +421,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
               className={errors.target_sharpe ? 'border-red-500' : ''}
             />
             {errors.target_sharpe && <p className="text-sm text-red-500 mt-1">{errors.target_sharpe}</p>}
-            <p className="text-xs text-gray-500 mt-1">Risk-adjusted return target</p>
+            <p className="text-xs text-gray-500 mt-1">هدف بازده تعدیل‌شده با ریسک</p>
           </div>
         </div>
       </div>
@@ -431,12 +431,12 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Target className="h-4 w-4" />
-            <h3 className="text-lg font-medium">Technical Parameters</h3>
+            <h3 className="text-lg font-medium">پارامترهای تکنیکال</h3>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <Label htmlFor="rsi_period">RSI Period</Label>
+              <Label htmlFor="rsi_period">دوره RSI</Label>
               <Input
                 id="rsi_period"
                 name="rsi_period"
@@ -451,7 +451,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
             </div>
 
             <div>
-              <Label htmlFor="rsi_oversold">RSI Oversold Level</Label>
+              <Label htmlFor="rsi_oversold">سطح اشباع فروش RSI</Label>
               <Input
                 id="rsi_oversold"
                 name="rsi_oversold"
@@ -466,7 +466,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
             </div>
 
             <div>
-              <Label htmlFor="rsi_overbought">RSI Overbought Level</Label>
+              <Label htmlFor="rsi_overbought">سطح اشباع خرید RSI</Label>
               <Input
                 id="rsi_overbought"
                 name="rsi_overbought"
@@ -483,7 +483,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
             {form.strategy_type === 'technical' && (
               <>
                 <div>
-                  <Label htmlFor="bb_period">Bollinger Bands Period</Label>
+                  <Label htmlFor="bb_period">دوره باندهای بولینگر</Label>
                   <Input
                     id="bb_period"
                     name="bb_period"
@@ -496,7 +496,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
                 </div>
 
                 <div>
-                  <Label htmlFor="bb_stddev">Bollinger Bands Std Dev</Label>
+                  <Label htmlFor="bb_stddev">انحراف معیار باندهای بولینگر</Label>
                   <Input
                     id="bb_stddev"
                     name="bb_stddev"
@@ -514,7 +514,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
             {form.strategy_type === 'momentum' && (
               <>
                 <div>
-                  <Label htmlFor="momentum_lookback">Momentum Lookback Period</Label>
+                  <Label htmlFor="momentum_lookback">دوره بازنگری مومنتوم</Label>
                   <Input
                     id="momentum_lookback"
                     name="momentum_lookback"
@@ -527,7 +527,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
                 </div>
 
                 <div>
-                  <Label htmlFor="momentum_threshold">Momentum Threshold</Label>
+                  <Label htmlFor="momentum_threshold">آستانه مومنتوم</Label>
                   <Input
                     id="momentum_threshold"
                     name="momentum_threshold"
@@ -549,12 +549,12 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Target className="h-4 w-4" />
-            <h3 className="text-lg font-medium">Volatility Parameters</h3>
+            <h3 className="text-lg font-medium">پارامترهای نوسان</h3>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="volatility_threshold">Volatility Spread Threshold</Label>
+              <Label htmlFor="volatility_threshold">آستانه اسپرد نوسان</Label>
               <Input
                 id="volatility_threshold"
                 name="volatility_threshold"
@@ -565,7 +565,7 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
                 max="0.5"
                 step="0.01"
               />
-              <p className="text-xs text-gray-500 mt-1">Minimum IV-HV spread to trigger signal</p>
+              <p className="text-xs text-gray-500 mt-1">حداقل اسپرد نوسان ضمنی-تاریخی برای ایجاد سیگنال</p>
             </div>
           </div>
         </div>
@@ -581,13 +581,13 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
           onChange={handleCheckboxChange}
           className="rounded border-gray-300"
         />
-        <Label htmlFor="active">Activate strategy immediately</Label>
+        <Label htmlFor="active">فعال‌سازی فوری استراتژی</Label>
       </div>
 
       {/* Submit Button */}
       <div className="flex gap-3 pt-4">
         <Button type="submit" disabled={isSubmitting} className="flex-1">
-          {isSubmitting ? 'Creating...' : 'Create Strategy'}
+          {isSubmitting ? 'در حال ایجاد...' : 'ایجاد استراتژی'}
         </Button>
       </div>
     </form>
@@ -595,9 +595,9 @@ function NewStrategyForm({ onSuccess }: { onSuccess?: () => void }): JSX.Element
 }
 
 // Strategy Details Modal Component
-function StrategyDetailsModal({ strategy, isOpen, onClose }: { 
-  strategy: Strategy | null; 
-  isOpen: boolean; 
+function StrategyDetailsModal({ strategy, isOpen, onClose }: {
+  strategy: Strategy | null;
+  isOpen: boolean;
   onClose: () => void;
 }) {
   if (!strategy) return null;
@@ -625,73 +625,73 @@ function StrategyDetailsModal({ strategy, isOpen, onClose }: {
     switch (type) {
       case 'momentum':
         return {
-          overview: 'Momentum strategies capitalize on the tendency of assets to continue moving in their current direction. This strategy identifies trends and rides them for profit.',
-          methodology: 'Uses moving averages, price momentum indicators, and trend strength metrics to identify and follow market trends.',
-          riskProfile: 'Medium to High - Can experience significant drawdowns during trend reversals',
-          bestMarkets: 'Trending markets, bull markets, crypto markets with strong directional moves',
-          parameters: ['Lookback Period: 20 days', 'Momentum Threshold: 2%', 'Stop Loss: 5%', 'Position Size: 10-25%'],
-          pros: ['Captures large market moves', 'Works well in trending markets', 'Can generate high returns'],
-          cons: ['Vulnerable to whipsaws', 'Poor performance in sideways markets', 'Late entries and exits']
+          overview: 'استراتژی‌های مومنتوم از تمایل دارایی‌ها به ادامه حرکت در جهت فعلی خود بهره می‌برند. این استراتژی روندها را شناسایی کرده و برای کسب سود آن‌ها را دنبال می‌کند.',
+          methodology: 'از میانگین‌های متحرک، شاخص‌های مومنتوم قیمت و معیارهای قدرت روند برای شناسایی و پیگیری روندهای بازار استفاده می‌کند.',
+          riskProfile: 'متوسط تا بالا - می‌تواند در بازگشت روندها افت سرمایه قابل‌توجهی را تجربه کند',
+          bestMarkets: 'بازارهای روند‌دار، بازارهای صعودی، بازارهای رمزارز با حرکات جهت‌دار قوی',
+          parameters: ['دوره بازنگری: ۲۰ روز', 'آستانه مومنتوم: ۲٪', 'حد ضرر: ۵٪', 'اندازه پوزیشن: ۱۰ تا ۲۵٪'],
+          pros: ['ثبت حرکات بزرگ بازار', 'عملکرد خوب در بازارهای روند‌دار', 'قابلیت تولید بازده بالا'],
+          cons: ['آسیب‌پذیر در برابر نوسانات کاذب', 'عملکرد ضعیف در بازارهای خنثی', 'ورود و خروج با تأخیر']
         };
       case 'technical':
         return {
-          overview: 'Technical analysis strategy using multiple indicators including RSI, Bollinger Bands, MACD, and moving averages to identify entry and exit points.',
-          methodology: 'Combines multiple technical indicators to generate high-confidence signals. Uses RSI for momentum, Bollinger Bands for volatility, and moving averages for trend.',
-          riskProfile: 'Medium - Diversified signal sources reduce false signals',
-          bestMarkets: 'All market conditions, particularly effective in volatile markets',
-          parameters: ['RSI Period: 14', 'RSI Oversold: 30', 'RSI Overbought: 70', 'BB Period: 20', 'BB Std Dev: 2'],
-          pros: ['Multiple confirmation signals', 'Works in various market conditions', 'Well-tested indicators'],
-          cons: ['Can be slow to react', 'Prone to false signals in choppy markets', 'Requires parameter optimization']
+          overview: 'استراتژی تحلیل تکنیکال با استفاده از چندین شاخص شامل RSI، باندهای بولینگر، MACD و میانگین‌های متحرک برای شناسایی نقاط ورود و خروج.',
+          methodology: 'چندین شاخص تکنیکال را برای تولید سیگنال‌های با اطمینان بالا ترکیب می‌کند. از RSI برای مومنتوم، باندهای بولینگر برای نوسان و میانگین‌های متحرک برای روند استفاده می‌کند.',
+          riskProfile: 'متوسط - منابع سیگنال متنوع، سیگنال‌های کاذب را کاهش می‌دهد',
+          bestMarkets: 'همه شرایط بازار، به‌ویژه مؤثر در بازارهای پرنوسان',
+          parameters: ['دوره RSI: ۱۴', 'اشباع فروش RSI: ۳۰', 'اشباع خرید RSI: ۷۰', 'دوره باند بولینگر: ۲۰', 'انحراف معیار باند بولینگر: ۲'],
+          pros: ['سیگنال‌های تأییدی متعدد', 'عملکرد در شرایط مختلف بازار', 'شاخص‌های آزموده‌شده'],
+          cons: ['ممکن است در واکنش کند باشد', 'مستعد سیگنال‌های کاذب در بازارهای پرنوسان کوتاه‌مدت', 'نیاز به بهینه‌سازی پارامتر']
         };
       case 'risk_aware':
         return {
-          overview: 'Risk-first strategy that prioritizes capital preservation through active risk management, position sizing, and drawdown control.',
-          methodology: 'Uses Value at Risk (VaR), maximum drawdown limits, and dynamic position sizing to control portfolio risk while seeking consistent returns.',
-          riskProfile: 'Low to Medium - Primary focus on capital preservation',
-          bestMarkets: 'All market conditions, especially volatile or uncertain markets',
-          parameters: ['Max Drawdown: 15%', 'VaR Confidence: 95%', 'Risk Budget: 5%', 'Position Limit: 10%'],
-          pros: ['Capital preservation focus', 'Consistent risk-adjusted returns', 'Lower volatility'],
-          cons: ['May miss large upside moves', 'Lower absolute returns', 'Conservative approach']
+          overview: 'استراتژی ریسک‌محور که با مدیریت فعال ریسک، اندازه‌گیری پوزیشن و کنترل افت سرمایه، حفظ سرمایه را در اولویت قرار می‌دهد.',
+          methodology: 'از ارزش در معرض ریسک (VaR)، محدودیت‌های حداکثر افت سرمایه و اندازه‌گیری پویای پوزیشن برای کنترل ریسک پورتفولیو ضمن جستجوی بازده پایدار استفاده می‌کند.',
+          riskProfile: 'پایین تا متوسط - تمرکز اصلی بر حفظ سرمایه',
+          bestMarkets: 'همه شرایط بازار، به‌ویژه بازارهای پرنوسان یا نامطمئن',
+          parameters: ['حداکثر افت سرمایه: ۱۵٪', 'اطمینان VaR: ۹۵٪', 'بودجه ریسک: ۵٪', 'محدودیت پوزیشن: ۱۰٪'],
+          pros: ['تمرکز بر حفظ سرمایه', 'بازده پایدار تعدیل‌شده با ریسک', 'نوسان‌پذیری کمتر'],
+          cons: ['ممکن است حرکات صعودی بزرگ را از دست بدهد', 'بازده مطلق کمتر', 'رویکرد محافظه‌کارانه']
         };
       case 'mean_reversion':
         return {
-          overview: 'Mean reversion strategy assumes that prices will return to their historical average over time, profiting from price extremes.',
-          methodology: 'Identifies overbought and oversold conditions using statistical measures and trades against the prevailing trend.',
-          riskProfile: 'Medium - Can face extended periods of unrealized losses',
-          bestMarkets: 'Range-bound markets, high-frequency trading, pairs trading',
-          parameters: ['Lookback Period: 30 days', 'Z-Score Threshold: 2.0', 'Hold Period: 5-10 days'],
-          pros: ['Profits from market inefficiencies', 'Good in sideways markets', 'Natural stop-loss levels'],
-          cons: ['Poor in trending markets', 'Timing is critical', 'Can catch falling knives']
+          overview: 'استراتژی بازگشت به میانگین فرض می‌کند که قیمت‌ها در طول زمان به میانگین تاریخی خود بازمی‌گردند و از نقاط اوج و کف قیمت سود می‌برد.',
+          methodology: 'شرایط اشباع خرید و فروش را با استفاده از معیارهای آماری شناسایی کرده و برخلاف روند غالب معامله می‌کند.',
+          riskProfile: 'متوسط - می‌تواند دوره‌های طولانی زیان تحقق‌نیافته را تجربه کند',
+          bestMarkets: 'بازارهای محدود به یک بازه، معاملات پرتناوب، معاملات جفتی',
+          parameters: ['دوره بازنگری: ۳۰ روز', 'آستانه Z-Score: ۲.۰', 'دوره نگهداری: ۵ تا ۱۰ روز'],
+          pros: ['سود از ناکارآمدی‌های بازار', 'عملکرد خوب در بازارهای خنثی', 'سطوح حد ضرر طبیعی'],
+          cons: ['عملکرد ضعیف در بازارهای روند‌دار', 'زمان‌بندی حیاتی است', 'ممکن است در روند نزولی گرفتار شود']
         };
       case 'breakout':
         return {
-          overview: 'Breakout strategy identifies when price breaks through significant support or resistance levels, indicating potential new trends.',
-          methodology: 'Monitors price ranges, volume patterns, and volatility to identify genuine breakouts versus false signals.',
-          riskProfile: 'Medium to High - Early trend identification but prone to false breakouts',
-          bestMarkets: 'Markets transitioning from consolidation to trending phases',
-          parameters: ['Breakout Threshold: 2%', 'Volume Confirmation: 150%', 'Range Period: 20 days'],
-          pros: ['Early trend identification', 'Clear entry signals', 'Strong risk-reward ratios'],
-          cons: ['Many false breakouts', 'Requires quick execution', 'High transaction costs']
+          overview: 'استراتژی شکست قیمتی زمانی را شناسایی می‌کند که قیمت از سطوح مهم حمایت یا مقاومت عبور کند و روندهای جدید احتمالی را نشان دهد.',
+          methodology: 'محدوده‌های قیمتی، الگوهای حجم و نوسان را برای تشخیص شکست‌های واقعی از سیگنال‌های کاذب رصد می‌کند.',
+          riskProfile: 'متوسط تا بالا - شناسایی زودهنگام روند اما مستعد شکست‌های کاذب',
+          bestMarkets: 'بازارهایی که از تثبیت به فاز روند‌دار در حال گذار هستند',
+          parameters: ['آستانه شکست: ۲٪', 'تأیید حجم: ۱۵۰٪', 'دوره محدوده: ۲۰ روز'],
+          pros: ['شناسایی زودهنگام روند', 'سیگنال‌های ورود واضح', 'نسبت‌های ریسک به بازده قوی'],
+          cons: ['شکست‌های کاذب زیاد', 'نیاز به اجرای سریع', 'هزینه‌های معاملاتی بالا']
         };
       case 'volatility_spread':
         return {
-          overview: 'Options strategy that profits from the difference between implied volatility (IV) and historical volatility (HV).',
-          methodology: 'Compares current implied volatility to historical volatility to identify mispriced options and volatility opportunities.',
-          riskProfile: 'Medium - Limited by option premium and time decay',
-          bestMarkets: 'Options markets with high volatility skew, earnings seasons',
-          parameters: ['IV-HV Threshold: 10%', 'Days to Expiration: 30-45', 'Delta Range: 0.3-0.7'],
-          pros: ['Profits from volatility mispricing', 'Limited risk exposure', 'Market neutral potential'],
-          cons: ['Requires options knowledge', 'Time decay risk', 'Liquidity constraints']
+          overview: 'استراتژی اختیار معامله که از اختلاف بین نوسان ضمنی (IV) و نوسان تاریخی (HV) سود می‌برد.',
+          methodology: 'نوسان ضمنی فعلی را با نوسان تاریخی مقایسه می‌کند تا اختیار معامله‌های نادرست قیمت‌گذاری‌شده و فرصت‌های نوسان را شناسایی کند.',
+          riskProfile: 'متوسط - محدود به پرمیوم اختیار معامله و کاهش ارزش زمانی',
+          bestMarkets: 'بازارهای اختیار معامله با انحراف نوسان بالا، فصل‌های گزارش‌دهی مالی',
+          parameters: ['آستانه IV-HV: ۱۰٪', 'روز تا سررسید: ۳۰ تا ۴۵', 'محدوده دلتا: ۰.۳ تا ۰.۷'],
+          pros: ['سود از قیمت‌گذاری نادرست نوسان', 'قرارگیری محدود در معرض ریسک', 'پتانسیل خنثی از بازار'],
+          cons: ['نیاز به دانش اختیار معامله', 'ریسک کاهش ارزش زمانی', 'محدودیت‌های نقدشوندگی']
         };
       default:
         return {
-          overview: 'Custom trading strategy with specific parameters and risk management rules.',
-          methodology: 'Uses proprietary algorithms and indicators to generate trading signals.',
-          riskProfile: 'Varies based on strategy configuration',
-          bestMarkets: 'Depends on strategy design and parameters',
-          parameters: ['Custom parameters based on strategy type'],
-          pros: ['Tailored to specific market conditions', 'Customizable parameters'],
-          cons: ['Requires backtesting', 'May need optimization']
+          overview: 'استراتژی معاملاتی سفارشی با پارامترها و قوانین مدیریت ریسک مشخص.',
+          methodology: 'از الگوریتم‌ها و شاخص‌های اختصاصی برای تولید سیگنال‌های معاملاتی استفاده می‌کند.',
+          riskProfile: 'متغیر بر اساس پیکربندی استراتژی',
+          bestMarkets: 'بستگی به طراحی استراتژی و پارامترها دارد',
+          parameters: ['پارامترهای سفارشی بر اساس نوع استراتژی'],
+          pros: ['متناسب با شرایط خاص بازار', 'پارامترهای قابل تنظیم'],
+          cons: ['نیاز به بک‌تست', 'ممکن است نیاز به بهینه‌سازی داشته باشد']
         };
     }
   };
@@ -715,10 +715,10 @@ function StrategyDetailsModal({ strategy, isOpen, onClose }: {
 
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="methodology">Methodology</TabsTrigger>
-            <TabsTrigger value="parameters">Parameters</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="overview">نمای کلی</TabsTrigger>
+            <TabsTrigger value="methodology">روش‌شناسی</TabsTrigger>
+            <TabsTrigger value="parameters">پارامترها</TabsTrigger>
+            <TabsTrigger value="performance">عملکرد</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
@@ -726,26 +726,26 @@ function StrategyDetailsModal({ strategy, isOpen, onClose }: {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Info className="h-4 w-4" />
-                  Strategy Overview
+                  نمای کلی استراتژی
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-gray-600">{strategyInfo.overview}</p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-medium text-sm mb-2">Risk Profile</h4>
+                    <h4 className="font-medium text-sm mb-2">نمایه ریسک</h4>
                     <Badge variant="outline">{strategyInfo.riskProfile}</Badge>
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm mb-2">Best Markets</h4>
+                    <h4 className="font-medium text-sm mb-2">بهترین بازارها</h4>
                     <p className="text-sm text-gray-600">{strategyInfo.bestMarkets}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-medium text-sm mb-2 text-green-600">Advantages</h4>
+                    <h4 className="font-medium text-sm mb-2 text-green-600">مزایا</h4>
                     <ul className="text-sm text-gray-600 space-y-1">
                       {strategyInfo.pros.map((pro, index) => (
                         <li key={index} className="flex items-start gap-2">
@@ -756,7 +756,7 @@ function StrategyDetailsModal({ strategy, isOpen, onClose }: {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-medium text-sm mb-2 text-red-600">Considerations</h4>
+                    <h4 className="font-medium text-sm mb-2 text-red-600">ملاحظات</h4>
                     <ul className="text-sm text-gray-600 space-y-1">
                       {strategyInfo.cons.map((con, index) => (
                         <li key={index} className="flex items-start gap-2">
@@ -774,7 +774,7 @@ function StrategyDetailsModal({ strategy, isOpen, onClose }: {
           <TabsContent value="methodology" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Strategy Methodology</CardTitle>
+                <CardTitle>روش‌شناسی استراتژی</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600 leading-relaxed">{strategyInfo.methodology}</p>
@@ -785,7 +785,7 @@ function StrategyDetailsModal({ strategy, isOpen, onClose }: {
           <TabsContent value="parameters" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Strategy Parameters</CardTitle>
+                <CardTitle>پارامترهای استراتژی</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -803,29 +803,29 @@ function StrategyDetailsModal({ strategy, isOpen, onClose }: {
           <TabsContent value="performance" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Performance Metrics</CardTitle>
+                <CardTitle>معیارهای عملکرد</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-3 bg-gray-50 rounded">
                     <div className="text-lg font-bold text-gray-900">--</div>
-                    <div className="text-xs text-gray-500">Total Return</div>
+                    <div className="text-xs text-gray-500">بازده کل</div>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded">
                     <div className="text-lg font-bold text-gray-900">--</div>
-                    <div className="text-xs text-gray-500">Sharpe Ratio</div>
+                    <div className="text-xs text-gray-500">نسبت شارپ</div>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded">
                     <div className="text-lg font-bold text-gray-900">--</div>
-                    <div className="text-xs text-gray-500">Max Drawdown</div>
+                    <div className="text-xs text-gray-500">حداکثر افت سرمایه</div>
                   </div>
                   <div className="text-center p-3 bg-gray-50 rounded">
                     <div className="text-lg font-bold text-gray-900">--</div>
-                    <div className="text-xs text-gray-500">Win Rate</div>
+                    <div className="text-xs text-gray-500">نرخ برد</div>
                   </div>
                 </div>
                 <p className="text-sm text-gray-500 mt-4">
-                  Performance metrics will be available after running a backtest.
+                  معیارهای عملکرد پس از اجرای بک‌تست در دسترس خواهند بود.
                 </p>
               </CardContent>
             </Card>
@@ -894,21 +894,21 @@ export function StrategiesContent() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h2 className="text-lg font-semibold">Active Strategies</h2>
+          <h2 className="text-lg font-semibold">استراتژی‌های فعال</h2>
           <p className="text-sm text-muted-foreground">
-            Manage and monitor your trading strategies
+            استراتژی‌های معاملاتی خود را مدیریت و پایش کنید
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" size="sm" asChild>
             <Link href="/options?tab=strategies" className="flex items-center gap-1">
               <Activity className="h-4 w-4" />
-              Options Strategies
+              استراتژی‌های اختیار معامله
             </Link>
           </Button>
           <Button onClick={() => setShowNewStrategyModal(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            New Strategy
+            استراتژی جدید
           </Button>
         </div>
       </div>
@@ -917,9 +917,9 @@ export function StrategiesContent() {
       <Dialog open={showNewStrategyModal} onOpenChange={setShowNewStrategyModal}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create New Trading Strategy</DialogTitle>
+            <DialogTitle>ایجاد استراتژی معاملاتی جدید</DialogTitle>
             <DialogDescription>
-              Configure a new trading strategy with custom parameters and risk management settings.
+              یک استراتژی معاملاتی جدید با پارامترهای سفارشی و تنظیمات مدیریت ریسک پیکربندی کنید.
             </DialogDescription>
           </DialogHeader>
           <NewStrategyForm onSuccess={handleNewStrategySuccess} />
@@ -927,7 +927,7 @@ export function StrategiesContent() {
       </Dialog>
 
       {/* Strategy Details Modal */}
-      <StrategyDetailsModal 
+      <StrategyDetailsModal
         strategy={selectedStrategy}
         isOpen={showDetailsModal}
         onClose={() => setShowDetailsModal(false)}
@@ -938,13 +938,13 @@ export function StrategiesContent() {
           <CardContent className="pt-6">
             <div className="text-center py-8">
               <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Strategies Found</h3>
+              <h3 className="text-lg font-medium mb-2">استراتژی‌ای یافت نشد</h3>
               <p className="text-muted-foreground mb-4">
-                Create your first trading strategy to get started
+                برای شروع، اولین استراتژی معاملاتی خود را ایجاد کنید
               </p>
               <Button onClick={() => setShowNewStrategyModal(true)}>
                 <Plus className="h-4 w-4 mr-2" />
-                Create Strategy
+                ایجاد استراتژی
               </Button>
             </div>
           </CardContent>
@@ -965,11 +965,11 @@ export function StrategiesContent() {
                     {strategy.name}
                   </CardTitle>
                   <div className={`px-2 py-1 rounded-full text-xs ${
-                    strategy.is_active 
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' 
+                    strategy.is_active
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
                       : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
                   }`}>
-                    {strategy.is_active ? 'Active' : 'Inactive'}
+                    {strategy.is_active ? 'فعال' : 'غیرفعال'}
                   </div>
                 </div>
               </CardHeader>
@@ -980,32 +980,32 @@ export function StrategiesContent() {
                     {strategy.description}
                   </p>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">Type:</span>
+                    <span className="text-gray-400">نوع:</span>
                     <span className="font-medium capitalize text-gray-200">{strategy.strategy_type.replace('_', ' ')}</span>
                   </div>
                   <div className="flex flex-wrap gap-2 pt-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="flex-1 min-w-0"
                       onClick={() => handleBacktest(strategy)}
                     >
                       <Play className="h-3 w-3 mr-1 shrink-0" />
-                      Backtest
+                      بک‌تست
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="flex-1 min-w-0"
                       onClick={() => handleViewDetails(strategy)}
                     >
-                      View Details
+                      مشاهده جزئیات
                     </Button>
                     {strategy.strategy_type === 'volatility_spread' && (
                       <Button size="sm" variant="outline" className="w-full" asChild>
                         <Link href="/options?tab=strategies">
                           <ExternalLink className="h-3 w-3 mr-1 shrink-0" />
-                          Open in Options
+                          باز کردن در اختیار معامله
                         </Link>
                       </Button>
                     )}
@@ -1018,4 +1018,4 @@ export function StrategiesContent() {
       )}
     </div>
   );
-} 
+}

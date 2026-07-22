@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
+import {
   User,
   Settings,
   Shield,
@@ -101,20 +101,20 @@ export default function ProfilePage() {
   const [selectedTab, setSelectedTab] = useState('personal');
   const [isEditing, setIsEditing] = useState(false);
   const [showApiKey, setShowApiKey] = useState<string | null>(null);
-  
+
   const [profile, setProfile] = useState<UserProfile>({
     id: 'user-123',
-    firstName: 'Massoud',
-    lastName: 'Shemirani',
+    firstName: 'مسعود',
+    lastName: 'شمیرانی',
     email: 'massoud.shemirani@company.com',
-    phone: '+1 (555) 123-4567',
+    phone: '+98 912 123 4567',
     avatar: '',
-    role: 'Senior Trader',
+    role: 'معامله‌گر ارشد',
     joinDate: '2022-03-15',
     lastLogin: '2024-01-20T15:45:23Z',
-    location: 'New York, NY, USA',
-    timezone: 'EST (UTC-5)',
-    bio: 'Experienced quantitative trader specializing in algorithmic strategies and risk management.',
+    location: 'تهران، ایران',
+    timezone: 'تهران (UTC+3:30)',
+    bio: 'معامله‌گر کمی با تخصص در استراتژی‌های الگوریتمی و مدیریت ریسک.',
     verified: true,
     twoFactorEnabled: true,
     emailNotifications: true,
@@ -138,7 +138,7 @@ export default function ProfilePage() {
   const [apiKeys, setApiKeys] = useState<APIKey[]>([
     {
       id: 'api-001',
-      name: 'Trading Bot v1',
+      name: 'ربات معاملاتی نسخه ۱',
       key: 'ak_live_123abc...def789',
       permissions: ['read', 'trade'],
       created: '2024-01-15',
@@ -147,7 +147,7 @@ export default function ProfilePage() {
     },
     {
       id: 'api-002',
-      name: 'Data Analytics',
+      name: 'تحلیل داده',
       key: 'ak_live_456ghi...jkl012',
       permissions: ['read'],
       created: '2024-01-10',
@@ -159,29 +159,29 @@ export default function ProfilePage() {
   const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>([
     {
       id: 'sec-001',
-      action: 'Login',
+      action: 'ورود',
       timestamp: '2024-01-20T15:45:23Z',
       ipAddress: '192.168.1.145',
-      location: 'New York, NY',
-      device: 'Chrome on Windows',
+      location: 'تهران',
+      device: 'Chrome روی Windows',
       status: 'success'
     },
     {
       id: 'sec-002',
-      action: 'Password Change',
+      action: 'تغییر رمز عبور',
       timestamp: '2024-01-18T09:30:15Z',
       ipAddress: '192.168.1.145',
-      location: 'New York, NY',
-      device: 'Chrome on Windows',
+      location: 'تهران',
+      device: 'Chrome روی Windows',
       status: 'success'
     },
     {
       id: 'sec-003',
-      action: 'Failed Login',
+      action: 'ورود ناموفق',
       timestamp: '2024-01-17T23:15:42Z',
       ipAddress: '203.45.67.89',
-      location: 'Unknown',
-      device: 'Unknown',
+      location: 'نامشخص',
+      device: 'نامشخص',
       status: 'failed'
     }
   ]);
@@ -194,11 +194,11 @@ export default function ProfilePage() {
   const handleGenerateApiKey = () => {
     const newKey: APIKey = {
       id: `api-${Date.now()}`,
-      name: `New API Key ${apiKeys.length + 1}`,
+      name: `کلید API جدید ${apiKeys.length + 1}`,
       key: `ak_live_${Math.random().toString(36).substring(2, 15)}...`,
       permissions: ['read'],
       created: new Date().toISOString().split('T')[0],
-      lastUsed: 'Never',
+      lastUsed: 'هرگز',
       status: 'active'
     };
     setApiKeys([...apiKeys, newKey]);
@@ -209,7 +209,7 @@ export default function ProfilePage() {
   };
 
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString();
+    return new Date(timestamp).toLocaleString('fa-IR');
   };
 
   return (
@@ -218,29 +218,29 @@ export default function ProfilePage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <User className="w-8 h-8 text-blue-600" />
-            User Profile
+            پروفایل کاربری
           </h1>
           <p className="text-muted-foreground">
-            Manage your account settings, security, and trading preferences
+            مدیریت تنظیمات حساب، امنیت و ترجیحات معاملاتی
           </p>
         </div>
-        
+
         <div className="flex gap-3">
           {isEditing ? (
             <>
               <Button variant="outline" onClick={() => setIsEditing(false)}>
                 <X className="w-4 h-4 mr-2" />
-                Cancel
+                انصراف
               </Button>
               <Button onClick={handleSaveProfile}>
                 <Save className="w-4 h-4 mr-2" />
-                Save Changes
+                ذخیره تغییرات
               </Button>
             </>
           ) : (
             <Button onClick={() => setIsEditing(true)}>
               <Edit className="w-4 h-4 mr-2" />
-              Edit Profile
+              ویرایش پروفایل
             </Button>
           )}
         </div>
@@ -260,14 +260,14 @@ export default function ProfilePage() {
                 </Button>
               )}
             </div>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <h2 className="text-2xl font-bold">{profile.firstName} {profile.lastName}</h2>
                 {profile.verified && (
                   <Badge className="bg-green-100 text-green-800">
                     <Check className="w-3 h-3 mr-1" />
-                    Verified
+                    تأییدشده
                   </Badge>
                 )}
                 <Badge variant="outline">{profile.role}</Badge>
@@ -276,11 +276,11 @@ export default function ProfilePage() {
               <div className="flex items-center gap-4 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  Joined {new Date(profile.joinDate).toLocaleDateString()}
+                  عضویت از {new Date(profile.joinDate).toLocaleDateString('fa-IR')}
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
-                  Last login {formatTimestamp(profile.lastLogin)}
+                  آخرین ورود {formatTimestamp(profile.lastLogin)}
                 </span>
                 <span className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
@@ -294,69 +294,69 @@ export default function ProfilePage() {
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="personal">Personal Info</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="trading">Trading</TabsTrigger>
-          <TabsTrigger value="api">API Keys</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="personal">اطلاعات شخصی</TabsTrigger>
+          <TabsTrigger value="security">امنیت</TabsTrigger>
+          <TabsTrigger value="trading">معاملات</TabsTrigger>
+          <TabsTrigger value="api">کلیدهای API</TabsTrigger>
+          <TabsTrigger value="notifications">اعلان‌ها</TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
+              <CardTitle>اطلاعات شخصی</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium">First Name</label>
-                  <Input 
-                    value={profile.firstName} 
+                  <label className="text-sm font-medium">نام</label>
+                  <Input
+                    value={profile.firstName}
                     onChange={(e) => setProfile({...profile, firstName: e.target.value})}
                     disabled={!isEditing}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Last Name</label>
-                  <Input 
-                    value={profile.lastName} 
+                  <label className="text-sm font-medium">نام خانوادگی</label>
+                  <Input
+                    value={profile.lastName}
                     onChange={(e) => setProfile({...profile, lastName: e.target.value})}
                     disabled={!isEditing}
                   />
                 </div>
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium">Email Address</label>
-                <Input 
-                  value={profile.email} 
+                <label className="text-sm font-medium">آدرس ایمیل</label>
+                <Input
+                  value={profile.email}
                   onChange={(e) => setProfile({...profile, email: e.target.value})}
                   disabled={!isEditing}
                 />
               </div>
-              
+
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium">Phone Number</label>
-                  <Input 
-                    value={profile.phone} 
+                  <label className="text-sm font-medium">شماره تلفن</label>
+                  <Input
+                    value={profile.phone}
                     onChange={(e) => setProfile({...profile, phone: e.target.value})}
                     disabled={!isEditing}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Timezone</label>
-                  <Input 
-                    value={profile.timezone} 
+                  <label className="text-sm font-medium">منطقه زمانی</label>
+                  <Input
+                    value={profile.timezone}
                     onChange={(e) => setProfile({...profile, timezone: e.target.value})}
                     disabled={!isEditing}
                   />
                 </div>
               </div>
-              
+
               <div>
-                <label className="text-sm font-medium">Bio</label>
-                <textarea 
+                <label className="text-sm font-medium">درباره من</label>
+                <textarea
                   className="w-full p-3 border rounded-md resize-none"
                   rows={3}
                   value={profile.bio}
@@ -374,44 +374,44 @@ export default function ProfilePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="w-5 h-5" />
-                  Security Settings
+                  تنظیمات امنیتی
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <div className="font-medium">Two-Factor Authentication</div>
-                    <div className="text-sm text-gray-600">Add an extra layer of security</div>
+                    <div className="font-medium">تأیید دومرحله‌ای</div>
+                    <div className="text-sm text-gray-600">افزودن یک لایه امنیتی اضافه</div>
                   </div>
                   <div className="flex items-center gap-2">
                     {profile.twoFactorEnabled ? (
-                      <Badge className="bg-green-100 text-green-800">Enabled</Badge>
+                      <Badge className="bg-green-100 text-green-800">فعال</Badge>
                     ) : (
-                      <Badge variant="outline">Disabled</Badge>
+                      <Badge variant="outline">غیرفعال</Badge>
                     )}
                     <Button size="sm" variant="outline">
-                      {profile.twoFactorEnabled ? 'Disable' : 'Enable'}
+                      {profile.twoFactorEnabled ? 'غیرفعال‌سازی' : 'فعال‌سازی'}
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <div className="font-medium">Password</div>
-                    <div className="text-sm text-gray-600">Last changed 3 days ago</div>
+                    <div className="font-medium">رمز عبور</div>
+                    <div className="text-sm text-gray-600">آخرین تغییر ۳ روز پیش</div>
                   </div>
                   <Button size="sm" variant="outline">
-                    Change Password
+                    تغییر رمز عبور
                   </Button>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <div className="font-medium">Login Sessions</div>
-                    <div className="text-sm text-gray-600">Manage active sessions</div>
+                    <div className="font-medium">جلسات ورود</div>
+                    <div className="text-sm text-gray-600">مدیریت جلسات فعال</div>
                   </div>
                   <Button size="sm" variant="outline">
-                    View Sessions
+                    مشاهده جلسات
                   </Button>
                 </div>
               </CardContent>
@@ -421,7 +421,7 @@ export default function ProfilePage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="w-5 h-5" />
-                  Recent Activity
+                  فعالیت‌های اخیر
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -440,7 +440,7 @@ export default function ProfilePage() {
                         </div>
                       </div>
                       <Badge className={log.status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                        {log.status}
+                        {log.status === 'success' ? 'موفق' : 'ناموفق'}
                       </Badge>
                     </div>
                   ))}
@@ -455,51 +455,51 @@ export default function ProfilePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5" />
-                Trading Preferences
+                ترجیحات معاملاتی
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="text-sm font-medium">Default Order Type</label>
-                  <select 
+                  <label className="text-sm font-medium">نوع سفارش پیش‌فرض</label>
+                  <select
                     value={tradingPrefs.defaultOrderType}
                     onChange={(e) => setTradingPrefs({...tradingPrefs, defaultOrderType: e.target.value})}
                     className="w-full px-3 py-2 border rounded-md"
                   >
-                    <option value="market">Market</option>
-                    <option value="limit">Limit</option>
-                    <option value="stop">Stop</option>
-                    <option value="stop-limit">Stop Limit</option>
+                    <option value="market">بازار</option>
+                    <option value="limit">محدود (Limit)</option>
+                    <option value="stop">استاپ</option>
+                    <option value="stop-limit">استاپ محدود</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="text-sm font-medium">Risk Tolerance</label>
-                  <select 
+                  <label className="text-sm font-medium">میزان ریسک‌پذیری</label>
+                  <select
                     value={tradingPrefs.riskTolerance}
                     onChange={(e) => setTradingPrefs({...tradingPrefs, riskTolerance: e.target.value})}
                     className="w-full px-3 py-2 border rounded-md"
                   >
-                    <option value="conservative">Conservative</option>
-                    <option value="moderate">Moderate</option>
-                    <option value="aggressive">Aggressive</option>
+                    <option value="conservative">محافظه‌کار</option>
+                    <option value="moderate">متعادل</option>
+                    <option value="aggressive">تهاجمی</option>
                   </select>
                 </div>
               </div>
-              
+
               <div className="grid gap-4 md:grid-cols-3">
                 <div>
-                  <label className="text-sm font-medium">Max Position Size ($)</label>
-                  <Input 
+                  <label className="text-sm font-medium">حداکثر حجم پوزیشن (تومان)</label>
+                  <Input
                     type="number"
                     value={tradingPrefs.maxPositionSize}
                     onChange={(e) => setTradingPrefs({...tradingPrefs, maxPositionSize: Number(e.target.value)})}
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Default Stop Loss (%)</label>
-                  <Input 
+                  <label className="text-sm font-medium">حد ضرر پیش‌فرض (%)</label>
+                  <Input
                     type="number"
                     step="0.1"
                     value={tradingPrefs.stopLossDefault}
@@ -507,8 +507,8 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium">Default Take Profit (%)</label>
-                  <Input 
+                  <label className="text-sm font-medium">حد سود پیش‌فرض (%)</label>
+                  <Input
                     type="number"
                     step="0.1"
                     value={tradingPrefs.takeProfitDefault}
@@ -516,28 +516,28 @@ export default function ProfilePage() {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <div className="font-medium">Auto-confirm Orders</div>
-                    <div className="text-sm text-gray-600">Automatically confirm order placement</div>
+                    <div className="font-medium">تأیید خودکار سفارش‌ها</div>
+                    <div className="text-sm text-gray-600">ثبت خودکار سفارش‌ها بدون تأیید دستی</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={tradingPrefs.autoConfirmOrders}
                     onChange={(e) => setTradingPrefs({...tradingPrefs, autoConfirmOrders: e.target.checked})}
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
-                    <div className="font-medium">Show Advanced Features</div>
-                    <div className="text-sm text-gray-600">Display advanced trading tools</div>
+                    <div className="font-medium">نمایش امکانات پیشرفته</div>
+                    <div className="text-sm text-gray-600">نمایش ابزارهای معاملاتی پیشرفته</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={tradingPrefs.showAdvancedFeatures}
                     onChange={(e) => setTradingPrefs({...tradingPrefs, showAdvancedFeatures: e.target.checked})}
                     className="w-4 h-4"
@@ -554,11 +554,11 @@ export default function ProfilePage() {
               <div className="flex justify-between items-center">
                 <CardTitle className="flex items-center gap-2">
                   <Key className="w-5 h-5" />
-                  API Keys
+                  کلیدهای API
                 </CardTitle>
                 <Button onClick={handleGenerateApiKey}>
                   <Plus className="w-4 h-4 mr-2" />
-                  Generate New Key
+                  ایجاد کلید جدید
                 </Button>
               </div>
             </CardHeader>
@@ -570,21 +570,21 @@ export default function ProfilePage() {
                       <div>
                         <div className="font-medium">{apiKey.name}</div>
                         <div className="text-sm text-gray-600">
-                          Created {apiKey.created} • Last used {apiKey.lastUsed}
+                          ایجاد {apiKey.created} • آخرین استفاده {apiKey.lastUsed}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge className={apiKey.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                          {apiKey.status}
+                          {apiKey.status === 'active' ? 'فعال' : 'غیرفعال'}
                         </Badge>
                         <Button size="sm" variant="outline" onClick={() => setShowApiKey(showApiKey === apiKey.id ? null : apiKey.id)}>
                           {showApiKey === apiKey.id ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </Button>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 mb-3">
-                      <Input 
+                      <Input
                         value={showApiKey === apiKey.id ? apiKey.key : '••••••••••••••••••••'}
                         readOnly
                         className="font-mono text-sm"
@@ -593,7 +593,7 @@ export default function ProfilePage() {
                         <Copy className="w-4 h-4" />
                       </Button>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex gap-2">
                         {apiKey.permissions.map(permission => (
@@ -623,7 +623,7 @@ export default function ProfilePage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Bell className="w-5 h-5" />
-                Notification Preferences
+                ترجیحات اعلان
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -632,80 +632,80 @@ export default function ProfilePage() {
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       <Mail className="w-4 h-4" />
-                      Email Notifications
+                      اعلان‌های ایمیلی
                     </div>
-                    <div className="text-sm text-gray-600">Receive notifications via email</div>
+                    <div className="text-sm text-gray-600">دریافت اعلان از طریق ایمیل</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={profile.emailNotifications}
                     onChange={(e) => setProfile({...profile, emailNotifications: e.target.checked})}
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       <Smartphone className="w-4 h-4" />
-                      SMS Notifications
+                      اعلان‌های پیامکی
                     </div>
-                    <div className="text-sm text-gray-600">Receive notifications via SMS</div>
+                    <div className="text-sm text-gray-600">دریافت اعلان از طریق پیامک</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={profile.smsNotifications}
                     onChange={(e) => setProfile({...profile, smsNotifications: e.target.checked})}
                     className="w-4 h-4"
                   />
                 </div>
-                
+
                 <div className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       <Bell className="w-4 h-4" />
-                      Push Notifications
+                      اعلان‌های پوش
                     </div>
-                    <div className="text-sm text-gray-600">Receive browser push notifications</div>
+                    <div className="text-sm text-gray-600">دریافت اعلان‌های پوش مرورگر</div>
                   </div>
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={profile.pushNotifications}
                     onChange={(e) => setProfile({...profile, pushNotifications: e.target.checked})}
                     className="w-4 h-4"
                   />
                 </div>
               </div>
-              
+
               <div className="pt-4 border-t">
-                <h3 className="font-medium mb-3">Notification Types</h3>
+                <h3 className="font-medium mb-3">انواع اعلان</h3>
                 <div className="grid gap-3 md:grid-cols-2">
                   <div className="space-y-2">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked className="w-4 h-4" />
-                      <span className="text-sm">Trade Executions</span>
+                      <span className="text-sm">اجرای معاملات</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked className="w-4 h-4" />
-                      <span className="text-sm">Price Alerts</span>
+                      <span className="text-sm">هشدار قیمت</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked className="w-4 h-4" />
-                      <span className="text-sm">Risk Alerts</span>
+                      <span className="text-sm">هشدار ریسک</span>
                     </label>
                   </div>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2">
                       <input type="checkbox" defaultChecked className="w-4 h-4" />
-                      <span className="text-sm">Market Updates</span>
+                      <span className="text-sm">به‌روزرسانی بازار</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" className="w-4 h-4" />
-                      <span className="text-sm">System Maintenance</span>
+                      <span className="text-sm">تعمیر و نگهداری سیستم</span>
                     </label>
                     <label className="flex items-center gap-2">
                       <input type="checkbox" className="w-4 h-4" />
-                      <span className="text-sm">Account Security</span>
+                      <span className="text-sm">امنیت حساب</span>
                     </label>
                   </div>
                 </div>
@@ -716,4 +716,4 @@ export default function ProfilePage() {
       </Tabs>
     </div>
   );
-} 
+}

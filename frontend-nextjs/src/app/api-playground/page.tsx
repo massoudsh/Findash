@@ -7,9 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Code2, 
-  Play, 
+import {
+  Code2,
+  Play,
   Copy,
   Download,
   Settings,
@@ -76,6 +76,14 @@ interface APIRequest {
   success: boolean;
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  'Market Data': 'داده بازار',
+  'Portfolio': 'پرتفوی',
+  'Trading': 'معاملات',
+  'Risk Management': 'مدیریت ریسک',
+  'Analytics': 'تحلیل',
+};
+
 export default function APIPlaygroundPage() {
   const [selectedEndpoint, setSelectedEndpoint] = useState<APIEndpoint | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -95,15 +103,15 @@ export default function APIPlaygroundPage() {
     // Market Data Endpoints
     {
       id: 'market-data-current',
-      name: 'Get Current Market Data',
+      name: 'دریافت داده لحظه‌ای بازار',
       method: 'GET',
       path: '/api/market-data/current',
-      description: 'Retrieve real-time market data for specified symbols',
+      description: 'دریافت داده لحظه‌ای بازار برای نمادهای مشخص‌شده',
       category: 'Market Data',
       requiresAuth: true,
       parameters: [
-        { name: 'symbols', type: 'string', required: true, description: 'Comma-separated list of symbols', example: 'AAPL,TSLA,MSFT' },
-        { name: 'fields', type: 'string', required: false, description: 'Specific fields to retrieve', example: 'price,volume,change' }
+        { name: 'symbols', type: 'string', required: true, description: 'فهرست نمادها با کاما جدا شده', example: 'AAPL,TSLA,MSFT' },
+        { name: 'fields', type: 'string', required: false, description: 'فیلدهای خاص برای دریافت', example: 'price,volume,change' }
       ],
       headers: [
         { name: 'Authorization', value: 'Bearer {token}', required: true },
@@ -130,16 +138,16 @@ export default function APIPlaygroundPage() {
     },
     {
       id: 'market-data-historical',
-      name: 'Get Historical Data',
+      name: 'دریافت داده تاریخی',
       method: 'GET',
       path: '/api/market-data/historical',
-      description: 'Retrieve historical market data with various timeframes',
+      description: 'دریافت داده تاریخی بازار با بازه‌های زمانی مختلف',
       category: 'Market Data',
       requiresAuth: true,
       parameters: [
-        { name: 'symbol', type: 'string', required: true, description: 'Stock symbol', example: 'AAPL' },
-        { name: 'period', type: 'string', required: true, description: 'Time period', example: '1d,1w,1m,3m,1y' },
-        { name: 'interval', type: 'string', required: false, description: 'Data interval', example: '1m,5m,1h,1d' }
+        { name: 'symbol', type: 'string', required: true, description: 'نماد سهم', example: 'AAPL' },
+        { name: 'period', type: 'string', required: true, description: 'بازه زمانی', example: '1d,1w,1m,3m,1y' },
+        { name: 'interval', type: 'string', required: false, description: 'فاصله داده‌ها', example: '1m,5m,1h,1d' }
       ],
       headers: [
         { name: 'Authorization', value: 'Bearer {token}', required: true }
@@ -165,14 +173,14 @@ export default function APIPlaygroundPage() {
     // Portfolio Endpoints
     {
       id: 'portfolio-list',
-      name: 'List Portfolios',
+      name: 'فهرست پرتفوی‌ها',
       method: 'GET',
       path: '/api/portfolio',
-      description: 'Get all portfolios for the authenticated user',
+      description: 'دریافت همه پرتفوی‌های کاربر احراز هویت‌شده',
       category: 'Portfolio',
       requiresAuth: true,
       parameters: [
-        { name: 'include_positions', type: 'boolean', required: false, description: 'Include position details', example: 'true' }
+        { name: 'include_positions', type: 'boolean', required: false, description: 'شامل جزئیات پوزیشن‌ها', example: 'true' }
       ],
       headers: [
         { name: 'Authorization', value: 'Bearer {token}', required: true }
@@ -202,10 +210,10 @@ export default function APIPlaygroundPage() {
     },
     {
       id: 'portfolio-create',
-      name: 'Create Portfolio',
+      name: 'ایجاد پرتفوی',
       method: 'POST',
       path: '/api/portfolio',
-      description: 'Create a new portfolio',
+      description: 'ایجاد یک پرتفوی جدید',
       category: 'Portfolio',
       requiresAuth: true,
       parameters: [],
@@ -233,16 +241,16 @@ export default function APIPlaygroundPage() {
     // Trading Endpoints
     {
       id: 'orders-list',
-      name: 'List Orders',
+      name: 'فهرست سفارش‌ها',
       method: 'GET',
       path: '/api/trading/orders',
-      description: 'Get all orders with optional filtering',
+      description: 'دریافت همه سفارش‌ها با امکان فیلتر',
       category: 'Trading',
       requiresAuth: true,
       parameters: [
-        { name: 'status', type: 'string', required: false, description: 'Filter by status', example: 'pending,filled,cancelled' },
-        { name: 'symbol', type: 'string', required: false, description: 'Filter by symbol', example: 'AAPL' },
-        { name: 'limit', type: 'number', required: false, description: 'Number of results', example: '50' }
+        { name: 'status', type: 'string', required: false, description: 'فیلتر بر اساس وضعیت', example: 'pending,filled,cancelled' },
+        { name: 'symbol', type: 'string', required: false, description: 'فیلتر بر اساس نماد', example: 'AAPL' },
+        { name: 'limit', type: 'number', required: false, description: 'تعداد نتایج', example: '50' }
       ],
       headers: [
         { name: 'Authorization', value: 'Bearer {token}', required: true }
@@ -267,10 +275,10 @@ export default function APIPlaygroundPage() {
     },
     {
       id: 'orders-create',
-      name: 'Place Order',
+      name: 'ثبت سفارش',
       method: 'POST',
       path: '/api/trading/orders',
-      description: 'Place a new trading order',
+      description: 'ثبت یک سفارش معاملاتی جدید',
       category: 'Trading',
       requiresAuth: true,
       parameters: [],
@@ -304,10 +312,10 @@ export default function APIPlaygroundPage() {
     // Risk Management
     {
       id: 'risk-assessment',
-      name: 'Risk Assessment',
+      name: 'ارزیابی ریسک',
       method: 'POST',
       path: '/api/risk/assessment',
-      description: 'Analyze portfolio risk metrics',
+      description: 'تحلیل معیارهای ریسک پرتفوی',
       category: 'Risk Management',
       requiresAuth: true,
       parameters: [],
@@ -339,15 +347,15 @@ export default function APIPlaygroundPage() {
     // Analytics
     {
       id: 'analytics-performance',
-      name: 'Performance Analytics',
+      name: 'تحلیل عملکرد',
       method: 'GET',
       path: '/api/analytics/performance',
-      description: 'Get detailed performance analytics',
+      description: 'دریافت تحلیل جزئی عملکرد',
       category: 'Analytics',
       requiresAuth: true,
       parameters: [
-        { name: 'portfolioId', type: 'string', required: true, description: 'Portfolio ID', example: 'port_123' },
-        { name: 'period', type: 'string', required: false, description: 'Analysis period', example: '1m,3m,6m,1y' }
+        { name: 'portfolioId', type: 'string', required: true, description: 'شناسه پرتفوی', example: 'port_123' },
+        { name: 'period', type: 'string', required: false, description: 'بازه تحلیل', example: '1m,3m,6m,1y' }
       ],
       headers: [
         { name: 'Authorization', value: 'Bearer {token}', required: true }
@@ -372,8 +380,8 @@ export default function APIPlaygroundPage() {
 
   const categories = ['all', ...Array.from(new Set(apiEndpoints.map(endpoint => endpoint.category)))];
 
-  const filteredEndpoints = selectedCategory === 'all' 
-    ? apiEndpoints 
+  const filteredEndpoints = selectedCategory === 'all'
+    ? apiEndpoints
     : apiEndpoints.filter(endpoint => endpoint.category === selectedCategory);
 
   const addCustomHeader = () => {
@@ -385,7 +393,7 @@ export default function APIPlaygroundPage() {
   };
 
   const updateCustomHeader = (index: number, field: 'name' | 'value', value: string) => {
-    setCustomHeaders(prev => prev.map((header, i) => 
+    setCustomHeaders(prev => prev.map((header, i) =>
       i === index ? { ...header, [field]: value } : header
     ));
   };
@@ -438,14 +446,14 @@ export default function APIPlaygroundPage() {
 
       // Simulate API call (in real app, make actual request)
       await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
-      
+
       const endTime = Date.now();
       const responseTime = endTime - startTime;
-      
+
       // Simulate response
       const mockResponse = selectedEndpoint.responseExample;
       const status = Math.random() > 0.1 ? 200 : 400; // 90% success rate
-      
+
       setResponse(mockResponse);
       setResponseStatus(status);
       setResponseTime(responseTime);
@@ -518,25 +526,25 @@ export default function APIPlaygroundPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <Terminal className="w-8 h-8 text-blue-600" />
-            API Playground
+            محیط آزمایش API
           </h1>
           <p className="text-muted-foreground">
-            Interactive API explorer for testing and debugging Octopus platform endpoints
+            کاوشگر تعاملی API برای تست و اشکال‌زدایی مسیرهای پلتفرم اکتپوس
           </p>
         </div>
-        
+
         {/* Quick Stats */}
         <div className="flex gap-4">
           <Card className="w-32">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-blue-600">{apiEndpoints.length}</div>
-              <div className="text-xs text-gray-500">Endpoints</div>
+              <div className="text-xs text-gray-500">مسیرها</div>
             </CardContent>
           </Card>
           <Card className="w-32">
             <CardContent className="p-3 text-center">
               <div className="text-2xl font-bold text-green-600">{requestHistory.filter(r => r.success).length}</div>
-              <div className="text-xs text-gray-500">Successful</div>
+              <div className="text-xs text-gray-500">موفق</div>
             </CardContent>
           </Card>
         </div>
@@ -547,13 +555,13 @@ export default function APIPlaygroundPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
-            Configuration
+            پیکربندی
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="baseUrl">Base URL</Label>
+              <Label htmlFor="baseUrl">آدرس پایه</Label>
               <div className="flex gap-2">
                 <Globe className="w-4 h-4 mt-2 text-gray-500" />
                 <Input
@@ -565,7 +573,7 @@ export default function APIPlaygroundPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="apiKey">API Key</Label>
+              <Label htmlFor="apiKey">کلید API</Label>
               <div className="flex gap-2">
                 <Key className="w-4 h-4 mt-2 text-gray-500" />
                 <Input
@@ -573,7 +581,7 @@ export default function APIPlaygroundPage() {
                   type={showApiKey ? 'text' : 'password'}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="Your API key"
+                  placeholder="کلید API شما"
                 />
                 <Button
                   variant="outline"
@@ -595,7 +603,7 @@ export default function APIPlaygroundPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
-                API Endpoints
+                مسیرهای API
               </CardTitle>
               <div className="flex gap-2 flex-wrap">
                 {categories.map(category => (
@@ -606,7 +614,7 @@ export default function APIPlaygroundPage() {
                     onClick={() => setSelectedCategory(category)}
                     className="text-xs"
                   >
-                    {category === 'all' ? 'All' : category}
+                    {category === 'all' ? 'همه' : (CATEGORY_LABELS[category] ?? category)}
                   </Button>
                 ))}
               </div>
@@ -643,10 +651,10 @@ export default function APIPlaygroundPage() {
           {selectedEndpoint ? (
             <Tabs defaultValue="request" className="space-y-4">
               <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="request">Request</TabsTrigger>
-                <TabsTrigger value="response">Response</TabsTrigger>
-                <TabsTrigger value="docs">Documentation</TabsTrigger>
-                <TabsTrigger value="history">History</TabsTrigger>
+                <TabsTrigger value="request">درخواست</TabsTrigger>
+                <TabsTrigger value="response">پاسخ</TabsTrigger>
+                <TabsTrigger value="docs">مستندات</TabsTrigger>
+                <TabsTrigger value="history">تاریخچه</TabsTrigger>
               </TabsList>
 
               <TabsContent value="request" className="space-y-4">
@@ -655,10 +663,10 @@ export default function APIPlaygroundPage() {
                     <CardTitle className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Zap className="w-5 h-5" />
-                        Request Builder
+                        سازنده درخواست
                       </div>
-                      <Button 
-                        onClick={executeRequest} 
+                      <Button
+                        onClick={executeRequest}
                         disabled={loading}
                         className="flex items-center gap-2"
                       >
@@ -667,7 +675,7 @@ export default function APIPlaygroundPage() {
                         ) : (
                           <Play className="w-4 h-4" />
                         )}
-                        {loading ? 'Executing...' : 'Execute'}
+                        {loading ? 'در حال اجرا...' : 'اجرا'}
                       </Button>
                     </CardTitle>
                   </CardHeader>
@@ -686,16 +694,16 @@ export default function APIPlaygroundPage() {
                     {/* Parameters */}
                     {selectedEndpoint.parameters.length > 0 && (
                       <div>
-                        <Label className="text-base font-medium">Parameters</Label>
+                        <Label className="text-base font-medium">پارامترها</Label>
                         <div className="space-y-2 mt-2">
                           {selectedEndpoint.parameters.map(param => (
                             <div key={param.name} className="grid grid-cols-4 gap-2 items-center p-2 border rounded">
                               <div>
                                 <div className="font-mono text-sm">{param.name}</div>
-                                {param.required && <Badge variant="destructive" className="text-xs">Required</Badge>}
+                                {param.required && <Badge variant="destructive" className="text-xs">اجباری</Badge>}
                               </div>
                               <div className="text-sm text-gray-600">{param.type}</div>
-                              <Input 
+                              <Input
                                 placeholder={param.example}
                                 className="text-sm"
                               />
@@ -709,32 +717,32 @@ export default function APIPlaygroundPage() {
                     {/* Headers */}
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <Label className="text-base font-medium">Headers</Label>
+                        <Label className="text-base font-medium">هدرها</Label>
                         <Button variant="outline" size="sm" onClick={addCustomHeader}>
                           <Plus className="w-4 h-4 mr-1" />
-                          Add Header
+                          افزودن هدر
                         </Button>
                       </div>
                       <div className="space-y-2">
                         {selectedEndpoint.headers.map(header => (
                           <div key={header.name} className="grid grid-cols-3 gap-2 items-center p-2 bg-gray-50 rounded">
                             <Input value={header.name} disabled />
-                            <Input 
-                              value={header.name === 'Authorization' && apiKey ? `Bearer ${apiKey}` : header.value} 
-                              disabled={header.name === 'Authorization'} 
+                            <Input
+                              value={header.name === 'Authorization' && apiKey ? `Bearer ${apiKey}` : header.value}
+                              disabled={header.name === 'Authorization'}
                             />
-                            {header.required && <Badge variant="destructive" className="text-xs">Required</Badge>}
+                            {header.required && <Badge variant="destructive" className="text-xs">اجباری</Badge>}
                           </div>
                         ))}
                         {customHeaders.map((header, index) => (
                           <div key={index} className="grid grid-cols-3 gap-2 items-center p-2 border rounded">
-                            <Input 
-                              placeholder="Header name"
+                            <Input
+                              placeholder="نام هدر"
                               value={header.name}
                               onChange={(e) => updateCustomHeader(index, 'name', e.target.value)}
                             />
-                            <Input 
-                              placeholder="Header value"
+                            <Input
+                              placeholder="مقدار هدر"
                               value={header.value}
                               onChange={(e) => updateCustomHeader(index, 'value', e.target.value)}
                             />
@@ -749,12 +757,12 @@ export default function APIPlaygroundPage() {
                     {/* Request Body */}
                     {['POST', 'PUT', 'PATCH'].includes(selectedEndpoint.method) && (
                       <div>
-                        <Label className="text-base font-medium">Request Body</Label>
+                        <Label className="text-base font-medium">بدنه درخواست</Label>
                         <textarea
                           className="w-full h-32 p-3 border rounded-md font-mono text-sm mt-2"
                           value={requestBody}
                           onChange={(e) => setRequestBody(e.target.value)}
-                          placeholder="JSON request body"
+                          placeholder="بدنه درخواست JSON"
                         />
                       </div>
                     )}
@@ -768,7 +776,7 @@ export default function APIPlaygroundPage() {
                     <CardTitle className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Database className="w-5 h-5" />
-                        Response
+                        پاسخ
                       </div>
                       <div className="flex items-center gap-2">
                         {responseStatus && (
@@ -797,7 +805,7 @@ export default function APIPlaygroundPage() {
                       </pre>
                     ) : (
                       <div className="text-center py-8 text-gray-500">
-                        Execute a request to see the response
+                        برای مشاهده پاسخ، یک درخواست اجرا کنید
                       </div>
                     )}
                   </CardContent>
@@ -809,17 +817,17 @@ export default function APIPlaygroundPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <FileText className="w-5 h-5" />
-                      Documentation
+                      مستندات
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
                       <h3 className="font-semibold text-lg mb-2">{selectedEndpoint.name}</h3>
                       <p className="text-gray-600 mb-4">{selectedEndpoint.description}</p>
-                      
+
                       <div className="grid gap-4">
                         <div>
-                          <h4 className="font-medium mb-2">Endpoint</h4>
+                          <h4 className="font-medium mb-2">مسیر</h4>
                           <code className="bg-gray-100 p-2 rounded block">
                             {selectedEndpoint.method} {selectedEndpoint.path}
                           </code>
@@ -827,19 +835,19 @@ export default function APIPlaygroundPage() {
 
                         {selectedEndpoint.parameters.length > 0 && (
                           <div>
-                            <h4 className="font-medium mb-2">Parameters</h4>
+                            <h4 className="font-medium mb-2">پارامترها</h4>
                             <div className="space-y-2">
                               {selectedEndpoint.parameters.map(param => (
                                 <div key={param.name} className="border-l-4 border-blue-500 pl-4">
                                   <div className="flex items-center gap-2">
                                     <code className="font-mono text-sm">{param.name}</code>
                                     <Badge variant={param.required ? 'destructive' : 'secondary'} className="text-xs">
-                                      {param.required ? 'Required' : 'Optional'}
+                                      {param.required ? 'اجباری' : 'اختیاری'}
                                     </Badge>
                                     <Badge variant="outline" className="text-xs">{param.type}</Badge>
                                   </div>
                                   <p className="text-sm text-gray-600 mt-1">{param.description}</p>
-                                  <p className="text-xs text-gray-500 mt-1">Example: <code>{param.example}</code></p>
+                                  <p className="text-xs text-gray-500 mt-1">مثال: <code>{param.example}</code></p>
                                 </div>
                               ))}
                             </div>
@@ -847,7 +855,7 @@ export default function APIPlaygroundPage() {
                         )}
 
                         <div>
-                          <h4 className="font-medium mb-2">Example Response</h4>
+                          <h4 className="font-medium mb-2">نمونه پاسخ</h4>
                           <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
                             {formatJsonResponse(selectedEndpoint.responseExample)}
                           </pre>
@@ -863,7 +871,7 @@ export default function APIPlaygroundPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <History className="w-5 h-5" />
-                      Request History
+                      تاریخچه درخواست‌ها
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -894,14 +902,14 @@ export default function APIPlaygroundPage() {
                               </div>
                             </div>
                             <div className="text-xs text-gray-500">
-                              {new Date(request.timestamp).toLocaleString()}
+                              {new Date(request.timestamp).toLocaleString('fa-IR')}
                             </div>
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div className="text-center py-8 text-gray-500">
-                        No requests made yet. Execute some API calls to see history.
+                        هنوز درخواستی ثبت نشده است. برای مشاهده تاریخچه، چند درخواست API اجرا کنید.
                       </div>
                     )}
                   </CardContent>
@@ -912,9 +920,9 @@ export default function APIPlaygroundPage() {
             <Card>
               <CardContent className="p-8 text-center">
                 <Code2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Select an API Endpoint</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">یک مسیر API را انتخاب کنید</h3>
                 <p className="text-gray-600">
-                  Choose an endpoint from the list to start testing and exploring the API
+                  یک مسیر را از فهرست انتخاب کنید تا تست و کاوش API را شروع کنید
                 </p>
               </CardContent>
             </Card>
@@ -923,4 +931,4 @@ export default function APIPlaygroundPage() {
       </div>
     </div>
   );
-} 
+}

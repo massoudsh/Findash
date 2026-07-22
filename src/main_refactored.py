@@ -42,6 +42,7 @@ from src.api.endpoints.comprehensive_api import router as comprehensive_router
 from src.api.endpoints.risk import router as risk_router
 from src.api.endpoints.llm_simple import llm_router
 from src.api.endpoints.macro_data import router as macro_router
+from src.api.endpoints.alpha_vantage_mcp import router as alpha_vantage_mcp_router
 from src.api.endpoints.onchain_data import router as onchain_router
 from src.api.endpoints.social_data import router as social_router
 from src.api.endpoints.agents import router as agents_router
@@ -200,6 +201,7 @@ app.include_router(llm_router, prefix="/llm", tags=["LLM & AI Analytics"])
 app.include_router(macro_router, prefix="/api/macro", tags=["Real Macro Data"])
 app.include_router(onchain_router, prefix="/api/onchain", tags=["Real On-Chain Data"])
 app.include_router(social_router, prefix="/api/social", tags=["Real Social Data"])
+app.include_router(alpha_vantage_mcp_router, tags=["Alpha Vantage MCP"])
 
 # Phase 3: Backend Integration APIs
 app.include_router(agents_router, tags=["Agent Monitoring"])

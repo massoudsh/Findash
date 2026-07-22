@@ -10,10 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  DollarSign, 
+import {
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
   BarChart3,
   Activity,
   AlertCircle,
@@ -251,7 +251,7 @@ export default function UnifiedTradingPage() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
+    return new Date(dateString).toLocaleString('fa-IR');
   };
 
   const getConnectionStatusIcon = () => {
@@ -292,17 +292,17 @@ export default function UnifiedTradingPage() {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
               مرکز فرماندهی
             </h1>
-            <p className="text-gray-400 text-lg">Live trading, order management, and trade history</p>
+            <p className="text-gray-400 text-lg">معاملات زنده، مدیریت سفارش‌ها و تاریخچه معاملات</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               {getConnectionStatusIcon()}
               <span className="text-sm text-gray-400">
-                {connectionStatus.brokerConnection} • {connectionStatus.latency}ms
+                {connectionStatus.brokerConnection === 'connected' ? 'متصل' : connectionStatus.brokerConnection === 'connecting' ? 'در حال اتصال' : 'قطع'} • {connectionStatus.latency} میلی‌ثانیه
               </span>
             </div>
             <Badge variant={tradingEnabled ? "default" : "secondary"}>
-              {tradingEnabled ? "Live Trading" : "Paper Trading"}
+              {tradingEnabled ? "معاملات زنده" : "معاملات آزمایشی"}
             </Badge>
           </div>
         </div>
@@ -317,7 +317,7 @@ export default function UnifiedTradingPage() {
                 <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs sm:text-sm text-muted-foreground">Total Value</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">ارزش کل</p>
                 <p className="text-lg sm:text-xl md:text-2xl font-bold text-blue-400 truncate">{formatCurrency(accountInfo.totalValue)}</p>
               </div>
             </div>
@@ -331,7 +331,7 @@ export default function UnifiedTradingPage() {
                 <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs sm:text-sm text-muted-foreground">Day P&L</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">سود/زیان روزانه</p>
                 <p className={`text-lg sm:text-xl md:text-2xl font-bold truncate ${accountInfo.dayPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {formatCurrency(accountInfo.dayPnL)}
                 </p>
@@ -347,7 +347,7 @@ export default function UnifiedTradingPage() {
                 <BarChart3 className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs sm:text-sm text-muted-foreground">Buying Power</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">قدرت خرید</p>
                 <p className="text-lg sm:text-xl md:text-2xl font-bold text-purple-400 truncate">{formatCurrency(accountInfo.buyingPower)}</p>
               </div>
             </div>
@@ -361,7 +361,7 @@ export default function UnifiedTradingPage() {
                 <PieChart className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs sm:text-sm text-muted-foreground">Positions</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">پوزیشن‌ها</p>
                 <p className="text-lg sm:text-xl md:text-2xl font-bold text-yellow-400">{positions.length}</p>
               </div>
             </div>
@@ -375,7 +375,7 @@ export default function UnifiedTradingPage() {
                 <Activity className="h-5 w-5 sm:h-6 sm:w-6 text-red-400" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs sm:text-sm text-muted-foreground">Open Orders</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">سفارش‌های باز</p>
                 <p className="text-lg sm:text-xl md:text-2xl font-bold text-red-400">{liveOrders.length}</p>
               </div>
             </div>
@@ -386,12 +386,12 @@ export default function UnifiedTradingPage() {
       {/* Main Trading Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-1 glass-card p-1 overflow-x-auto">
-          <TabsTrigger value="overview" className="text-xs sm:text-sm whitespace-nowrap">Overview</TabsTrigger>
-          <TabsTrigger value="order-entry" className="text-xs sm:text-sm whitespace-nowrap">Order Entry</TabsTrigger>
-          <TabsTrigger value="positions" className="text-xs sm:text-sm whitespace-nowrap">Positions</TabsTrigger>
-          <TabsTrigger value="orders" className="text-xs sm:text-sm whitespace-nowrap">Orders</TabsTrigger>
-          <TabsTrigger value="history" className="text-xs sm:text-sm whitespace-nowrap">History</TabsTrigger>
-          <TabsTrigger value="funding-rates" className="text-xs sm:text-sm whitespace-nowrap">Funding Rates</TabsTrigger>
+          <TabsTrigger value="overview" className="text-xs sm:text-sm whitespace-nowrap">نمای کلی</TabsTrigger>
+          <TabsTrigger value="order-entry" className="text-xs sm:text-sm whitespace-nowrap">ثبت سفارش</TabsTrigger>
+          <TabsTrigger value="positions" className="text-xs sm:text-sm whitespace-nowrap">پوزیشن‌ها</TabsTrigger>
+          <TabsTrigger value="orders" className="text-xs sm:text-sm whitespace-nowrap">سفارش‌ها</TabsTrigger>
+          <TabsTrigger value="history" className="text-xs sm:text-sm whitespace-nowrap">تاریخچه</TabsTrigger>
+          <TabsTrigger value="funding-rates" className="text-xs sm:text-sm whitespace-nowrap">نرخ فاندینگ</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
@@ -402,22 +402,22 @@ export default function UnifiedTradingPage() {
               <CardHeader className="p-4 sm:p-6 pb-2">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <Zap className="h-5 w-5 text-yellow-400 shrink-0" />
-                  Quick Order
+                  سفارش سریع
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
                 <div>
-                  <Label>Symbol</Label>
+                  <Label>نماد</Label>
                   <Input
                     value={selectedSymbol}
                     onChange={(e) => setSelectedSymbol(e.target.value.toUpperCase())}
-                    placeholder="e.g., AAPL"
+                    placeholder="مثلاً AAPL"
                     className="mt-1"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <Label>Quantity</Label>
+                    <Label>تعداد</Label>
                     <Input
                       type="number"
                       value={quantity}
@@ -426,30 +426,30 @@ export default function UnifiedTradingPage() {
                     />
                   </div>
                   <div>
-                    <Label>Price</Label>
+                    <Label>قیمت</Label>
                     <Input
                       type="number"
                       value={price}
                       onChange={(e) => setPrice(Number(e.target.value))}
-                      placeholder="Market"
+                      placeholder="بازار"
                       className="mt-1"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <Button 
+                  <Button
                     onClick={() => {setOrderSide('buy'); handlePlaceOrder();}}
                     disabled={isLoading}
                     className="bg-green-600 hover:bg-green-700"
                   >
-                    Buy
+                    خرید
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => {setOrderSide('sell'); handlePlaceOrder();}}
                     disabled={isLoading}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    Sell
+                    فروش
                   </Button>
                 </div>
               </CardContent>
@@ -460,7 +460,7 @@ export default function UnifiedTradingPage() {
               <CardHeader className="p-4 sm:p-6 pb-2">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <Target className="h-5 w-5 text-blue-400 shrink-0" />
-                  Active Positions
+                  پوزیشن‌های فعال
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 sm:p-6 pt-0">
@@ -469,7 +469,7 @@ export default function UnifiedTradingPage() {
                     <div key={position.id} className="flex items-center justify-between p-3 border border-gray-700 rounded-lg">
                       <div>
                         <p className="font-semibold">{position.symbol}</p>
-                        <p className="text-sm text-gray-400">{position.quantity} shares</p>
+                        <p className="text-sm text-gray-400">{position.quantity} سهم</p>
                       </div>
                       <div className="text-right">
                         <p className={`font-bold ${position.unrealizedPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -488,7 +488,7 @@ export default function UnifiedTradingPage() {
               <CardHeader className="p-4 sm:p-6 pb-2">
                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                   <History className="h-5 w-5 text-purple-400 shrink-0" />
-                  Recent Activity
+                  فعالیت‌های اخیر
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-4 sm:p-6 pt-0">
@@ -498,7 +498,7 @@ export default function UnifiedTradingPage() {
                       <div>
                         <p className="font-semibold">{trade.symbol}</p>
                         <p className="text-sm text-gray-400">
-                          {trade.side.toUpperCase()} {trade.quantity}
+                          {trade.side === 'buy' ? 'خرید' : 'فروش'} {trade.quantity}
                         </p>
                       </div>
                       <div className="text-right">
@@ -518,30 +518,30 @@ export default function UnifiedTradingPage() {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
             <Card className="glass-card min-w-0">
               <CardHeader className="p-4 sm:p-6 pb-2">
-                <CardTitle className="text-base sm:text-lg">Advanced Order Entry</CardTitle>
+                <CardTitle className="text-base sm:text-lg">ثبت سفارش پیشرفته</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6 p-4 sm:p-6 pt-0">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label>Symbol</Label>
+                    <Label>نماد</Label>
                     <Input
                       value={selectedSymbol}
                       onChange={(e) => setSelectedSymbol(e.target.value.toUpperCase())}
-                      placeholder="e.g., AAPL"
+                      placeholder="مثلاً AAPL"
                       className="mt-1"
                     />
                   </div>
                   <div>
-                    <Label>Order Type</Label>
+                    <Label>نوع سفارش</Label>
                     <Select value={orderType} onValueChange={(value: any) => setOrderType(value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="market">Market</SelectItem>
-                        <SelectItem value="limit">Limit</SelectItem>
-                        <SelectItem value="stop">Stop</SelectItem>
-                        <SelectItem value="stop_limit">Stop Limit</SelectItem>
+                        <SelectItem value="market">بازار</SelectItem>
+                        <SelectItem value="limit">محدود</SelectItem>
+                        <SelectItem value="stop">استاپ</SelectItem>
+                        <SelectItem value="stop_limit">استاپ محدود</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -549,19 +549,19 @@ export default function UnifiedTradingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Side</Label>
+                    <Label>جهت</Label>
                     <Select value={orderSide} onValueChange={(value: any) => setOrderSide(value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="buy">Buy</SelectItem>
-                        <SelectItem value="sell">Sell</SelectItem>
+                        <SelectItem value="buy">خرید</SelectItem>
+                        <SelectItem value="sell">فروش</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label>Quantity</Label>
+                    <Label>تعداد</Label>
                     <Input
                       type="number"
                       value={quantity}
@@ -574,7 +574,7 @@ export default function UnifiedTradingPage() {
                 {orderType !== 'market' && (
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Limit Price</Label>
+                      <Label>قیمت محدود</Label>
                       <Input
                         type="number"
                         value={price}
@@ -584,7 +584,7 @@ export default function UnifiedTradingPage() {
                     </div>
                     {orderType.includes('stop') && (
                       <div>
-                        <Label>Stop Price</Label>
+                        <Label>قیمت استاپ</Label>
                         <Input
                           type="number"
                           value={stopPrice}
@@ -598,16 +598,16 @@ export default function UnifiedTradingPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Time in Force</Label>
+                    <Label>اعتبار زمانی</Label>
                     <Select value={timeInForce} onValueChange={(value: any) => setTimeInForce(value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="GTC">Good Till Cancelled</SelectItem>
-                        <SelectItem value="IOC">Immediate or Cancel</SelectItem>
-                        <SelectItem value="FOK">Fill or Kill</SelectItem>
-                        <SelectItem value="DAY">Day Order</SelectItem>
+                        <SelectItem value="GTC">معتبر تا لغو</SelectItem>
+                        <SelectItem value="IOC">فوری یا لغو</SelectItem>
+                        <SelectItem value="FOK">کامل یا هیچ</SelectItem>
+                        <SelectItem value="DAY">سفارش روزانه</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -617,31 +617,31 @@ export default function UnifiedTradingPage() {
                       disabled={isLoading}
                       className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
                     >
-                      {isLoading ? 'Placing...' : 'Place Order'}
+                      {isLoading ? 'در حال ثبت...' : 'ثبت سفارش'}
                     </Button>
                   </div>
                 </div>
 
                 <div className="border-t border-gray-700 pt-4 space-y-4">
-                  <h4 className="font-semibold">Risk Management</h4>
+                  <h4 className="font-semibold">مدیریت ریسک</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <Label>Stop Loss</Label>
+                      <Label>حد ضرر</Label>
                       <Input
                         type="number"
                         value={stopLoss}
                         onChange={(e) => setStopLoss(Number(e.target.value))}
-                        placeholder="Optional"
+                        placeholder="اختیاری"
                         className="mt-1"
                       />
                     </div>
                     <div>
-                      <Label>Take Profit</Label>
+                      <Label>حد سود</Label>
                       <Input
                         type="number"
                         value={takeProfit}
                         onChange={(e) => setTakeProfit(Number(e.target.value))}
-                        placeholder="Optional"
+                        placeholder="اختیاری"
                         className="mt-1"
                       />
                     </div>
@@ -652,38 +652,38 @@ export default function UnifiedTradingPage() {
 
             <Card className="glass-card min-w-0">
               <CardHeader className="p-4 sm:p-6 pb-2">
-                <CardTitle className="text-base sm:text-lg">Order Preview & Settings</CardTitle>
+                <CardTitle className="text-base sm:text-lg">پیش‌نمایش و تنظیمات سفارش</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="p-4 border border-gray-700 rounded-lg space-y-2">
-                  <h4 className="font-semibold">Order Summary</h4>
+                  <h4 className="font-semibold">خلاصه سفارش</h4>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span>Symbol:</span>
+                      <span>نماد:</span>
                       <span className="font-mono">{selectedSymbol}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Side:</span>
+                      <span>جهت:</span>
                       <span className={orderSide === 'buy' ? 'text-green-400' : 'text-red-400'}>
-                        {orderSide.toUpperCase()}
+                        {orderSide === 'buy' ? 'خرید' : 'فروش'}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Type:</span>
+                      <span>نوع:</span>
                       <span className="capitalize">{orderType.replace('_', ' ')}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Quantity:</span>
+                      <span>تعداد:</span>
                       <span>{quantity}</span>
                     </div>
                     {orderType !== 'market' && (
                       <div className="flex justify-between">
-                        <span>Price:</span>
+                        <span>قیمت:</span>
                         <span>{formatCurrency(price)}</span>
                       </div>
                     )}
                     <div className="flex justify-between border-t border-gray-700 pt-2">
-                      <span>Est. Value:</span>
+                      <span>ارزش تخمینی:</span>
                       <span className="font-bold">
                         {formatCurrency((orderType === 'market' ? 150 : price) * quantity)}
                       </span>
@@ -692,16 +692,16 @@ export default function UnifiedTradingPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="font-semibold">Trading Settings</h4>
+                  <h4 className="font-semibold">تنظیمات معاملاتی</h4>
                   <div className="flex items-center justify-between">
-                    <Label>Live Trading</Label>
+                    <Label>معاملات زنده</Label>
                     <Switch
                       checked={tradingEnabled}
                       onCheckedChange={setTradingEnabled}
                     />
                   </div>
                   <div className="flex items-center justify-between">
-                    <Label>Require Confirmation</Label>
+                    <Label>نیاز به تأیید</Label>
                     <Switch
                       checked={confirmationRequired}
                       onCheckedChange={setConfirmationRequired}
@@ -713,7 +713,7 @@ export default function UnifiedTradingPage() {
                   <Alert>
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
-                      Paper trading mode is active. Orders will be simulated.
+                      حالت معاملات آزمایشی فعال است. سفارش‌ها به‌صورت شبیه‌سازی‌شده اجرا می‌شوند.
                     </AlertDescription>
                   </Alert>
                 )}
@@ -727,10 +727,10 @@ export default function UnifiedTradingPage() {
           <Card className="glass-card min-w-0 overflow-hidden">
             <CardHeader className="p-4 sm:p-6 pb-2">
               <CardTitle className="flex items-center justify-between">
-                <span>Active Positions</span>
+                <span>پوزیشن‌های فعال</span>
                 <Button variant="outline" size="sm">
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
+                  بازخوانی
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -739,15 +739,15 @@ export default function UnifiedTradingPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-700">
-                      <th className="text-left py-3">Symbol</th>
-                      <th className="text-left py-3">Side</th>
-                      <th className="text-right py-3">Quantity</th>
-                      <th className="text-right py-3">Entry Price</th>
-                      <th className="text-right py-3">Current Price</th>
-                      <th className="text-right py-3">Market Value</th>
-                      <th className="text-right py-3">Unrealized P&L</th>
-                      <th className="text-right py-3">Day P&L</th>
-                      <th className="text-center py-3">Actions</th>
+                      <th className="text-left py-3">نماد</th>
+                      <th className="text-left py-3">جهت</th>
+                      <th className="text-right py-3">تعداد</th>
+                      <th className="text-right py-3">قیمت ورود</th>
+                      <th className="text-right py-3">قیمت فعلی</th>
+                      <th className="text-right py-3">ارزش بازار</th>
+                      <th className="text-right py-3">سود/زیان محقق‌نشده</th>
+                      <th className="text-right py-3">سود/زیان روزانه</th>
+                      <th className="text-center py-3">عملیات</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -756,7 +756,7 @@ export default function UnifiedTradingPage() {
                         <td className="py-3 font-semibold">{position.symbol}</td>
                         <td className="py-3">
                           <Badge variant={position.side === 'long' ? 'default' : 'secondary'}>
-                            {position.side.toUpperCase()}
+                            {position.side === 'long' ? 'خرید (Long)' : 'فروش (Short)'}
                           </Badge>
                         </td>
                         <td className="text-right py-3">{position.quantity}</td>
@@ -790,10 +790,10 @@ export default function UnifiedTradingPage() {
           <Card className="glass-card min-w-0 overflow-hidden">
             <CardHeader className="p-4 sm:p-6 pb-2">
               <CardTitle className="flex flex-wrap items-center justify-between gap-2 text-base sm:text-lg">
-                <span>Open Orders</span>
+                <span>سفارش‌های باز</span>
                 <Button variant="outline" size="sm">
                   <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
+                  بازخوانی
                 </Button>
               </CardTitle>
             </CardHeader>
@@ -802,15 +802,15 @@ export default function UnifiedTradingPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-700">
-                      <th className="text-left py-3">Symbol</th>
-                      <th className="text-left py-3">Side</th>
-                      <th className="text-left py-3">Type</th>
-                      <th className="text-right py-3">Quantity</th>
-                      <th className="text-right py-3">Price</th>
-                      <th className="text-left py-3">Status</th>
-                      <th className="text-left py-3">Time in Force</th>
-                      <th className="text-left py-3">Placed At</th>
-                      <th className="text-center py-3">Actions</th>
+                      <th className="text-left py-3">نماد</th>
+                      <th className="text-left py-3">جهت</th>
+                      <th className="text-left py-3">نوع</th>
+                      <th className="text-right py-3">تعداد</th>
+                      <th className="text-right py-3">قیمت</th>
+                      <th className="text-left py-3">وضعیت</th>
+                      <th className="text-left py-3">اعتبار زمانی</th>
+                      <th className="text-left py-3">زمان ثبت</th>
+                      <th className="text-center py-3">عملیات</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -819,7 +819,7 @@ export default function UnifiedTradingPage() {
                         <td className="py-3 font-semibold">{order.symbol}</td>
                         <td className="py-3">
                           <Badge variant={order.side === 'buy' ? 'default' : 'secondary'}>
-                            {order.side.toUpperCase()}
+                            {order.side === 'buy' ? 'خرید' : 'فروش'}
                           </Badge>
                         </td>
                         <td className="py-3 capitalize">{order.type.replace('_', ' ')}</td>
@@ -827,7 +827,7 @@ export default function UnifiedTradingPage() {
                           {order.filledQuantity}/{order.quantity}
                         </td>
                         <td className="text-right py-3">
-                          {order.price ? formatCurrency(order.price) : 'Market'}
+                          {order.price ? formatCurrency(order.price) : 'بازار'}
                         </td>
                         <td className="py-3">
                           <Badge variant="outline" className="capitalize">
@@ -838,7 +838,7 @@ export default function UnifiedTradingPage() {
                         <td className="py-3 text-sm">{formatDate(order.placedAt)}</td>
                         <td className="text-center py-3">
                           <Button variant="outline" size="sm" className="text-red-400">
-                            Cancel
+                            لغو
                           </Button>
                         </td>
                       </tr>
@@ -855,15 +855,15 @@ export default function UnifiedTradingPage() {
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Trade History</span>
+                <span>تاریخچه معاملات</span>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm">
                     <Download className="h-4 w-4 mr-2" />
-                    Export
+                    خروجی
                   </Button>
                   <Button variant="outline" size="sm">
                     <RefreshCw className="h-4 w-4 mr-2" />
-                    Refresh
+                    بازخوانی
                   </Button>
                 </div>
               </CardTitle>
@@ -873,14 +873,14 @@ export default function UnifiedTradingPage() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-700">
-                      <th className="text-left py-3">Date</th>
-                      <th className="text-left py-3">Symbol</th>
-                      <th className="text-left py-3">Side</th>
-                      <th className="text-right py-3">Quantity</th>
-                      <th className="text-right py-3">Price</th>
-                      <th className="text-right py-3">Value</th>
-                      <th className="text-right py-3">Fees</th>
-                      <th className="text-left py-3">Status</th>
+                      <th className="text-left py-3">تاریخ</th>
+                      <th className="text-left py-3">نماد</th>
+                      <th className="text-left py-3">جهت</th>
+                      <th className="text-right py-3">تعداد</th>
+                      <th className="text-right py-3">قیمت</th>
+                      <th className="text-right py-3">ارزش</th>
+                      <th className="text-right py-3">کارمزد</th>
+                      <th className="text-left py-3">وضعیت</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -890,7 +890,7 @@ export default function UnifiedTradingPage() {
                         <td className="py-3 font-semibold">{trade.symbol}</td>
                         <td className="py-3">
                           <Badge variant={trade.side === 'buy' ? 'default' : 'secondary'}>
-                            {trade.side.toUpperCase()}
+                            {trade.side === 'buy' ? 'خرید' : 'فروش'}
                           </Badge>
                         </td>
                         <td className="text-right py-3">{trade.quantity}</td>
@@ -899,7 +899,7 @@ export default function UnifiedTradingPage() {
                         <td className="text-right py-3">{formatCurrency(trade.fees)}</td>
                         <td className="py-3">
                           <Badge variant="outline" className="capitalize">
-                            {trade.status}
+                            {trade.status === 'executed' ? 'اجراشده' : trade.status}
                           </Badge>
                         </td>
                       </tr>
@@ -964,36 +964,36 @@ function FundingRatesPanel() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-lg font-semibold">25 days</span>
-          <span className="text-sm text-muted-foreground">(Matures 27 Feb 2026)</span>
+          <span className="text-lg font-semibold">۲۵ روز</span>
+          <span className="text-sm text-muted-foreground">(سررسید ۲۷ فوریه ۲۰۲۶)</span>
         </div>
       </div>
 
       {/* Market Stats */}
       <div className="flex items-center gap-8 pb-4 border-b">
         <div>
-          <div className="text-3xl font-bold text-green-500">5.34%</div>
-          <div className="text-xs text-muted-foreground">Implied APR</div>
+          <div className="text-3xl font-bold text-green-500">۵.۳۴٪</div>
+          <div className="text-xs text-muted-foreground">نرخ سود ضمنی</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">Mark APR</div>
-          <div className="text-sm font-semibold">5.35%</div>
+          <div className="text-sm text-muted-foreground">نرخ سود مارک</div>
+          <div className="text-sm font-semibold">۵.۳۵٪</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">Underlying APR</div>
-          <div className="text-sm font-semibold text-red-500">-6.82%</div>
+          <div className="text-sm text-muted-foreground">نرخ سود دارایی پایه</div>
+          <div className="text-sm font-semibold text-red-500">-۶.۸۲٪</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">Notional OI</div>
-          <div className="text-sm font-semibold">5.1815K ETH</div>
+          <div className="text-sm text-muted-foreground">حجم قرارداد باز</div>
+          <div className="text-sm font-semibold">۵.۱۸۱۵K ETH</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">24h Volume</div>
-          <div className="text-sm font-semibold">6.389K ETH</div>
+          <div className="text-sm text-muted-foreground">حجم ۲۴ ساعته</div>
+          <div className="text-sm font-semibold">۶.۳۸۹K ETH</div>
         </div>
         <div>
-          <div className="text-sm text-muted-foreground">Next Settlement</div>
-          <div className="text-sm font-semibold">00:46:42</div>
+          <div className="text-sm text-muted-foreground">تسویه بعدی</div>
+          <div className="text-sm font-semibold">۰۰:۴۶:۴۲</div>
         </div>
       </div>
 
@@ -1004,31 +1004,31 @@ function FundingRatesPanel() {
             <CardContent className="p-4">
               {/* Chart Tabs */}
               <div className="flex items-center gap-4 mb-4">
-                <Button variant="default" size="sm">APR Chart</Button>
-                <Button variant="ghost" size="sm">My PnL</Button>
+                <Button variant="default" size="sm">نمودار نرخ سود</Button>
+                <Button variant="ghost" size="sm">سود/زیان من</Button>
               </div>
 
               {/* Chart Legend */}
               <div className="flex items-center gap-4 mb-2 text-xs">
-                <span>Implied APR</span>
-                <span className="text-green-500">O5.34%</span>
-                <span className="text-green-500">H5.34%</span>
-                <span className="text-green-500">L5.34%</span>
-                <span className="text-green-500">C5.34%</span>
+                <span>نرخ سود ضمنی</span>
+                <span className="text-green-500">O۵.۳۴٪</span>
+                <span className="text-green-500">H۵.۳۴٪</span>
+                <span className="text-green-500">L۵.۳۴٪</span>
+                <span className="text-green-500">C۵.۳۴٪</span>
               </div>
               <div className="text-xs text-red-500 mb-4">
-                Underlying APR <span className="ml-2">-6.82%</span>
+                نرخ سود دارایی پایه <span className="ml-2">-۶.۸۲٪</span>
               </div>
 
               {/* Chart Area */}
               <div className="relative h-64 bg-muted/30 rounded-lg overflow-hidden">
                 {/* Y-axis labels */}
                 <div className="absolute right-2 top-0 bottom-0 flex flex-col justify-between text-xs text-muted-foreground py-4">
-                  <span>4%</span>
-                  <span>0%</span>
-                  <span>-4%</span>
-                  <span>-8%</span>
-                  <span>-12%</span>
+                  <span>۴٪</span>
+                  <span>۰٪</span>
+                  <span>-۴٪</span>
+                  <span>-۸٪</span>
+                  <span>-۱۲٪</span>
                 </div>
 
                 {/* Chart visualization */}
@@ -1036,7 +1036,7 @@ function FundingRatesPanel() {
                   {[0, 50, 100, 150, 200].map((y, i) => (
                     <line key={i} x1="0" y1={y} x2="500" y2={y} stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                   ))}
-                  <path 
+                  <path
                     d="M 0,150 L 50,160 L 100,140 L 150,120 L 200,145 L 250,130 L 300,90 L 350,75 L 400,60 L 450,45 L 480,55 L 500,85"
                     fill="none"
                     stroke="rgb(59, 130, 246)"
@@ -1055,8 +1055,8 @@ function FundingRatesPanel() {
                       key={tf}
                       onClick={() => setSelectedTimeframe(tf)}
                       className={`px-2 py-1 text-xs rounded ${
-                        selectedTimeframe === tf 
-                          ? 'bg-primary text-primary-foreground' 
+                        selectedTimeframe === tf
+                          ? 'bg-primary text-primary-foreground'
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
@@ -1074,23 +1074,23 @@ function FundingRatesPanel() {
           <Card className="glass-card h-full min-w-0">
             <CardHeader className="pb-2">
               <div className="flex items-center gap-4">
-                <button className="text-sm font-medium border-b-2 border-primary pb-1">Orderbook</button>
-                <button className="text-sm text-muted-foreground hover:text-foreground pb-1">Market Trades</button>
+                <button className="text-sm font-medium border-b-2 border-primary pb-1">دفتر سفارش</button>
+                <button className="text-sm text-muted-foreground hover:text-foreground pb-1">معاملات بازار</button>
               </div>
             </CardHeader>
             <CardContent className="p-4">
               {/* Short Rate Section */}
               <div className="mb-4">
-                <div className="text-xs text-red-500 font-semibold mb-2">SHORT RATE</div>
+                <div className="text-xs text-red-500 font-semibold mb-2">نرخ شورت</div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                  <span>Implied APR (%)</span>
-                  <span>Size (ETH YU)</span>
+                  <span>نرخ سود ضمنی (٪)</span>
+                  <span>حجم (ETH YU)</span>
                 </div>
                 <div className="space-y-1">
                   {shortRateOrders.map((order, i) => (
                     <div key={i} className="flex items-center justify-between text-xs relative">
-                      <div 
-                        className="absolute left-0 top-0 bottom-0 bg-red-500/20" 
+                      <div
+                        className="absolute left-0 top-0 bottom-0 bg-red-500/20"
                         style={{ width: `${Math.min(order.size / 10, 100)}%` }}
                       />
                       <span className="text-red-500 relative z-10">{order.rate.toFixed(1)}</span>
@@ -1102,22 +1102,22 @@ function FundingRatesPanel() {
 
               {/* Spread */}
               <div className="flex items-center justify-between text-xs py-2 border-y my-2">
-                <span className="text-muted-foreground">0.1% Spread</span>
-                <span className="text-cyan-500">Incent. Range: 5.16% - 5.62%</span>
+                <span className="text-muted-foreground">اسپرد ۰.۱٪</span>
+                <span className="text-cyan-500">بازه تشویقی: ۵.۱۶٪ - ۵.۶۲٪</span>
               </div>
 
               {/* Long Rate Section */}
               <div>
-                <div className="text-xs text-green-500 font-semibold mb-2">LONG RATE</div>
+                <div className="text-xs text-green-500 font-semibold mb-2">نرخ لانگ</div>
                 <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                  <span>Implied APR (%)</span>
-                  <span>Size (ETH YU)</span>
+                  <span>نرخ سود ضمنی (٪)</span>
+                  <span>حجم (ETH YU)</span>
                 </div>
                 <div className="space-y-1">
                   {longRateOrders.map((order, i) => (
                     <div key={i} className="flex items-center justify-between text-xs relative">
-                      <div 
-                        className="absolute left-0 top-0 bottom-0 bg-green-500/20" 
+                      <div
+                        className="absolute left-0 top-0 bottom-0 bg-green-500/20"
                         style={{ width: `${Math.min(order.size / 10, 100)}%` }}
                       />
                       <span className="text-green-500 relative z-10">{order.rate.toFixed(1)}</span>
@@ -1137,7 +1137,7 @@ function FundingRatesPanel() {
               {/* Maker Rewards Banner */}
               <div className="bg-amber-500/20 border border-amber-500/30 rounded-lg p-3 mb-4 flex items-center gap-2">
                 <Zap className="h-4 w-4 text-amber-400" />
-                <span className="text-sm text-amber-200">Maker Order Rewards Live!</span>
+                <span className="text-sm text-amber-200">پاداش سفارش‌های میکر فعال است!</span>
               </div>
 
               {/* Leverage Selector */}
@@ -1161,14 +1161,14 @@ function FundingRatesPanel() {
                   size="sm"
                   onClick={() => setOrderType('market')}
                 >
-                  Market
+                  بازار
                 </Button>
                 <Button
                   variant={orderType === 'limit' ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setOrderType('limit')}
                 >
-                  Limit
+                  محدود
                 </Button>
               </div>
 
@@ -1177,31 +1177,31 @@ function FundingRatesPanel() {
                 <Button
                   onClick={() => setTradeDirection('long')}
                   className={`flex items-center gap-2 ${
-                    tradeDirection === 'long' 
-                      ? 'bg-green-600 hover:bg-green-700' 
+                    tradeDirection === 'long'
+                      ? 'bg-green-600 hover:bg-green-700'
                       : ''
                   }`}
                   variant={tradeDirection === 'long' ? 'default' : 'outline'}
                 >
                   <TrendingUp className="h-4 w-4" />
                   <div className="text-left">
-                    <div className="text-xs font-semibold">Long Rates</div>
-                    <div className="text-[10px] opacity-70">Pay Fixed</div>
+                    <div className="text-xs font-semibold">نرخ لانگ</div>
+                    <div className="text-[10px] opacity-70">پرداخت ثابت</div>
                   </div>
                 </Button>
                 <Button
                   onClick={() => setTradeDirection('short')}
                   className={`flex items-center gap-2 ${
-                    tradeDirection === 'short' 
-                      ? 'bg-red-600 hover:bg-red-700' 
+                    tradeDirection === 'short'
+                      ? 'bg-red-600 hover:bg-red-700'
                       : ''
                   }`}
                   variant={tradeDirection === 'short' ? 'default' : 'outline'}
                 >
                   <TrendingDown className="h-4 w-4" />
                   <div className="text-left">
-                    <div className="text-xs font-semibold">Short Rates</div>
-                    <div className="text-[10px] opacity-70">Rcv. Fixed</div>
+                    <div className="text-xs font-semibold">نرخ شورت</div>
+                    <div className="text-[10px] opacity-70">دریافت ثابت</div>
                   </div>
                 </Button>
               </div>
@@ -1209,22 +1209,22 @@ function FundingRatesPanel() {
               {/* Position Info */}
               <div className="space-y-2 mb-4">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">My Notional Size</span>
+                  <span className="text-muted-foreground">حجم اسمی من</span>
                   <span className="text-cyan-500">0 YU</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Available to Trade</span>
+                  <span className="text-muted-foreground">قابل معامله</span>
                   <span>0 ETH</span>
                 </div>
               </div>
 
               {/* Notional Size Input */}
               <div className="mb-4">
-                <Label className="text-sm text-muted-foreground">Notional Size</Label>
+                <Label className="text-sm text-muted-foreground">حجم اسمی</Label>
                 <div className="flex items-center gap-2 mt-1">
-                  <Input 
-                    type="number" 
-                    value={notionalSize} 
+                  <Input
+                    type="number"
+                    value={notionalSize}
                     onChange={(e) => setNotionalSize(parseInt(e.target.value) || 0)}
                     className="flex-1"
                   />
@@ -1234,30 +1234,30 @@ function FundingRatesPanel() {
 
               {/* Reduce Only */}
               <div className="flex items-center gap-2 mb-4">
-                <Switch 
+                <Switch
                   checked={reduceOnly}
                   onCheckedChange={setReduceOnly}
                 />
-                <Label className="text-sm text-muted-foreground">Reduce Only</Label>
+                <Label className="text-sm text-muted-foreground">فقط کاهش پوزیشن</Label>
               </div>
 
               {/* Trade Info */}
               <div className="space-y-2 text-sm border-t pt-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Liquidation Implied APR</span>
-                  <span>NA</span>
+                  <span className="text-muted-foreground">نرخ سود ضمنی نقطه انحلال</span>
+                  <span>—</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Margin Required</span>
-                  <span>NA</span>
+                  <span className="text-muted-foreground">مارجین موردنیاز</span>
+                  <span>—</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Fees</span>
+                  <span className="text-muted-foreground">کارمزد</span>
                   <span>0 ETH ($0.00)</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Slippage</span>
-                  <span>Est: 0% / Max: <span className="text-cyan-500">0.5%</span></span>
+                  <span className="text-muted-foreground">لغزش قیمت</span>
+                  <span>تخمینی: ۰٪ / حداکثر: <span className="text-cyan-500">۰.۵٪</span></span>
                 </div>
               </div>
             </CardContent>
@@ -1266,4 +1266,4 @@ function FundingRatesPanel() {
       </div>
     </div>
   );
-} 
+}
