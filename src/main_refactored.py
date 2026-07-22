@@ -57,6 +57,7 @@ from src.api.endpoints.agent_panels import router as agent_panels_router
 from src.api.endpoints.backtesting import router as backtesting_router
 from src.api.endpoints.strategies_crud import router as strategies_crud_router
 from src.api.endpoints.startup_tracker import router as startup_tracker_router
+from src.api.endpoints.allocation_copilot import router as allocation_copilot_router
 from src.api.endpoints.search import router as search_router
 from src.api.endpoints.payment_zarinpal import router as zarinpal_router
 from src.api.endpoints.iran_market import router as iran_market_router
@@ -217,6 +218,7 @@ app.include_router(agent_panels_router, tags=["Agent Panels"])
 app.include_router(backtesting_router, tags=["Backtesting"])
 app.include_router(strategies_crud_router, tags=["Strategies CRUD"])
 app.include_router(startup_tracker_router, tags=["Startup Tracker"])
+app.include_router(allocation_copilot_router, tags=["Asset Allocation Copilot"])
 app.include_router(search_router, tags=["Search"])
 
 # Previously orphaned routers

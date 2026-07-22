@@ -16,6 +16,7 @@ import {
   type AssetType,
   type IranPortfolioAsset,
 } from './add-asset-modal';
+import { AllocationCopilot } from './allocation-copilot';
 
 // ─── Colors per asset type ────────────────────────────────────────────────────
 
@@ -229,6 +230,11 @@ export function IranPortfolioSection() {
           </CardContent>
         </Card>
       </div>
+
+      {/* AI Asset Allocation Copilot */}
+      <AllocationCopilot
+        holdings={positions.map((p) => ({ code: p.code, name: p.name, type: p.type, value: p.totalSpent }))}
+      />
 
       {/* Chart + Holdings */}
       <div className="grid gap-4 md:grid-cols-2">

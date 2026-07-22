@@ -72,3 +72,32 @@ TGJU API → AssetService._fetch_tgju()
 ## مرحله بعدی (باقی‌مانده از TASK-001)
 - [x] TASK-001b: ثبت router در `main_refactored.py` (`app.include_router(assets_router)`) — انجام شد 2026-06-27
 - [x] TASK-001f: اتصال دارایی‌ها به portfolio tracker موجود — trade-tracker.tsx ساخته شد 2026-06-29
+
+## دستیار هوشمند تخصیص دارایی (AI Asset Allocation Copilot)
+
+> فقط تحلیل ترکیب دارایی موجود کاربر — **بدون هیچ توصیه خرید/فروش یا سیگنال قیمتی** (تمایز استراتژیک محصول از کانال‌های سیگنال‌ده)
+
+### وضعیت
+`✅ کامل`
+
+### فایل‌ها
+| فایل | نوع | شرح |
+|------|-----|-----|
+| `src/api/endpoints/allocation_copilot.py` | Backend | Router `/api/copilot` — محاسبه HHI (Herfindahl-Hirschman Index) روی سهم هر دسته دارایی، سطح تمرکز (کم/متوسط/بالا)، امتیاز تنوع (0-100)، insights متنی rule-based فارسی + disclaimer اجباری |
+| `frontend-nextjs/src/components/portfolio/allocation-copilot.tsx` | Frontend | کامپوننت `AllocationCopilot` — POST به backend با holdings، نمایش badge ریسک تمرکز/امتیاز تنوع/سهم بزرگ‌ترین دارایی + لیست insights + disclaimer |
+| `tests/test_allocation_copilot.py` | Test | 3 تست: پرتفوی خالی، متمرکز (۹۰٪ یک دسته → بالا)، پخش‌شده در ۴ دسته مساوی (HHI=2500 → متوسط) |
+
+### API
+| Method | Path | ورودی | خروجی |
+|--------|------|-------|-------|
+| POST | `/api/copilot/allocation-analysis` | `{holdings: [{code,name,type,value}]}` | `total_value، category_breakdown، top_holding_pct، hhi، concentration_level، diversification_score، insights[]، disclaimer` |
+
+### منطق HHI (thresholds روی مقیاس 0-10000)
+`hhi < 1500` → کم | `hhi <= 2500` → متوسط | `hhi > 2500` → بالا. `diversification_score = 100 - hhi/100` (clamped 0-100).
+
+### جایگاه در UI
+داخل `IranPortfolioSection` (`iran-portfolio-section.tsx`)، بین KPI cards و بخش «تخصیص دارایی» donut — `holdings` از `positions` محاسبه‌شده (net buy-sell) پاس داده می‌شود.
+
+### وابستگی‌ها
+- [[entities/assets-feature]] — از همان `AssetType`/`CATEGORY_LABEL` در `add-asset-modal.tsx` استفاده می‌کند
+- ثبت‌شده در `main_refactored.py` با tag `"Asset Allocation Copilot"`
