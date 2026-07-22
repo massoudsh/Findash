@@ -9,7 +9,7 @@ from typing import Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr, Field, validator
-
+from sqlalchemy.orm import Session
 
 from src.core.security import (
     get_current_active_user,
@@ -22,6 +22,9 @@ from src.core.security import (
 )
 from src.core.config import get_settings
 from src.core.rate_limiter import auth_rate_limit, rate_limiter, get_client_identifier, standard_rate_limit
+from src.database.postgres_connection import get_db
+from src.database.models import User
+from src.database import crud as db_crud
 
 settings = get_settings()
 router = APIRouter(prefix="/api/auth", tags=["Professional Authentication"])
@@ -72,69 +75,93 @@ class UserProfile(BaseModel):
     role: str = "trader"
     permissions: list = ["trade", "view_portfolio", "view_analytics"]
 
-# Professional user database - Environment-based secure defaults
+# Professional user database - backed by the real `users` table in PostgreSQL
+# (src/database/models.py User, via SQLAlchemy). Environment-based secure
+# defaults are used only to seed the fixed demo accounts on first use.
 import os
 from src.core.config import get_settings
 
 settings = get_settings()
 
-# Generate secure demo users from environment or use secure defaults (lazy to avoid bcrypt at import)
-DEMO_ADMIN_PASSWORD = os.getenv("DEMO_ADMIN_PASSWORD", "SecureAdmin2025!")
-DEMO_TRADER_PASSWORD = os.getenv("DEMO_TRADER_PASSWORD", "TraderPro2025!")
-DEMO_USER_PASSWORD = os.getenv("DEMO_USER_PASSWORD", "DemoUser2025!")
+# Fixed demo accounts, seeded into the real `users` table (not an in-memory
+# store) the first time any of them is touched. Passwords come from env vars
+# so they can be overridden per-deployment; secure hard-coded fallbacks are
+# used only when the env var isn't set (e.g. local/dev).
+_DEMO_USERS_SEED = [
+    {
+        "email": "admin@octopus.trading", "username": "admin",
+        "password_env": "DEMO_ADMIN_PASSWORD", "default_password": "SecureAdmin2025!",
+        "first_name": "System", "last_name": "Administrator",
+        "role": "admin", "permissions": ["admin", "trade", "view_portfolio", "view_analytics", "manage_users"],
+    },
+    {
+        "email": "trader@octopus.trading", "username": "trader",
+        "password_env": "DEMO_TRADER_PASSWORD", "default_password": "TraderPro2025!",
+        "first_name": "Professional", "last_name": "Trader",
+        "role": "trader", "permissions": ["trade", "view_portfolio", "view_analytics"],
+    },
+    {
+        "email": "demo@octopus.trading", "username": "demo",
+        "password_env": "DEMO_USER_PASSWORD", "default_password": "DemoUser2025!",
+        "first_name": "Demo", "last_name": "User",
+        "role": "demo", "permissions": ["view_portfolio", "view_analytics"],
+    },
+]
 
-_professional_users_cache: Optional[Dict[str, Any]] = None
 
-def _get_professional_users() -> Dict[str, Any]:
-    global _professional_users_cache
-    if _professional_users_cache is not None:
-        return _professional_users_cache
-    def _pwd(p: str) -> str:
-        return hash_password(p)
-    _professional_users_cache = {
-        "admin@octopus.trading": {
-            "id": "usr_admin_001",
-            "email": "admin@octopus.trading",
-            "password_hash": _pwd(DEMO_ADMIN_PASSWORD),
-            "first_name": "System",
-            "last_name": "Administrator",
-            "is_active": True,
-            "created_at": "2025-01-01T00:00:00Z",
-            "last_login": None,
-            "role": "admin",
-            "permissions": ["admin", "trade", "view_portfolio", "view_analytics", "manage_users"]
-        },
-        "trader@octopus.trading": {
-            "id": "usr_trader_001",
-            "email": "trader@octopus.trading",
-            "password_hash": _pwd(DEMO_TRADER_PASSWORD),
-            "first_name": "Professional",
-            "last_name": "Trader",
-            "is_active": True,
-            "created_at": "2025-01-01T00:00:00Z",
-            "last_login": None,
-            "role": "trader",
-            "permissions": ["trade", "view_portfolio", "view_analytics"]
-        },
-        "demo@octopus.trading": {
-            "id": "usr_demo_001",
-            "email": "demo@octopus.trading",
-            "password_hash": _pwd(DEMO_USER_PASSWORD),
-            "first_name": "Demo",
-            "last_name": "User",
-            "is_active": True,
-            "created_at": "2025-01-01T00:00:00Z",
-            "last_login": None,
-            "role": "demo",
-            "permissions": ["view_portfolio", "view_analytics"]
-        }
-    }
-    return _professional_users_cache
+def _ensure_demo_users(db: Session) -> None:
+    """Idempotently seed the fixed demo accounts into the real `users` table
+    if they don't exist yet. Cheap no-op after the first call per database."""
+    created = False
+    for seed in _DEMO_USERS_SEED:
+        if db_crud.get_user_by_email(db, seed["email"]):
+            continue
+        password = os.getenv(seed["password_env"], seed["default_password"])
+        db.add(User(
+            username=seed["username"],
+            email=seed["email"],
+            password_hash=hash_password(password),
+            first_name=seed["first_name"],
+            last_name=seed["last_name"],
+            role=seed["role"],
+            permissions=seed["permissions"],
+            is_active=True,
+        ))
+        created = True
+    if created:
+        db.commit()
+
+
+def _derive_unique_username(db: Session, email: str) -> str:
+    """Derive a unique `username` (required, unique column) from an email's
+    local part, since the registration form only collects email/name."""
+    base = (email.split("@")[0] or "user")[:50]
+    username = base
+    suffix = 1
+    while db_crud.get_user_by_username(db, username):
+        suffix += 1
+        username = f"{base}{suffix}"[:64]
+    return username
+
+
+def _to_profile(user: User) -> "UserProfile":
+    return UserProfile(
+        id=str(user.id),
+        email=user.email,
+        first_name=user.first_name or "",
+        last_name=user.last_name or "",
+        is_active=bool(user.is_active),
+        created_at=user.created_at.isoformat() if user.created_at else "",
+        last_login=user.last_login.isoformat() if user.last_login else None,
+        role=user.role or "trader",
+        permissions=user.permissions or ["trade", "view_portfolio", "view_analytics"],
+    )
 
 @router.post("/credentials", response_model=AuthResponse, dependencies=[Depends(auth_rate_limit)])
 async def authenticate_credentials(
     credentials: UserCredentials,
-    request: Request
+    request: Request,
+    db: Session = Depends(get_db)
 ):
     """
     Professional authentication endpoint for NextAuth.js credentials provider
@@ -159,8 +186,9 @@ async def authenticate_credentials(
         )
     
     try:
-        # Find user in database
-        user = _get_professional_users().get(credentials.email)
+        # Find user in the real `users` table (seeding demo accounts on first use)
+        _ensure_demo_users(db)
+        user = db_crud.get_user_by_email(db, credentials.email)
         if not user:
             logger.warning(f"Authentication attempt with non-existent email: {credentials.email}")
             rate_limiter.record_failed_login(client_id)
@@ -170,49 +198,53 @@ async def authenticate_credentials(
             )
 
         # Verify password
-        if not verify_password(credentials.password, user["password_hash"]):
+        if not verify_password(credentials.password, user.password_hash):
             logger.warning(f"Failed password attempt for user: {credentials.email}")
             rate_limiter.record_failed_login(client_id)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password"
             )
-        
+
         # Check if user is active
-        if not user["is_active"]:
+        if not user.is_active:
             logger.warning(f"Login attempt for inactive user: {credentials.email}")
             return AuthResponse(
                 success=False,
                 message="Account is disabled"
             )
-        
+
         # Clear failed login attempts on successful login
         rate_limiter.clear_login_attempts(client_id)
-        
+
         # Update last login
-        user["last_login"] = datetime.utcnow().isoformat() + "Z"
-        
+        user.last_login = datetime.utcnow()
+        db.commit()
+
+        permissions = user.permissions or []
+        user_id = str(user.id)
+
         # Create JWT tokens (access and refresh)
         access_token = create_access_token({
-            "sub": user["id"],
-            "email": user["email"],
-            "role": user["role"],
-            "permissions": user["permissions"]
+            "sub": user_id,
+            "email": user.email,
+            "role": user.role,
+            "permissions": permissions
         })
-        refresh_token = create_refresh_token({"sub": user["id"]})
-        
+        refresh_token = create_refresh_token({"sub": user_id})
+
         # Return user data for NextAuth.js
         user_profile = {
-            "id": user["id"],
-            "email": user["email"],
-            "name": f"{user['first_name']} {user['last_name']}",
-            "first_name": user["first_name"],
-            "last_name": user["last_name"],
-            "role": user["role"],
-            "permissions": user["permissions"],
+            "id": user_id,
+            "email": user.email,
+            "name": f"{user.first_name or ''} {user.last_name or ''}".strip(),
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "role": user.role,
+            "permissions": permissions,
             "token": access_token
         }
-        
+
         logger.info(f"Successful authentication for user: {credentials.email}")
         
         return AuthResponse(
@@ -238,46 +270,44 @@ async def authenticate_credentials(
 async def register_user(
     registration: UserRegistration,
     request: Request,
+    db: Session = Depends(get_db),
     _: bool = Depends(auth_rate_limit)
 ):
     """
     User registration endpoint
     """
     try:
+        _ensure_demo_users(db)
+
         # Check if user already exists
-        if registration.email in _get_professional_users():
+        if db_crud.get_user_by_email(db, registration.email):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Email already registered"
             )
 
-        # Create new user
-        user_id = f"usr_{len(_get_professional_users()) + 1:06d}"
-        password_hash = hash_password(registration.password)
-
-        new_user = {
-            "id": user_id,
-            "email": registration.email,
-            "password_hash": password_hash,
-            "first_name": registration.first_name,
-            "last_name": registration.last_name,
-            "is_active": True,
-            "created_at": datetime.utcnow().isoformat() + "Z",
-            "last_login": None,
-            "role": "trader",
-            "permissions": ["trade", "view_portfolio", "view_analytics"]
-        }
-
-        # Add to database
-        _get_professional_users()[registration.email] = new_user
+        # Create new user in the real `users` table
+        new_user = User(
+            username=_derive_unique_username(db, registration.email),
+            email=registration.email,
+            password_hash=hash_password(registration.password),
+            first_name=registration.first_name,
+            last_name=registration.last_name,
+            role="trader",
+            permissions=["trade", "view_portfolio", "view_analytics"],
+            is_active=True,
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
 
         logger.info(f"New user registered: {registration.email}")
 
         return AuthResponse(
             success=True,
             message="User created successfully",
-            user_id=user_id,
-            email=registration.email
+            user_id=str(new_user.id),
+            email=new_user.email
         )
 
     except HTTPException:
@@ -291,7 +321,8 @@ async def register_user(
 
 @router.get("/users", response_model=list[UserProfile])
 async def list_users(
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
 ):
     """
     List all users (admin only)
@@ -302,54 +333,32 @@ async def list_users(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin access required"
         )
-    
+
     # Return user profiles
-    profiles = []
-    for user in _get_professional_users().values():
-        profiles.append(UserProfile(
-            id=user["id"],
-            email=user["email"],
-            first_name=user["first_name"],
-            last_name=user["last_name"],
-            is_active=user["is_active"],
-            created_at=user["created_at"],
-            last_login=user["last_login"],
-            role=user["role"],
-            permissions=user["permissions"]
-        ))
-    
-    return profiles
+    return [_to_profile(user) for user in db.query(User).all()]
 
 @router.get("/profile", response_model=UserProfile)
 @router.get("/me", response_model=UserProfile)
 async def get_user_profile(
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
 ):
     """
     Get current user profile
     """
-    user = _get_professional_users().get(current_user.email)
+    user = db_crud.get_user_by_email(db, current_user.email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found"
         )
 
-    return UserProfile(
-        id=user["id"],
-        email=user["email"],
-        first_name=user["first_name"],
-        last_name=user["last_name"],
-        is_active=user["is_active"],
-        created_at=user["created_at"],
-        last_login=user["last_login"],
-        role=user["role"],
-        permissions=user["permissions"]
-    )
+    return _to_profile(user)
 
 @router.post("/refresh", response_model=AuthResponse)
 async def refresh_token_endpoint(
     refresh_token_data: Dict[str, str],
+    db: Session = Depends(get_db),
     _: bool = Depends(auth_rate_limit)
 ):
     """
@@ -362,7 +371,7 @@ async def refresh_token_endpoint(
                 success=False,
                 message="Refresh token required"
             )
-        
+
         # Verify refresh token
         payload = verify_token(refresh_token, token_type="refresh")
         if not payload:
@@ -371,35 +380,32 @@ async def refresh_token_endpoint(
                 detail="Invalid refresh token"
             )
 
-        user_id = payload.user_id
-        if not user_id:
+        try:
+            user = db_crud.get_user_by_id(db, int(payload.user_id)) if payload.user_id else None
+        except (ValueError, TypeError):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid refresh token"
             )
-        
-        # Find user
-        user = None
-        for u in _get_professional_users().values():
-            if u["id"] == user_id:
-                user = u
-                break
-        
-        if not user or not user["is_active"]:
+
+        if not user or not user.is_active:
             return AuthResponse(
                 success=False,
                 message="User not found or disabled"
             )
-        
+
+        permissions = user.permissions or []
+        user_id = str(user.id)
+
         # Create new tokens
         access_token = create_access_token({
-            "sub": user["id"],
-            "email": user["email"],
-            "role": user["role"],
-            "permissions": user["permissions"]
+            "sub": user_id,
+            "email": user.email,
+            "role": user.role,
+            "permissions": permissions
         })
-        new_refresh_token = create_refresh_token({"sub": user["id"]})
-        
+        new_refresh_token = create_refresh_token({"sub": user_id})
+
         return AuthResponse(
             success=True,
             access_token=access_token,
@@ -431,7 +437,8 @@ async def logout(
 @router.post("/change-password")
 async def change_password(
     password_data: Dict[str, str],
-    current_user: dict = Depends(get_current_active_user)
+    current_user: dict = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
 ):
     """
     Change user password
@@ -440,20 +447,20 @@ async def change_password(
         current_password = password_data.get("current_password")
         new_password = password_data.get("new_password")
         confirm_password = password_data.get("confirm_password")
-        
+
         if not all([current_password, new_password, confirm_password]):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="All password fields required"
             )
-        
+
         if new_password != confirm_password:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="New passwords do not match"
             )
-        
-        user = _get_professional_users().get(current_user.email)
+
+        user = db_crud.get_user_by_email(db, current_user.email)
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -461,18 +468,19 @@ async def change_password(
             )
 
         # Verify current password
-        if not verify_password(current_password, user["password_hash"]):
+        if not verify_password(current_password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Current password is incorrect"
             )
 
         # Update password
-        user["password_hash"] = hash_password(new_password)
+        user.password_hash = hash_password(new_password)
+        db.commit()
 
         logger.info(f"Password changed for user: {current_user.email}")
         return {"message": "Password changed successfully"}
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -574,6 +582,7 @@ async def get_demo_accounts():
 async def login(
     credentials: UserCredentials,
     request: Request,
+    db: Session = Depends(get_db),
     _: bool = Depends(auth_rate_limit)
 ):
     """
@@ -581,5 +590,5 @@ async def login(
     Returns standard token format with access_token and refresh_token
     """
     # Delegate to credentials endpoint
-    response = await authenticate_credentials(credentials, request)
+    response = await authenticate_credentials(credentials, request, db)
     return response 

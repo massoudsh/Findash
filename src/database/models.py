@@ -10,10 +10,15 @@ class User(Base):
     username = Column(String(64), unique=True, nullable=False)
     email = Column(String(128), unique=True, nullable=False)
     password_hash = Column(String(256), nullable=False)
+    first_name = Column(String(100), nullable=True)
+    last_name = Column(String(100), nullable=True)
     phone = Column(String(20), nullable=True)
     is_verified = Column(Boolean, default=False)
     risk_tolerance = Column(String(20), default='moderate')  # conservative, moderate, aggressive
     is_active = Column(Boolean, default=True)
+    role = Column(String(20), default='trader')  # admin, trader, demo
+    permissions = Column(JSON, default=list)
+    last_login = Column(TIMESTAMP, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
     portfolios = relationship('Portfolio', back_populates='user', cascade="all, delete-orphan")

@@ -4,12 +4,10 @@ Tests JWT authentication, password hashing, rate limiting, and security features
 """
 
 import pytest
-from fastapi.testclient import TestClient
 from unittest.mock import patch, Mock
 from datetime import datetime, timedelta
 import json
 
-from src.main_refactored import app
 from src.core.security import (
     verify_token,
     create_access_token,
@@ -20,9 +18,6 @@ from src.core.security import (
 from src.core.config import get_settings
 
 settings = get_settings()
-
-# Test client
-client = TestClient(app)
 
 
 @pytest.fixture(autouse=True)
@@ -122,7 +117,7 @@ class TestJWTTokens:
 class TestAuthenticationEndpoints:
     """Test authentication API endpoints"""
     
-    def test_login_success(self):
+    def test_login_success(self, client):
         """Test successful login"""
         login_data = {
             "email": "demo@octopus.trading",
@@ -138,7 +133,7 @@ class TestAuthenticationEndpoints:
         assert data["token_type"] == "bearer"
         assert "expires_in" in data
     
-    def test_login_invalid_email(self):
+    def test_login_invalid_email(self, client):
         """Test login with invalid email"""
         login_data = {
             "email": "nonexistent@example.com",
@@ -150,7 +145,7 @@ class TestAuthenticationEndpoints:
         assert response.status_code == 401
         assert "Invalid email or password" in response.json()["message"]
     
-    def test_login_invalid_password(self):
+    def test_login_invalid_password(self, client):
         """Test login with invalid password"""
         login_data = {
             "email": "demo@octopus.trading",
@@ -162,7 +157,7 @@ class TestAuthenticationEndpoints:
         assert response.status_code == 401
         assert "Invalid email or password" in response.json()["message"]
     
-    def test_login_invalid_email_format(self):
+    def test_login_invalid_email_format(self, client):
         """Test login with invalid email format"""
         login_data = {
             "email": "invalid-email-format",
@@ -173,7 +168,7 @@ class TestAuthenticationEndpoints:
         
         assert response.status_code == 422  # Validation error
     
-    def test_register_success(self):
+    def test_register_success(self, client):
         """Test successful user registration"""
         register_data = {
             "email": "newuser@example.com",
@@ -191,7 +186,7 @@ class TestAuthenticationEndpoints:
         assert "user_id" in data
         assert data["email"] == "newuser@example.com"
     
-    def test_register_existing_email(self):
+    def test_register_existing_email(self, client):
         """Test registration with existing email"""
         register_data = {
             "email": "demo@octopus.trading",  # Already exists
@@ -206,7 +201,7 @@ class TestAuthenticationEndpoints:
         assert response.status_code == 400
         assert "Email already registered" in response.json()["message"]
     
-    def test_register_password_mismatch(self):
+    def test_register_password_mismatch(self, client):
         """Test registration with mismatched passwords"""
         register_data = {
             "email": "newuser2@example.com",
@@ -220,7 +215,7 @@ class TestAuthenticationEndpoints:
         
         assert response.status_code == 422  # Validation error
     
-    def test_refresh_token_success(self):
+    def test_refresh_token_success(self, client):
         """Test successful token refresh"""
         # First login to get refresh token
         login_data = {
@@ -242,7 +237,7 @@ class TestAuthenticationEndpoints:
         assert "refresh_token" in data
         assert data["token_type"] == "bearer"
     
-    def test_refresh_token_invalid(self):
+    def test_refresh_token_invalid(self, client):
         """Test refresh with invalid token"""
         refresh_data = {"refresh_token": "invalid.refresh.token"}
         response = client.post("/api/auth/refresh", json=refresh_data)
@@ -250,7 +245,7 @@ class TestAuthenticationEndpoints:
         assert response.status_code == 401
         assert "Invalid refresh token" in response.json()["message"]
     
-    def test_get_current_user_profile(self):
+    def test_get_current_user_profile(self, client):
         """Test getting current user profile"""
         # Login and get access token
         login_data = {
@@ -272,20 +267,20 @@ class TestAuthenticationEndpoints:
         assert data["last_name"] == "User"
         assert data["is_active"] is True
     
-    def test_get_profile_without_auth(self):
+    def test_get_profile_without_auth(self, client):
         """Test getting profile without authentication"""
         response = client.get("/api/auth/me")
 
         assert response.status_code == 401  # No authorization header (FastAPI HTTPBearer default)
     
-    def test_get_profile_invalid_token(self):
+    def test_get_profile_invalid_token(self, client):
         """Test getting profile with invalid token"""
         headers = {"Authorization": "Bearer invalid.token.here"}
         response = client.get("/api/auth/me", headers=headers)
         
         assert response.status_code == 401
     
-    def test_logout(self):
+    def test_logout(self, client):
         """Test user logout"""
         # Login first
         login_data = {
@@ -307,7 +302,7 @@ class TestAuthenticationEndpoints:
 class TestRateLimiting:
     """Test rate limiting functionality"""
     
-    def test_rate_limiting_enforcement(self):
+    def test_rate_limiting_enforcement(self, client):
         """Test that rate limiting is enforced"""
         login_data = {
             "email": "demo@octopus.trading",
@@ -334,7 +329,7 @@ class TestRateLimiting:
 class TestSecurityHeaders:
     """Test security headers middleware"""
     
-    def test_security_headers_present(self):
+    def test_security_headers_present(self, client):
         """Test that security headers are added to responses"""
         response = client.get("/health")
         
@@ -350,7 +345,7 @@ class TestSecurityHeaders:
 class TestAPIValidation:
     """Test API input validation"""
     
-    def test_email_validation(self):
+    def test_email_validation(self, client):
         """Test email format validation"""
         invalid_emails = [
             "not-an-email",
@@ -369,7 +364,7 @@ class TestAPIValidation:
             response = client.post("/api/auth/login", json=login_data)
             assert response.status_code == 422  # Validation error
     
-    def test_password_length_validation(self):
+    def test_password_length_validation(self, client):
         """Test password length validation"""
         # Password too short
         register_data = {
@@ -383,7 +378,7 @@ class TestAPIValidation:
         response = client.post("/api/auth/register", json=register_data)
         assert response.status_code == 422
     
-    def test_required_fields_validation(self):
+    def test_required_fields_validation(self, client):
         """Test that required fields are validated"""
         # Missing required fields
         incomplete_data = {
@@ -398,7 +393,7 @@ class TestAPIValidation:
 class TestAPIKeyManagement:
     """Test API key creation and management"""
     
-    def test_create_api_key(self):
+    def test_create_api_key(self, client):
         """Test API key creation"""
         # Login first
         login_data = {
@@ -428,7 +423,7 @@ class TestAPIKeyManagement:
 
 
 @pytest.fixture
-def authenticated_client():
+def authenticated_client(client):
     """Fixture that provides an authenticated test client"""
     login_data = {
         "email": "demo@octopus.trading",
@@ -466,7 +461,7 @@ def authenticated_client():
 class TestIntegration:
     """Integration tests for the complete authentication flow"""
     
-    def test_complete_auth_flow(self):
+    def test_complete_auth_flow(self, client):
         """Test complete authentication flow from registration to API access"""
         # 1. Register new user
         register_data = {

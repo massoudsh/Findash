@@ -30,14 +30,20 @@ class SystemInitializer:
             logger.info("🚀 Initializing FastAPI performance components...")
             
             # Lazy import to avoid circular dependencies
-            from src.database.postgres_connection import init_db_connection
+            from src.database.postgres_connection import init_db_connection, create_tables
             from src.core.cache import TradingCache, initialize_cache
             from src.realtime.websockets import websocket_manager
             from src.core.intelligence_orchestrator import IntelligenceOrchestrator
-            
+
             # Initialize database connection
             logger.info("📊 Initializing database connection...")
             init_db_connection()
+            try:
+                create_tables()
+            except Exception as e:
+                # Don't crash the whole app if the DB is unreachable/misconfigured;
+                # DB-backed endpoints already degrade gracefully (e.g. get_db_optional).
+                logger.warning(f"⚠️ Could not auto-create database tables (continuing): {e}")
             
             # Initialize cache
             logger.info("🏎️ Initializing Redis cache...")

@@ -24,6 +24,9 @@ def get_user_by_id(db: Session, user_id: int) -> Optional[User]:
 def get_user_by_username(db: Session, username: str) -> Optional[User]:
     return db.query(User).filter(User.username == username).first()
 
+def get_user_by_email(db: Session, email: str) -> Optional[User]:
+    return db.query(User).filter(User.email == email).first()
+
 # --- Portfolio CRUD ---
 def create_portfolio(db: Session, user_id: int, portfolio: PortfolioCreate) -> Portfolio:
     db_portfolio = Portfolio(

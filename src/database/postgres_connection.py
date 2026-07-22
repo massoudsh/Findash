@@ -131,12 +131,22 @@ def get_db_session() -> Generator[Session, None, None]:
         db.close()
 
 def create_tables():
-    """Create all database tables"""
+    """Create all database tables.
+
+    Note: this module historically defined its own empty `Base` (used only by
+    a couple of endpoints, e.g. `PaymentOrder` in payment_zarinpal.py), separate
+    from `src.database.models.Base` (User, Portfolio, Trade, ...). Both are
+    created here so a fresh database actually gets every ORM-backed table,
+    instead of silently creating nothing for the models most of the app uses.
+    """
     if engine is None:
         init_db_connection()
-    
+
+    from src.database.models import Base as ModelsBase
+
     try:
         Base.metadata.create_all(bind=engine)
+        ModelsBase.metadata.create_all(bind=engine)
         logger.info("Database tables created successfully")
     except Exception as e:
         logger.error(f"Failed to create database tables: {e}")
@@ -146,9 +156,12 @@ def drop_tables():
     """Drop all database tables (use with caution!)"""
     if engine is None:
         init_db_connection()
-    
+
+    from src.database.models import Base as ModelsBase
+
     try:
         Base.metadata.drop_all(bind=engine)
+        ModelsBase.metadata.drop_all(bind=engine)
         logger.info("Database tables dropped successfully")
     except Exception as e:
         logger.error(f"Failed to drop database tables: {e}")
