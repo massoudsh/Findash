@@ -1,136 +1,180 @@
-# Octopus Trading Platform (Findash) — Stakeholder Deck
+# Findash — Investor Pitch
 
-**Use this content in Google Slides, PowerPoint, or export to PDF.**  
-Copy each section as a slide. Suggested slide count: 10–12.
-
----
-
-## Slide 1: Title
-
-**Octopus Trading Platform**  
-*AI-Powered Trading & Analytics*
-
-[Your name / company]  
-[Date]  
-*Confidential — Fundraising*
+**Use this content as a 12-slide investor deck in Google Slides, PowerPoint, or PDF.**
+Replace bracketed fields with verified company data before presenting.
 
 ---
 
-## Slide 2: Problem
+## Slide 1 — Findash
 
-- **Retail and pro traders** lack a single platform that combines:
-  - Real-time market data and options analytics
-  - AI-driven signals and risk management
-  - Automated strategies (bots) and execution
-- **Fragmented tools** → multiple subscriptions, no unified view of portfolio, risk, and opportunities.
-- **Demand** for transparent, AI-augmented decision-making in options and multi-asset trading is growing.
+# The intelligent operating system for active investors
 
----
+**One workspace for market intelligence, options analysis, portfolio risk, and disciplined execution.**
 
-## Slide 3: Solution
-
-**Octopus (Findash)** is an **all-in-one AI trading platform** that delivers:
-
-- **Options-first Command Center** — IV, Greeks, expirations, and strategy tools in one place.
-- **11 orchestrated AI agents** — Data (M1), Strategy (M4), Sentiment (M9), Risk (M6), Analytics (M11), and more.
-- **Unified dashboard** — Portfolio, live data, bots, and reports in a single glass-style UI.
-- **Security & control** — Paper trading first; optional live execution with risk limits.
+[Founder name] · [Company name] · [Month Year]
+*Confidential — Fundraising Materials*
 
 ---
 
-## Slide 4: Platform Overview
+## Slide 2 — The Problem
 
-| Area | Capability |
-|------|------------|
-| **Dashboard** | Portfolio overview, account cards, market status, holdings |
-| **Command Center** | Options (landing), Trading Bots |
-| **Options** | Decision tools (IV, Greeks, expiry), strategies, terminal |
-| **Risk & Portfolio** | VaR, stress tests, multi-asset tracking |
-| **Reports** | AI-generated reports (open-source LLM options) |
-| **Search** | ⌘K — search pages and commands across the platform |
+Active investors make high-stakes decisions with disconnected tools.
 
----
+- Market data, portfolio visibility, options analytics, research, and execution live in separate products.
+- Traders spend time reconciling information instead of evaluating opportunities and risk.
+- Generic signals lack context: they rarely connect market conditions, strategy selection, and portfolio exposure.
+- Advanced options and risk tools remain difficult to access, interpret, and operationalize.
 
-## Slide 5: AI Agents (M1–M11)
-
-- **Data & real-time:** Nexus (M1), Pulse (M3), Echo (M9) — market data, news, sentiment.
-- **Strategy & risk:** Atlas (M4), Guardian (M6) — signals, execution, risk limits.
-- **Analytics & viz:** Lens (M11), Chronicle (M10), Neuron (M5), Oracle (M7).
-- **Execution:** Shadow (M8) — paper trading; integration path for live execution.
-
-*Differentiated by orchestration: one platform, one pipeline, one UI.*
+**The result:** slower decisions, fragmented workflows, and avoidable risk.
 
 ---
 
-## Slide 6: Demo — How to Access
+## Slide 3 — The Opportunity
 
-**Option A (recommended): Live demo**  
-→ Single URL, no install. Best for stakeholders.
+Investors increasingly expect institutional-quality intelligence in a consumer-grade experience.
 
-- **[Insert your live demo URL here]**  
-- Example: `https://findash-demo.vercel.app` (frontend) + backend on Render/Railway.
+- Multi-asset portfolios require a unified view of positions, market conditions, and downside exposure.
+- Options activity creates demand for clear insight into implied volatility, Greeks, expiration, and strategy payoff.
+- AI can synthesize fast-moving data into explainable decision support—but only when embedded in a trusted workflow.
 
-**Option B: Local run (one command)**  
-→ For due diligence; run on your machine.
-
-- See **DEMO_GUIDE.md** in this folder (or repo `presentation/`).
-- One-command script: `./scripts/demo-stakeholders.sh` or Docker Compose.
-
-**Option C: Google Drive / Colab**  
-→ Link to this repo or a packaged zip + DEMO_GUIDE.md; optional Colab notebook for analytics/ML teaser.
+**Findash is being built to make sophisticated market intelligence actionable in one place.**
 
 ---
 
-## Slide 7: Tech Stack
+## Slide 4 — The Solution
 
-- **Frontend:** Next.js 15, TypeScript, Tailwind, Shadcn UI.
-- **Backend:** FastAPI, Python 3.10+, async.
-- **Data:** PostgreSQL (TimescaleDB), Redis; Celery for tasks.
-- **AI/LLM:** Open-source and free-tier options (Falcon TGI, FinGPT, HuggingFace); no required paid API keys for reports.
-- **DevOps:** Docker (core + optional LLM profile), CI/CD (lint, tests, frontend build).
+# Findash turns fragmented market workflows into a single decision system.
 
----
+- **Unified command center** for portfolio monitoring, market intelligence, options analysis, and trading workflows.
+- **AI-assisted research** that brings together data, sentiment, strategy, analytics, and risk perspectives.
+- **Options-first decision tools** for implied volatility, Greeks, expirations, and strategy analysis.
+- **Risk-aware execution path** designed to start with paper trading and progress to controlled live execution.
 
-## Slide 8: Traction / Milestones
-
-- [ ] **Phase 1 (done):** Core app, Command Center, Dashboard, Options decision tools, agent panels, CI/CD.
-- [ ] **Phase 2 (in progress):** Trading bots execution, panel wiring, paper → live path.
-- [ ] **Roadmap:** Real data wiring, Technical page (Screener, Watchlist), E2E tests, production deploy.
-
-*Customize with your actual milestones, users, or pilot feedback.*
+*Findash supports investor judgment; it does not promise returns or replace responsible risk management.*
 
 ---
 
-## Slide 9: Business Model (placeholder)
+## Slide 5 — Product
 
-- Subscription tiers (e.g. Pro / Institutional).
-- Revenue share or fee on execution (when live trading is enabled).
-- API / data products for institutions.
+| Product area | Investor value |
+|---|---|
+| **Dashboard** | A clear view of portfolio, holdings, market status, and key account metrics |
+| **Market intelligence** | Real-time data, technical and fundamental research, on-chain insight, and AI reports |
+| **Options workspace** | Greeks, implied volatility, expiration analysis, strategy tools, and terminal workflows |
+| **Paper trading** | A lower-risk environment to evaluate ideas and execution behavior |
+| **Risk & portfolio** | Multi-asset monitoring, VaR, stress-testing, and exposure awareness |
+| **Automation** | Trading-bot workflows with a path toward governed execution |
 
-*Replace with your chosen model.*
-
----
-
-## Slide 10: The Ask
-
-- **Raising:** [Amount]
-- **Use of funds:** Product (execution, data integrations), go-to-market, operations.
-- **Timeline:** [Next 12–18 months]
-
-*Add contact and next steps.*
+**Demo flow:** Dashboard → Options Command Center → Decision Tools → Paper Trading → AI Reports.
 
 ---
 
-## Slide 11: Thank You
+## Slide 6 — Why Findash Can Win
 
-**Octopus Trading Platform — Findash**
+# The moat is the integrated decision loop.
 
-- **Demo:** [Live URL]
-- **Repo:** https://github.com/massoudsh/Findash
-- **Contact:** [Your email / Calendly]
+1. **Ingest** market, portfolio, and contextual data.
+2. **Interpret** it through specialized intelligence modules.
+3. **Evaluate** opportunities alongside portfolio risk.
+4. **Act** through paper-trading and execution workflows.
+5. **Learn** from reports, outcomes, and user feedback.
 
-*Confidential. Thank you for your time.*
+Unlike point solutions, Findash is designed around the complete workflow—from insight to risk-aware action—in a single product experience.
 
 ---
 
-*Last updated: 2026. Copy slides into Google Slides or PowerPoint; replace placeholders with your data.*
+## Slide 7 — AI Architecture
+
+Findash uses an orchestration layer to coordinate specialized intelligence capabilities:
+
+- **Data & market context:** market data, real-time monitoring, news, and sentiment.
+- **Strategy & risk:** signal generation, scenario analysis, risk limits, and execution guardrails.
+- **Analytics & reporting:** visualization, forecasting, explainable reporting, and portfolio insight.
+- **Execution:** paper-trading workflows and an integration path for live trading.
+
+The architecture supports up to **11 coordinated AI modules**. Core modules are the foundation today; additional modules are staged as the product matures.
+
+---
+
+## Slide 8 — Business Model
+
+# Recurring software revenue, with expansion paths as engagement grows.
+
+- **Pro subscription:** advanced analytics, options tools, AI reports, and higher usage limits.
+- **Professional / team plans:** shared workspaces, controls, reporting, and premium support.
+- **Data and API products:** programmatic access and tailored analytics for qualified partners.
+- **Execution economics:** potential transaction-based revenue only after compliant live-execution capabilities are established.
+
+**Pricing principle:** align recurring revenue with the depth of intelligence and workflow value delivered.
+
+---
+
+## Slide 9 — Go-to-Market
+
+Start with high-intent active investors, then expand through trust and product depth.
+
+1. **Wedge:** options-focused and multi-asset traders who already pay for several tools.
+2. **Acquisition:** educational content, trader communities, product-led demo access, and targeted partnerships.
+3. **Activation:** fast time-to-value through a guided dashboard, watchlists, reports, and paper trading.
+4. **Expansion:** deeper analytics, automation, team workflows, and partner integrations.
+
+**Early proof points to add:** [waitlist] · [active users] · [pilot partners] · [retention] · [revenue].
+
+---
+
+## Slide 10 — Progress & Roadmap
+
+### Built foundation
+- Next.js and FastAPI application architecture
+- Unified dashboard and market-analysis surfaces
+- Options decision tools and paper-trading workflows
+- Data, caching, task-processing, and AI orchestration foundations
+
+### Next milestones
+- Production-grade market-data integrations
+- Broader automation and risk-control workflows
+- Pilot users and measured product validation
+- Compliance, brokerage, and live-execution readiness where applicable
+
+**Milestone discipline:** validate engagement and trust before scaling execution features.
+
+---
+
+## Slide 11 — The Raise
+
+# Raising [Amount] to reach [specific milestone] over [12–18] months.
+
+| Use of funds | Objective |
+|---|---|
+| **Product & data** | Complete data integrations, decision tools, and reliability foundations |
+| **AI & risk** | Improve explainability, guardrails, evaluation, and reporting |
+| **Go-to-market** | Acquire design partners, validate positioning, and build repeatable distribution |
+| **Operations** | Security, compliance readiness, and core team capacity |
+
+**Target outcomes:** [pilot users] · [paid customers] · [MRR/ARR target] · [key integration or launch milestone].
+
+---
+
+## Slide 12 — Closing
+
+# Findash gives active investors a clearer path from market signal to risk-aware decision.
+
+**We are building the intelligent operating system for the modern investor.**
+
+- **Demo:** [Live demo URL]
+- **Contact:** [Founder email]
+- **Company:** [Company website]
+- **Repository / technical diligence:** available on request
+
+*Thank you.*
+
+---
+
+## Presenter Notes
+
+- Lead with the problem and user workflow, not the technology stack.
+- Do not claim users, revenue, performance, regulatory status, or live-execution capability unless those claims are verified.
+- Replace every bracketed field with current facts and tailor Slides 9–11 to the investor and stage of the raise.
+- Keep the live product demo to five minutes and use paper-trading examples rather than performance promises.
+
+*Last updated: July 2026.*

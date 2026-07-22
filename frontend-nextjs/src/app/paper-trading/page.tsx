@@ -316,6 +316,36 @@ export default function PaperTradingPage() {
     }
   };
 
+  const getSideLabel = (side: string) => {
+    switch (side) {
+      case 'buy': return 'خرید';
+      case 'sell': return 'فروش';
+      case 'long': return 'خرید (Long)';
+      case 'short': return 'فروش (Short)';
+      default: return side;
+    }
+  };
+
+  const getOrderTypeLabel = (type: string) => {
+    switch (type) {
+      case 'market': return 'بازار';
+      case 'limit': return 'حد';
+      case 'stop': return 'استاپ';
+      case 'stop_limit': return 'استاپ حد';
+      default: return type;
+    }
+  };
+
+  const getOrderStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending': return 'در انتظار';
+      case 'filled': return 'اجراشده';
+      case 'cancelled': return 'لغوشده';
+      case 'rejected': return 'ردشده';
+      default: return status;
+    }
+  };
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -331,9 +361,9 @@ export default function PaperTradingPage() {
     <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
       <div className="min-w-0 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Paper Trading</h1>
+        <h1 className="text-3xl font-bold tracking-tight">معاملات آزمایشی</h1>
         <p className="text-muted-foreground">
-          Practice trading with real market data in a risk-free environment
+          تمرین معامله با داده واقعی بازار در محیطی بدون ریسک
         </p>
       </div>
 
@@ -341,20 +371,20 @@ export default function PaperTradingPage() {
       <div className="grid gap-4 md:grid-cols-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <CardTitle className="text-sm font-medium">ارزش کل</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(accountStats.totalValue)}</div>
             <p className="text-xs text-muted-foreground">
-              Portfolio value
+              ارزش پرتفولیو
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Day P&L</CardTitle>
+            <CardTitle className="text-sm font-medium">سود/زیان امروز</CardTitle>
             {accountStats.dayPnL >= 0 ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
           </CardHeader>
           <CardContent>
@@ -369,7 +399,7 @@ export default function PaperTradingPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total P&L</CardTitle>
+            <CardTitle className="text-sm font-medium">سود/زیان کل</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -384,39 +414,39 @@ export default function PaperTradingPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Cash</CardTitle>
+            <CardTitle className="text-sm font-medium">نقد</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(accountStats.cash)}</div>
             <p className="text-xs text-muted-foreground">
-              Available cash
+              نقد در دسترس
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Win Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">نرخ برد</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{accountStats.winRate}%</div>
             <p className="text-xs text-muted-foreground">
-              {accountStats.totalTrades} total trades
+              مجموع {accountStats.totalTrades} معامله
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Sharpe Ratio</CardTitle>
+            <CardTitle className="text-sm font-medium">نسبت شارپ</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{accountStats.sharpeRatio}</div>
             <p className="text-xs text-muted-foreground">
-              Risk-adjusted return
+              بازده تعدیل‌شده با ریسک
             </p>
           </CardContent>
         </Card>
@@ -424,11 +454,11 @@ export default function PaperTradingPage() {
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="trading">Trading</TabsTrigger>
-          <TabsTrigger value="positions">Positions</TabsTrigger>
-          <TabsTrigger value="orders">Orders</TabsTrigger>
-          <TabsTrigger value="trades">Trade History</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="trading">معامله</TabsTrigger>
+          <TabsTrigger value="positions">موقعیت‌ها</TabsTrigger>
+          <TabsTrigger value="orders">سفارش‌ها</TabsTrigger>
+          <TabsTrigger value="trades">تاریخچه معاملات</TabsTrigger>
+          <TabsTrigger value="analytics">تحلیل</TabsTrigger>
         </TabsList>
 
         <TabsContent value="trading" className="space-y-6">
@@ -438,12 +468,12 @@ export default function PaperTradingPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Zap className="w-5 h-5" />
-                  Place Order
+                  ثبت سفارش
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="symbol">Symbol</Label>
+                  <Label htmlFor="symbol">نماد</Label>
                   <select 
                     value={selectedSymbol} 
                     onChange={(e) => setSelectedSymbol(e.target.value)}
@@ -461,33 +491,33 @@ export default function PaperTradingPage() {
                     onClick={() => setOrderSide('buy')}
                     className="bg-green-600 hover:bg-green-700"
                   >
-                    BUY
+                    خرید
                   </Button>
-                  <Button 
-                    variant={orderSide === 'sell' ? 'default' : 'outline'} 
+                  <Button
+                    variant={orderSide === 'sell' ? 'default' : 'outline'}
                     onClick={() => setOrderSide('sell')}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    SELL
+                    فروش
                   </Button>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="orderType">Order Type</Label>
-                  <select 
-                    value={orderType} 
+                  <Label htmlFor="orderType">نوع سفارش</Label>
+                  <select
+                    value={orderType}
                     onChange={(e) => setOrderType(e.target.value as any)}
                     className="w-full p-2 border rounded-md"
                   >
-                    <option value="market">Market</option>
-                    <option value="limit">Limit</option>
-                    <option value="stop">Stop</option>
-                    <option value="stop_limit">Stop Limit</option>
+                    <option value="market">بازار</option>
+                    <option value="limit">حد</option>
+                    <option value="stop">استاپ</option>
+                    <option value="stop_limit">استاپ حد</option>
                   </select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="quantity">Quantity</Label>
+                  <Label htmlFor="quantity">تعداد</Label>
                   <Input
                     type="number"
                     value={quantity}
@@ -498,7 +528,7 @@ export default function PaperTradingPage() {
 
                 {(orderType === 'limit' || orderType === 'stop_limit') && (
                   <div className="space-y-2">
-                    <Label htmlFor="price">Limit Price</Label>
+                    <Label htmlFor="price">قیمت حد</Label>
                     <Input
                       type="number"
                       value={price}
@@ -510,7 +540,7 @@ export default function PaperTradingPage() {
 
                 {(orderType === 'stop' || orderType === 'stop_limit') && (
                   <div className="space-y-2">
-                    <Label htmlFor="stopPrice">Stop Price</Label>
+                    <Label htmlFor="stopPrice">قیمت استاپ</Label>
                     <Input
                       type="number"
                       value={stopPrice}
@@ -521,16 +551,16 @@ export default function PaperTradingPage() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="timeInForce">Time in Force</Label>
-                  <select 
-                    value={timeInForce} 
+                  <Label htmlFor="timeInForce">اعتبار زمانی</Label>
+                  <select
+                    value={timeInForce}
                     onChange={(e) => setTimeInForce(e.target.value as any)}
                     className="w-full p-2 border rounded-md"
                   >
-                    <option value="GTC">Good Till Cancelled</option>
-                    <option value="DAY">Day Only</option>
-                    <option value="IOC">Immediate or Cancel</option>
-                    <option value="FOK">Fill or Kill</option>
+                    <option value="GTC">تا لغو (GTC)</option>
+                    <option value="DAY">فقط امروز (DAY)</option>
+                    <option value="IOC">فوری یا لغو (IOC)</option>
+                    <option value="FOK">کامل یا هیچ (FOK)</option>
                   </select>
                 </div>
 
@@ -552,7 +582,7 @@ export default function PaperTradingPage() {
                 )}
 
                 <Button onClick={handlePlaceOrder} className="w-full" size="lg">
-                  Place {orderSide.toUpperCase()} Order
+                  ثبت سفارش {getSideLabel(orderSide)}
                 </Button>
               </CardContent>
             </Card>
@@ -562,7 +592,7 @@ export default function PaperTradingPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Eye className="w-5 h-5" />
-                  Market Watch
+                  رصد بازار
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -596,13 +626,13 @@ export default function PaperTradingPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PieChart className="w-5 h-5" />
-                Open Positions
+                موقعیت‌های باز
               </CardTitle>
             </CardHeader>
             <CardContent>
               {positions.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  No open positions
+                  هیچ موقعیت بازی وجود ندارد
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -612,33 +642,33 @@ export default function PaperTradingPage() {
                         <div>
                           <h3 className="font-bold text-lg">{position.symbol}</h3>
                           <Badge variant={position.side === 'long' ? 'default' : 'destructive'}>
-                            {position.side.toUpperCase()} {position.quantity}
+                            {getSideLabel(position.side)} {position.quantity}
                           </Badge>
                         </div>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => handleClosePosition(position.id)}
                         >
-                          Close Position
+                          بستن موقعیت
                         </Button>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <div className="text-gray-500">Entry Price</div>
+                          <div className="text-gray-500">قیمت ورود</div>
                           <div className="font-medium">{formatCurrency(position.entryPrice)}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Current Price</div>
+                          <div className="text-gray-500">قیمت فعلی</div>
                           <div className="font-medium">{formatCurrency(position.currentPrice)}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Market Value</div>
+                          <div className="text-gray-500">ارزش بازار</div>
                           <div className="font-medium">{formatCurrency(position.marketValue)}</div>
                         </div>
                         <div>
-                          <div className="text-gray-500">Unrealized P&L</div>
+                          <div className="text-gray-500">سود/زیان تحقق‌نیافته</div>
                           <div className={`font-medium ${position.unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                             {formatCurrency(position.unrealizedPnL)} ({formatPercent(position.unrealizedPnLPercent)})
                           </div>
@@ -657,13 +687,13 @@ export default function PaperTradingPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="w-5 h-5" />
-                Order Management
+                مدیریت سفارش‌ها
               </CardTitle>
             </CardHeader>
             <CardContent>
               {orders.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
-                  No active orders
+                  هیچ سفارش فعالی وجود ندارد
                 </div>
               ) : (
                 <div className="space-y-4">

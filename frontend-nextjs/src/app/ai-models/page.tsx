@@ -204,7 +204,7 @@ export default function AIModelsPage() {
         last_trained: '2024-01-15T12:00:00Z',
         predictions_count: 8932,
         performance_score: 0.87,
-        description: 'Generative adversarial network for synthetic data generation',
+        description: 'شبکه مولد تخاصمی برای تولید داده مصنوعی',
         complexity: 'high'
       },
       {
@@ -216,7 +216,7 @@ export default function AIModelsPage() {
         last_trained: '2024-01-14T16:00:00Z',
         predictions_count: 9654,
         performance_score: 0.82,
-        description: 'Time series forecasting with seasonal decomposition',
+        description: 'پیش‌بینی سری زمانی با تجزیه فصلی',
         complexity: 'low'
       },
       {
@@ -228,7 +228,7 @@ export default function AIModelsPage() {
         last_trained: '2024-01-14T14:00:00Z',
         predictions_count: 5421,
         performance_score: 0.79,
-        description: 'Anomaly detection and feature compression model',
+        description: 'مدل تشخیص ناهنجاری و فشرده‌سازی ویژگی',
         complexity: 'medium'
       }
     ];
@@ -394,6 +394,41 @@ export default function AIModelsPage() {
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'running': return 'در حال اجرا';
+      case 'training': return 'در حال آموزش';
+      case 'active': return 'فعال';
+      case 'completed': return 'تکمیل‌شده';
+      case 'failed': return 'ناموفق';
+      case 'pending': return 'در انتظار';
+      case 'idle': return 'بی‌کار';
+      default: return status;
+    }
+  };
+
+  const getComplexityLabel = (complexity: string) => {
+    switch (complexity) {
+      case 'low': return 'کم';
+      case 'medium': return 'متوسط';
+      case 'high': return 'بالا';
+      case 'extreme': return 'بسیار بالا';
+      default: return complexity;
+    }
+  };
+
+  const getModelTypeLabel = (type: string) => {
+    switch (type) {
+      case 'transformer': return 'ترنسفورمر';
+      case 'xgboost': return 'ایکس‌جی‌بوست';
+      case 'gan': return 'گن (GAN)';
+      case 'llm': return 'مدل زبانی';
+      case 'prophet': return 'پروفت';
+      case 'autoencoder': return 'اتوانکودر';
+      default: return type;
+    }
+  };
+
   const getModelIcon = (type: string) => {
     switch (type) {
       case 'transformer': return <Brain className="h-5 w-5" />;
@@ -409,9 +444,9 @@ export default function AIModelsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">AI Models</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">مدل‌های هوش مصنوعی</h1>
         <p className="text-muted-foreground mt-1">
-          Train and manage ML models for trading intelligence
+          آموزش و مدیریت مدل‌های یادگیری ماشین برای هوشمندی معاملاتی
         </p>
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
@@ -430,7 +465,7 @@ export default function AIModelsPage() {
               <Cpu className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Active Models</p>
+              <p className="text-sm text-muted-foreground">مدل‌های فعال</p>
               <p className="text-xl font-bold text-foreground">{models.filter(m => m.status === 'active').length}</p>
             </div>
           </div>
@@ -441,7 +476,7 @@ export default function AIModelsPage() {
               <Activity className="h-5 w-5 text-chart-1" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Training Jobs</p>
+              <p className="text-sm text-muted-foreground">وظایف آموزشی</p>
               <p className="text-xl font-bold text-foreground">{trainingJobs.filter(j => j.status === 'running').length}</p>
             </div>
           </div>
@@ -452,7 +487,7 @@ export default function AIModelsPage() {
               <BarChart3 className="h-5 w-5 text-chart-2" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Avg Accuracy</p>
+              <p className="text-sm text-muted-foreground">میانگین دقت</p>
               <p className="text-xl font-bold text-foreground">
                 {(models.reduce((acc, m) => acc + m.accuracy, 0) / models.length * 100).toFixed(1)}%
               </p>
@@ -465,7 +500,7 @@ export default function AIModelsPage() {
               <Sparkles className="h-5 w-5 text-chart-3" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Predictions Today</p>
+              <p className="text-sm text-muted-foreground">پیش‌بینی‌های امروز</p>
               <p className="text-xl font-bold text-foreground">
                 {models.reduce((acc, m) => acc + m.predictions_count, 0).toLocaleString()}
               </p>
@@ -478,7 +513,7 @@ export default function AIModelsPage() {
               <Binary className="h-5 w-5 text-chart-4" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Model Types</p>
+              <p className="text-sm text-muted-foreground">انواع مدل</p>
               <p className="text-xl font-bold text-foreground">{new Set(models.map(m => m.type)).size}</p>
             </div>
           </div>
@@ -490,19 +525,19 @@ export default function AIModelsPage() {
           <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Gauge className="h-4 w-4" />
-              Overview
+              نمای کلی
             </TabsTrigger>
             <TabsTrigger value="training" className="flex items-center gap-2">
               <Zap className="h-4 w-4" />
-              Training
+              آموزش
             </TabsTrigger>
             <TabsTrigger value="models" className="flex items-center gap-2">
               <Database className="h-4 w-4" />
-              Models
+              مدل‌ها
             </TabsTrigger>
             <TabsTrigger value="advanced" className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4" />
-              Advanced
+              پیشرفته
             </TabsTrigger>
           </TabsList>
         </div>
@@ -514,7 +549,7 @@ export default function AIModelsPage() {
             <Card className="glass-card p-6">
               <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
                 <Gauge className="h-6 w-6 text-foreground" />
-                Model Performance Overview
+                نمای کلی عملکرد مدل‌ها
               </h2>
               
               <div className="space-y-4">
@@ -526,25 +561,25 @@ export default function AIModelsPage() {
                         <h3 className="font-semibold text-foreground">{model.name}</h3>
                       </div>
                       <Badge className={`${getStatusColor(model.status)} text-foreground`}>
-                        {model.status}
+                        {getStatusLabel(model.status)}
                       </Badge>
                     </div>
-                    
+
                     <p className="text-sm text-muted-foreground mb-3">{model.description}</p>
-                    
+
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <p className="text-muted-foreground">Accuracy</p>
+                        <p className="text-muted-foreground">دقت</p>
                         <p className="text-green-400 font-bold">{(model.accuracy * 100).toFixed(1)}%</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Performance</p>
+                        <p className="text-muted-foreground">عملکرد</p>
                         <p className="text-blue-400 font-bold">{(model.performance_score * 100).toFixed(1)}%</p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Complexity</p>
+                        <p className="text-muted-foreground">پیچیدگی</p>
                         <p className={`font-bold ${getComplexityColor(model.complexity)}`}>
-                          {model.complexity.toUpperCase()}
+                          {getComplexityLabel(model.complexity)}
                         </p>
                       </div>
                     </div>
@@ -557,12 +592,12 @@ export default function AIModelsPage() {
             <Card className="glass-card p-6">
               <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
                 <Zap className="h-6 w-6 text-foreground" />
-                Quick Actions
+                اقدامات سریع
               </h2>
 
               <div className="space-y-4">
                 <div>
-                  <Label>Trading Symbol</Label>
+                  <Label>نماد معاملاتی</Label>
                   <Select value={selectedSymbol} onValueChange={setSelectedSymbol}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
@@ -583,36 +618,36 @@ export default function AIModelsPage() {
                     onClick={() => setActiveTab('training')}
                   >
                     <PlayCircle className="h-4 w-4 mr-2" />
-                    Start Training
+                    شروع آموزش
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     onClick={generateAIInsights}
                     disabled={isLoading}
                     variant="outline"
                   >
                     <Sparkles className="h-4 w-4 mr-2" />
-                    AI Insights
+                    بینش‌های هوش مصنوعی
                   </Button>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <Button 
+                  <Button
                     onClick={generateSyntheticData}
                     disabled={isLoading}
                     variant="secondary"
                   >
                     <Infinity className="h-4 w-4 mr-2" />
-                    Generate Data
+                    تولید داده
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     onClick={startLLMFineTuning}
                     disabled={isLoading}
                     variant="outline"
                   >
                     <Bot className="h-4 w-4 mr-2" />
-                    Fine-tune LLM
+                    فاین‌تیون مدل زبانی
                   </Button>
                 </div>
               </div>
@@ -627,22 +662,22 @@ export default function AIModelsPage() {
             <Card className="glass-card p-6">
               <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
                 <Zap className="h-6 w-6 text-foreground" />
-                Start New Training
+                شروع آموزش جدید
               </h2>
 
               <div className="space-y-4">
                 <div>
-                  <Label>Trading Symbol</Label>
+                  <Label>نماد معاملاتی</Label>
                   <Input
                     value={selectedSymbol}
                     onChange={(e) => setSelectedSymbol(e.target.value)}
-                    placeholder="e.g., AAPL, TSLA, BTC-USD"
+                    placeholder="مثلا AAPL, TSLA, BTC-USD"
                     className="mt-1"
                   />
                 </div>
 
                 <div>
-                  <Label>Model Types</Label>
+                  <Label>انواع مدل</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {['transformer', 'xgboost', 'gan', 'prophet', 'autoencoder'].map((type) => (
                       <Button
@@ -659,14 +694,14 @@ export default function AIModelsPage() {
                         className="flex items-center gap-1"
                       >
                         {getModelIcon(type)}
-                        {type.toUpperCase()}
+                        {getModelTypeLabel(type)}
                       </Button>
                     ))}
                   </div>
                 </div>
 
                 <div>
-                  <Label>Training Epochs</Label>
+                  <Label>تعداد epoch آموزش</Label>
                   <Input
                     type="number"
                     value={epochs}
@@ -683,7 +718,7 @@ export default function AIModelsPage() {
                   className="w-full"
                 >
                   <PlayCircle className="h-4 w-4 mr-2" />
-                  Start Training
+                  شروع آموزش
                 </Button>
               </div>
             </Card>
@@ -692,13 +727,13 @@ export default function AIModelsPage() {
             <Card className="glass-card p-6">
               <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
                 <Target className="h-6 w-6 text-foreground" />
-                XGBoost Configuration
+                تنظیمات XGBoost
               </h2>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Estimators</Label>
+                    <Label>تعداد Estimator</Label>
                     <Input
                       type="number"
                       value={xgboostConfig.n_estimators}
@@ -710,7 +745,7 @@ export default function AIModelsPage() {
                     />
                   </div>
                   <div>
-                    <Label>Learning Rate</Label>
+                    <Label>نرخ یادگیری</Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -726,7 +761,7 @@ export default function AIModelsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>Max Depth</Label>
+                    <Label>حداکثر عمق</Label>
                     <Input
                       type="number"
                       value={xgboostConfig.max_depth}
@@ -738,7 +773,7 @@ export default function AIModelsPage() {
                     />
                   </div>
                   <div>
-                    <Label>Early Stopping</Label>
+                    <Label>توقف زودهنگام</Label>
                     <Input
                       type="number"
                       value={xgboostConfig.early_stopping_rounds}
@@ -752,9 +787,9 @@ export default function AIModelsPage() {
                 </div>
 
                 <div>
-                  <Label>Objective</Label>
-                  <Select 
-                    value={xgboostConfig.objective} 
+                  <Label>هدف مدل</Label>
+                  <Select
+                    value={xgboostConfig.objective}
                     onValueChange={(value) => setXgboostConfig(prev => ({
                       ...prev,
                       objective: value
@@ -764,10 +799,10 @@ export default function AIModelsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="reg:squarederror">Regression (Squared Error)</SelectItem>
-                      <SelectItem value="reg:absoluteerror">Regression (Absolute Error)</SelectItem>
-                      <SelectItem value="binary:logistic">Binary Classification</SelectItem>
-                      <SelectItem value="multi:softmax">Multi-class Classification</SelectItem>
+                      <SelectItem value="reg:squarederror">رگرسیون (خطای مربعی)</SelectItem>
+                      <SelectItem value="reg:absoluteerror">رگرسیون (خطای مطلق)</SelectItem>
+                      <SelectItem value="binary:logistic">طبقه‌بندی دودویی</SelectItem>
+                      <SelectItem value="multi:softmax">طبقه‌بندی چندکلاسه</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -779,14 +814,14 @@ export default function AIModelsPage() {
           <Card className="glass-card p-6">
             <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
               <Infinity className="h-6 w-6 text-foreground" />
-              GAN Configuration
+              تنظیمات GAN
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-muted-foreground">Architecture</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">معماری</h3>
                 <div>
-                  <Label>Input Dimension</Label>
+                  <Label>بعد ورودی</Label>
                   <Input
                     type="number"
                     value={ganConfig.input_dim}
@@ -798,7 +833,7 @@ export default function AIModelsPage() {
                   />
                 </div>
                 <div>
-                  <Label>Hidden Dimension</Label>
+                  <Label>بعد پنهان</Label>
                   <Input
                     type="number"
                     value={ganConfig.hidden_dim}
@@ -810,7 +845,7 @@ export default function AIModelsPage() {
                   />
                 </div>
                 <div>
-                  <Label>Latent Dimension</Label>
+                  <Label>بعد نهفته (Latent)</Label>
                   <Input
                     type="number"
                     value={ganConfig.latent_dim}
@@ -824,9 +859,9 @@ export default function AIModelsPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-muted-foreground">Training</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">آموزش</h3>
                 <div>
-                  <Label>Learning Rate</Label>
+                  <Label>نرخ یادگیری</Label>
                   <Input
                     type="number"
                     step="0.0001"
@@ -839,7 +874,7 @@ export default function AIModelsPage() {
                   />
                 </div>
                 <div>
-                  <Label>Epochs</Label>
+                  <Label>تعداد Epoch</Label>
                   <Input
                     type="number"
                     value={ganConfig.num_epochs}
@@ -851,7 +886,7 @@ export default function AIModelsPage() {
                   />
                 </div>
                 <div>
-                  <Label>Batch Size</Label>
+                  <Label>اندازه دسته (Batch)</Label>
                   <Input
                     type="number"
                     value={ganConfig.batch_size}
@@ -865,31 +900,31 @@ export default function AIModelsPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-muted-foreground">Actions</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">اقدامات</h3>
                 <div className="space-y-2">
-                  <Button 
+                  <Button
                     onClick={generateSyntheticData}
                     disabled={isLoading}
                     className="w-full"
                   >
                     <Infinity className="h-4 w-4 mr-2" />
-                    Generate Synthetic Data
+                    تولید داده مصنوعی
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     variant="outline"
                     className="w-full"
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    Export GAN Model
+                    خروجی گرفتن از مدل GAN
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     variant="outline"
                     className="w-full"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    Visualize Latent Space
+                    نمایش فضای نهفته
                   </Button>
                 </div>
               </div>
@@ -903,7 +938,7 @@ export default function AIModelsPage() {
           <Card className="glass-card p-6">
             <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
               <Database className="h-6 w-6 text-foreground" />
-              Active Models Registry
+              فهرست مدل‌های فعال
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -915,29 +950,29 @@ export default function AIModelsPage() {
                       <h3 className="font-semibold text-foreground">{model.name}</h3>
                     </div>
                     <Badge className={`${getStatusColor(model.status)} text-foreground`}>
-                      {model.status}
+                      {getStatusLabel(model.status)}
                     </Badge>
                   </div>
-                  
+
                   <p className="text-sm text-muted-foreground mb-3">{model.description}</p>
-                  
+
                   <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                     <div>
-                      <p className="text-muted-foreground">Accuracy</p>
+                      <p className="text-muted-foreground">دقت</p>
                       <p className="text-green-400 font-bold">{(model.accuracy * 100).toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Performance</p>
+                      <p className="text-muted-foreground">عملکرد</p>
                       <p className="text-blue-400 font-bold">{(model.performance_score * 100).toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Predictions</p>
+                      <p className="text-muted-foreground">پیش‌بینی‌ها</p>
                       <p className="text-purple-400 font-bold">{model.predictions_count.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Complexity</p>
+                      <p className="text-muted-foreground">پیچیدگی</p>
                       <p className={`font-bold ${getComplexityColor(model.complexity)}`}>
-                        {model.complexity.toUpperCase()}
+                        {getComplexityLabel(model.complexity)}
                       </p>
                     </div>
                   </div>
@@ -945,15 +980,15 @@ export default function AIModelsPage() {
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" className="flex-1">
                       <Eye className="h-3 w-3 mr-1" />
-                      View
+                      نمایش
                     </Button>
                     <Button size="sm" variant="outline" className="flex-1">
                       <Download className="h-3 w-3 mr-1" />
-                      Export
+                      خروجی
                     </Button>
                     <Button size="sm" variant="outline" className="flex-1">
                       <Settings className="h-3 w-3 mr-1" />
-                      Config
+                      تنظیمات
                     </Button>
                   </div>
                 </div>
@@ -968,7 +1003,7 @@ export default function AIModelsPage() {
           <Card className="glass-card p-6">
             <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
               <TrendingUp className="h-6 w-6 text-foreground" />
-              Training Jobs Monitor
+              پایش وظایف آموزشی
             </h2>
 
             <div className="space-y-4">
@@ -978,10 +1013,10 @@ export default function AIModelsPage() {
                     <div className="flex items-center gap-3">
                       {getModelIcon(job.model_type)}
                       <h3 className="font-semibold text-foreground">
-                        {job.symbol} - {job.model_type.toUpperCase()}
+                        {job.symbol} - {getModelTypeLabel(job.model_type)}
                       </h3>
                       <Badge className={`${getStatusColor(job.status)} text-foreground`}>
-                        {job.status}
+                        {getStatusLabel(job.status)}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-2">
@@ -997,7 +1032,7 @@ export default function AIModelsPage() {
                   {job.status === 'running' && (
                     <div className="mb-3">
                       <div className="flex justify-between text-sm mb-1">
-                        <span>Progress: {job.epochs_completed}/{job.total_epochs} epochs</span>
+                        <span>پیشرفت: {job.epochs_completed}/{job.total_epochs} epoch</span>
                         <span>{job.progress}%</span>
                       </div>
                       <Progress value={job.progress} className="h-2" />
@@ -1006,19 +1041,19 @@ export default function AIModelsPage() {
 
                   <div className="grid grid-cols-4 gap-4 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Loss</p>
+                      <p className="text-muted-foreground">خطا (Loss)</p>
                       <p className="text-red-400 font-bold">{job.loss.toFixed(4)}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Accuracy</p>
+                      <p className="text-muted-foreground">دقت</p>
                       <p className="text-green-400 font-bold">{(job.accuracy * 100).toFixed(1)}%</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Started</p>
+                      <p className="text-muted-foreground">شروع</p>
                       <p className="text-blue-400">{new Date(job.started_at).toLocaleTimeString()}</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">ETA</p>
+                      <p className="text-muted-foreground">زمان تخمینی پایان</p>
                       <p className="text-purple-400">{new Date(job.estimated_completion).toLocaleTimeString()}</p>
                     </div>
                   </div>
@@ -1031,30 +1066,30 @@ export default function AIModelsPage() {
           <Card className="glass-card p-6">
             <h2 className="text-2xl font-bold tracking-tight text-foreground mb-6 flex items-center gap-2">
               <Activity className="h-6 w-6 text-foreground" />
-              System Status
+              وضعیت سیستم
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-muted-foreground">Hardware</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">سخت‌افزار</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">GPU Available:</span>
+                    <span className="text-muted-foreground">GPU در دسترس:</span>
                     <span className="text-green-400">✓ CUDA 11.8</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Memory Usage:</span>
-                    <span className="text-yellow-400">67%</span>
+                    <span className="text-muted-foreground">مصرف حافظه:</span>
+                    <span className="text-yellow-400">۶۷٪</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">CPU Cores:</span>
-                    <span className="text-blue-400">16 cores</span>
+                    <span className="text-muted-foreground">هسته‌های CPU:</span>
+                    <span className="text-blue-400">۱۶ هسته</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-muted-foreground">Model Versions</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">نسخه مدل‌ها</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">PyTorch:</span>
@@ -1072,19 +1107,19 @@ export default function AIModelsPage() {
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-muted-foreground">Performance</h3>
+                <h3 className="text-lg font-semibold text-muted-foreground">عملکرد</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Avg Training Time:</span>
-                    <span className="text-blue-400">2.3h</span>
+                    <span className="text-muted-foreground">میانگین زمان آموزش:</span>
+                    <span className="text-blue-400" dir="ltr">۲.۳ ساعت</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Inference Speed:</span>
-                    <span className="text-green-400">45ms</span>
+                    <span className="text-muted-foreground">سرعت استنتاج:</span>
+                    <span className="text-green-400" dir="ltr">۴۵ms</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Model Accuracy:</span>
-                    <span className="text-purple-400">91.2%</span>
+                    <span className="text-muted-foreground">دقت مدل:</span>
+                    <span className="text-purple-400">۹۱.۲٪</span>
                   </div>
                 </div>
               </div>
