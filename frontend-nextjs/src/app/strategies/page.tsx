@@ -39,20 +39,20 @@ function StrategiesPageContent() {
   return (
     <div className="container mx-auto px-6 py-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Strategies</h1>
+        <h1 className="text-3xl font-bold tracking-tight">استراتژی‌ها</h1>
         <p className="text-muted-foreground">
-          Define, manage, and backtest trading strategies.
+          تعریف، مدیریت و بک‌تست استراتژی‌های معاملاتی.
         </p>
       </div>
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="strategies" className="flex items-center gap-2">
             <Target className="h-4 w-4" />
-            Strategies
+            استراتژی‌ها
           </TabsTrigger>
           <TabsTrigger value="backtesting" className="flex items-center gap-2">
             <FlaskConical className="h-4 w-4" />
-            Backtesting
+            بک‌تست
           </TabsTrigger>
         </TabsList>
         <TabsContent value="strategies" className="mt-6">

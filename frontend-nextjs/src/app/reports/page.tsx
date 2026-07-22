@@ -10,16 +10,16 @@ export default function ReportsPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">AI-Powered Reports</h1>
+          <h1 className="text-3xl font-bold tracking-tight">گزارش‌های مبتنی بر هوش مصنوعی</h1>
           <p className="text-muted-foreground mt-1">
-            Intelligent insights and comprehensive analysis powered by open-source LLMs (Falcon, FinGPT) or simulated
+            بینش‌های هوشمند و تحلیل جامع مبتنی بر مدل‌های زبانی متن‌باز (Falcon، FinGPT) یا شبیه‌سازی‌شده
           </p>
           <Link
             href="/data?tab=charts"
             className="inline-flex items-center gap-1.5 mt-2 text-xs font-medium text-primary hover:underline"
           >
             <PieChart className="h-3.5 w-3.5" />
-            View the underlying charts this report is based on
+            مشاهده نمودارهای پایه این گزارش
           </Link>
         </div>
         <LlmStatusBadge />

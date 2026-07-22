@@ -168,7 +168,7 @@ export default function AIModelsPage() {
         last_trained: '2024-01-15T10:30:00Z',
         predictions_count: 15420,
         performance_score: 0.89,
-        description: 'Advanced attention-based model for sequential pattern recognition',
+        description: 'مدل پیشرفته مبتنی بر توجه برای تشخیص الگوهای متوالی',
         complexity: 'high'
       },
       {
@@ -180,7 +180,7 @@ export default function AIModelsPage() {
         last_trained: '2024-01-15T08:00:00Z',
         predictions_count: 12847,
         performance_score: 0.95,
-        description: 'Gradient boosting ensemble for robust price prediction',
+        description: 'مدل تجمیعی گرادیان بوستینگ برای پیش‌بینی دقیق قیمت',
         complexity: 'medium'
       },
       {
@@ -192,7 +192,7 @@ export default function AIModelsPage() {
         last_trained: '2024-01-15T06:00:00Z',
         predictions_count: 2847,
         performance_score: 0.85,
-        description: 'Large language model for market sentiment analysis',
+        description: 'مدل زبانی بزرگ برای تحلیل احساسات بازار',
         complexity: 'extreme'
       },
       {

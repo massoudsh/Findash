@@ -390,7 +390,7 @@ function InsightCard() {
   );
 }
 
-function OverviewDashboard({ riskValue }: { riskValue: number }) {
+export function OverviewDashboard({ riskValue }: { riskValue: number }) {
   return (
     <div className="space-y-5">
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

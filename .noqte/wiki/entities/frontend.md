@@ -10,8 +10,9 @@
 ## صفحات اصلی
 | مسیر | عملکرد |
 |------|--------|
-| `/` | صفحه اصلی فارسی — phone mockup، market cards، feature cards، CTA |
-| `/dashboard` | داشبورد اصلی بازطراحی‌شده — modern mill-flat، grid layout، رنگ آبی `#3B82F6`، 5 تب یکپارچه |
+| `/` | صفحه اصلی فارسی — phone mockup، market cards، feature cards، CTA (دکمه‌های اصلی به `/demo` لینک می‌دهند، نه `/dashboard`) |
+| `/demo` | **صفحه دمو عمومی بدون نیاز به ورود** — برای کاربر جدید که هنوز ثبت‌نام نکرده؛ همان `OverviewDashboard` (کامپوننت export شده از `dashboard/page.tsx`) را با داده mock رندر می‌کند، نوار اعلان دمو + CTAهای «ثبت‌نام رایگان»/«ورود» در بالا و پایین صفحه؛ در `middleware.ts` matcher نیست، پس عمومی و قابل مشاهده بدون توکن است |
+| `/dashboard` | داشبورد اصلی بازطراحی‌شده — modern mill-flat، grid layout، رنگ آبی `#3B82F6`، 5 تب یکپارچه؛ پشت `middleware.ts` (نیازمند ورود) — تابع `OverviewDashboard` از این فایل export شده تا `/demo` هم از آن استفاده کند |
 | `/auth/signin` | ورود — two-column layout، visual preview panel |
 | `/auth/signup` | ثبت‌نام — two-column layout، feature list |
 | `/alerts` | هشدار قیمت با localStorage + toast notification |

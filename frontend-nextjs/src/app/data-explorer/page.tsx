@@ -7,10 +7,10 @@ export default function DataExplorerPage() {
     <div className="container mx-auto py-6">
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
         <div className="min-w-0">
-          <h1 className="text-3xl font-bold mb-6">Data Explorer</h1>
+          <h1 className="text-3xl font-bold mb-6">کاوشگر داده</h1>
           <div className="space-y-6">
             <DataExport
-              title="Export Trading Data"
+              title="خروجی‌گیری از داده‌های معاملاتی"
               filename="trading-data"
               className="mb-6"
             />

@@ -61,12 +61,12 @@ function saveWatchlist(symbols: string[]) {
 }
 
 const ECONOMIC_EVENTS_MOCK = [
-  { title: 'FOMC Statement', date: 'This week', impact: 'High' },
-  { title: 'Non-Farm Payrolls', date: 'Next Fri', impact: 'High' },
-  { title: 'CPI Release', date: 'Next month', impact: 'High' },
-  { title: 'Fed Chair Speech', date: 'In 2 weeks', impact: 'Medium' },
-  { title: 'Retail Sales', date: 'Next week', impact: 'Medium' },
-  { title: 'Initial Jobless Claims', date: 'Thu', impact: 'Low' },
+  { title: 'بیانیه FOMC', date: 'این هفته', impact: 'بالا' },
+  { title: 'اشتغال غیرکشاورزی', date: 'جمعه آینده', impact: 'بالا' },
+  { title: 'انتشار CPI', date: 'ماه آینده', impact: 'بالا' },
+  { title: 'سخنرانی رئیس فدرال رزرو', date: 'دو هفته دیگر', impact: 'متوسط' },
+  { title: 'فروش خرده‌فروشی', date: 'هفته آینده', impact: 'متوسط' },
+  { title: 'درخواست‌های اولیه بیمه بیکاری', date: 'پنجشنبه', impact: 'پایین' },
 ];
 
 interface EconomicEvent {
@@ -172,106 +172,106 @@ export default function TechnicalPage() {
   const chartData = generateMockData();
 
   const technicalIndicators = [
-    { 
-      name: 'RSI (14)', 
-      value: 68.5, 
-      signal: 'Overbought', 
+    {
+      name: 'RSI (14)',
+      value: 68.5,
+      signal: 'اشباع خرید',
       color: 'orange',
-      description: 'Relative Strength Index',
-      recommendation: 'Sell Signal'
+      description: 'شاخص قدرت نسبی',
+      recommendation: 'سیگنال فروش'
     },
-    { 
-      name: 'MACD (12,26,9)', 
-      value: 0.45, 
-      signal: 'Bullish Cross', 
+    {
+      name: 'MACD (12,26,9)',
+      value: 0.45,
+      signal: 'تقاطع صعودی',
       color: 'green',
-      description: 'Moving Average Convergence Divergence',
-      recommendation: 'Buy Signal'
+      description: 'همگرایی/واگرایی میانگین متحرک',
+      recommendation: 'سیگنال خرید'
     },
-    { 
-      name: 'Stochastic (14,3,3)', 
-      value: 75.2, 
-      signal: 'Overbought', 
+    {
+      name: 'Stochastic (14,3,3)',
+      value: 75.2,
+      signal: 'اشباع خرید',
       color: 'red',
-      description: 'Stochastic Oscillator',
-      recommendation: 'Sell Signal'
+      description: 'نوسان‌ساز استوکاستیک',
+      recommendation: 'سیگنال فروش'
     },
-    { 
-      name: 'Williams %R (14)', 
-      value: -25.8, 
-      signal: 'Bullish', 
+    {
+      name: 'Williams %R (14)',
+      value: -25.8,
+      signal: 'صعودی',
       color: 'green',
-      description: 'Williams Percent Range',
-      recommendation: 'Buy Signal'
+      description: 'محدوده درصدی ویلیامز',
+      recommendation: 'سیگنال خرید'
     },
-    { 
-      name: 'CCI (20)', 
-      value: 145.6, 
-      signal: 'Overbought', 
+    {
+      name: 'CCI (20)',
+      value: 145.6,
+      signal: 'اشباع خرید',
       color: 'orange',
-      description: 'Commodity Channel Index',
-      recommendation: 'Neutral'
+      description: 'شاخص کانال کالا',
+      recommendation: 'خنثی'
     },
-    { 
-      name: 'ADX (14)', 
-      value: 32.1, 
-      signal: 'Strong Trend', 
+    {
+      name: 'ADX (14)',
+      value: 32.1,
+      signal: 'روند قوی',
       color: 'blue',
-      description: 'Average Directional Index',
-      recommendation: 'Trend Following'
+      description: 'شاخص جهت‌دار میانگین',
+      recommendation: 'پیروی از روند'
     },
-    { 
-      name: 'Bollinger Bands', 
-      value: 0.82, 
-      signal: 'Upper Band', 
+    {
+      name: 'Bollinger Bands',
+      value: 0.82,
+      signal: 'باند بالایی',
       color: 'purple',
-      description: 'Volatility Indicator',
-      recommendation: 'Sell Signal'
+      description: 'شاخص نوسان',
+      recommendation: 'سیگنال فروش'
     },
-    { 
-      name: 'ATR (14)', 
-      value: 1250.5, 
-      signal: 'High Volatility', 
+    {
+      name: 'ATR (14)',
+      value: 1250.5,
+      signal: 'نوسان بالا',
       color: 'yellow',
-      description: 'Average True Range',
-      recommendation: 'Caution'
+      description: 'میانگین محدوده واقعی',
+      recommendation: 'احتیاط'
     }
   ];
 
   const movingAverages = [
-    { period: 'SMA 20', value: '$42,150', position: 'Above', signal: 'Bullish', distance: '+1.2%' },
-    { period: 'SMA 50', value: '$41,850', position: 'Above', signal: 'Bullish', distance: '+2.8%' },
-    { period: 'SMA 200', value: '$39,200', position: 'Above', signal: 'Bullish', distance: '+8.0%' },
-    { period: 'EMA 12', value: '$42,280', position: 'Above', signal: 'Bullish', distance: '+0.9%' },
-    { period: 'EMA 26', value: '$41,950', position: 'Above', signal: 'Bullish', distance: '+1.8%' },
-    { period: 'EMA 50', value: '$41,650', position: 'Above', signal: 'Bullish', distance: '+2.5%' }
+    { period: 'SMA 20', value: '$42,150', position: 'Above', signal: 'صعودی', distance: '۱.۲%+' },
+    { period: 'SMA 50', value: '$41,850', position: 'Above', signal: 'صعودی', distance: '۲.۸%+' },
+    { period: 'SMA 200', value: '$39,200', position: 'Above', signal: 'صعودی', distance: '۸.۰%+' },
+    { period: 'EMA 12', value: '$42,280', position: 'Above', signal: 'صعودی', distance: '۰.۹%+' },
+    { period: 'EMA 26', value: '$41,950', position: 'Above', signal: 'صعودی', distance: '۱.۸%+' },
+    { period: 'EMA 50', value: '$41,650', position: 'Above', signal: 'صعودی', distance: '۲.۵%+' }
   ];
 
   const supportResistance = [
-    { level: 'Resistance 3', price: '$45,200', distance: '+6.7%', strength: 'Strong', touches: 5 },
-    { level: 'Resistance 2', price: '$43,800', distance: '+3.4%', strength: 'Medium', touches: 3 },
-    { level: 'Resistance 1', price: '$42,900', distance: '+1.3%', strength: 'Weak', touches: 2 },
-    { level: 'Current Price', price: '$42,350', distance: '0%', strength: 'Current', touches: 0 },
-    { level: 'Support 1', price: '$41,200', distance: '-2.7%', strength: 'Strong', touches: 4 },
-    { level: 'Support 2', price: '$39,800', distance: '-6.0%', strength: 'Medium', touches: 3 },
-    { level: 'Support 3', price: '$38,100', distance: '-10.0%', strength: 'Strong', touches: 6 }
+    { level: 'مقاومت ۳', price: '$45,200', distance: '۶.۷%+', strength: 'قوی', touches: 5 },
+    { level: 'مقاومت ۲', price: '$43,800', distance: '۳.۴%+', strength: 'متوسط', touches: 3 },
+    { level: 'مقاومت ۱', price: '$42,900', distance: '۱.۳%+', strength: 'ضعیف', touches: 2 },
+    { level: 'قیمت فعلی', price: '$42,350', distance: '۰%', strength: 'فعلی', touches: 0 },
+    { level: 'حمایت ۱', price: '$41,200', distance: '۲.۷%-', strength: 'قوی', touches: 4 },
+    { level: 'حمایت ۲', price: '$39,800', distance: '۶.۰%-', strength: 'متوسط', touches: 3 },
+    { level: 'حمایت ۳', price: '$38,100', distance: '۱۰.۰%-', strength: 'قوی', touches: 6 }
   ];
 
   const patterns = [
-    { name: 'Bull Flag', probability: 75, timeframe: '4H', target: '$44,500', status: 'Active', confidence: 'High' },
-    { name: 'Ascending Triangle', probability: 68, timeframe: '1D', target: '$45,200', status: 'Forming', confidence: 'Medium' },
-    { name: 'Double Bottom', probability: 82, timeframe: '1W', target: '$47,800', status: 'Confirmed', confidence: 'High' },
-    { name: 'Head & Shoulders', probability: 45, timeframe: '4H', target: '$39,500', status: 'Potential', confidence: 'Low' }
+    { name: 'پرچم صعودی', probability: 75, timeframe: '4H', target: '$44,500', status: 'فعال', confidence: 'بالا' },
+    { name: 'مثلث صعودی', probability: 68, timeframe: '1D', target: '$45,200', status: 'در حال شکل‌گیری', confidence: 'متوسط' },
+    { name: 'کف دوقلو', probability: 82, timeframe: '1W', target: '$47,800', status: 'تأییدشده', confidence: 'بالا' },
+    { name: 'سر و شانه', probability: 45, timeframe: '4H', target: '$39,500', status: 'بالقوه', confidence: 'پایین' }
   ];
 
   const fibonacciLevels = [
-    { level: '0%', price: '$38,100', type: 'Support' },
-    { level: '23.6%', price: '$39,450', type: 'Support' },
-    { level: '38.2%', price: '$40,850', type: 'Support' },
-    { level: '50%', price: '$41,650', type: 'Pivot' },
-    { level: '61.8%', price: '$42,450', type: 'Resistance' },
-    { level: '78.6%', price: '$43,250', type: 'Resistance' },
-    { level: '100%', price: '$45,200', type: 'Resistance' }
+    { level: '۰%', price: '$38,100', type: 'حمایت' },
+    { level: '۲۳.۶%', price: '$39,450', type: 'حمایت' },
+    { level: '۳۸.۲%', price: '$40,850', type: 'حمایت' },
+    { level: '۵۰%', price: '$41,650', type: 'محور' },
+    { level: '۶۱.۸%', price: '$42,450', type: 'مقاومت' },
+    { level: '۷۸.۶%', price: '$43,250', type: 'مقاومت' },
+    { level: '۱۰۰%', price: '$45,200', type: 'مقاومت' }
   ];
 
   const volumeProfile = [
@@ -288,17 +288,17 @@ export default function TechnicalPage() {
         {/* Header with Controls */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold gradient-text">Technical Analysis</h1>
-            <p className="text-gray-400 mt-2">Professional charting platform with advanced technical analysis</p>
+            <h1 className="text-3xl font-bold gradient-text">تحلیل تکنیکال</h1>
+            <p className="text-gray-400 mt-2">پلتفرم نمودارخوانی حرفه‌ای همراه با تحلیل تکنیکال پیشرفته</p>
           </div>
           <div className="flex items-center space-x-3">
             <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
               <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
-              Live Data
+              داده زنده
             </Badge>
             <Button onClick={() => setIsFullscreen(!isFullscreen)} className="btn-morphic">
               <Maximize2 className="h-4 w-4 mr-2" />
-              Fullscreen
+              تمام‌صفحه
             </Button>
           </div>
         </div>
@@ -313,27 +313,27 @@ export default function TechnicalPage() {
             }}
           >
             <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh Data
+            به‌روزرسانی داده
           </Button>
           <Button className="btn-morphic h-12" onClick={() => setActivePanel('screener')}>
             <Zap className="h-4 w-4 mr-2" />
-            Screener
+            فیلتر نمادها
           </Button>
           <Button className="btn-morphic h-12" onClick={() => setActivePanel('watchlist')}>
             <Target className="h-4 w-4 mr-2" />
-            Watchlist
+            دیده‌بان
           </Button>
           <Button className="btn-morphic h-12" onClick={() => setActivePanel('calendar')}>
             <Calendar className="h-4 w-4 mr-2" />
-            Economic Calendar
+            تقویم اقتصادی
           </Button>
           <Button className="btn-morphic h-12" onClick={() => setActivePanel('chartSettings')}>
             <Settings className="h-4 w-4 mr-2" />
-            Chart Settings
+            تنظیمات نمودار
           </Button>
           <Button className="btn-morphic h-12" onClick={() => setActivePanel('marketOverview')}>
             <Eye className="h-4 w-4 mr-2" />
-            Market Overview
+            نمای کلی بازار
           </Button>
         </div>
 
@@ -342,17 +342,17 @@ export default function TechnicalPage() {
           <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
             <SheetHeader>
               <SheetTitle>
-                {activePanel === 'screener' && 'Screener'}
-                {activePanel === 'watchlist' && 'Watchlist'}
-                {activePanel === 'calendar' && 'Economic Calendar'}
-                {activePanel === 'chartSettings' && 'Chart Settings'}
-                {activePanel === 'marketOverview' && 'Market Overview'}
+                {activePanel === 'screener' && 'فیلتر نمادها'}
+                {activePanel === 'watchlist' && 'دیده‌بان'}
+                {activePanel === 'calendar' && 'تقویم اقتصادی'}
+                {activePanel === 'chartSettings' && 'تنظیمات نمودار'}
+                {activePanel === 'marketOverview' && 'نمای کلی بازار'}
               </SheetTitle>
             </SheetHeader>
             <div className="mt-6 space-y-4">
               {activePanel === 'screener' && (
                 <>
-                  <p className="text-sm text-gray-400">Filter symbols by price, volume, and technicals. Wired to live data from /api/real-market-data.</p>
+                  <p className="text-sm text-gray-400">فیلتر نمادها بر اساس قیمت، حجم و تکنیکال — متصل به داده زنده از /api/real-market-data.</p>
                   <div className="space-y-2">
                     {['BTC/USD', 'ETH/USD', 'AAPL', 'TSLA', 'NVDA', 'MSFT', 'GOOGL'].map((s) => (
                       <Button
@@ -375,7 +375,7 @@ export default function TechnicalPage() {
               )}
               {activePanel === 'watchlist' && (
                 <>
-                  <p className="text-sm text-gray-400">Your saved symbols (persisted locally). Click to load on chart.</p>
+                  <p className="text-sm text-gray-400">نمادهای ذخیره‌شده شما (به‌صورت محلی نگهداری می‌شود). برای نمایش در نمودار کلیک کنید.</p>
                   <div className="space-y-2">
                     {(watchlistLoaded ? watchlist : DEFAULT_WATCHLIST).map((s) => (
                       <div key={s} className="flex items-center gap-2">
@@ -398,21 +398,21 @@ export default function TechnicalPage() {
                           size="icon"
                           className="shrink-0 text-gray-400 hover:text-red-400"
                           onClick={() => removeFromWatchlist(s)}
-                          aria-label={`Remove ${s} from watchlist`}
+                          aria-label={`حذف ${s} از دیده‌بان`}
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">Add symbols from Screener or chart selector.</p>
+                  <p className="text-xs text-gray-500 mt-2">نمادها را از فیلتر یا انتخاب‌گر نمودار اضافه کنید.</p>
                 </>
               )}
               {activePanel === 'calendar' && (
                 <>
-                  <p className="text-sm text-gray-400">Upcoming economic events from API when backend is available; otherwise fallback list.</p>
+                  <p className="text-sm text-gray-400">رویدادهای اقتصادی پیش‌رو از API در صورت در دسترس بودن بک‌اند؛ در غیر این صورت فهرست پیش‌فرض.</p>
                   {calendarLoading ? (
-                    <p className="text-sm text-muted-foreground py-4">Loading calendar…</p>
+                    <p className="text-sm text-muted-foreground py-4">در حال بارگذاری تقویم…</p>
                   ) : (
                     <ul className="space-y-2 text-sm">
                       {economicEvents.map((ev) => (
@@ -430,16 +430,16 @@ export default function TechnicalPage() {
               )}
               {activePanel === 'chartSettings' && (
                 <>
-                  <p className="text-sm text-gray-400">Chart type and timeframe are in the Trading Controls below. Fullscreen is in the header.</p>
+                  <p className="text-sm text-gray-400">نوع نمودار و بازه زمانی در کنترل‌های معاملاتی پایین قرار دارند. تمام‌صفحه در هدر است.</p>
                   <div className="space-y-2">
-                    <p className="text-xs text-gray-500">Symbol: {selectedSymbol}</p>
-                    <p className="text-xs text-gray-500">Timeframe: {selectedTimeframe}</p>
+                    <p className="text-xs text-gray-500">نماد: {selectedSymbol}</p>
+                    <p className="text-xs text-gray-500">بازه زمانی: {selectedTimeframe}</p>
                   </div>
                 </>
               )}
               {activePanel === 'marketOverview' && (
                 <>
-                  <p className="text-sm text-gray-400">Live snapshot from API.</p>
+                  <p className="text-sm text-gray-400">تصویر زنده از API.</p>
                   <div className="space-y-2">
                     {Object.entries(realMarketData).slice(0, 8).map(([sym, d]) => (
                       <div key={sym} className="flex justify-between items-center p-2 rounded bg-slate-800/50 text-sm">
@@ -515,15 +515,15 @@ export default function TechnicalPage() {
               <div className="flex items-center space-x-2">
                 <Button className="btn-morphic text-xs">
                   <Download className="h-3 w-3 mr-1" />
-                  Export
+                  خروجی‌گیری
                 </Button>
                 <Button className="btn-morphic text-xs">
                   <Share2 className="h-3 w-3 mr-1" />
-                  Share
+                  اشتراک‌گذاری
                 </Button>
                 <Button className="btn-morphic text-xs">
                   <Bookmark className="h-3 w-3 mr-1" />
-                  Save
+                  ذخیره
                 </Button>
               </div>
             </div>
@@ -548,11 +548,11 @@ export default function TechnicalPage() {
             {/* Market Info - real data when available */}
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Market Info</CardTitle>
+                <CardTitle className="text-sm">اطلاعات بازار</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-400">24h Change</span>
+                  <span className="text-gray-400">تغییر ۲۴ساعته</span>
                   <span className={currentMarket?.change_percent != null ? (currentMarket.change_percent >= 0 ? 'text-green-400' : 'text-red-400') : 'text-gray-400'}>
                     {currentMarket?.change_percent != null
                       ? (currentMarket.change_percent >= 0 ? '+' : '') + currentMarket.change_percent.toFixed(2) + '%'
@@ -560,15 +560,15 @@ export default function TechnicalPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">24h Volume</span>
+                  <span className="text-gray-400">حجم ۲۴ساعته</span>
                   <span>{currentMarket?.volume != null ? (currentMarket.volume / 1e6).toFixed(2) + 'M' : '$2.4B'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Price</span>
+                  <span className="text-gray-400">قیمت</span>
                   <span>{currentMarket?.price != null ? '$' + currentMarket.price.toLocaleString() : '—'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-400">Open</span>
+                  <span className="text-gray-400">باز شدن</span>
                   <span>{currentMarket?.open != null ? '$' + currentMarket.open.toLocaleString() : '—'}</span>
                 </div>
               </CardContent>
@@ -577,7 +577,7 @@ export default function TechnicalPage() {
             {/* Quick Indicators */}
             <Card className="glass-card">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Quick Signals</CardTitle>
+                <CardTitle className="text-sm">سیگنال‌های سریع</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {technicalIndicators.slice(0, 4).map((indicator) => (
@@ -604,12 +604,12 @@ export default function TechnicalPage() {
         {/* Tabbed Analysis */}
         <Tabs defaultValue="indicators" className="w-full">
           <TabsList className="grid w-full grid-cols-6 bg-slate-800/50">
-            <TabsTrigger value="indicators">Indicators</TabsTrigger>
-            <TabsTrigger value="patterns">Patterns</TabsTrigger>
-            <TabsTrigger value="levels">Levels</TabsTrigger>
-            <TabsTrigger value="fibonacci">Fibonacci</TabsTrigger>
-            <TabsTrigger value="volume">Volume</TabsTrigger>
-            <TabsTrigger value="alerts">Alerts</TabsTrigger>
+            <TabsTrigger value="indicators">اندیکاتورها</TabsTrigger>
+            <TabsTrigger value="patterns">الگوها</TabsTrigger>
+            <TabsTrigger value="levels">سطوح</TabsTrigger>
+            <TabsTrigger value="fibonacci">فیبوناچی</TabsTrigger>
+            <TabsTrigger value="volume">حجم</TabsTrigger>
+            <TabsTrigger value="alerts">هشدارها</TabsTrigger>
           </TabsList>
 
           <TabsContent value="indicators" className="space-y-4">
@@ -617,9 +617,9 @@ export default function TechnicalPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Gauge className="h-5 w-5 text-blue-400" />
-                  <span>Technical Indicators</span>
+                  <span>اندیکاتورهای تکنیکال</span>
                 </CardTitle>
-                <CardDescription>Comprehensive technical analysis indicators</CardDescription>
+                <CardDescription>اندیکاتورهای جامع تحلیل تکنیکال</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -672,9 +672,9 @@ export default function TechnicalPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Activity className="h-5 w-5 text-cyan-400" />
-                  <span>Chart Patterns</span>
+                  <span>الگوهای نمودار</span>
                 </CardTitle>
-                <CardDescription>Detected patterns and price targets</CardDescription>
+                <CardDescription>الگوهای شناسایی‌شده و اهداف قیمتی</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -686,19 +686,19 @@ export default function TechnicalPage() {
                       </div>
                       <div className="space-y-3">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Probability</span>
+                          <span className="text-gray-400">احتمال</span>
                           <span className="font-bold text-green-400">{pattern.probability}%</span>
                         </div>
                         <Progress value={pattern.probability} className="h-2" />
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Target</span>
+                          <span className="text-gray-400">هدف</span>
                           <span className="font-bold text-blue-400">{pattern.target}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Confidence</span>
+                          <span className="text-gray-400">اطمینان</span>
                           <Badge className={`text-xs ${
-                            pattern.confidence === 'High' ? 'bg-green-500/20 text-green-300' :
-                            pattern.confidence === 'Medium' ? 'bg-yellow-500/20 text-yellow-300' :
+                            pattern.confidence === 'بالا' ? 'bg-green-500/20 text-green-300' :
+                            pattern.confidence === 'متوسط' ? 'bg-yellow-500/20 text-yellow-300' :
                             'bg-red-500/20 text-red-300'
                           }`}>
                             {pattern.confidence}
@@ -707,7 +707,7 @@ export default function TechnicalPage() {
                       </div>
                       <Button className="w-full btn-morphic">
                         <Eye className="h-4 w-4 mr-2" />
-                        View on Chart
+                        نمایش در نمودار
                       </Button>
                     </div>
                   ))}
@@ -723,24 +723,24 @@ export default function TechnicalPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Target className="h-5 w-5 text-yellow-400" />
-                    <span>Support & Resistance</span>
+                    <span>حمایت و مقاومت</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     {supportResistance.map((level, index) => (
-                      <div 
-                        key={level.level} 
+                      <div
+                        key={level.level}
                         className={`flex items-center justify-between p-3 rounded-lg ${
-                          level.level === 'Current Price' 
-                            ? 'bg-blue-500/20 border border-blue-500/30' 
+                          level.level === 'قیمت فعلی'
+                            ? 'bg-blue-500/20 border border-blue-500/30'
                             : 'neomorphic'
                         }`}
                       >
                         <div className="flex items-center space-x-4">
                           <span className={`font-medium w-24 text-sm ${
-                            level.level.includes('Resistance') ? 'text-red-400' :
-                            level.level.includes('Support') ? 'text-green-400' :
+                            level.level.includes('مقاومت') ? 'text-red-400' :
+                            level.level.includes('حمایت') ? 'text-green-400' :
                             'text-blue-400'
                           }`}>
                             {level.level}
@@ -749,19 +749,19 @@ export default function TechnicalPage() {
                         </div>
                         <div className="flex items-center space-x-3">
                           <span className={`text-sm ${
-                            level.distance.startsWith('+') ? 'text-green-400' :
-                            level.distance.startsWith('-') ? 'text-red-400' :
+                            level.distance.endsWith('+') ? 'text-green-400' :
+                            level.distance.endsWith('-') ? 'text-red-400' :
                             'text-gray-400'
                           }`}>
                             {level.distance}
                           </span>
                           <Badge className={`text-xs ${
-                            level.strength === 'Strong' ? 'bg-red-500/20 text-red-300' :
-                            level.strength === 'Medium' ? 'bg-yellow-500/20 text-yellow-300' :
-                            level.strength === 'Current' ? 'bg-blue-500/20 text-blue-300' :
+                            level.strength === 'قوی' ? 'bg-red-500/20 text-red-300' :
+                            level.strength === 'متوسط' ? 'bg-yellow-500/20 text-yellow-300' :
+                            level.strength === 'فعلی' ? 'bg-blue-500/20 text-blue-300' :
                             'bg-gray-500/20 text-gray-300'
                           }`}>
-                            {level.touches} touches
+                            {level.touches} برخورد
                           </Badge>
                         </div>
                       </div>
@@ -775,7 +775,7 @@ export default function TechnicalPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <LineChart className="h-5 w-5 text-purple-400" />
-                    <span>Moving Averages</span>
+                    <span>میانگین‌های متحرک</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -789,7 +789,7 @@ export default function TechnicalPage() {
                         <div className="flex items-center space-x-3">
                           <span className="text-sm text-green-400">{ma.distance}</span>
                           <Badge className={`text-xs ${
-                            ma.signal === 'Bullish' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
+                            ma.signal === 'صعودی' ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
                           }`}>
                             {ma.signal}
                           </Badge>
@@ -807,9 +807,9 @@ export default function TechnicalPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Layers className="h-5 w-5 text-orange-400" />
-                  <span>Fibonacci Retracement</span>
+                  <span>اصلاح فیبوناچی</span>
                 </CardTitle>
-                <CardDescription>Key Fibonacci levels for price analysis</CardDescription>
+                <CardDescription>سطوح کلیدی فیبوناچی برای تحلیل قیمت</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -820,8 +820,8 @@ export default function TechnicalPage() {
                         <span className="text-lg font-bold">{fib.price}</span>
                       </div>
                       <Badge className={`text-xs ${
-                        fib.type === 'Support' ? 'bg-green-500/20 text-green-300' :
-                        fib.type === 'Resistance' ? 'bg-red-500/20 text-red-300' :
+                        fib.type === 'حمایت' ? 'bg-green-500/20 text-green-300' :
+                        fib.type === 'مقاومت' ? 'bg-red-500/20 text-red-300' :
                         'bg-blue-500/20 text-blue-300'
                       }`}>
                         {fib.type}
@@ -838,9 +838,9 @@ export default function TechnicalPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Volume2 className="h-5 w-5 text-cyan-400" />
-                  <span>Volume Profile</span>
+                  <span>نمایه حجم</span>
                 </CardTitle>
-                <CardDescription>Volume distribution by price levels</CardDescription>
+                <CardDescription>توزیع حجم بر اساس سطوح قیمتی</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -873,46 +873,46 @@ export default function TechnicalPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                  <span>Price Alerts</span>
+                  <span>هشدارهای قیمت</span>
                 </CardTitle>
-                <CardDescription>Set up technical analysis alerts</CardDescription>
+                <CardDescription>تنظیم هشدارهای تحلیل تکنیکال</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Button className="btn-morphic h-12">
                     <Target className="h-4 w-4 mr-2" />
-                    Price Alert
+                    هشدار قیمت
                   </Button>
                   <Button className="btn-morphic h-12">
                     <Gauge className="h-4 w-4 mr-2" />
-                    Indicator Alert
+                    هشدار اندیکاتور
                   </Button>
                   <Button className="btn-morphic h-12">
                     <Activity className="h-4 w-4 mr-2" />
-                    Pattern Alert
+                    هشدار الگو
                   </Button>
                   <Button className="btn-morphic h-12">
                     <Volume2 className="h-4 w-4 mr-2" />
-                    Volume Alert
+                    هشدار حجم
                   </Button>
                 </div>
-                
+
                 <div className="space-y-3 mt-6">
-                  <h4 className="font-medium">Active Alerts</h4>
+                  <h4 className="font-medium">هشدارهای فعال</h4>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-3 neomorphic rounded-lg">
                       <div>
                         <p className="font-medium">BTC/USD &gt; $43,000</p>
-                        <p className="text-xs text-gray-400">Price Alert</p>
+                        <p className="text-xs text-gray-400">هشدار قیمت</p>
                       </div>
-                      <Badge className="bg-green-500/20 text-green-300">Active</Badge>
+                      <Badge className="bg-green-500/20 text-green-300">فعال</Badge>
                     </div>
                     <div className="flex items-center justify-between p-3 neomorphic rounded-lg">
                       <div>
                         <p className="font-medium">RSI &lt; 30</p>
-                        <p className="text-xs text-gray-400">Oversold Alert</p>
+                        <p className="text-xs text-gray-400">هشدار اشباع فروش</p>
                       </div>
-                      <Badge className="bg-yellow-500/20 text-yellow-300">Pending</Badge>
+                      <Badge className="bg-yellow-500/20 text-yellow-300">در انتظار</Badge>
                     </div>
                   </div>
                 </div>

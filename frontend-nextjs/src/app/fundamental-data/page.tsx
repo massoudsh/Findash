@@ -34,27 +34,27 @@ import {
 } from 'lucide-react';
 
 const PREDEFINED_ASSETS = [
-  { symbol: 'BTC-USD', name: 'Bitcoin', type: 'crypto', category: 'Layer 1', marketCap: '$831B' },
-  { symbol: 'ETH-USD', name: 'Ethereum', type: 'crypto', category: 'Smart Contract', marketCap: '$310B' },
-  { symbol: 'AAPL', name: 'Apple Inc.', type: 'stock', category: 'Technology', marketCap: '$2.8T' },
-  { symbol: 'TSLA', name: 'Tesla Inc.', type: 'stock', category: 'EV/Energy', marketCap: '$780B' },
-  { symbol: 'NVDA', name: 'NVIDIA Corp.', type: 'stock', category: 'AI/Semiconductors', marketCap: '$1.2T' },
-  { symbol: 'MSFT', name: 'Microsoft Corp.', type: 'stock', category: 'Cloud/Software', marketCap: '$2.9T' },
-  { symbol: 'GOOGL', name: 'Alphabet Inc.', type: 'stock', category: 'Tech/AI', marketCap: '$1.7T' },
-  { symbol: 'LINK-USD', name: 'Chainlink', type: 'crypto', category: 'Oracle Network', marketCap: '$8.2B' },
-  { symbol: 'SOL-USD', name: 'Solana', type: 'crypto', category: 'Layer 1', marketCap: '$43B' },
-  { symbol: 'AVAX-USD', name: 'Avalanche', type: 'crypto', category: 'Layer 1', marketCap: '$15B' },
-  { symbol: 'MATIC-USD', name: 'Polygon', type: 'crypto', category: 'Layer 2', marketCap: '$9.8B' },
-  { symbol: 'UNI-USD', name: 'Uniswap', type: 'crypto', category: 'DeFi', marketCap: '$5.2B' },
+  { symbol: 'BTC-USD', name: 'بیت‌کوین', type: 'crypto', category: 'لایه ۱', marketCap: '$831B' },
+  { symbol: 'ETH-USD', name: 'اتریوم', type: 'crypto', category: 'قرارداد هوشمند', marketCap: '$310B' },
+  { symbol: 'AAPL', name: 'اپل', type: 'stock', category: 'فناوری', marketCap: '$2.8T' },
+  { symbol: 'TSLA', name: 'تسلا', type: 'stock', category: 'خودرو برقی/انرژی', marketCap: '$780B' },
+  { symbol: 'NVDA', name: 'انویدیا', type: 'stock', category: 'هوش مصنوعی/نیمه‌هادی', marketCap: '$1.2T' },
+  { symbol: 'MSFT', name: 'مایکروسافت', type: 'stock', category: 'ابر/نرم‌افزار', marketCap: '$2.9T' },
+  { symbol: 'GOOGL', name: 'آلفابت', type: 'stock', category: 'فناوری/هوش مصنوعی', marketCap: '$1.7T' },
+  { symbol: 'LINK-USD', name: 'چین‌لینک', type: 'crypto', category: 'شبکه اوراکل', marketCap: '$8.2B' },
+  { symbol: 'SOL-USD', name: 'سولانا', type: 'crypto', category: 'لایه ۱', marketCap: '$43B' },
+  { symbol: 'AVAX-USD', name: 'آوالانچ', type: 'crypto', category: 'لایه ۱', marketCap: '$15B' },
+  { symbol: 'MATIC-USD', name: 'پالیگان', type: 'crypto', category: 'لایه ۲', marketCap: '$9.8B' },
+  { symbol: 'UNI-USD', name: 'یونی‌سواپ', type: 'crypto', category: 'دیفای', marketCap: '$5.2B' },
 ];
 
 const NEW_PROJECTS = [
-  { symbol: 'ARB-USD', name: 'Arbitrum', type: 'crypto', category: 'Layer 2', status: 'Emerging', risk: 'High' },
-  { symbol: 'OP-USD', name: 'Optimism', type: 'crypto', category: 'Layer 2', status: 'Growing', risk: 'Medium' },
-  { symbol: 'BLUR-USD', name: 'Blur', type: 'crypto', category: 'NFT/Gaming', status: 'New', risk: 'Very High' },
-  { symbol: 'LDO-USD', name: 'Lido DAO', type: 'crypto', category: 'Liquid Staking', status: 'Established', risk: 'Medium' },
-  { symbol: 'RDNT-USD', name: 'Radiant Capital', type: 'crypto', category: 'DeFi/Lending', status: 'Emerging', risk: 'High' },
-  { symbol: 'GMX-USD', name: 'GMX', type: 'crypto', category: 'DeFi/Derivatives', status: 'Growing', risk: 'Medium' },
+  { symbol: 'ARB-USD', name: 'آربیتروم', type: 'crypto', category: 'لایه ۲', status: 'نوظهور', risk: 'بالا' },
+  { symbol: 'OP-USD', name: 'اپتیمیزم', type: 'crypto', category: 'لایه ۲', status: 'در حال رشد', risk: 'متوسط' },
+  { symbol: 'BLUR-USD', name: 'بلور', type: 'crypto', category: 'NFT/گیمینگ', status: 'جدید', risk: 'بسیار بالا' },
+  { symbol: 'LDO-USD', name: 'لیدو DAO', type: 'crypto', category: 'استیکینگ نقدشونده', status: 'تثبیت‌شده', risk: 'متوسط' },
+  { symbol: 'RDNT-USD', name: 'رادیانت کپیتال', type: 'crypto', category: 'دیفای/وام‌دهی', status: 'نوظهور', risk: 'بالا' },
+  { symbol: 'GMX-USD', name: 'جی‌ام‌ایکس', type: 'crypto', category: 'دیفای/مشتقات', status: 'در حال رشد', risk: 'متوسط' },
 ];
 
 export default function FundamentalDataPage() {
@@ -173,19 +173,19 @@ export default function FundamentalDataPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Fundamental Research</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">تحقیق بنیادی</h1>
           <p className="text-muted-foreground mt-1">
-            Fundamental analysis and research — dashboard from API when available
+            تحلیل و تحقیق بنیادی — داشبورد از API در صورت در دسترس بودن
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <Button onClick={runDeepAnalysis} disabled={deepAnalysisLoading} variant="outline" size="sm">
             <Brain className="h-4 w-4 mr-2" />
-            {deepAnalysisLoading ? 'Analyzing...' : 'AI Analysis'}
+            {deepAnalysisLoading ? 'در حال تحلیل...' : 'تحلیل هوش مصنوعی'}
           </Button>
           <Button onClick={generateDeepResearchReport} disabled={reportGenerating} variant="secondary" size="sm">
             <FileText className="h-4 w-4 mr-2" />
-            {reportGenerating ? 'Generating...' : 'Generate PDF'}
+            {reportGenerating ? 'در حال تولید...' : 'تولید PDF'}
           </Button>
         </div>
       </div>
@@ -193,10 +193,10 @@ export default function FundamentalDataPage() {
       <Tabs defaultValue="research" className="w-full">
         <div className="border-b border-border/50 bg-card/30 px-4 py-2 rounded-lg">
           <TabsList className="grid w-full max-w-2xl grid-cols-4">
-            <TabsTrigger value="research">Deep Research</TabsTrigger>
-            <TabsTrigger value="new-projects">New Projects</TabsTrigger>
-            <TabsTrigger value="ai-insights">AI Insights</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="research">تحقیق عمیق</TabsTrigger>
+            <TabsTrigger value="new-projects">پروژه‌های جدید</TabsTrigger>
+            <TabsTrigger value="ai-insights">بینش‌های هوش مصنوعی</TabsTrigger>
+            <TabsTrigger value="reports">گزارش‌ها</TabsTrigger>
           </TabsList>
         </div>
 
@@ -206,17 +206,17 @@ export default function FundamentalDataPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Database className="h-5 w-5 text-foreground" />
-                  <span>Research Center</span>
+                  <span>مرکز تحقیق</span>
                 </CardTitle>
-                <CardDescription>Select assets for deep fundamental analysis with AI-powered insights</CardDescription>
+                <CardDescription>انتخاب دارایی برای تحلیل بنیادی عمیق با بینش‌های هوش مصنوعی</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Asset Selection</label>
+                    <label className="text-sm font-medium">انتخاب دارایی</label>
                     <Select value={selectedAsset} onValueChange={handleAssetSelect}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select an asset" />
+                        <SelectValue placeholder="یک دارایی انتخاب کنید" />
                       </SelectTrigger>
                       <SelectContent>
                         {PREDEFINED_ASSETS.map((asset) => (
@@ -235,27 +235,27 @@ export default function FundamentalDataPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Category Filter</label>
+                    <label className="text-sm font-medium">فیلتر دسته</label>
                     <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                       <SelectTrigger>
-                        <SelectValue placeholder="All Categories" />
+                        <SelectValue placeholder="همه دسته‌ها" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Categories</SelectItem>
-                        <SelectItem value="layer 1">Layer 1</SelectItem>
-                        <SelectItem value="layer 2">Layer 2</SelectItem>
-                        <SelectItem value="defi">DeFi</SelectItem>
-                        <SelectItem value="technology">Technology</SelectItem>
-                        <SelectItem value="ai">AI/ML</SelectItem>
+                        <SelectItem value="all">همه دسته‌ها</SelectItem>
+                        <SelectItem value="لایه ۱">لایه ۱</SelectItem>
+                        <SelectItem value="لایه ۲">لایه ۲</SelectItem>
+                        <SelectItem value="دیفای">دیفای</SelectItem>
+                        <SelectItem value="فناوری">فناوری</SelectItem>
+                        <SelectItem value="هوش مصنوعی">هوش مصنوعی</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">Search Assets</label>
+                    <label className="text-sm font-medium">جستجوی دارایی</label>
                     <div className="flex space-x-2">
                       <Input
-                        placeholder="Search symbol or name..."
+                        placeholder="جستجوی نماد یا نام..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -287,16 +287,16 @@ export default function FundamentalDataPage() {
                           asset.type === 'stock' ? 'bg-green-500/20 text-green-300' :
                           'bg-blue-500/20 text-blue-300'
                         }`}>
-                          {asset.type}
+                          {asset.type === 'crypto' ? 'ارز دیجیتال' : asset.type === 'stock' ? 'سهام' : asset.type}
                         </Badge>
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-400">Category:</span>
+                          <span className="text-sm text-gray-400">دسته:</span>
                           <span className="text-sm font-medium">{asset.category}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-400">Market Cap:</span>
+                          <span className="text-sm text-gray-400">ارزش بازار:</span>
                           <span className="text-sm font-medium">{asset.marketCap}</span>
                         </div>
                       </div>
@@ -315,9 +315,9 @@ export default function FundamentalDataPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Zap className="h-5 w-5 text-yellow-400" />
-                  <span>New & Emerging Projects</span>
+                  <span>پروژه‌های جدید و نوظهور</span>
                 </CardTitle>
-                <CardDescription>Research and analysis of new blockchain projects and tokens</CardDescription>
+                <CardDescription>تحقیق و تحلیل پروژه‌ها و توکن‌های جدید بلاک‌چین</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -329,8 +329,8 @@ export default function FundamentalDataPage() {
                           <p className="text-sm text-gray-400">{project.name}</p>
                         </div>
                         <Badge className={`${
-                          project.risk === 'Very High' ? 'bg-red-500/20 text-red-300' :
-                          project.risk === 'High' ? 'bg-orange-500/20 text-orange-300' :
+                          project.risk === 'بسیار بالا' ? 'bg-red-500/20 text-red-300' :
+                          project.risk === 'بالا' ? 'bg-orange-500/20 text-orange-300' :
                           'bg-yellow-500/20 text-yellow-300'
                         }`}>
                           {project.risk}
@@ -338,14 +338,14 @@ export default function FundamentalDataPage() {
                       </div>
                       <div className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-400">Category:</span>
+                          <span className="text-sm text-gray-400">دسته:</span>
                           <span className="text-sm font-medium">{project.category}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-sm text-gray-400">Status:</span>
+                          <span className="text-sm text-gray-400">وضعیت:</span>
                           <Badge className={`text-xs ${
-                            project.status === 'Established' ? 'bg-green-500/20 text-green-300' :
-                            project.status === 'Growing' ? 'bg-blue-500/20 text-blue-300' :
+                            project.status === 'تثبیت‌شده' ? 'bg-green-500/20 text-green-300' :
+                            project.status === 'در حال رشد' ? 'bg-blue-500/20 text-blue-300' :
                             'bg-purple-500/20 text-purple-300'
                           }`}>
                             {project.status}
@@ -356,7 +356,7 @@ export default function FundamentalDataPage() {
                         className="w-full mt-3 btn-morphic text-sm"
                         onClick={() => handleAssetSelect(project.symbol)}
                       >
-                        Research Project
+                        تحقیق درباره پروژه
                       </Button>
                     </div>
                   ))}
@@ -373,23 +373,23 @@ export default function FundamentalDataPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
                       <Brain className="h-5 w-5 text-purple-400" />
-                      <span>AI Market Intelligence</span>
+                      <span>هوشمندی بازار با هوش مصنوعی</span>
                     </CardTitle>
-                    <CardDescription>LLM-powered insights from comprehensive market analysis</CardDescription>
+                    <CardDescription>بینش‌های مبتنی بر LLM از تحلیل جامع بازار</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                       <div className="text-center p-4 neomorphic rounded-lg">
                         <div className="text-2xl font-bold text-green-400">{aiInsights.market_summary?.bullish_signals || 0}</div>
-                        <div className="text-sm text-gray-400">Bullish Signals</div>
+                        <div className="text-sm text-gray-400">سیگنال‌های صعودی</div>
                       </div>
                       <div className="text-center p-4 neomorphic rounded-lg">
                         <div className="text-2xl font-bold text-red-400">{aiInsights.market_summary?.bearish_signals || 0}</div>
-                        <div className="text-sm text-gray-400">Bearish Signals</div>
+                        <div className="text-sm text-gray-400">سیگنال‌های نزولی</div>
                       </div>
                       <div className="text-center p-4 neomorphic rounded-lg">
                         <div className="text-2xl font-bold text-blue-400">{aiInsights.market_summary?.total_assets_analyzed || 0}</div>
-                        <div className="text-sm text-gray-400">Assets Analyzed</div>
+                        <div className="text-sm text-gray-400">دارایی‌های تحلیل‌شده</div>
                       </div>
                     </div>
                   </CardContent>
@@ -416,14 +416,14 @@ export default function FundamentalDataPage() {
                         <p className="text-gray-300 mb-4">{insight.summary}</p>
                         <div className="space-y-2">
                           <div className="flex justify-between">
-                            <span className="text-sm text-gray-400">Confidence:</span>
+                            <span className="text-sm text-gray-400">اطمینان:</span>
                             <div className="flex items-center space-x-2">
                               <Progress value={insight.confidence} className="w-20 h-2" />
                               <span className="text-sm font-medium">{insight.confidence}%</span>
                             </div>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-sm text-gray-400">Impact:</span>
+                            <span className="text-sm text-gray-400">تأثیر:</span>
                             <Badge className={`text-xs ${
                               insight.impact === 'high' ? 'bg-red-500/20 text-red-300' :
                               insight.impact === 'medium' ? 'bg-yellow-500/20 text-yellow-300' :
@@ -447,11 +447,11 @@ export default function FundamentalDataPage() {
               <Card className="glass-card">
                 <CardContent className="text-center py-12">
                   <Brain className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No AI Insights Generated</h3>
-                  <p className="text-gray-400 mb-4">Click "AI Analysis" to generate comprehensive market insights</p>
+                  <h3 className="text-lg font-medium mb-2">هنوز بینشی تولید نشده است</h3>
+                  <p className="text-gray-400 mb-4">برای تولید بینش‌های جامع بازار روی «تحلیل هوش مصنوعی» کلیک کنید</p>
                   <Button onClick={runDeepAnalysis} disabled={deepAnalysisLoading} className="btn-morphic">
                     <Brain className="h-4 w-4 mr-2" />
-                    {deepAnalysisLoading ? 'Analyzing...' : 'Generate AI Insights'}
+                    {deepAnalysisLoading ? 'در حال تحلیل...' : 'تولید بینش هوش مصنوعی'}
                   </Button>
                 </CardContent>
               </Card>
@@ -463,92 +463,92 @@ export default function FundamentalDataPage() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <FileText className="h-5 w-5 text-green-400" />
-                  <span>Research Reports</span>
+                  <span>گزارش‌های تحقیقاتی</span>
                 </CardTitle>
-                <CardDescription>Generate comprehensive PDF reports using AI analysis</CardDescription>
+                <CardDescription>تولید گزارش‌های جامع PDF با استفاده از تحلیل هوش مصنوعی</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <h3 className="font-semibold">Report Types</h3>
+                    <h3 className="font-semibold">انواع گزارش</h3>
                     <div className="space-y-3">
                       <div className="p-4 neomorphic rounded-lg">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium">Deep Fundamental Analysis</h4>
-                          <Badge className="bg-blue-500/20 text-blue-300">Comprehensive</Badge>
+                          <h4 className="font-medium">تحلیل بنیادی عمیق</h4>
+                          <Badge className="bg-blue-500/20 text-blue-300">جامع</Badge>
                         </div>
-                        <p className="text-sm text-gray-400 mb-3">Complete fundamental analysis with AI insights, financial metrics, and recommendations</p>
-                        <Button 
-                          onClick={generateDeepResearchReport} 
+                        <p className="text-sm text-gray-400 mb-3">تحلیل بنیادی کامل همراه با بینش‌های هوش مصنوعی، متریک‌های مالی و توصیه‌ها</p>
+                        <Button
+                          onClick={generateDeepResearchReport}
                           disabled={reportGenerating}
                           className="w-full btn-morphic"
                         >
                           <Download className="h-4 w-4 mr-2" />
-                          {reportGenerating ? 'Generating...' : 'Generate PDF'}
+                          {reportGenerating ? 'در حال تولید...' : 'تولید PDF'}
                         </Button>
                       </div>
-                      
+
                       <div className="p-4 neomorphic rounded-lg">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium">Technical + Fundamental</h4>
-                          <Badge className="bg-purple-500/20 text-purple-300">Combined</Badge>
+                          <h4 className="font-medium">تکنیکال + بنیادی</h4>
+                          <Badge className="bg-purple-500/20 text-purple-300">ترکیبی</Badge>
                         </div>
-                        <p className="text-sm text-gray-400 mb-3">Integrated technical and fundamental analysis for complete market view</p>
+                        <p className="text-sm text-gray-400 mb-3">تحلیل یکپارچه تکنیکال و بنیادی برای دید کامل بازار</p>
                         <Button className="w-full btn-morphic" variant="outline">
                           <Download className="h-4 w-4 mr-2" />
-                          Coming Soon
+                          به‌زودی
                         </Button>
                       </div>
-                      
+
                       <div className="p-4 neomorphic rounded-lg">
                         <div className="flex items-center justify-between mb-2">
-                          <h4 className="font-medium">Portfolio Analysis</h4>
-                          <Badge className="bg-green-500/20 text-green-300">Multi-Asset</Badge>
+                          <h4 className="font-medium">تحلیل پرتفوی</h4>
+                          <Badge className="bg-green-500/20 text-green-300">چند-دارایی</Badge>
                         </div>
-                        <p className="text-sm text-gray-400 mb-3">Complete portfolio analysis with risk assessment and optimization</p>
+                        <p className="text-sm text-gray-400 mb-3">تحلیل کامل پرتفوی همراه با ارزیابی ریسک و بهینه‌سازی</p>
                         <Button className="w-full btn-morphic" variant="outline">
                           <Download className="h-4 w-4 mr-2" />
-                          Coming Soon
+                          به‌زودی
                         </Button>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
-                    <h3 className="font-semibold">Report Features</h3>
+                    <h3 className="font-semibold">امکانات گزارش</h3>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-3">
                         <CheckCircle className="h-5 w-5 text-green-400" />
-                        <span className="text-sm">AI-powered insights and analysis</span>
+                        <span className="text-sm">بینش‌ها و تحلیل مبتنی بر هوش مصنوعی</span>
                       </div>
                       <div className="flex items-center space-x-3">
                         <CheckCircle className="h-5 w-5 text-green-400" />
-                        <span className="text-sm">Real-time market data integration</span>
+                        <span className="text-sm">یکپارچگی با داده بازار بلادرنگ</span>
                       </div>
                       <div className="flex items-center space-x-3">
                         <CheckCircle className="h-5 w-5 text-green-400" />
-                        <span className="text-sm">Professional PDF formatting</span>
+                        <span className="text-sm">قالب‌بندی حرفه‌ای PDF</span>
                       </div>
                       <div className="flex items-center space-x-3">
                         <CheckCircle className="h-5 w-5 text-green-400" />
-                        <span className="text-sm">Institutional-grade research</span>
+                        <span className="text-sm">تحقیق در سطح نهادی</span>
                       </div>
                       <div className="flex items-center space-x-3">
                         <CheckCircle className="h-5 w-5 text-green-400" />
-                        <span className="text-sm">Risk assessment and recommendations</span>
+                        <span className="text-sm">ارزیابی ریسک و توصیه‌ها</span>
                       </div>
                       <div className="flex items-center space-x-3">
                         <CheckCircle className="h-5 w-5 text-green-400" />
-                        <span className="text-sm">Competitive landscape analysis</span>
+                        <span className="text-sm">تحلیل فضای رقابتی</span>
                       </div>
                     </div>
-                    
+
                     <div className="mt-6 p-4 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
-                      <h4 className="font-medium text-indigo-300 mb-2">AI-Powered Research</h4>
+                      <h4 className="font-medium text-indigo-300 mb-2">تحقیق مبتنی بر هوش مصنوعی</h4>
                       <p className="text-sm text-gray-300">
-                        Our reports use advanced LLM models to analyze market data, 
-                        news sentiment, and fundamental metrics to provide institutional-grade 
-                        research and actionable insights.
+                        گزارش‌های ما از مدل‌های پیشرفته LLM برای تحلیل داده بازار،
+                        احساسات اخبار و متریک‌های بنیادی استفاده می‌کنند تا تحقیق و
+                        بینش‌های عملیاتی در سطح نهادی ارائه دهند.
                       </p>
                     </div>
                   </div>

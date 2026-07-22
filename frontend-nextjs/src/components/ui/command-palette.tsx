@@ -121,94 +121,94 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const navigationActions: CommandAction[] = [
     {
       id: 'nav-dashboard',
-      title: 'Dashboard',
-      description: 'Go to main dashboard',
+      title: 'داشبورد',
+      description: 'رفتن به داشبورد اصلی',
       action: () => router.push('/'),
       icon: BarChart3,
-      category: 'Navigation',
-      keywords: ['dashboard', 'home', 'overview'],
+      category: 'ناوبری',
+      keywords: ['dashboard', 'home', 'overview', 'داشبورد'],
       shortcut: 'Ctrl+D'
     },
     {
       id: 'nav-portfolio',
-      title: 'Portfolio',
-      description: 'View your investment portfolio',
+      title: 'پرتفوی',
+      description: 'مشاهده و مدیریت پرتفوی سرمایه‌گذاری',
       action: () => router.push('/dashboard?tab=portfolio'),
       icon: Briefcase,
-      category: 'Navigation',
-      keywords: ['portfolio', 'investments', 'assets']
+      category: 'ناوبری',
+      keywords: ['portfolio', 'investments', 'assets', 'پرتفوی']
     },
     {
       id: 'nav-options',
-      title: 'Options Trading',
-      description: 'Access options trading platform',
+      title: 'معاملات اختیار',
+      description: 'دسترسی به پلتفرم معاملات اختیار',
       action: () => router.push('/options'),
       icon: DollarSign,
-      category: 'Navigation',
-      keywords: ['options', 'trading', 'derivatives']
+      category: 'ناوبری',
+      keywords: ['options', 'trading', 'derivatives', 'اختیار']
     },
     {
       id: 'nav-strategies',
-      title: 'Trading Strategies',
-      description: 'Manage your trading strategies',
+      title: 'استراتژی‌های معاملاتی',
+      description: 'مدیریت استراتژی‌های معاملاتی شما',
       action: () => router.push('/strategies'),
       icon: Target,
-      category: 'Navigation',
-      keywords: ['strategies', 'algorithms', 'trading']
+      category: 'ناوبری',
+      keywords: ['strategies', 'algorithms', 'trading', 'استراتژی']
     },
     {
       id: 'nav-trades',
-      title: 'Trade History',
-      description: 'View past and current trades',
+      title: 'تاریخچه معاملات',
+      description: 'مشاهده معاملات گذشته و جاری',
       action: () => router.push('/trades'),
       icon: TrendingUp,
-      category: 'Navigation',
-      keywords: ['trades', 'history', 'orders']
+      category: 'ناوبری',
+      keywords: ['trades', 'history', 'orders', 'معاملات']
     },
     {
       id: 'nav-realtime',
-      title: 'Real-time Data',
-      description: 'Live market data and analytics',
+      title: 'داده بلادرنگ',
+      description: 'داده و تحلیل زنده بازار',
       action: () => router.push('/realtime'),
       icon: Activity,
-      category: 'Navigation',
-      keywords: ['realtime', 'live', 'market', 'data']
+      category: 'ناوبری',
+      keywords: ['realtime', 'live', 'market', 'data', 'بلادرنگ']
     },
     {
       id: 'nav-ai-models',
-      title: 'AI Models',
-      description: 'Machine learning models and training',
+      title: 'مدل‌های هوش مصنوعی',
+      description: 'مدل‌های یادگیری ماشین و آموزش آن‌ها',
       action: () => router.push('/ai-models'),
       icon: Brain,
-      category: 'Navigation',
-      keywords: ['ai', 'ml', 'models', 'training']
+      category: 'ناوبری',
+      keywords: ['ai', 'ml', 'models', 'training', 'هوش مصنوعی']
     },
     {
       id: 'nav-risk',
-      title: 'Risk Management',
-      description: 'Risk analysis and stress testing',
+      title: 'مدیریت ریسک',
+      description: 'تحلیل ریسک و استرس‌تست',
       action: () => router.push('/trading?tab=risk'),
       icon: Shield,
-      category: 'Navigation',
-      keywords: ['risk', 'analysis', 'var', 'stress']
+      category: 'ناوبری',
+      keywords: ['risk', 'analysis', 'var', 'stress', 'ریسک']
     },
     {
       id: 'nav-visualization',
-      title: 'Charts & Visualization',
-      description: 'Advanced charting and data visualization',
+      title: 'نمودار و نمایش داده',
+      description: 'نمودارسازی پیشرفته و مصورسازی داده',
       action: () => router.push('/visualization'),
       icon: PieChart,
-      category: 'Navigation',
-      keywords: ['charts', 'visualization', 'graphs']
+      category: 'ناوبری',
+      keywords: ['charts', 'visualization', 'graphs', 'نمودار']
     },
     {
       id: 'nav-reports',
-      title: 'Reports',
-      description: 'Generate and view reports',
+      title: 'گزارش‌ها',
+      description: 'تولید و مشاهده گزارش‌ها',
       action: () => router.push('/reports'),
       icon: FileText,
-      category: 'Navigation',
-      keywords: ['reports', 'analytics', 'pdf']
+      category: 'ناوبری',
+      keywords: ['reports', 'analytics', 'pdf', 'گزارش']
     }
   ];
 
@@ -216,52 +216,52 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const tradingActions: CommandAction[] = [
     {
       id: 'trade-buy',
-      title: 'Buy Stock',
-      description: 'Place a buy order',
+      title: 'خرید سهم',
+      description: 'ثبت سفارش خرید',
       action: () => {
         onOpenChange(false);
         // Mock action - would open buy dialog
         console.log('Opening buy order dialog');
       },
       icon: TrendingUp,
-      category: 'Trading',
-      keywords: ['buy', 'purchase', 'long', 'order'],
+      category: 'معاملات',
+      keywords: ['buy', 'purchase', 'long', 'order', 'خرید'],
       shortcut: 'Ctrl+B',
-      badge: 'Quick'
+      badge: 'سریع'
     },
     {
       id: 'trade-sell',
-      title: 'Sell Stock',
-      description: 'Place a sell order',
+      title: 'فروش سهم',
+      description: 'ثبت سفارش فروش',
       action: () => {
         onOpenChange(false);
         console.log('Opening sell order dialog');
       },
       icon: TrendingUp,
-      category: 'Trading',
-      keywords: ['sell', 'short', 'order'],
+      category: 'معاملات',
+      keywords: ['sell', 'short', 'order', 'فروش'],
       shortcut: 'Ctrl+S'
     },
     {
       id: 'trade-options',
-      title: 'Trade Options',
-      description: 'Open options trading interface',
+      title: 'معامله اختیار',
+      description: 'باز کردن رابط معاملات اختیار',
       action: () => router.push('/options'),
       icon: Target,
-      category: 'Trading',
-      keywords: ['options', 'calls', 'puts', 'derivatives']
+      category: 'معاملات',
+      keywords: ['options', 'calls', 'puts', 'derivatives', 'اختیار']
     },
     {
       id: 'trade-portfolio-rebalance',
-      title: 'Rebalance Portfolio',
-      description: 'Automatically rebalance your portfolio',
+      title: 'بازتوازن پرتفوی',
+      description: 'بازتوازن خودکار پرتفوی شما',
       action: () => {
         onOpenChange(false);
         console.log('Starting portfolio rebalancing');
       },
       icon: Briefcase,
-      category: 'Trading',
-      keywords: ['rebalance', 'portfolio', 'allocation']
+      category: 'معاملات',
+      keywords: ['rebalance', 'portfolio', 'allocation', 'بازتوازن']
     }
   ];
 
@@ -269,45 +269,45 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const analysisActions: CommandAction[] = [
     {
       id: 'analysis-stock',
-      title: 'Analyze Stock',
-      description: 'Run fundamental and technical analysis',
+      title: 'تحلیل سهم',
+      description: 'اجرای تحلیل بنیادی و تکنیکال',
       action: () => {
         onOpenChange(false);
         console.log('Opening stock analysis');
       },
       icon: BarChart3,
-      category: 'Analysis',
-      keywords: ['analyze', 'stock', 'fundamental', 'technical']
+      category: 'تحلیل',
+      keywords: ['analyze', 'stock', 'fundamental', 'technical', 'تحلیل']
     },
     {
       id: 'analysis-backtest',
-      title: 'Backtest Strategy',
-      description: 'Test strategy against historical data',
+      title: 'بک‌تست استراتژی',
+      description: 'آزمایش استراتژی روی داده‌های تاریخی',
       action: () => router.push('/strategies?tab=backtesting'),
       icon: FlaskConical,
-      category: 'Analysis',
-      keywords: ['backtest', 'strategy', 'historical', 'simulation']
+      category: 'تحلیل',
+      keywords: ['backtest', 'strategy', 'historical', 'simulation', 'بک‌تست']
     },
     {
       id: 'analysis-risk',
-      title: 'Risk Assessment',
-      description: 'Analyze portfolio risk metrics',
+      title: 'ارزیابی ریسک',
+      description: 'تحلیل معیارهای ریسک پرتفوی',
       action: () => router.push('/trading?tab=risk'),
       icon: Shield,
-      category: 'Analysis',
-      keywords: ['risk', 'var', 'stress', 'assessment']
+      category: 'تحلیل',
+      keywords: ['risk', 'var', 'stress', 'assessment', 'ریسک']
     },
     {
       id: 'analysis-generate-report',
-      title: 'Generate Report',
-      description: 'Create comprehensive trading report',
+      title: 'تولید گزارش',
+      description: 'ساخت گزارش کامل معاملاتی',
       action: () => {
         onOpenChange(false);
         console.log('Generating report');
       },
       icon: FileText,
-      category: 'Analysis',
-      keywords: ['report', 'generate', 'pdf', 'analytics']
+      category: 'تحلیل',
+      keywords: ['report', 'generate', 'pdf', 'analytics', 'گزارش']
     }
   ];
 
@@ -315,51 +315,51 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const systemActions: CommandAction[] = [
     {
       id: 'system-settings',
-      title: 'Settings',
-      description: 'Open application settings',
+      title: 'تنظیمات',
+      description: 'باز کردن تنظیمات برنامه',
       action: () => router.push('/settings'),
       icon: SettingsIcon,
-      category: 'System',
-      keywords: ['settings', 'preferences', 'config']
+      category: 'سیستم',
+      keywords: ['settings', 'preferences', 'config', 'تنظیمات']
     },
     {
       id: 'system-profile',
-      title: 'Profile',
-      description: 'View and edit your profile',
+      title: 'پروفایل',
+      description: 'مشاهده و ویرایش پروفایل شما',
       action: () => router.push('/profile'),
       icon: User,
-      category: 'System',
-      keywords: ['profile', 'account', 'user']
+      category: 'سیستم',
+      keywords: ['profile', 'account', 'user', 'پروفایل']
     },
     {
       id: 'system-notifications',
-      title: 'Notifications',
-      description: 'View system notifications',
+      title: 'اعلان‌ها',
+      description: 'مشاهده اعلان‌های سیستم',
       action: () => router.push('/notifications'),
       icon: Bell,
-      category: 'System',
-      keywords: ['notifications', 'alerts', 'messages']
+      category: 'سیستم',
+      keywords: ['notifications', 'alerts', 'messages', 'اعلان']
     },
     {
       id: 'system-help',
-      title: 'Help & Documentation',
-      description: 'Access help and documentation',
+      title: 'راهنما و مستندات',
+      description: 'دسترسی به راهنما و مستندات',
       action: () => router.push('/help'),
       icon: BookOpen,
-      category: 'System',
-      keywords: ['help', 'docs', 'documentation', 'support']
+      category: 'سیستم',
+      keywords: ['help', 'docs', 'documentation', 'support', 'راهنما']
     },
     {
       id: 'system-logout',
-      title: 'Logout',
-      description: 'Sign out of your account',
+      title: 'خروج',
+      description: 'خروج از حساب کاربری',
       action: () => {
         onOpenChange(false);
         console.log('Logging out');
       },
       icon: LogOut,
-      category: 'System',
-      keywords: ['logout', 'signout', 'exit']
+      category: 'سیستم',
+      keywords: ['logout', 'signout', 'exit', 'خروج']
     }
   ];
 
@@ -367,52 +367,52 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const quickActions: CommandAction[] = [
     {
       id: 'quick-refresh',
-      title: 'Refresh Data',
-      description: 'Refresh all market data',
+      title: 'به‌روزرسانی داده',
+      description: 'به‌روزرسانی تمام داده‌های بازار',
       action: () => {
         onOpenChange(false);
         console.log('Refreshing data');
       },
       icon: RefreshCw,
-      category: 'Quick Actions',
-      keywords: ['refresh', 'reload', 'update'],
+      category: 'اقدامات سریع',
+      keywords: ['refresh', 'reload', 'update', 'به‌روزرسانی'],
       shortcut: 'Ctrl+R'
     },
     {
       id: 'quick-export',
-      title: 'Export Data',
-      description: 'Export portfolio data',
+      title: 'خروجی‌گیری داده',
+      description: 'خروجی‌گیری از داده‌های پرتفوی',
       action: () => {
         onOpenChange(false);
         console.log('Exporting data');
       },
       icon: Download,
-      category: 'Quick Actions',
-      keywords: ['export', 'download', 'csv', 'pdf']
+      category: 'اقدامات سریع',
+      keywords: ['export', 'download', 'csv', 'pdf', 'خروجی']
     },
     {
       id: 'quick-calculator',
-      title: 'Options Calculator',
-      description: 'Open options pricing calculator',
+      title: 'ماشین‌حساب اختیار معامله',
+      description: 'باز کردن ماشین‌حساب قیمت‌گذاری اختیار',
       action: () => {
         onOpenChange(false);
         console.log('Opening calculator');
       },
       icon: Calculator,
-      category: 'Quick Actions',
-      keywords: ['calculator', 'options', 'pricing', 'greeks']
+      category: 'اقدامات سریع',
+      keywords: ['calculator', 'options', 'pricing', 'greeks', 'ماشین‌حساب']
     },
     {
       id: 'quick-watchlist',
-      title: 'Add to Watchlist',
-      description: 'Add current symbol to watchlist',
+      title: 'افزودن به دیده‌بان',
+      description: 'افزودن نماد جاری به لیست دیده‌بان',
       action: () => {
         onOpenChange(false);
         console.log('Adding to watchlist');
       },
       icon: Star,
-      category: 'Quick Actions',
-      keywords: ['watchlist', 'favorite', 'star', 'add']
+      category: 'اقدامات سریع',
+      keywords: ['watchlist', 'favorite', 'star', 'add', 'دیده‌بان']
     }
   ];
 
@@ -506,7 +506,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
         {platformResults.length > 0 && (
           <>
-            <CommandGroup heading="Platform">
+            <CommandGroup heading="پلتفرم">
               {platformResults.map((result) => (
                 <CommandItem
                   key={result.id}
@@ -577,7 +577,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           <CommandGroup>
             <CommandItem disabled>
               <Search className="h-4 w-4 mr-3" />
-              <span>No commands found for "{search}"</span>
+              <span>هیچ دستوری برای «{search}» یافت نشد</span>
             </CommandItem>
           </CommandGroup>
         )}

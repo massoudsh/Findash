@@ -6,9 +6,9 @@ export default function RealtimePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Real-time Processing</h1>
+        <h1 className="text-3xl font-bold tracking-tight">پردازش بلادرنگ</h1>
         <p className="text-muted-foreground">
-          Monitor live market data streams and real-time analytics
+          پایش جریان داده زنده بازار و تحلیل‌های بلادرنگ
         </p>
       </div>
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">

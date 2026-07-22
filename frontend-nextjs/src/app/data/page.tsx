@@ -42,24 +42,24 @@ export default function DataPage() {
   return (
     <div className="container mx-auto px-6 py-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Data & Charts</h1>
+        <h1 className="text-3xl font-bold tracking-tight">داده و نمودارها</h1>
         <p className="text-muted-foreground">
-          Explore, export, and visualize your trading data
+          داده‌های معاملاتی خود را کاوش، خروجی‌گیری و مصورسازی کنید
         </p>
       </div>
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full max-w-lg grid-cols-3">
           <TabsTrigger value="explorer" className="flex items-center gap-2">
             <Database className="h-4 w-4" />
-            Explorer
+            کاوشگر
           </TabsTrigger>
           <TabsTrigger value="charts" className="flex items-center gap-2">
             <PieChart className="h-4 w-4" />
-            Charts
+            نمودارها
           </TabsTrigger>
           <TabsTrigger value="report" className="flex items-center gap-2">
             <Sparkles className="h-4 w-4" />
-            AI Report
+            گزارش هوش مصنوعی
           </TabsTrigger>
         </TabsList>
         <TabsContent value="explorer" className="mt-6">
@@ -67,7 +67,7 @@ export default function DataPage() {
             <div className="min-w-0">
               <div className="space-y-6">
                 <DataExport
-                  title="Export Trading Data"
+                  title="خروجی‌گیری از داده‌های معاملاتی"
                   filename="trading-data"
                   className="mb-6"
                 />
@@ -88,35 +88,35 @@ export default function DataPage() {
               </Suspense>
               <Card className="mt-6 bg-card border-border">
                 <CardHeader>
-                  <CardTitle>Trading Analytics</CardTitle>
+                  <CardTitle>تحلیل معاملات</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="bg-muted/50 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Total Trades</h3>
-                      <div className="text-2xl font-bold">1,247</div>
-                      <p className="text-xs text-green-500">+12% this month</p>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">مجموع معاملات</h3>
+                      <div className="text-2xl font-bold">۱,۲۴۷</div>
+                      <p className="text-xs text-green-500">۱۲%+ این ماه</p>
                     </div>
                     <div className="bg-muted/50 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Win Rate</h3>
-                      <div className="text-2xl font-bold">68.3%</div>
-                      <p className="text-xs text-green-500">+2.1% this month</p>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">نرخ برد</h3>
+                      <div className="text-2xl font-bold">۶۸.۳%</div>
+                      <p className="text-xs text-green-500">۲.۱%+ این ماه</p>
                     </div>
                     <div className="bg-muted/50 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Avg. Return</h3>
-                      <div className="text-2xl font-bold">2.4%</div>
-                      <p className="text-xs text-red-500">-0.3% this month</p>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">میانگین بازده</h3>
+                      <div className="text-2xl font-bold">۲.۴%</div>
+                      <p className="text-xs text-red-500">۰.۳%- این ماه</p>
                     </div>
                     <div className="bg-muted/50 p-4 rounded-lg">
-                      <h3 className="text-sm font-medium text-muted-foreground mb-2">Sharpe Ratio</h3>
-                      <div className="text-2xl font-bold">1.85</div>
-                      <p className="text-xs text-green-500">+0.12 this month</p>
+                      <h3 className="text-sm font-medium text-muted-foreground mb-2">نسبت شارپ</h3>
+                      <div className="text-2xl font-bold">۱.۸۵</div>
+                      <p className="text-xs text-green-500">۰.۱۲+ این ماه</p>
                     </div>
                   </div>
                   <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-4">Performance Overview</h3>
+                    <h3 className="text-lg font-semibold mb-4">نمای کلی عملکرد</h3>
                     <div className="text-center text-muted-foreground border-2 border-dashed border-border rounded-lg h-48 flex items-center justify-center">
-                      Real-time trading analytics (Grafana/TradingView integration)
+                      تحلیل معاملاتی بلادرنگ (اتصال به Grafana/TradingView)
                     </div>
                   </div>
                 </CardContent>
@@ -127,7 +127,7 @@ export default function DataPage() {
                 className="mt-4 w-full flex items-center justify-center gap-2 rounded-lg border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
               >
                 <Sparkles className="h-4 w-4" />
-                Turn this data into an AI-written report
+                این داده‌ها را به گزارش هوش مصنوعی تبدیل کن
               </button>
             </div>
             <aside className="hidden xl:block min-h-[360px]">

@@ -44,20 +44,20 @@ export default function AccountPage() {
   return (
     <div className="container mx-auto px-6 py-8 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Account</h1>
+        <h1 className="text-3xl font-bold tracking-tight">حساب کاربری</h1>
         <p className="text-muted-foreground">
-          Profile and app settings
+          پروفایل و تنظیمات برنامه
         </p>
       </div>
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
-            Profile
+            پروفایل
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
-            Settings
+            تنظیمات
           </TabsTrigger>
         </TabsList>
         <TabsContent value="profile" className="mt-6">

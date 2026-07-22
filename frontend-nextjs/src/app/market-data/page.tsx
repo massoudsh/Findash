@@ -80,16 +80,26 @@ export default function MarketDataPage() {
   }
 
   const categories = [
-    { id: 'all', name: 'All Assets', count: marketData.length },
-    { id: 'stocks', name: 'Stocks', count: marketData.filter(item => item.category === 'stocks').length },
-    { id: 'crypto', name: 'Crypto', count: marketData.filter(item => item.category === 'crypto').length },
-    { id: 'stablecoins', name: 'Stablecoins', count: marketData.filter(item => item.category === 'stablecoins').length },
-    { id: 'commodities_etfs', name: 'Commodities & ETFs', count: marketData.filter(item => item.category === 'commodities_etfs').length },
+    { id: 'all', name: 'همه دارایی‌ها', count: marketData.length },
+    { id: 'stocks', name: 'سهام', count: marketData.filter(item => item.category === 'stocks').length },
+    { id: 'crypto', name: 'ارز دیجیتال', count: marketData.filter(item => item.category === 'crypto').length },
+    { id: 'stablecoins', name: 'استیبل‌کوین', count: marketData.filter(item => item.category === 'stablecoins').length },
+    { id: 'commodities_etfs', name: 'کالا و ETF', count: marketData.filter(item => item.category === 'commodities_etfs').length },
   ];
 
   const filteredData = selectedCategory === 'all' 
     ? marketData 
     : marketData.filter(item => item.category === selectedCategory);
+
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'stocks': return 'سهام';
+      case 'crypto': return 'ارز دیجیتال';
+      case 'stablecoins': return 'استیبل‌کوین';
+      case 'commodities_etfs': return 'کالا و ETF';
+      default: return category;
+    }
+  };
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -105,9 +115,9 @@ export default function MarketDataPage() {
     <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6">
       <div className="min-w-0 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Market Data</h1>
+        <h1 className="text-3xl font-bold tracking-tight">داده بازار</h1>
         <p className="text-muted-foreground">
-          Live market data across stocks, cryptocurrencies, stablecoins, and ETFs
+          داده بازار زنده برای سهام، ارزهای دیجیتال، استیبل‌کوین‌ها و ETFها
         </p>
       </div>
 
@@ -127,7 +137,7 @@ export default function MarketDataPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="w-5 h-5" />
-            Asset Categories
+            دسته‌بندی دارایی‌ها
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -153,20 +163,20 @@ export default function MarketDataPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Assets</CardTitle>
+            <CardTitle className="text-sm font-medium">مجموع دارایی‌ها</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{filteredData.length}</div>
             <p className="text-xs text-muted-foreground">
-              {selectedCategory === 'all' ? 'All categories' : `${selectedCategory} only`}
+              {selectedCategory === 'all' ? 'همه دسته‌ها' : `فقط ${categories.find(c => c.id === selectedCategory)?.name}`}
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Change</CardTitle>
+            <CardTitle className="text-sm font-medium">میانگین تغییرات</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -174,14 +184,14 @@ export default function MarketDataPage() {
               {(filteredData.reduce((acc, item) => acc + item.changePercent, 0) / filteredData.length).toFixed(2)}%
             </div>
             <p className="text-xs text-muted-foreground">
-              Across selected assets
+              در دارایی‌های انتخاب‌شده
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gainers</CardTitle>
+            <CardTitle className="text-sm font-medium">در حال رشد</CardTitle>
             <TrendingUp className="h-4 w-4 text-green-500" />
           </CardHeader>
           <CardContent>
@@ -189,14 +199,14 @@ export default function MarketDataPage() {
               {filteredData.filter(item => item.change > 0).length}
             </div>
             <p className="text-xs text-muted-foreground">
-              Assets with positive change
+              دارایی‌های با تغییر مثبت
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Losers</CardTitle>
+            <CardTitle className="text-sm font-medium">در حال افت</CardTitle>
             <TrendingDown className="h-4 w-4 text-red-500" />
           </CardHeader>
           <CardContent>
@@ -204,7 +214,7 @@ export default function MarketDataPage() {
               {filteredData.filter(item => item.change < 0).length}
             </div>
             <p className="text-xs text-muted-foreground">
-              Assets with negative change
+              دارایی‌های با تغییر منفی
             </p>
           </CardContent>
         </Card>
@@ -215,7 +225,7 @@ export default function MarketDataPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <DollarSign className="w-5 h-5" />
-            Live Market Data
+            داده بازار زنده
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -228,13 +238,13 @@ export default function MarketDataPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3">Asset</th>
-                    <th className="text-right py-3">Price</th>
-                    <th className="text-right py-3">Change</th>
-                    <th className="text-right py-3">Change %</th>
-                    <th className="text-right py-3">Volume</th>
-                    <th className="text-right py-3">Market Cap</th>
-                    <th className="text-left py-3">Category</th>
+                    <th className="text-left py-3">دارایی</th>
+                    <th className="text-right py-3">قیمت</th>
+                    <th className="text-right py-3">تغییر</th>
+                    <th className="text-right py-3">درصد تغییر</th>
+                    <th className="text-right py-3">حجم</th>
+                    <th className="text-right py-3">ارزش بازار</th>
+                    <th className="text-left py-3">دسته</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -263,7 +273,7 @@ export default function MarketDataPage() {
                       </td>
                       <td className="py-3">
                         <Badge variant="outline" className={getCategoryColor(item.category)}>
-                          {item.category.replace('_', ' & ')}
+                          {getCategoryLabel(item.category)}
                         </Badge>
                       </td>
                     </tr>
