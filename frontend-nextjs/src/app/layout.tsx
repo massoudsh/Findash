@@ -16,7 +16,7 @@ const vazir = Vazirmatn({
 });
 
 export const metadata: Metadata = {
-  title: 'فین‌دَش | پلتفرم هوشمند معاملاتی',
+  title: 'فین دَش | پلتفرم هوشمند معاملاتی',
   description: 'پلتفرم هوشمند معاملاتی بازار ایران با هوش مصنوعی، تحلیل ریل‌تایم و مدیریت ریسک پیشرفته',
   icons: {
     icon: '/favicon.svg',
@@ -42,7 +42,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#22C55E" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="فین‌دَش" />
+        <meta name="apple-mobile-web-app-title" content="فین دَش" />
       </head>
       <body className="font-iran-yekan">
         <ErrorBoundary>

@@ -42,7 +42,7 @@ export default function HomePage() {
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] mb-5">
-                فین‌دَش؛
+                فین دَش؛
                 <span className="block gradient-text">تصمیم‌گیری سریع‌تر، ریسک کمتر</span>
               </h1>
 

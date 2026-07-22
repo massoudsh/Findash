@@ -37,7 +37,7 @@ function SignInForm() {
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 border border-green-500/20 mb-6">
             <TrendingUp className="h-6 w-6 text-green-400" />
           </div>
-          <h2 className="text-3xl font-black mb-3">به فین‌دَش خوش آمدید</h2>
+          <h2 className="text-3xl font-black mb-3">به فین دَش خوش آمدید</h2>
           <p className="text-muted-foreground leading-7 mb-6">داشبورد فارسی، سریع و امن برای پایش بازار و مدیریت ریسک.</p>
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-2xl bg-green-500/10 border border-green-500/20 p-4">

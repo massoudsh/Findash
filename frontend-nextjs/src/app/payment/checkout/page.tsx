@@ -33,7 +33,7 @@ export default function CheckoutPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount_toman: plan.price,
-          description: `اشتراک فین‌دَش — پلن ${plan.label}`,
+          description: `اشتراک فین دَش — پلن ${plan.label}`,
         }),
       });
       if (!res.ok) {

@@ -80,7 +80,7 @@ const FAQS: FaqItem[] = [
   },
   {
     q: 'آیا اپ موبایل دارد؟',
-    a: 'فین‌دَش یک اپ PWA است — از مرورگر موبایل (Chrome یا Safari) وارد شوید و گزینه «افزودن به صفحه اصلی» را انتخاب کنید تا مانند یک اپ نصب شود.',
+    a: 'فین دَش یک اپ PWA است — از مرورگر موبایل (Chrome یا Safari) وارد شوید و گزینه «افزودن به صفحه اصلی» را انتخاب کنید تا مانند یک اپ نصب شود.',
   },
 ];
 
@@ -164,7 +164,7 @@ const TIPS = [
     icon: Lightbulb,
     color: 'text-sky-400',
     title: 'نصب اپ روی موبایل',
-    body: 'در Chrome موبایل از منو «Add to Home Screen» را انتخاب کنید. فین‌دَش مانند یک اپ نصب می‌شود — بدون App Store.',
+    body: 'در Chrome موبایل از منو «Add to Home Screen» را انتخاب کنید. فین دَش مانند یک اپ نصب می‌شود — بدون App Store.',
   },
 ];
 
@@ -278,7 +278,7 @@ export function HelpCenter() {
         {active === 'getting-started' && (
           <div className="space-y-5">
             <div>
-              <h2 className="text-xl font-black text-white">شروع به کار با فین‌دَش</h2>
+              <h2 className="text-xl font-black text-white">شروع به کار با فین دَش</h2>
               <p className="mt-1 text-sm text-slate-400">در چند دقیقه داشبورد معاملاتی خود را راه‌اندازی کنید.</p>
             </div>
 

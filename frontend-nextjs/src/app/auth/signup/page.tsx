@@ -79,7 +79,7 @@ export default function SignUpPage() {
               <UserPlus className="h-7 w-7 text-green-400" />
             </div>
             <h1 className="text-2xl font-black mb-2">ثبت‌نام</h1>
-            <p className="text-sm text-muted-foreground">دسترسی به امکانات معاملاتی فین‌دَش</p>
+            <p className="text-sm text-muted-foreground">دسترسی به امکانات معاملاتی فین دَش</p>
           </div>
 
           {error && <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-sm text-center p-3">{error}</div>}
