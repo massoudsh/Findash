@@ -32,3 +32,4 @@
 ## [2026-06-30] update | فارسی‌سازی کل اپ: lang=fa dir=rtl، فونت Vazirmatn، default locale=fa، fa-utils.ts، ترجمه صفحات auth/dashboard/error و ۲۰+ کامپوننت
 ## [2026-06-30] feature | یکپارچه‌سازی زرین‌پال: backend create/callback/verify، payment_orders SQL، صفحات checkout/success/failed/callback و env sandbox
 ## [2026-06-30] redesign | بازطراحی کامل UI/UX فارسی: IRANYekanX، سبز #22C55E، persian-card/border/pattern، داشبورد 5 تب یکپارچه، RiskGauge SVG، CreditScore، homepage phone mockup، README فارسی کامل
+## [2026-07-22] docs | trace کامل login flow (signin → NextAuth → /api/auth/login → in-memory demo users) + صفحه جدید concepts/auth-flow.md؛ کشف: لاگین به PostgreSQL واقعی وصل نیست
