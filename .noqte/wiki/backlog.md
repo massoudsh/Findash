@@ -710,7 +710,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 
 ### TASK-025 — رفع اجرای test suite بک‌اند (pytest/make exit 127)
 
-**وضعیت:** `✅ Done (partial)` — commit `7094617`, `bd3edfc`, `e4a15ca` | ابزار تست کار می‌کند؛ ۳۴ تست failed + ۱۱ error باقی مانده (خارج از scope این تسک)
+**وضعیت:** `✅ Done` — ۲ فایل stale باقی‌مانده (`test_options_trading.py`, `test_websocket.py`) در `2026-07-22` بازنویسی شدند و از `--ignore` در `pytest.ini` حذف شدند (جزئیات کامل: `log.md` تاریخ ۲۰۲۶-۰۷-۲۲). failureهای باقی‌مانده (`test_auth.py`, `test_main_endpoints.py`, `test_phase2_api.py`, `test_allocation_copilot.py`, `test_phase4_integration.py`, `test_ingestion_pipeline.py`) ریشه در پین‌نبودن نسخه `fastapi`/ناسازگاری `statsmodels` و نیاز به Postgres واقعی دارند — مستقل از test-infra، خارج از scope این تسک.
 **اندازه:** M
 **نوع:** DevOps / Test Infra
 **تیم:** Backend

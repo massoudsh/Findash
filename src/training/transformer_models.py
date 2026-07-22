@@ -255,9 +255,24 @@ class DeepLearningAgent:
         
         # Performance tracking
         self.model_performance: Dict[str, Dict[str, float]] = {}
-        
-        # Initialize default models
-        asyncio.create_task(self._initialize_models())
+
+        # Initialize default models (only if called from within a running event
+        # loop). `IntelligenceOrchestrator` builds this agent as a module-level
+        # singleton at import time, i.e. before uvicorn's event loop exists, so
+        # `asyncio.create_task()` would raise `RuntimeError: no running event
+        # loop` and crash the whole app on startup whenever torch is installed.
+        # Consumers of `self.models` (see e.g. `predict_price`) already check
+        # `if model_name not in self.models` before use, so leaving it empty
+        # here is a safe degrade rather than a regression.
+        try:
+            asyncio.get_running_loop()
+            asyncio.create_task(self._initialize_models())
+        except RuntimeError:
+            self.logger.warning(
+                "DeepLearningAgent created outside a running event loop; "
+                "models were not scheduled for initialization. Call "
+                "`await agent._initialize_models()` explicitly once a loop is running."
+            )
     
     async def _initialize_models(self):
         """Initialize default neural network models."""

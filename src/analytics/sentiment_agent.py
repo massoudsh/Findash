@@ -456,9 +456,23 @@ class MarketSentimentAgent:
         
         # Sentiment history for trend analysis
         self.sentiment_history: Dict[str, List[AggregatedSentiment]] = {}
-        
-        # Initialize FinBERT asynchronously
-        asyncio.create_task(self.finbert.initialize())
+
+        # Initialize FinBERT asynchronously — only if a loop is already running.
+        # `MarketSentimentAgent` is built by `IntelligenceOrchestrator`'s
+        # module-level singleton (created at import time, before uvicorn's event
+        # loop exists), so an unguarded `asyncio.create_task()` would raise
+        # `RuntimeError: no running event loop` and crash app startup whenever
+        # `transformers` is installed (same class of bug fixed in
+        # `DeepLearningAgent`, see `src/training/transformer_models.py`).
+        try:
+            asyncio.get_running_loop()
+            asyncio.create_task(self.finbert.initialize())
+        except RuntimeError:
+            self.logger.warning(
+                "MarketSentimentAgent created outside a running event loop; "
+                "FinBERT was not scheduled for initialization. Call "
+                "`await agent.finbert.initialize()` explicitly once a loop is running."
+            )
     
     async def analyze_comprehensive_sentiment(self, symbol: str) -> Optional[AggregatedSentiment]:
         """Analyze comprehensive sentiment for a symbol."""
