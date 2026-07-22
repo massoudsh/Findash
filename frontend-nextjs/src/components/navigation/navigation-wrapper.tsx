@@ -29,7 +29,6 @@ import {
   LineChart,
   Cpu,
   GitBranch,
-  Newspaper,
   BellRing,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -38,6 +37,7 @@ import { ThemeSwitcher } from "@/components/ui/theme-switcher";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { NotificationCenter } from "@/components/ui/notification-center";
 import { CommandPalette, CommandPaletteTrigger } from "@/components/ui/command-palette";
+import { NewsTicker } from "@/components/navigation/news-ticker";
 import { useTranslations } from '@/lib/i18n/locale-context';
 
 interface NavigationWrapperProps {
@@ -49,7 +49,6 @@ const leftSidebarItems = {
   'Trading': [
     { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
     { name: 'Command Center', href: '/trading', icon: TrendingUp },
-    { name: 'Iran Market News', href: '/news', icon: Newspaper },
     { name: 'Price Alerts', href: '/alerts', icon: BellRing },
   ],
   'Analysis & Research': [
@@ -188,6 +187,7 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
             <UserMenu />
           </div>
         </div>
+        <NewsTicker />
       </div>
 
       <div className="lg:flex">
@@ -250,6 +250,9 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
             rightCollapsed ? 'lg:pr-16' : 'lg:pr-64'
           )}
         >
+          <div className="hidden lg:block sticky top-0 z-30">
+            <NewsTicker />
+          </div>
           <main className="py-6 pb-24 lg:pb-6">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               {children}
@@ -311,7 +314,6 @@ export function NavigationWrapper({ children }: NavigationWrapperProps) {
           {[
             { href: '/dashboard', icon: BarChart3, label: 'داشبورد' },
             { href: '/trading', icon: TrendingUp, label: 'معاملات' },
-            { href: '/news', icon: Newspaper, label: 'اخبار' },
             { href: '/portfolio', icon: PieChart, label: 'پرتفولیو' },
             { href: '/technical', icon: Target, label: 'تحلیل' },
           ].map((item) => {

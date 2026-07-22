@@ -790,6 +790,20 @@ main > * {
 .flash-up   { animation: flash-green 0.6s ease; }
 .flash-down { animation: flash-red   0.6s ease; }
 
+/* ── News ticker (header) marquee ─────────────────────────────────────── */
+@keyframes news-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-news-marquee {
+  animation: news-marquee 40s linear infinite;
+}
+
+.animate-news-marquee:hover {
+  animation-play-state: paused;
+}
+
 /* ── Mobile: hide sidebar text labels at small width ─────────────────── */
 @media (max-width: 640px) {
   .sidebar-label { display: none; }

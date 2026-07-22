@@ -14,7 +14,6 @@
 | `/dashboard` | داشبورد اصلی بازطراحی‌شده — modern mill-flat، grid layout، رنگ آبی `#3B82F6`، 5 تب یکپارچه |
 | `/auth/signin` | ورود — two-column layout، visual preview panel |
 | `/auth/signup` | ثبت‌نام — two-column layout، feature list |
-| `/news` | اخبار بازار ایران (طلا، ارز، بورس، کریپتو) |
 | `/alerts` | هشدار قیمت با localStorage + toast notification |
 | `/payment/checkout` | انتخاب پلن و شروع پرداخت زرین‌پال |
 | `/payment/callback/zarinpal` | bridge برگشت از زرین‌پال به backend verify |
@@ -34,7 +33,7 @@
 | `src/lib/hooks/use-market-ws.ts` | WebSocket hook با auto-reconnect و polling fallback |
 | `src/lib/hooks/use-price-alerts.ts` | هشدار قیمت در localStorage + trigger callback |
 | `src/components/alerts/alerts-panel.tsx` | پنل ایجاد و مدیریت هشدار قیمت |
-| `src/app/news/page.tsx` | صفحه اخبار ایران با RSS feed |
+| `src/components/navigation/news-ticker.tsx` | نوار خبری متحرک (marquee) در هدر — جایگزین صفحه مستقل `/news` (حذف شد)؛ از همان `src/app/api/news/route.ts` (RSS) داده می‌گیرد، در هدر موبایل و بالای محتوای دسکتاپ mount شده در `navigation-wrapper.tsx` |
 | `src/components/admin/startup-tracker-panel.tsx` | پنل داخلی/ادمین «استارتاپ‌تراکر» — ۳ تب: فرضیه‌های GTM، مکالمات با مشتری (با لینک به فرضیه)، داده‌های Traction؛ CRUD کامل روی `/api/startup-tracker/*` — mount شده در `/admin` (تب «استارتاپ‌تراکر») |
 
 ## طراحی بصری فعلی
