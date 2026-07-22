@@ -9,22 +9,24 @@ import { DataCollectorAgentPanel } from '@/components/trading/data-collector-age
 import { VisualizationContent } from '@/components/visualization/visualization-content';
 import { ChartShowcase } from '@/components/ui/chart-showcase';
 import { AnalysisAgentInsightsPanel } from '@/components/trading/analysis-agent-insights';
+import { ReportsContent } from '@/components/reports/reports-content';
+import { LlmStatusBadge } from '@/components/reports/llm-status-badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Database, PieChart } from 'lucide-react';
+import { Database, PieChart, Sparkles } from 'lucide-react';
 
-type DataTab = 'explorer' | 'charts';
+type DataTab = 'explorer' | 'charts' | 'report';
 
 export default function DataPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState<DataTab>(() => {
-    if (tabParam === 'charts' || tabParam === 'explorer') return tabParam;
+    if (tabParam === 'charts' || tabParam === 'explorer' || tabParam === 'report') return tabParam;
     return 'explorer';
   });
 
   useEffect(() => {
-    if (tabParam === 'charts' || tabParam === 'explorer') setActiveTab(tabParam);
+    if (tabParam === 'charts' || tabParam === 'explorer' || tabParam === 'report') setActiveTab(tabParam);
   }, [tabParam]);
 
   function handleTabChange(value: string) {
@@ -46,7 +48,7 @@ export default function DataPage() {
         </p>
       </div>
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-lg grid-cols-3">
           <TabsTrigger value="explorer" className="flex items-center gap-2">
             <Database className="h-4 w-4" />
             Explorer
@@ -54,6 +56,10 @@ export default function DataPage() {
           <TabsTrigger value="charts" className="flex items-center gap-2">
             <PieChart className="h-4 w-4" />
             Charts
+          </TabsTrigger>
+          <TabsTrigger value="report" className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            AI Report
           </TabsTrigger>
         </TabsList>
         <TabsContent value="explorer" className="mt-6">
@@ -115,11 +121,27 @@ export default function DataPage() {
                   </div>
                 </CardContent>
               </Card>
+              <button
+                type="button"
+                onClick={() => handleTabChange('report')}
+                className="mt-4 w-full flex items-center justify-center gap-2 rounded-lg border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm font-medium text-primary hover:bg-primary/10 transition-colors"
+              >
+                <Sparkles className="h-4 w-4" />
+                Turn this data into an AI-written report
+              </button>
             </div>
             <aside className="hidden xl:block min-h-[360px]">
               <AnalysisAgentInsightsPanel />
             </aside>
           </div>
+        </TabsContent>
+        <TabsContent value="report" className="mt-6">
+          <div className="flex items-center justify-end mb-2">
+            <LlmStatusBadge />
+          </div>
+          <Suspense fallback={<div className="text-center text-muted-foreground">در حال بارگذاری سیستم گزارش‌دهی...</div>}>
+            <ReportsContent />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </div>

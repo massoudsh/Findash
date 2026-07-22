@@ -10,10 +10,11 @@
 - [[entities/data-layer]] — PostgreSQL، TimescaleDB، Redis، Kafka
 - [[entities/assets-feature]] — سکشن دارایی‌های ایرانی (TASK-001) ✅
 
-## Concepts (3 صفحه)
+## Concepts (4 صفحه)
 - [[concepts/trading-flow]] — flow کامل ثبت و اجرای معامله
 - [[concepts/data-pipeline]] — pipeline ورود داده بازار تا نمایش frontend
 - [[concepts/auth-flow]] — flow لاگین از فرم signin تا PostgreSQL (جدول `users` واقعی)
+- [[concepts/data-reports-integration]] — یکپارچه‌سازی صفحه `/data` (نمودار) و `/reports` (گزارش AI)
 
 ## Backlog
 - [[backlog]] — تسک‌های برنامه‌ریزی‌شده و feature های آینده
