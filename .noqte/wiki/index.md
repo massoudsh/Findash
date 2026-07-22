@@ -13,7 +13,7 @@
 ## Concepts (3 صفحه)
 - [[concepts/trading-flow]] — flow کامل ثبت و اجرای معامله
 - [[concepts/data-pipeline]] — pipeline ورود داده بازار تا نمایش frontend
-- [[concepts/auth-flow]] — flow لاگین از فرم signin تا backend؛ فعلاً بدون اتصال واقعی به PostgreSQL (in-memory demo users)
+- [[concepts/auth-flow]] — flow لاگین از فرم signin تا PostgreSQL (جدول `users` واقعی)
 
 ## Backlog
 - [[backlog]] — تسک‌های برنامه‌ریزی‌شده و feature های آینده
