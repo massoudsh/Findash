@@ -25,6 +25,12 @@ interface MacroData {
   monetary_policy: Record<string, { value?: number; change_pct?: number }>;
 }
 
+const IMPACT_LABELS: Record<string, string> = {
+  high: 'بالا',
+  medium: 'متوسط',
+  low: 'پایین',
+};
+
 function renderIndicatorSection(
   title: string,
   indicators: { name: string; value: string; change: string; trend: string; impact: string }[],
@@ -45,7 +51,7 @@ function renderIndicatorSection(
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-muted-foreground">{indicator.name}</span>
                 <Badge className={`text-xs ${indicator.impact === 'high' ? 'bg-red-500/20 text-red-300' : indicator.impact === 'medium' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-green-500/20 text-green-300'}`}>
-                  {indicator.impact}
+                  {IMPACT_LABELS[indicator.impact] ?? indicator.impact}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
@@ -146,42 +152,42 @@ export default function MacroContent() {
     { name: 'Repo Rate', value: '5.30%', change: '+0.02%', trend: 'up', impact: 'medium' },
   ];
   const upcomingEvents = [
-    { date: 'Today', time: '2:00 PM', event: 'FOMC Meeting Minutes', impact: 'high' },
-    { date: 'Tomorrow', time: '8:30 AM', event: 'Initial Jobless Claims', impact: 'medium' },
-    { date: 'Jan 12', time: '8:30 AM', event: 'Core PCE Price Index', impact: 'high' },
-    { date: 'Jan 15', time: '9:15 AM', event: 'Industrial Production', impact: 'medium' },
-    { date: 'Jan 18', time: '10:00 AM', event: 'Existing Home Sales', impact: 'low' },
-    { date: 'Jan 26', time: '8:30 AM', event: 'Advance GDP', impact: 'high' },
+    { date: 'امروز', time: '2:00 PM', event: 'صورتجلسه FOMC', impact: 'high' },
+    { date: 'فردا', time: '8:30 AM', event: 'درخواست‌های اولیه بیمه بیکاری', impact: 'medium' },
+    { date: 'Jan 12', time: '8:30 AM', event: 'شاخص قیمت PCE هسته‌ای', impact: 'high' },
+    { date: 'Jan 15', time: '9:15 AM', event: 'تولید صنعتی', impact: 'medium' },
+    { date: 'Jan 18', time: '10:00 AM', event: 'فروش خانه‌های موجود', impact: 'low' },
+    { date: 'Jan 26', time: '8:30 AM', event: 'برآورد اولیه تولید ناخالص داخلی', impact: 'high' },
   ];
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">Macro</h1>
-          <p className="text-muted-foreground mt-1">Treasury yields, inflation, and monetary policy — real-time from FRED when backend is available</p>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">اقتصاد کلان</h1>
+          <p className="text-muted-foreground mt-1">بازده اوراق خزانه، تورم و سیاست پولی — داده زنده از FRED در صورت دسترسی به بک‌اند</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          {lastUpdated && <span className="text-xs text-muted-foreground">Updated {new Date(lastUpdated).toLocaleTimeString()}</span>}
-          <Badge variant={macroData ? 'default' : 'secondary'}>{macroData ? 'Live from source' : 'Static snapshot'}</Badge>
+          {lastUpdated && <span className="text-xs text-muted-foreground">به‌روزرسانی {new Date(lastUpdated).toLocaleTimeString('fa-IR')}</span>}
+          <Badge variant={macroData ? 'default' : 'secondary'}>{macroData ? 'زنده از منبع' : 'عکس لحظه‌ای ثابت'}</Badge>
         </div>
       </div>
       <div className="space-y-6">
-        {renderIndicatorSection('Central Bank & Monetary Policy', monetaryIndicators, <DollarSign className="h-5 w-5 text-foreground" />)}
-        {renderIndicatorSection('Yield Curve & Term Structure', yieldCurveIndicators, <BarChart3 className="h-5 w-5 text-foreground" />)}
-        {renderIndicatorSection('Inflation & Growth Indicators', inflationGrowthIndicators, <TrendingUp className="h-5 w-5 text-foreground" />)}
-        {renderIndicatorSection('Cross-Asset & Volatility', crossAssetIndicators, <Activity className="h-5 w-5 text-red-400" />)}
-        {renderIndicatorSection('Currency & Carry Trade', currencyCarryIndicators, <Globe className="h-5 w-5 text-cyan-400" />)}
-        {renderIndicatorSection('Credit & Liquidity Conditions', creditLiquidityIndicators, <Layers className="h-5 w-5 text-purple-400" />)}
-        {renderIndicatorSection('Commodity & Energy Complex', commodityIndicators, <Zap className="h-5 w-5 text-yellow-400" />)}
-        {renderIndicatorSection('Alternative Data & Sentiment', alternativeIndicators, <Target className="h-5 w-5 text-pink-400" />)}
+        {renderIndicatorSection('بانک مرکزی و سیاست پولی', monetaryIndicators, <DollarSign className="h-5 w-5 text-foreground" />)}
+        {renderIndicatorSection('منحنی بازده و ساختار سررسید', yieldCurveIndicators, <BarChart3 className="h-5 w-5 text-foreground" />)}
+        {renderIndicatorSection('شاخص‌های تورم و رشد', inflationGrowthIndicators, <TrendingUp className="h-5 w-5 text-foreground" />)}
+        {renderIndicatorSection('دارایی‌های متقاطع و نوسان', crossAssetIndicators, <Activity className="h-5 w-5 text-red-400" />)}
+        {renderIndicatorSection('ارز و معاملات کری‌تریت', currencyCarryIndicators, <Globe className="h-5 w-5 text-cyan-400" />)}
+        {renderIndicatorSection('شرایط اعتبار و نقدینگی', creditLiquidityIndicators, <Layers className="h-5 w-5 text-purple-400" />)}
+        {renderIndicatorSection('کالا و کمپلکس انرژی', commodityIndicators, <Zap className="h-5 w-5 text-yellow-400" />)}
+        {renderIndicatorSection('داده جایگزین و احساسات بازار', alternativeIndicators, <Target className="h-5 w-5 text-pink-400" />)}
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Calendar className="h-5 w-5 text-blue-400" />
-              <span>High-Impact Economic Calendar</span>
+              <span>تقویم اقتصادی با تأثیر بالا</span>
             </CardTitle>
-            <CardDescription>Institutional-grade event risk monitoring</CardDescription>
+            <CardDescription>پایش ریسک رویداد در سطح نهادی</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -195,7 +201,7 @@ export default function MacroContent() {
                     <div><p className="font-medium">{event.event}</p></div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge className={event.impact === 'high' ? 'bg-red-500/20 text-red-300' : event.impact === 'medium' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-green-500/20 text-green-300'}>{event.impact}</Badge>
+                    <Badge className={event.impact === 'high' ? 'bg-red-500/20 text-red-300' : event.impact === 'medium' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-green-500/20 text-green-300'}>{IMPACT_LABELS[event.impact] ?? event.impact}</Badge>
                     {event.impact === 'high' && <AlertTriangle className="h-4 w-4 text-red-400" />}
                   </div>
                 </div>
@@ -206,40 +212,40 @@ export default function MacroContent() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2"><PieChart className="h-5 w-5 text-green-400" /><span>Regime Analysis</span></CardTitle>
+              <CardTitle className="flex items-center space-x-2"><PieChart className="h-5 w-5 text-green-400" /><span>تحلیل رژیم بازار</span></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex justify-between items-center"><span>Macro Regime</span><Badge className="bg-blue-500/20 text-blue-300">Goldilocks</Badge></div>
-                <div className="flex justify-between items-center"><span>Volatility Regime</span><Badge className="bg-yellow-500/20 text-yellow-300">Medium</Badge></div>
-                <div className="flex justify-between items-center"><span>Risk Regime</span><Badge className="bg-green-500/20 text-green-300">Risk On</Badge></div>
-                <div className="flex justify-between items-center"><span>Liquidity Regime</span><Badge className="bg-cyan-500/20 text-cyan-300">Abundant</Badge></div>
+                <div className="flex justify-between items-center"><span>رژیم کلان</span><Badge className="bg-blue-500/20 text-blue-300">گلدیلاکس</Badge></div>
+                <div className="flex justify-between items-center"><span>رژیم نوسان</span><Badge className="bg-yellow-500/20 text-yellow-300">متوسط</Badge></div>
+                <div className="flex justify-between items-center"><span>رژیم ریسک</span><Badge className="bg-green-500/20 text-green-300">ریسک‌پذیر</Badge></div>
+                <div className="flex justify-between items-center"><span>رژیم نقدینگی</span><Badge className="bg-cyan-500/20 text-cyan-300">فراوان</Badge></div>
               </div>
             </CardContent>
           </Card>
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2"><Target className="h-5 w-5 text-purple-400" /><span>Factor Exposures</span></CardTitle>
+              <CardTitle className="flex items-center space-x-2"><Target className="h-5 w-5 text-purple-400" /><span>مواجهه با فاکتورها</span></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex justify-between items-center"><span>Growth Factor</span><div className="flex items-center space-x-2"><Progress value={75} className="w-20 h-2" /><span className="text-green-400">+0.8σ</span></div></div>
-                <div className="flex justify-between items-center"><span>Value Factor</span><div className="flex items-center space-x-2"><Progress value={40} className="w-20 h-2" /><span className="text-red-400">-0.3σ</span></div></div>
-                <div className="flex justify-between items-center"><span>Momentum Factor</span><div className="flex items-center space-x-2"><Progress value={65} className="w-20 h-2" /><span className="text-green-400">+0.5σ</span></div></div>
-                <div className="flex justify-between items-center"><span>Quality Factor</span><div className="flex items-center space-x-2"><Progress value={55} className="w-20 h-2" /><span className="text-gray-400">+0.1σ</span></div></div>
+                <div className="flex justify-between items-center"><span>فاکتور رشد</span><div className="flex items-center space-x-2"><Progress value={75} className="w-20 h-2" /><span className="text-green-400">+0.8σ</span></div></div>
+                <div className="flex justify-between items-center"><span>فاکتور ارزش</span><div className="flex items-center space-x-2"><Progress value={40} className="w-20 h-2" /><span className="text-red-400">-0.3σ</span></div></div>
+                <div className="flex justify-between items-center"><span>فاکتور مومنتوم</span><div className="flex items-center space-x-2"><Progress value={65} className="w-20 h-2" /><span className="text-green-400">+0.5σ</span></div></div>
+                <div className="flex justify-between items-center"><span>فاکتور کیفیت</span><div className="flex items-center space-x-2"><Progress value={55} className="w-20 h-2" /><span className="text-gray-400">+0.1σ</span></div></div>
               </div>
             </CardContent>
           </Card>
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2"><Layers className="h-5 w-5 text-orange-400" /><span>Cross-Asset Signals</span></CardTitle>
+              <CardTitle className="flex items-center space-x-2"><Layers className="h-5 w-5 text-orange-400" /><span>سیگنال‌های بین‌دارایی</span></CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex justify-between items-center"><span>Equity/Bond Correlation</span><Badge className="bg-red-500/20 text-red-300">+0.65</Badge></div>
-                <div className="flex justify-between items-center"><span>Currency Momentum</span><Badge className="bg-green-500/20 text-green-300">Strong</Badge></div>
-                <div className="flex justify-between items-center"><span>Commodity Trend</span><Badge className="bg-yellow-500/20 text-yellow-300">Mixed</Badge></div>
-                <div className="flex justify-between items-center"><span>Crypto Correlation</span><Badge className="bg-purple-500/20 text-purple-300">+0.45</Badge></div>
+                <div className="flex justify-between items-center"><span>همبستگی سهام/اوراق</span><Badge className="bg-red-500/20 text-red-300">+0.65</Badge></div>
+                <div className="flex justify-between items-center"><span>مومنتوم ارز</span><Badge className="bg-green-500/20 text-green-300">قوی</Badge></div>
+                <div className="flex justify-between items-center"><span>روند کالا</span><Badge className="bg-yellow-500/20 text-yellow-300">متغیر</Badge></div>
+                <div className="flex justify-between items-center"><span>همبستگی کریپتو</span><Badge className="bg-purple-500/20 text-purple-300">+0.45</Badge></div>
               </div>
             </CardContent>
           </Card>

@@ -23,15 +23,21 @@ interface DataFeed {
   throughput: number;
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  active: 'فعال',
+  inactive: 'غیرفعال',
+  error: 'خطا',
+};
+
 export function RealtimeContent() {
   const [isPaused, setIsPaused] = useState(false);
   const { ticks, status } = useMarketWS(isPaused ? [] : SYMBOLS);
 
   const dataFeeds: DataFeed[] = [
-    { id: 'market', name: 'Market Data Feed', status: 'active', latency: 12, throughput: 1500 },
-    { id: 'news', name: 'News Feed', status: 'active', latency: 45, throughput: 250 },
-    { id: 'social', name: 'Social Sentiment', status: 'inactive', latency: 0, throughput: 0 },
-    { id: 'options', name: 'Options Flow', status: 'active', latency: 8, throughput: 800 },
+    { id: 'market', name: 'فید داده‌های بازار', status: 'active', latency: 12, throughput: 1500 },
+    { id: 'news', name: 'فید اخبار', status: 'active', latency: 45, throughput: 250 },
+    { id: 'social', name: 'احساسات اجتماعی', status: 'inactive', latency: 0, throughput: 0 },
+    { id: 'options', name: 'جریان اختیار معامله', status: 'active', latency: 8, throughput: 800 },
   ];
 
   const streamData = Object.values(ticks);
@@ -44,17 +50,17 @@ export function RealtimeContent() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Radio className={cn('h-4 w-4', isLive && !isPaused && 'text-green-500 animate-pulse')} />
-            Stream Control
+            کنترل جریان داده
             <Badge
               variant={status === 'connected' ? 'default' : status === 'polling' ? 'secondary' : 'destructive'}
               className="ml-2"
             >
-              {status === 'connected' ? 'WebSocket' : status === 'polling' ? 'Polling 4s' : status}
+              {status === 'connected' ? 'WebSocket' : status === 'polling' ? 'دریافت هر ۴ ثانیه' : status}
             </Badge>
           </CardTitle>
           <Button onClick={() => setIsPaused((p) => !p)} variant={isPaused ? 'outline' : 'default'}>
             {isPaused ? <Play className="h-4 w-4 mr-2" /> : <Pause className="h-4 w-4 mr-2" />}
-            {isPaused ? 'Resume' : 'Pause'}
+            {isPaused ? 'ادامه' : 'توقف موقت'}
           </Button>
         </CardHeader>
         <CardContent>
@@ -70,11 +76,11 @@ export function RealtimeContent() {
                   <div>
                     <p className="font-medium text-sm">{feed.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {feed.status === 'active' ? `${feed.latency}ms latency` : 'Disconnected'}
+                      {feed.status === 'active' ? `تأخیر ${feed.latency} میلی‌ثانیه` : 'قطع شده'}
                     </p>
                   </div>
                 </div>
-                <Badge variant={feed.status === 'active' ? 'default' : 'secondary'}>{feed.status}</Badge>
+                <Badge variant={feed.status === 'active' ? 'default' : 'secondary'}>{STATUS_LABELS[feed.status] ?? feed.status}</Badge>
               </div>
             ))}
           </div>
@@ -86,28 +92,28 @@ export function RealtimeContent() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Live Market Data
+            داده‌های بازار زنده
             <span className="text-xs text-muted-foreground font-normal ml-2">
-              {streamData.length > 0 ? `${streamData.length} symbols` : 'Connecting...'}
+              {streamData.length > 0 ? `${streamData.length} نماد` : 'در حال اتصال...'}
             </span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {streamData.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground animate-pulse">
-              {isPaused ? 'Stream paused' : 'Fetching live data...'}
+              {isPaused ? 'جریان متوقف شده' : 'در حال دریافت داده زنده...'}
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b text-muted-foreground">
-                    <th className="text-left py-2 px-2">Symbol</th>
-                    <th className="text-right py-2 px-2">Price</th>
-                    <th className="text-right py-2 px-2">Change</th>
-                    <th className="text-right py-2 px-2">Change %</th>
-                    <th className="text-right py-2 px-2">Volume</th>
-                    <th className="text-right py-2 px-2">Updated</th>
+                    <th className="text-left py-2 px-2">نماد</th>
+                    <th className="text-right py-2 px-2">قیمت</th>
+                    <th className="text-right py-2 px-2">تغییر</th>
+                    <th className="text-right py-2 px-2">درصد تغییر</th>
+                    <th className="text-right py-2 px-2">حجم</th>
+                    <th className="text-right py-2 px-2">به‌روزرسانی</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -137,7 +143,7 @@ export function RealtimeContent() {
                         </td>
                         <td className="text-right py-2 px-2 text-muted-foreground">{item.volume?.toLocaleString()}</td>
                         <td className="text-right py-2 px-2 text-xs text-muted-foreground">
-                          {new Date(item.timestamp).toLocaleTimeString()}
+                          {new Date(item.timestamp).toLocaleTimeString('fa-IR')}
                         </td>
                       </tr>
                     );
@@ -152,26 +158,26 @@ export function RealtimeContent() {
       {/* Processing Stats */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
-          <CardHeader><CardTitle className="text-sm">Messages/sec</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm">پیام در ثانیه</CardTitle></CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2,547</div>
-            <p className="text-xs text-muted-foreground">Real-time throughput</p>
+            <div className="text-2xl font-bold">۲,۵۴۷</div>
+            <p className="text-xs text-muted-foreground">توان عملیاتی زنده</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle className="text-sm">Avg Latency</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm">میانگین تأخیر</CardTitle></CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {status === 'connected' ? '12ms' : status === 'polling' ? '4s' : '—'}
+              {status === 'connected' ? '۱۲ میلی‌ثانیه' : status === 'polling' ? '۴ ثانیه' : '—'}
             </div>
-            <p className="text-xs text-muted-foreground">End-to-end processing</p>
+            <p className="text-xs text-muted-foreground">پردازش سرتاسری</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle className="text-sm">Active Streams</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm">جریان‌های فعال</CardTitle></CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{dataFeeds.filter((f) => f.status === 'active').length}</div>
-            <p className="text-xs text-muted-foreground">of {dataFeeds.length} total feeds</p>
+            <p className="text-xs text-muted-foreground">از مجموع {dataFeeds.length} فید</p>
           </CardContent>
         </Card>
       </div>

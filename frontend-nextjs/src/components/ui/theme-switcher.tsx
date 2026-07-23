@@ -68,7 +68,7 @@ export function ThemeSwitcher({ className, showLabel = false }: ThemeSwitcherPro
     return (
       <Button variant="ghost" size="sm" disabled className={className}>
         <Sun className="h-4 w-4" />
-        {showLabel && <span className="ml-2">Theme</span>}
+        {showLabel && <span className="ml-2">پوسته</span>}
       </Button>
     );
   }
@@ -87,11 +87,11 @@ export function ThemeSwitcher({ className, showLabel = false }: ThemeSwitcherPro
   const getLabel = () => {
     switch (theme) {
       case 'light':
-        return 'Light';
+        return 'روشن';
       case 'dark':
-        return 'Dark';
+        return 'تیره';
       case 'system':
-        return 'System';
+        return 'سیستم';
     }
   };
 
@@ -101,7 +101,7 @@ export function ThemeSwitcher({ className, showLabel = false }: ThemeSwitcherPro
       size="sm" 
       onClick={cycleTheme}
       className={className}
-      title={`Current theme: ${getLabel()}. Click to cycle.`}
+      title={`پوسته فعلی: ${getLabel()}. برای تغییر کلیک کنید.`}
     >
       {getIcon()}
       {showLabel && <span className="ml-2">{getLabel()}</span>}

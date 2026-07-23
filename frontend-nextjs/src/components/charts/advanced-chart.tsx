@@ -231,25 +231,25 @@ export function AdvancedChart({
           <p className="text-gray-300 text-sm mb-2">{label}</p>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between gap-4">
-              <span className="text-gray-400">Open:</span>
+              <span className="text-gray-400">باز شدن:</span>
               <span className="text-white">${data.open?.toFixed(2)}</span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-gray-400">High:</span>
+              <span className="text-gray-400">بیشترین:</span>
               <span className="text-green-400">${data.high?.toFixed(2)}</span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-gray-400">Low:</span>
+              <span className="text-gray-400">کمترین:</span>
               <span className="text-red-400">${data.low?.toFixed(2)}</span>
             </div>
             <div className="flex justify-between gap-4">
-              <span className="text-gray-400">Close:</span>
+              <span className="text-gray-400">بسته شدن:</span>
               <span className="text-white">${data.close?.toFixed(2)}</span>
             </div>
             {data.volume && (
               <div className="flex justify-between gap-4">
-                <span className="text-gray-400">Volume:</span>
-                <span className="text-blue-400">{data.volume.toLocaleString()}</span>
+                <span className="text-gray-400">حجم:</span>
+                <span className="text-blue-400">{data.volume.toLocaleString('fa-IR')}</span>
               </div>
             )}
             {indicators.rsi && data.rsi && (
@@ -351,7 +351,7 @@ export function AdvancedChart({
           {/* Indicators */}
           {showIndicators && (
             <div className="flex items-center space-x-2">
-              <span className="text-sm text-muted-foreground">Indicators:</span>
+              <span className="text-sm text-muted-foreground">اندیکاتورها:</span>
               {Object.entries(indicators).map(([key, enabled]) => (
                 <Button
                   key={key}
@@ -360,7 +360,7 @@ export function AdvancedChart({
                   onClick={() => toggleIndicator(key as keyof typeof indicators)}
                 >
                   {enabled ? <Eye className="h-3 w-3 mr-1" /> : <EyeOff className="h-3 w-3 mr-1" />}
-                  {key.toUpperCase()}
+                  {key === 'volume' ? 'حجم' : key.toUpperCase()}
                 </Button>
               ))}
             </div>

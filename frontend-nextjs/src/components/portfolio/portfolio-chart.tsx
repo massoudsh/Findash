@@ -85,7 +85,7 @@ export function PortfolioChart({ assets, totalValue }: PortfolioChartProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-slate-200">
             <PieChart className="h-5 w-5 text-blue-400" />
-            Asset Allocation
+            تخصیص دارایی
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -150,7 +150,7 @@ export function PortfolioChart({ assets, totalValue }: PortfolioChartProps) {
                   className="fill-blue-400 text-sm font-semibold transform rotate-90"
                   style={{ transformOrigin: '140px 135px' }}
                 >
-                  Total
+                  مجموع
                 </text>
                 <text
                   x="140"
@@ -187,7 +187,7 @@ export function PortfolioChart({ assets, totalValue }: PortfolioChartProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-slate-200">
             <BarChart3 className="h-5 w-5 text-blue-400" />
-            Sector Breakdown
+            تفکیک بخش‌ها
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -228,13 +228,13 @@ export function PortfolioChart({ assets, totalValue }: PortfolioChartProps) {
           <div className="mt-6 pt-4 border-t border-slate-700/50">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <div className="text-slate-400">Total Sectors</div>
+                <div className="text-slate-400">کل بخش‌ها</div>
                 <div className="text-slate-200 font-semibold">{Object.keys(sectorData).length}</div>
               </div>
               <div>
-                <div className="text-slate-400">Top Sector</div>
+                <div className="text-slate-400">برترین بخش</div>
                 <div className="text-slate-200 font-semibold">
-                  {sortedSectors[0]?.[0] || 'N/A'}
+                  {sortedSectors[0]?.[0] || 'نامشخص'}
                 </div>
               </div>
             </div>

@@ -35,7 +35,7 @@ interface DataExportProps {
 export function DataExport({ 
   data = [], 
   filename = 'export', 
-  title = 'Export Data',
+  title = 'خروجی داده‌ها',
   className 
 }: DataExportProps) {
   const [isExporting, setIsExporting] = useState(false);
@@ -46,7 +46,7 @@ export function DataExport({
     {
       id: 'csv',
       name: 'CSV',
-      description: 'Comma-separated values file',
+      description: 'فایل مقادیر جداشده با کاما',
       format: 'csv',
       icon: Table,
       fileSize: '~2KB'
@@ -54,7 +54,7 @@ export function DataExport({
     {
       id: 'xlsx',
       name: 'Excel',
-      description: 'Microsoft Excel spreadsheet',
+      description: 'صفحه‌گسترده مایکروسافت اکسل',
       format: 'xlsx',
       icon: FileText,
       fileSize: '~5KB'
@@ -62,7 +62,7 @@ export function DataExport({
     {
       id: 'pdf',
       name: 'PDF',
-      description: 'Portable document format',
+      description: 'فرمت سند قابل‌حمل',
       format: 'pdf',
       icon: File,
       fileSize: '~10KB'
@@ -70,7 +70,7 @@ export function DataExport({
     {
       id: 'json',
       name: 'JSON',
-      description: 'JavaScript object notation',
+      description: 'نمایش شیء جاوااسکریپت',
       format: 'json',
       icon: Settings,
       fileSize: '~3KB'
@@ -184,18 +184,18 @@ export function DataExport({
           {exportStatus === 'success' && (
             <Badge variant="default" className="bg-green-100 text-green-800">
               <CheckCircle className="h-3 w-3 mr-1" />
-              Exported
+              خروجی گرفته شد
             </Badge>
           )}
           {exportStatus === 'error' && (
             <Badge variant="destructive">
               <AlertCircle className="h-3 w-3 mr-1" />
-              Failed
+              ناموفق
             </Badge>
           )}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Export your trading data in various formats
+          داده‌های معاملاتی خود را در فرمت‌های مختلف خروجی بگیرید
         </p>
       </CardHeader>
       
@@ -232,20 +232,20 @@ export function DataExport({
         <div className="space-y-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
           <h4 className="font-medium text-sm flex items-center gap-2">
             <Settings className="h-4 w-4" />
-            Export Settings
+            تنظیمات خروجی
           </h4>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Date Range:</span>
-              <span className="font-medium">Last 30 days</span>
+              <span className="text-muted-foreground">بازه زمانی:</span>
+              <span className="font-medium">۳۰ روز اخیر</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Records:</span>
-              <span className="font-medium">{exportData.length} items</span>
+              <span className="text-muted-foreground">رکوردها:</span>
+              <span className="font-medium">{exportData.length} مورد</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Format:</span>
+              <span className="text-muted-foreground">فرمت:</span>
               <span className="font-medium">{exportOptions.find(o => o.id === selectedFormat)?.name}</span>
             </div>
           </div>
@@ -253,15 +253,15 @@ export function DataExport({
 
         {/* Preview */}
         <div className="space-y-2">
-          <h4 className="font-medium text-sm">Data Preview</h4>
+          <h4 className="font-medium text-sm">پیش‌نمایش داده</h4>
           <div className="border rounded-lg overflow-hidden">
             <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 border-b">
               <div className="grid grid-cols-5 gap-2 text-xs font-medium text-muted-foreground">
-                <span>Symbol</span>
-                <span>Price</span>
-                <span>Change</span>
-                <span>Volume</span>
-                <span>Date</span>
+                <span>نماد</span>
+                <span>قیمت</span>
+                <span>تغییر</span>
+                <span>حجم</span>
+                <span>تاریخ</span>
               </div>
             </div>
             <div className="max-h-32 overflow-y-auto">
@@ -278,7 +278,7 @@ export function DataExport({
               ))}
               {exportData.length > 3 && (
                 <div className="px-3 py-2 text-xs text-muted-foreground text-center">
-                  +{exportData.length - 3} more rows...
+                  +{exportData.length - 3} ردیف دیگر...
                 </div>
               )}
             </div>
@@ -286,7 +286,7 @@ export function DataExport({
         </div>
 
         {/* Export Button */}
-        <Button 
+        <Button
           onClick={() => handleExport(selectedFormat)}
           disabled={isExporting}
           className="w-full"
@@ -295,12 +295,12 @@ export function DataExport({
           {isExporting ? (
             <>
               <Download className="h-4 w-4 mr-2 animate-pulse" />
-              Exporting...
+              در حال خروجی گرفتن...
             </>
           ) : (
             <>
               <Download className="h-4 w-4 mr-2" />
-              Export as {exportOptions.find(o => o.id === selectedFormat)?.name}
+              خروجی به‌صورت {exportOptions.find(o => o.id === selectedFormat)?.name}
             </>
           )}
         </Button>

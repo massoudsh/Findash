@@ -212,8 +212,8 @@ export function AdvancedChart({
             </CardTitle>
             {latestData && (
               <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                <span>Price: {formatPrice(latestData.close)}</span>
-                <span>Volume: {formatVolume(latestData.volume)}</span>
+                <span>قیمت: {formatPrice(latestData.close)}</span>
+                <span>حجم: {formatVolume(latestData.volume)}</span>
                 {latestData.rsi && <span>RSI: {latestData.rsi.toFixed(1)}</span>}
               </div>
             )}
@@ -284,7 +284,7 @@ export function AdvancedChart({
             onClick={() => toggleIndicator('volume')}
             className="text-xs"
           >
-            Volume
+            حجم
           </Button>
         </div>
       </CardHeader>
@@ -292,7 +292,7 @@ export function AdvancedChart({
       <CardContent>
         <Tabs defaultValue="price" className="space-y-4">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="price">Price Chart</TabsTrigger>
+            <TabsTrigger value="price">نمودار قیمت</TabsTrigger>
             <TabsTrigger value="rsi">RSI</TabsTrigger>
           </TabsList>
 
@@ -339,7 +339,7 @@ export function AdvancedChart({
                     stroke="#00D2FF"
                     strokeWidth={2}
                     dot={false}
-                    name="Price"
+                    name="قیمت"
                   />
 
                   {/* Moving Averages */}
@@ -371,7 +371,7 @@ export function AdvancedChart({
                     <Bar
                       dataKey="volume"
                       fill="rgba(255, 255, 255, 0.1)"
-                      name="Volume"
+                      name="حجم"
                       yAxisId="volume"
                     />
                   )}

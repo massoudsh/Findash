@@ -273,7 +273,7 @@ export function TradingViewChart({
             </div>
             <Badge className="bg-green-500/20 text-green-300">
               <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
-              Live
+              زنده
             </Badge>
           </div>
           
@@ -377,13 +377,13 @@ export function TradingViewChart({
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                   <div className="text-center">
                     <BarChart3 className="h-16 w-16 mx-auto mb-4 text-gray-600" />
-                    <p>Professional TradingView Chart</p>
+                    <p>نمودار حرفه‌ای TradingView</p>
                     <p className="text-sm mt-2">
-                      {chartData.length} data points • {chartType} view • {selectedInterval} interval
+                      {chartData.length} نقطه داده • نمای {chartType} • بازه {selectedInterval}
                     </p>
                     {indicators.filter(i => i.enabled).length > 0 && (
                       <p className="text-xs mt-1">
-                        Active indicators: {indicators.filter(i => i.enabled).map(i => i.name).join(', ')}
+                        اندیکاتورهای فعال: {indicators.filter(i => i.enabled).map(i => i.name).join('، ')}
                       </p>
                     )}
                   </div>
@@ -397,7 +397,7 @@ export function TradingViewChart({
             <div className="h-24 bg-gray-900/30 rounded-lg border border-gray-700 p-2">
               <div className="flex items-center justify-center h-full text-gray-400 text-sm">
                 <Volume2 className="h-4 w-4 mr-2" />
-                Volume Chart ({chartData.length} bars)
+                نمودار حجم ({chartData.length} کندل)
               </div>
             </div>
           )}
@@ -405,28 +405,28 @@ export function TradingViewChart({
           {/* Market Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">24h High</div>
+              <div className="text-xs text-gray-400 mb-1">بیشترین ۲۴ ساعت</div>
               <div className="font-semibold">${Math.max(...chartData.map(d => d.high)).toLocaleString()}</div>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">24h Low</div>
+              <div className="text-xs text-gray-400 mb-1">کمترین ۲۴ ساعت</div>
               <div className="font-semibold">${Math.min(...chartData.map(d => d.low)).toLocaleString()}</div>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">24h Volume</div>
+              <div className="text-xs text-gray-400 mb-1">حجم ۲۴ ساعت</div>
               <div className="font-semibold">{(chartData.reduce((sum, d) => sum + d.volume, 0) / 1e6).toFixed(1)}M</div>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Market Cap</div>
+              <div className="text-xs text-gray-400 mb-1">ارزش بازار</div>
               <div className="font-semibold">$821.5B</div>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Volatility</div>
+              <div className="text-xs text-gray-400 mb-1">نوسان</div>
               <div className="font-semibold">2.4%</div>
             </div>
             <div className="bg-gray-800/50 rounded-lg p-3">
-              <div className="text-xs text-gray-400 mb-1">Last Update</div>
-              <div className="font-semibold text-xs">{new Date().toLocaleTimeString()}</div>
+              <div className="text-xs text-gray-400 mb-1">آخرین به‌روزرسانی</div>
+              <div className="font-semibold text-xs">{new Date().toLocaleTimeString('fa-IR')}</div>
             </div>
           </div>
         </div>

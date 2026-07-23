@@ -169,7 +169,7 @@ export function ChartShowcase({ className }: ChartShowcaseProps) {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <DollarSign className="h-5 w-5" />
-            <span>Featured Chart - AAPL</span>
+            <span>نمودار ویژه - AAPL</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -190,7 +190,7 @@ export function ChartShowcase({ className }: ChartShowcaseProps) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-lg">Portfolio Value</CardTitle>
+            <CardTitle className="text-lg">ارزش پورتفولیو</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -200,16 +200,16 @@ export function ChartShowcase({ className }: ChartShowcaseProps) {
                   <TrendingUp className="h-3 w-3 mr-1" />
                   +2.34%
                 </Badge>
-                <span className="text-sm text-muted-foreground">Today</span>
+                <span className="text-sm text-muted-foreground">امروز</span>
               </div>
-              <p className="text-xs text-muted-foreground">+$2,987.50 unrealized P&L</p>
+              <p className="text-xs text-muted-foreground">+$2,987.50 سود/زیان محقق‌نشده</p>
             </div>
           </CardContent>
         </Card>
 
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-lg">Day's Best Performer</CardTitle>
+            <CardTitle className="text-lg">بهترین عملکرد روز</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -221,21 +221,21 @@ export function ChartShowcase({ className }: ChartShowcaseProps) {
                 </Badge>
               </div>
               <p className="text-xl font-bold">$248.42</p>
-              <p className="text-xs text-muted-foreground">125 shares • +$1,541.25</p>
+              <p className="text-xs text-muted-foreground">۱۲۵ سهم • +$1,541.25</p>
             </div>
           </CardContent>
         </Card>
 
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-lg">Active Orders</CardTitle>
+            <CardTitle className="text-lg">سفارش‌های فعال</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-2xl font-bold">3</p>
+              <p className="text-2xl font-bold">۳</p>
               <div className="space-y-1 text-xs text-muted-foreground">
-                <p>2 Buy Limit Orders</p>
-                <p>1 Stop Loss Order</p>
+                <p>۲ سفارش خرید محدود</p>
+                <p>۱ سفارش حد ضرر</p>
               </div>
             </div>
           </CardContent>

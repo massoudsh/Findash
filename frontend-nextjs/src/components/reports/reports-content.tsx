@@ -66,11 +66,32 @@ interface DataSource {
 }
 
 const REPORT_TYPES = [
-  { value: 'market_summary', label: 'Market Summary' },
-  { value: 'risk_assessment', label: 'Risk Assessment' },
-  { value: 'sentiment', label: 'Sentiment Analysis' },
-  { value: 'technical', label: 'Technical Analysis' },
+  { value: 'market_summary', label: 'خلاصه بازار' },
+  { value: 'risk_assessment', label: 'ارزیابی ریسک' },
+  { value: 'sentiment', label: 'تحلیل احساسات' },
+  { value: 'technical', label: 'تحلیل تکنیکال' },
 ] as const;
+
+const DATA_SOURCE_TYPE_LABELS: Record<string, string> = {
+  market_data: 'داده‌های بازار',
+  news: 'اخبار',
+  social: 'اجتماعی',
+  technical: 'تکنیکال',
+  fundamental: 'بنیادی',
+  sentiment: 'احساسات',
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  active: 'فعال',
+  inactive: 'غیرفعال',
+  error: 'خطا',
+};
+
+const IMPACT_LABELS: Record<string, string> = {
+  high: 'بالا',
+  medium: 'متوسط',
+  low: 'پایین',
+};
 
 /** Extract report narrative from backend response (multiple possible keys). */
 function getReportTextFromResponse(data: Record<string, unknown>): string | null {
@@ -99,61 +120,61 @@ export function ReportsContent() {
     {
       id: '1',
       type: 'bullish',
-      title: 'Strong Momentum in Tech Sector',
-      summary: 'AI analysis indicates sustained upward pressure in NVDA, MSFT, and GOOGL based on earnings momentum, institutional flow, and technical patterns. Expected 12-15% upside over next 30 days.',
+      title: 'مومنتوم قوی در بخش فناوری',
+      summary: 'تحلیل هوش مصنوعی نشان‌دهنده فشار صعودی پایدار در NVDA، MSFT و GOOGL بر اساس مومنتوم درآمدی، جریان نهادی و الگوهای تکنیکال است. رشد ۱۲ تا ۱۵ درصدی در ۳۰ روز آینده پیش‌بینی می‌شود.',
       confidence: 87,
       impact: 'high',
-      sources: ['Technical Analysis', 'Market Data', 'News Sentiment', 'Options Flow'],
+      sources: ['تحلیل تکنیکال', 'داده‌های بازار', 'احساسات اخبار', 'جریان اختیار معامله'],
       timestamp: new Date().toISOString()
     },
     {
       id: '2',
       type: 'warning',
-      title: 'Crypto Volatility Alert',
-      summary: 'Unusual options activity and social sentiment divergence detected in BTC-USD and ETH-USD. Potential 20-25% volatility spike expected within 48-72 hours.',
+      title: 'هشدار نوسان کریپتو',
+      summary: 'فعالیت غیرعادی اختیار معامله و واگرایی احساسات اجتماعی در BTC-USD و ETH-USD شناسایی شد. جهش نوسان ۲۰ تا ۲۵ درصدی طی ۴۸ تا ۷۲ ساعت آینده محتمل است.',
       confidence: 78,
       impact: 'medium',
-      sources: ['Social Sentiment', 'Options Data', 'Technical Indicators'],
+      sources: ['احساسات اجتماعی', 'داده‌های اختیار معامله', 'شاخص‌های تکنیکال'],
       timestamp: new Date().toISOString()
     },
     {
       id: '3',
       type: 'opportunity',
-      title: 'Commodities Rotation Signal',
-      summary: 'Inflation hedge rotation detected. GLD and SLV showing strong accumulation patterns while institutional money rotates from growth to value. 8-12% upside potential.',
+      title: 'سیگنال چرخش کالاها',
+      summary: 'چرخش پوشش ریسک تورمی شناسایی شد. GLD و SLV الگوهای انباشت قوی نشان می‌دهند، در حالی که سرمایه نهادی از سهام رشدی به ارزشی می‌چرخد. پتانسیل رشد ۸ تا ۱۲ درصدی.',
       confidence: 82,
       impact: 'medium',
-      sources: ['Institutional Flow', 'Macro Analysis', 'Technical Patterns'],
+      sources: ['جریان نهادی', 'تحلیل کلان', 'الگوهای تکنیکال'],
       timestamp: new Date().toISOString()
     },
     {
       id: '4',
       type: 'neutral',
-      title: 'Stablecoin Stability Confirmed',
-      summary: 'USDT and USDC maintaining healthy peg stability. No depegging risks detected. Suitable for portfolio stability and cash management strategies.',
+      title: 'تأیید پایداری استیبل‌کوین‌ها',
+      summary: 'USDT و USDC پایداری سالمی نسبت به دلار حفظ کرده‌اند. هیچ ریسک از‌دست‌رفتن قیمت ثابت شناسایی نشد. مناسب برای پایداری پورتفولیو و راهبردهای مدیریت نقدینگی.',
       confidence: 95,
       impact: 'low',
-      sources: ['On-chain Data', 'Market Data', 'Liquidity Analysis'],
+      sources: ['داده‌های آن‌چین', 'داده‌های بازار', 'تحلیل نقدینگی'],
       timestamp: new Date().toISOString()
     }
   ]);
 
   const [reportSections, setReportSections] = useState<ReportSection[]>([
-    { id: 'market', name: 'Market Analysis', status: 'completed', progress: 100, insights: 8, lastUpdated: '2 min ago' },
-    { id: 'portfolio', name: 'Portfolio Performance', status: 'completed', progress: 100, insights: 12, lastUpdated: '5 min ago' },
-    { id: 'risk', name: 'Risk Assessment', status: 'processing', progress: 75, insights: 6, lastUpdated: '1 min ago' },
-    { id: 'sentiment', name: 'Sentiment Analysis', status: 'completed', progress: 100, insights: 15, lastUpdated: '3 min ago' },
-    { id: 'technical', name: 'Technical Signals', status: 'processing', progress: 60, insights: 9, lastUpdated: 'Now' },
-    { id: 'macro', name: 'Macro Environment', status: 'pending', progress: 0, insights: 0, lastUpdated: 'Pending' }
+    { id: 'market', name: 'تحلیل بازار', status: 'completed', progress: 100, insights: 8, lastUpdated: '۲ دقیقه پیش' },
+    { id: 'portfolio', name: 'عملکرد پورتفولیو', status: 'completed', progress: 100, insights: 12, lastUpdated: '۵ دقیقه پیش' },
+    { id: 'risk', name: 'ارزیابی ریسک', status: 'processing', progress: 75, insights: 6, lastUpdated: '۱ دقیقه پیش' },
+    { id: 'sentiment', name: 'تحلیل احساسات', status: 'completed', progress: 100, insights: 15, lastUpdated: '۳ دقیقه پیش' },
+    { id: 'technical', name: 'سیگنال‌های تکنیکال', status: 'processing', progress: 60, insights: 9, lastUpdated: 'اکنون' },
+    { id: 'macro', name: 'محیط کلان', status: 'pending', progress: 0, insights: 0, lastUpdated: 'در انتظار' }
   ]);
 
   const [dataSources, setDataSources] = useState<DataSource[]>([
-    { id: 'market', name: 'Market Data Feed', type: 'market_data', status: 'active', lastSync: '30s ago', recordsProcessed: 15420 },
-    { id: 'news', name: 'News Analytics', type: 'news', status: 'active', lastSync: '1m ago', recordsProcessed: 2847 },
-    { id: 'social', name: 'Social Sentiment', type: 'social', status: 'active', lastSync: '45s ago', recordsProcessed: 8932 },
-    { id: 'technical', name: 'Technical Indicators', type: 'technical', status: 'active', lastSync: '15s ago', recordsProcessed: 5621 },
-    { id: 'fundamental', name: 'Fundamental Data', type: 'fundamental', status: 'active', lastSync: '2m ago', recordsProcessed: 1205 },
-    { id: 'sentiment', name: 'Sentiment Engine', type: 'sentiment', status: 'active', lastSync: '20s ago', recordsProcessed: 3847 }
+    { id: 'market', name: 'فید داده‌های بازار', type: 'market_data', status: 'active', lastSync: '۳۰ ثانیه پیش', recordsProcessed: 15420 },
+    { id: 'news', name: 'تحلیل اخبار', type: 'news', status: 'active', lastSync: '۱ دقیقه پیش', recordsProcessed: 2847 },
+    { id: 'social', name: 'احساسات اجتماعی', type: 'social', status: 'active', lastSync: '۴۵ ثانیه پیش', recordsProcessed: 8932 },
+    { id: 'technical', name: 'شاخص‌های تکنیکال', type: 'technical', status: 'active', lastSync: '۱۵ ثانیه پیش', recordsProcessed: 5621 },
+    { id: 'fundamental', name: 'داده‌های بنیادی', type: 'fundamental', status: 'active', lastSync: '۲ دقیقه پیش', recordsProcessed: 1205 },
+    { id: 'sentiment', name: 'موتور احساسات', type: 'sentiment', status: 'active', lastSync: '۲۰ ثانیه پیش', recordsProcessed: 3847 }
   ]);
 
   // Load data sources from backend
@@ -188,7 +209,7 @@ export function ReportsContent() {
 
     loadDataSources();
     loadAnalysisStatus();
-    
+
     // Set up periodic refresh
     const interval = setInterval(() => {
       loadDataSources();
@@ -219,7 +240,7 @@ export function ReportsContent() {
             ...section,
             progress: 100,
             status: 'completed',
-            lastUpdated: 'Just now',
+            lastUpdated: 'همین الان',
           }))
         );
 
@@ -227,31 +248,31 @@ export function ReportsContent() {
         if (reportText) {
           setLastReportText(reportText);
           const marketSummary = dataObj.market_summary as { ai_model?: string } | undefined;
-          setReportModelUsed(marketSummary?.ai_model ?? (dataObj.model_used as string) ?? 'AI');
+          setReportModelUsed(marketSummary?.ai_model ?? (dataObj.model_used as string) ?? 'هوش مصنوعی');
           setReportGeneratedAt(new Date().toISOString());
           setActiveTab('reports');
         }
         toast({
-          title: 'Report generated',
-          description: reportText ? 'AI report is ready in the Generated Reports tab.' : 'Insights updated.',
+          title: 'گزارش تولید شد',
+          description: reportText ? 'گزارش هوش مصنوعی در تب «گزارش‌های تولیدشده» آماده است.' : 'بینش‌ها به‌روزرسانی شدند.',
           type: 'success',
           duration: 4500,
         });
       } else {
-        const message = (data as { error?: string }).error ?? `Request failed (${response.status})`;
+        const message = (data as { error?: string }).error ?? `درخواست ناموفق بود (${response.status})`;
         setGenerateError(message);
         toast({
-          title: 'Generate report failed',
+          title: 'تولید گزارش ناموفق بود',
           description: message,
           type: 'error',
           duration: 6000,
         });
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Network or server error. Is the backend running at BACKEND_URL?';
+      const message = error instanceof Error ? error.message : 'خطای شبکه یا سرور. آیا بک‌اند در آدرس BACKEND_URL در حال اجراست؟';
       setGenerateError(message);
       toast({
-        title: 'Generate report failed',
+        title: 'تولید گزارش ناموفق بود',
         description: message,
         type: 'error',
         duration: 6000,
@@ -263,9 +284,9 @@ export function ReportsContent() {
 
   const downloadReport = () => {
     if (!lastReportText || !reportGeneratedAt) return;
-    const title = REPORT_TYPES.find((r) => r.value === reportType)?.label ?? 'Report';
+    const title = REPORT_TYPES.find((r) => r.value === reportType)?.label ?? 'گزارش';
     const blob = new Blob(
-      [`# ${title}\n\nGenerated: ${new Date(reportGeneratedAt).toLocaleString()}\nModel: ${reportModelUsed ?? 'AI'}\n\n---\n\n${lastReportText}`],
+      [`# ${title}\n\nتاریخ تولید: ${new Date(reportGeneratedAt).toLocaleString('fa-IR')}\nمدل: ${reportModelUsed ?? 'هوش مصنوعی'}\n\n---\n\n${lastReportText}`],
       { type: 'text/markdown' }
     );
     const url = URL.createObjectURL(blob);
@@ -314,16 +335,16 @@ export function ReportsContent() {
             <div className="flex items-center gap-3">
               <Brain className="w-8 h-8 text-primary" />
               <div>
-                <CardTitle className="text-2xl">AI Intelligence Report</CardTitle>
+                <CardTitle className="text-2xl">گزارش هوشمند تحلیلی</CardTitle>
                 <p className="text-muted-foreground text-sm">
-                  Reports are generated by AI models (Llama/FinGPT when configured, otherwise simulated). Choose type and generate.
+                  گزارش‌ها توسط مدل‌های هوش مصنوعی (لاما/فین‌جی‌پی‌تی در صورت پیکربندی، در غیر این صورت شبیه‌سازی‌شده) تولید می‌شوند. نوع را انتخاب کرده و گزارش را تولید کنید.
                 </p>
               </div>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <Select value={reportType} onValueChange={setReportType}>
                 <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder="Report type" />
+                  <SelectValue placeholder="نوع گزارش" />
                 </SelectTrigger>
                 <SelectContent>
                   {REPORT_TYPES.map((r) => (
@@ -337,7 +358,7 @@ export function ReportsContent() {
                 {lastReportText && (
                   <Button variant="outline" size="sm" onClick={downloadReport}>
                     <Download className="w-4 h-4 mr-2" />
-                    Download
+                    دانلود
                   </Button>
                 )}
                 <Button onClick={generateAIReport} disabled={isGenerating}>
@@ -346,15 +367,15 @@ export function ReportsContent() {
                   ) : (
                     <Zap className="w-4 h-4 mr-2" />
                   )}
-                  {isGenerating ? 'Generating…' : 'Generate Report'}
+                  {isGenerating ? 'در حال تولید…' : 'تولید گزارش'}
                 </Button>
               </div>
             </div>
           </div>
           {reportModelUsed && reportGeneratedAt && (
             <p className="text-xs text-muted-foreground mt-2">
-              Last report: generated with <span className="font-medium">{reportModelUsed}</span> at{' '}
-              {new Date(reportGeneratedAt).toLocaleString()}
+              آخرین گزارش: تولیدشده با <span className="font-medium">{reportModelUsed}</span> در{' '}
+              {new Date(reportGeneratedAt).toLocaleString('fa-IR')}
             </p>
           )}
           {generateError && (
@@ -368,10 +389,10 @@ export function ReportsContent() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="insights">AI Insights</TabsTrigger>
-          <TabsTrigger value="analysis">Analysis Status</TabsTrigger>
-          <TabsTrigger value="sources">Data Sources</TabsTrigger>
-          <TabsTrigger value="reports">Generated Reports</TabsTrigger>
+          <TabsTrigger value="insights">بینش‌های هوش مصنوعی</TabsTrigger>
+          <TabsTrigger value="analysis">وضعیت تحلیل</TabsTrigger>
+          <TabsTrigger value="sources">منابع داده</TabsTrigger>
+          <TabsTrigger value="reports">گزارش‌های تولیدشده</TabsTrigger>
         </TabsList>
 
         <TabsContent value="insights" className="space-y-6">
@@ -379,20 +400,20 @@ export function ReportsContent() {
           <div className="grid gap-4 md:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Insights</CardTitle>
+                <CardTitle className="text-sm font-medium">کل بینش‌ها</CardTitle>
                 <Lightbulb className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{aiInsights.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  AI-generated insights
+                  بینش‌های تولیدشده توسط هوش مصنوعی
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Avg Confidence</CardTitle>
+                <CardTitle className="text-sm font-medium">میانگین اطمینان</CardTitle>
                 <Target className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -400,14 +421,14 @@ export function ReportsContent() {
                   {Math.round(aiInsights.reduce((acc, insight) => acc + insight.confidence, 0) / aiInsights.length)}%
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  AI confidence level
+                  سطح اطمینان هوش مصنوعی
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">High Impact</CardTitle>
+                <CardTitle className="text-sm font-medium">تأثیر بالا</CardTitle>
                 <AlertTriangle className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
@@ -415,20 +436,20 @@ export function ReportsContent() {
                   {aiInsights.filter(insight => insight.impact === 'high').length}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Critical insights
+                  بینش‌های حیاتی
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Data Sources</CardTitle>
+                <CardTitle className="text-sm font-medium">منابع داده</CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{dataSources.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  Active data feeds
+                  فیدهای داده فعال
                 </p>
               </CardContent>
             </Card>
@@ -439,7 +460,7 @@ export function ReportsContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="w-5 h-5" />
-                Latest AI Insights
+                آخرین بینش‌های هوش مصنوعی
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -453,22 +474,22 @@ export function ReportsContent() {
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-xs">
-                          {insight.confidence}% confidence
+                          {insight.confidence}% اطمینان
                         </Badge>
                         <Badge variant={insight.impact === 'high' ? 'destructive' : insight.impact === 'medium' ? 'default' : 'secondary'}>
-                          {insight.impact} impact
+                          تأثیر {IMPACT_LABELS[insight.impact] ?? insight.impact}
                         </Badge>
                       </div>
                     </div>
-                    
+
                     <p className="text-sm mb-3">{insight.summary}</p>
-                    
+
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
-                        <span>Sources:</span>
-                        <span className="font-medium">{insight.sources.join(', ')}</span>
+                        <span>منابع:</span>
+                        <span className="font-medium">{insight.sources.join('، ')}</span>
                       </div>
-                      <span>{new Date(insight.timestamp).toLocaleTimeString()}</span>
+                      <span>{new Date(insight.timestamp).toLocaleTimeString('fa-IR')}</span>
                     </div>
                   </div>
                 ))}
@@ -483,7 +504,7 @@ export function ReportsContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="w-5 h-5" />
-                Analysis Status
+                وضعیت تحلیل
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -495,7 +516,7 @@ export function ReportsContent() {
                       <div>
                         <h3 className="font-medium">{section.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {section.insights} insights • Updated {section.lastUpdated}
+                          {section.insights} بینش • به‌روزرسانی {section.lastUpdated}
                         </p>
                       </div>
                     </div>
@@ -518,7 +539,7 @@ export function ReportsContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="w-5 h-5" />
-                Data Source Status
+                وضعیت منابع داده
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -528,21 +549,21 @@ export function ReportsContent() {
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-medium">{source.name}</h3>
                       <Badge variant={source.status === 'active' ? 'default' : 'destructive'}>
-                        {source.status}
+                        {STATUS_LABELS[source.status] ?? source.status}
                       </Badge>
                     </div>
                     <div className="space-y-2 text-sm text-muted-foreground">
                       <div className="flex justify-between">
-                        <span>Type:</span>
-                        <span className="font-medium capitalize">{source.type.replace('_', ' ')}</span>
+                        <span>نوع:</span>
+                        <span className="font-medium">{DATA_SOURCE_TYPE_LABELS[source.type] ?? source.type}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Last Sync:</span>
+                        <span>همگام‌سازی آخر:</span>
                         <span className="font-medium">{source.lastSync}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span>Records:</span>
-                        <span className="font-medium">{source.recordsProcessed.toLocaleString()}</span>
+                        <span>رکوردها:</span>
+                        <span className="font-medium">{source.recordsProcessed.toLocaleString('fa-IR')}</span>
                       </div>
                     </div>
                   </div>
@@ -558,12 +579,12 @@ export function ReportsContent() {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
                 <PieChart className="w-5 h-5" />
-                Latest AI-Generated Report
+                آخرین گزارش تولیدشده توسط هوش مصنوعی
               </CardTitle>
               {lastReportText && (
                 <Button size="sm" onClick={downloadReport}>
                   <Download className="w-4 h-4 mr-2" />
-                  Download (.md)
+                  دانلود (.md)
                 </Button>
               )}
             </CardHeader>
@@ -571,9 +592,9 @@ export function ReportsContent() {
               {lastReportText ? (
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                    <Badge variant="secondary">{reportModelUsed ?? 'AI'}</Badge>
+                    <Badge variant="secondary">{reportModelUsed ?? 'هوش مصنوعی'}</Badge>
                     {reportGeneratedAt && (
-                      <span>{new Date(reportGeneratedAt).toLocaleString()}</span>
+                      <span>{new Date(reportGeneratedAt).toLocaleString('fa-IR')}</span>
                     )}
                     <span>
                       {REPORT_TYPES.find((r) => r.value === reportType)?.label ?? reportType}
@@ -585,7 +606,7 @@ export function ReportsContent() {
                 </div>
               ) : (
                 <p className="text-muted-foreground text-sm">
-                  Generate a report using the &quot;Generate Report&quot; button above. The full AI-written narrative (Llama/FinGPT when configured) will appear here.
+                  با استفاده از دکمه «تولید گزارش» در بالا یک گزارش تولید کنید. متن کامل نوشته‌شده توسط هوش مصنوعی (لاما/فین‌جی‌پی‌تی در صورت پیکربندی) در اینجا نمایش داده خواهد شد.
                 </p>
               )}
             </CardContent>
@@ -596,7 +617,7 @@ export function ReportsContent() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <PieChart className="w-5 h-5" />
-                Report Types
+                انواع گزارش
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -606,14 +627,14 @@ export function ReportsContent() {
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="font-semibold">{r.label}</h3>
                       <Badge variant={reportType === r.value ? 'default' : 'outline'}>
-                        {reportType === r.value ? 'Selected' : 'Select above'}
+                        {reportType === r.value ? 'انتخاب‌شده' : 'از بالا انتخاب کنید'}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {r.value === 'market_summary' && 'One-page market analysis: indices, tech, macro, outlook.'}
-                      {r.value === 'risk_assessment' && 'Portfolio risk: volatility, correlations, tail risk, recommendations.'}
-                      {r.value === 'sentiment' && 'Social and news sentiment, sector highlights, divergences.'}
-                      {r.value === 'technical' && 'Support/resistance, momentum, actionable technical signals.'}
+                      {r.value === 'market_summary' && 'تحلیل یک‌صفحه‌ای بازار: شاخص‌ها، فناوری، کلان، چشم‌انداز.'}
+                      {r.value === 'risk_assessment' && 'ریسک پورتفولیو: نوسان‌پذیری، همبستگی‌ها، ریسک دنباله، توصیه‌ها.'}
+                      {r.value === 'sentiment' && 'احساسات اجتماعی و اخبار، نکات برجسته بخش‌ها، واگرایی‌ها.'}
+                      {r.value === 'technical' && 'حمایت/مقاومت، مومنتوم، سیگنال‌های تکنیکال قابل اجرا.'}
                     </p>
                   </div>
                 ))}
@@ -624,4 +645,4 @@ export function ReportsContent() {
       </Tabs>
     </div>
   );
-} 
+}

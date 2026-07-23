@@ -40,21 +40,27 @@ import { BackendOfflineBanner } from '@/components/ui/backend-offline-banner';
 
 /** Best-practice strategy types (fin market aligned). */
 const STRATEGY_TYPES = [
-  { value: 'momentum', label: 'Momentum', desc: 'Trend-following; best in trending markets' },
-  { value: 'mean_reversion', label: 'Mean Reversion', desc: 'Fade extremes; range-bound markets' },
-  { value: 'trend_following', label: 'Trend Following', desc: 'Moving average / breakout systems' },
-  { value: 'value', label: 'Value', desc: 'Fundamental signals; longer horizon' },
-  { value: 'arbitrage', label: 'Arbitrage', desc: 'Price dislocations; low risk per trade' },
-  { value: 'scalping', label: 'Scalping', desc: 'Short-term; high frequency' },
+  { value: 'momentum', label: 'مومنتوم', desc: 'روند-محور؛ بهترین در بازارهای رونددار' },
+  { value: 'mean_reversion', label: 'بازگشت به میانگین', desc: 'خرید/فروش در نقاط افراطی؛ بازارهای رنج' },
+  { value: 'trend_following', label: 'دنباله‌روی روند', desc: 'سیستم‌های میانگین متحرک / شکست قیمتی' },
+  { value: 'value', label: 'ارزشی', desc: 'سیگنال‌های بنیادی؛ افق زمانی بلندتر' },
+  { value: 'arbitrage', label: 'آربیتراژ', desc: 'اختلاف قیمت بین بازارها؛ ریسک کم در هر معامله' },
+  { value: 'scalping', label: 'اسکالپینگ', desc: 'کوتاه‌مدت؛ فرکانس بالا' },
 ] as const;
 
 /** Agent sources that can feed the bot (M1–M11 alignment). */
 const AGENT_SOURCES = [
-  { value: 'm4', label: 'Strategy (M4)', desc: 'Signals' },
-  { value: 'm9', label: 'Sentiment (M9)', desc: 'News/social' },
-  { value: 'm11', label: 'Analysis (M11)', desc: 'Insights' },
-  { value: 'm6', label: 'Risk (M6)', desc: 'Risk limits' },
+  { value: 'm4', label: 'استراتژی (M4)', desc: 'سیگنال‌ها' },
+  { value: 'm9', label: 'احساسات (M9)', desc: 'اخبار/شبکه‌های اجتماعی' },
+  { value: 'm11', label: 'تحلیل (M11)', desc: 'بینش‌ها' },
+  { value: 'm6', label: 'ریسک (M6)', desc: 'محدودیت‌های ریسک' },
 ] as const;
+
+const STATUS_LABELS: Record<string, string> = {
+  active: 'فعال',
+  paused: 'متوقف‌شده',
+  stopped: 'خاموش',
+};
 
 interface BotConfig {
   id: string;
@@ -96,7 +102,7 @@ type NewBotForm = {
 const MOCK_BOTS: BotConfig[] = [
   {
     id: '1',
-    name: 'Momentum Bot',
+    name: 'ربات مومنتوم',
     strategy: 'momentum',
     status: 'active',
     executionMode: 'paper',
@@ -104,12 +110,12 @@ const MOCK_BOTS: BotConfig[] = [
     agentSources: ['m4', 'm11'],
     risk: DEFAULT_RISK,
     performance: { total_trades: 45, win_rate: 0.67, total_pnl: 1250.5 },
-    lastSignalAt: '2m ago',
+    lastSignalAt: '۲ دقیقه پیش',
     created_at: new Date().toISOString(),
   },
   {
     id: '2',
-    name: 'Mean Reversion Bot',
+    name: 'ربات بازگشت به میانگین',
     strategy: 'mean_reversion',
     status: 'paused',
     executionMode: 'paper',
@@ -183,7 +189,7 @@ export function TradingBotsContent() {
       const data = await res.json();
       setBots(Array.isArray(data) ? data.map(mapApiBotToConfig) : MOCK_BOTS);
     } catch (e) {
-      setBotsError(e instanceof Error ? e.message : 'Failed to load bots');
+      setBotsError(e instanceof Error ? e.message : 'بارگذاری ربات‌ها ناموفق بود');
       setBots(MOCK_BOTS);
     } finally {
       setBotsLoading(false);
@@ -277,7 +283,7 @@ export function TradingBotsContent() {
   };
 
   const deleteBot = async (id: string) => {
-    if (!confirm('Delete this bot? This cannot be undone.')) return;
+    if (!confirm('این ربات حذف شود؟ این عملیات قابل بازگشت نیست.')) return;
     if (API_BASE) {
       try {
         const res = await fetch(`${API_BASE}/api/trading-bots/${id}`, { method: 'DELETE', credentials: 'include' });
@@ -298,31 +304,31 @@ export function TradingBotsContent() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
             <Bot className="h-8 w-8" />
-            Trading Bots
+            ربات‌های معاملاتی
           </h1>
           <p className="text-muted-foreground mt-1">
-            Automated strategies with risk controls; executed on the platform via مرکز فرماندهی
+            استراتژی‌های خودکار با کنترل ریسک؛ اجراشده روی پلتفرم از طریق مرکز فرماندهی
           </p>
         </div>
         <Button onClick={() => setCreateOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Create Bot
+          ساخت ربات
         </Button>
       </div>
 
       {!backendHealthLoading && !API_BASE && (
         <BackendOfflineBanner
           backendUrl={DEFAULT_BACKEND_URL}
-          message="Connect backend: set NEXT_PUBLIC_API_URL in .env.local"
-          fallbackLabel="(e.g. http://localhost:8000). Using local mock data."
+          message="اتصال بک‌اند: NEXT_PUBLIC_API_URL را در .env.local تنظیم کنید"
+          fallbackLabel="(مثلاً http://localhost:8000). در حال استفاده از داده‌های آزمایشی محلی."
           onRetry={refetchBackendHealth}
         />
       )}
       {!backendHealthLoading && API_BASE && !backendOk && (
         <BackendOfflineBanner
           backendUrl={backendUrl}
-          message="Backend offline."
-          fallbackLabel="Showing fallback data."
+          message="بک‌اند آفلاین است."
+          fallbackLabel="نمایش داده‌های جایگزین."
           onRetry={refetchBackendHealth}
         />
       )}
@@ -330,7 +336,7 @@ export function TradingBotsContent() {
         <Card className="border-destructive/30 bg-destructive/5">
           <CardContent className="py-3 px-4 flex items-center gap-3">
             <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
-            <span className="text-sm">{botsError}. Showing fallback data.</span>
+            <span className="text-sm">{botsError}. نمایش داده‌های جایگزین.</span>
             <Button variant="outline" size="sm" onClick={() => fetchBots()}>تلاش مجدد</Button>
           </CardContent>
         </Card>
@@ -341,11 +347,11 @@ export function TradingBotsContent() {
         <CardContent className="py-3 px-4 flex items-start gap-3">
           <Shield className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
           <div className="text-sm">
-            <p className="font-medium">Best practices</p>
+            <p className="font-medium">بهترین شیوه‌ها</p>
             <p className="text-muted-foreground">
-              Position sizing, stop-loss, take-profit, max daily loss and max drawdown are applied per bot.
-              Bots consume signals from Strategy (M4), Sentiment (M9), and Analysis (M11) agents. Execute in
-              <strong> Paper</strong> first; switch to Live from bot settings when ready.
+              اندازه پوزیشن، حد ضرر، حد سود، حداکثر زیان روزانه و حداکثر افت سرمایه به‌ازای هر ربات اعمال می‌شود.
+              ربات‌ها از سیگنال‌های عامل‌های استراتژی (M4)، احساسات (M9) و تحلیل (M11) استفاده می‌کنند. ابتدا در حالت
+              <strong> آزمایشی</strong> اجرا کنید؛ زمانی که آماده بودید از تنظیمات ربات به حالت زنده تغییر دهید.
             </p>
           </div>
         </CardContent>
@@ -364,7 +370,7 @@ export function TradingBotsContent() {
                   variant={bot.status === 'active' ? 'default' : bot.status === 'paused' ? 'secondary' : 'outline'}
                   className="shrink-0"
                 >
-                  {bot.status}
+                  {STATUS_LABELS[bot.status] ?? bot.status}
                 </Badge>
               </div>
               <div className="flex flex-wrap gap-1 mt-1">
@@ -372,42 +378,42 @@ export function TradingBotsContent() {
                   {STRATEGY_TYPES.find((s) => s.value === bot.strategy)?.label ?? bot.strategy}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
-                  {bot.executionMode === 'paper' ? 'Paper' : 'Live'}
+                  {bot.executionMode === 'paper' ? 'آزمایشی' : 'زنده'}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <span className="text-muted-foreground">Trades</span>
+                  <span className="text-muted-foreground">معاملات</span>
                   <p className="font-medium">{bot.performance.total_trades}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Win rate</span>
+                  <span className="text-muted-foreground">نرخ برد</span>
                   <p className="font-medium">{(bot.performance.win_rate * 100).toFixed(1)}%</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Total P&L</span>
+                  <span className="text-muted-foreground">سود/زیان کل</span>
                   <p className={cn('font-medium', bot.performance.total_pnl >= 0 ? 'text-green-600' : 'text-red-600')}>
                     ${bot.performance.total_pnl.toFixed(2)}
                   </p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Risk</span>
+                  <span className="text-muted-foreground">ریسک</span>
                   <p className="font-medium text-xs">
-                    SL {bot.risk.stopLossPct}% · TP {bot.risk.takeProfitPct}% · Max DD {bot.risk.maxDrawdownPct}%
+                    حد ضرر {bot.risk.stopLossPct}% · حد سود {bot.risk.takeProfitPct}% · حداکثر افت {bot.risk.maxDrawdownPct}%
                   </p>
                 </div>
               </div>
               <div className="text-xs text-muted-foreground">
-                <span>Agents: </span>
-                {bot.agentSources.map((a) => AGENT_SOURCES.find((x) => x.value === a)?.label ?? a).join(', ')}
-                {bot.symbols.length ? ` · ${bot.symbols.join(', ')}` : ''}
+                <span>عامل‌ها: </span>
+                {bot.agentSources.map((a) => AGENT_SOURCES.find((x) => x.value === a)?.label ?? a).join('، ')}
+                {bot.symbols.length ? ` · ${bot.symbols.join('، ')}` : ''}
               </div>
               {bot.lastSignalAt && (
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <Link2 className="h-3 w-3" />
-                  Last signal {bot.lastSignalAt} · runs on platform
+                  آخرین سیگنال {bot.lastSignalAt} · اجرا روی پلتفرم
                 </p>
               )}
               <div className="flex gap-2 pt-2">
@@ -419,7 +425,7 @@ export function TradingBotsContent() {
                   disabled={bot.status === 'stopped'}
                 >
                   {bot.status === 'active' ? <Pause className="h-3 w-3 mr-1" /> : <Play className="h-3 w-3 mr-1" />}
-                  {bot.status === 'active' ? 'Pause' : 'Start'}
+                  {bot.status === 'active' ? 'توقف موقت' : 'شروع'}
                 </Button>
                 <Button
                   variant="outline"
@@ -434,7 +440,7 @@ export function TradingBotsContent() {
                   size="sm"
                   className="text-muted-foreground hover:text-destructive"
                   onClick={() => deleteBot(bot.id)}
-                  aria-label={`Delete ${bot.name}`}
+                  aria-label={`حذف ${bot.name}`}
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>
@@ -448,20 +454,20 @@ export function TradingBotsContent() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>Create Trading Bot</DialogTitle>
+            <DialogTitle>ساخت ربات معاملاتی</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div>
-              <Label>Bot name</Label>
+              <Label>نام ربات</Label>
               <Input
-                placeholder="e.g. Tech Momentum"
+                placeholder="مثلاً مومنتوم فناوری"
                 value={newBot.name}
                 onChange={(e) => setNewBot((p) => ({ ...p, name: e.target.value }))}
                 className="mt-1"
               />
             </div>
             <div>
-              <Label>Strategy type</Label>
+              <Label>نوع استراتژی</Label>
               <Select
                 value={newBot.strategy}
                 onValueChange={(v) => setNewBot((p) => ({ ...p, strategy: v as typeof p.strategy }))}
@@ -479,7 +485,7 @@ export function TradingBotsContent() {
               </Select>
             </div>
             <div>
-              <Label>Execution mode</Label>
+              <Label>حالت اجرا</Label>
               <Select
                 value={newBot.executionMode}
                 onValueChange={(v) => setNewBot((p) => ({ ...p, executionMode: v as 'paper' | 'live' }))}
@@ -488,13 +494,13 @@ export function TradingBotsContent() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="paper">Paper (recommended first)</SelectItem>
-                  <SelectItem value="live">Live</SelectItem>
+                  <SelectItem value="paper">آزمایشی (ابتدا توصیه می‌شود)</SelectItem>
+                  <SelectItem value="live">زنده</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label>Symbols (comma-separated)</Label>
+              <Label>نمادها (جدا شده با کاما)</Label>
               <Input
                 placeholder="NVDA, AAPL, SPY"
                 value={newBot.symbols}
@@ -503,48 +509,48 @@ export function TradingBotsContent() {
               />
             </div>
             <div>
-              <Label>Risk: Stop-loss % · Take-profit % · Max daily loss % · Max drawdown %</Label>
+              <Label>ریسک: حد ضرر٪ · حد سود٪ · حداکثر زیان روزانه٪ · حداکثر افت سرمایه٪</Label>
               <div className="grid grid-cols-4 gap-2 mt-1">
                 <Input
                   type="number"
                   step={0.5}
                   value={newBot.risk.stopLossPct}
                   onChange={(e) => setNewBot((p) => ({ ...p, risk: { ...p.risk, stopLossPct: Number(e.target.value) || 0 } }))}
-                  placeholder="SL %"
+                  placeholder="حد ضرر٪"
                 />
                 <Input
                   type="number"
                   step={0.5}
                   value={newBot.risk.takeProfitPct}
                   onChange={(e) => setNewBot((p) => ({ ...p, risk: { ...p.risk, takeProfitPct: Number(e.target.value) || 0 } }))}
-                  placeholder="TP %"
+                  placeholder="حد سود٪"
                 />
                 <Input
                   type="number"
                   step={0.5}
                   value={newBot.risk.maxDailyLossPct}
                   onChange={(e) => setNewBot((p) => ({ ...p, risk: { ...p.risk, maxDailyLossPct: Number(e.target.value) || 0 } }))}
-                  placeholder="Daily %"
+                  placeholder="زیان روزانه٪"
                 />
                 <Input
                   type="number"
                   step={1}
                   value={newBot.risk.maxDrawdownPct}
                   onChange={(e) => setNewBot((p) => ({ ...p, risk: { ...p.risk, maxDrawdownPct: Number(e.target.value) || 0 } }))}
-                  placeholder="DD %"
+                  placeholder="افت سرمایه٪"
                 />
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Bot will use signals from Strategy (M4), Analysis (M11), and optional Sentiment (M9) and Risk (M6) agents.
+              ربات از سیگنال‌های عامل‌های استراتژی (M4)، تحلیل (M11) و به‌صورت اختیاری احساسات (M9) و ریسک (M6) استفاده می‌کند.
             </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateOpen(false)}>
-              Cancel
+              انصراف
             </Button>
             <Button onClick={createBot} disabled={!newBot.name.trim()}>
-              Create
+              ساخت
             </Button>
           </DialogFooter>
         </DialogContent>

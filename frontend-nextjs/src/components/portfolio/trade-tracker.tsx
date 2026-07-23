@@ -134,13 +134,13 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card>
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Portfolio Value</p>
+            <p className="text-xs text-muted-foreground">ارزش پورتفولیو</p>
             <p className="text-lg font-bold">{formatCurrency(totalValue)}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Unrealized P&L</p>
+            <p className="text-xs text-muted-foreground">سود/زیان محقق‌نشده</p>
             <p className={cn('text-lg font-bold', totalPnl >= 0 ? 'text-green-600' : 'text-red-500')}>
               {totalPnl >= 0 ? '+' : ''}{formatCurrency(totalPnl)}
             </p>
@@ -148,13 +148,13 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Positions</p>
+            <p className="text-xs text-muted-foreground">موقعیت‌ها</p>
             <p className="text-lg font-bold">{positions.length}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
-            <p className="text-xs text-muted-foreground">Total Trades</p>
+            <p className="text-xs text-muted-foreground">کل معاملات</p>
             <p className="text-lg font-bold">{trades.length}</p>
           </CardContent>
         </Card>
@@ -164,7 +164,7 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
       <Card>
         <CardHeader className="flex flex-row items-center justify-between pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Wallet className="h-4 w-4" /> Positions
+            <Wallet className="h-4 w-4" /> موقعیت‌ها
             {heldSymbols.length > 0 && (
               <Badge
                 variant="outline"
@@ -174,23 +174,23 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
                 )}
               >
                 <Radio className="h-2.5 w-2.5" />
-                {wsStatus === 'connected' ? 'Live' : wsStatus === 'polling' ? 'Polling' : 'Connecting'}
+                {wsStatus === 'connected' ? 'زنده' : wsStatus === 'polling' ? 'در حال دریافت' : 'در حال اتصال'}
               </Badge>
             )}
           </CardTitle>
           <Button size="sm" onClick={() => setShowForm((v) => !v)}>
             {showForm ? <X className="h-4 w-4 mr-1" /> : <Plus className="h-4 w-4 mr-1" />}
-            {showForm ? 'Cancel' : 'Log Trade'}
+            {showForm ? 'انصراف' : 'ثبت معامله'}
           </Button>
         </CardHeader>
         <CardContent>
           {/* Trade Form */}
           {showForm && (
             <div className="mb-4 p-4 border rounded-lg bg-muted/30 space-y-3">
-              <h4 className="font-semibold text-sm">New Trade</h4>
+              <h4 className="font-semibold text-sm">معامله جدید</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 <div>
-                  <Label className="text-xs">Symbol</Label>
+                  <Label className="text-xs">نماد</Label>
                   <Input
                     placeholder="AAPL"
                     value={form.symbol}
@@ -199,7 +199,7 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Side</Label>
+                  <Label className="text-xs">جهت</Label>
                   <div className="flex gap-2 mt-1">
                     <Button
                       size="sm"
@@ -207,7 +207,7 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
                       className={cn('flex-1 h-8 text-xs', form.side === 'buy' && 'bg-green-600 hover:bg-green-700')}
                       onClick={() => setForm((f) => ({ ...f, side: 'buy' }))}
                     >
-                      BUY
+                      خرید
                     </Button>
                     <Button
                       size="sm"
@@ -215,12 +215,12 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
                       className={cn('flex-1 h-8 text-xs', form.side === 'sell' && 'bg-red-600 hover:bg-red-700')}
                       onClick={() => setForm((f) => ({ ...f, side: 'sell' }))}
                     >
-                      SELL
+                      فروش
                     </Button>
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs">Quantity</Label>
+                  <Label className="text-xs">تعداد</Label>
                   <Input
                     type="number"
                     placeholder="10"
@@ -230,7 +230,7 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Price (USD)</Label>
+                  <Label className="text-xs">قیمت (دلار)</Label>
                   <Input
                     type="number"
                     placeholder="150.00"
@@ -240,9 +240,9 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
                   />
                 </div>
                 <div>
-                  <Label className="text-xs">Note (optional)</Label>
+                  <Label className="text-xs">یادداشت (اختیاری)</Label>
                   <Input
-                    placeholder="reason..."
+                    placeholder="دلیل..."
                     value={form.note}
                     onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
                     className="h-8 text-sm"
@@ -254,19 +254,19 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
           )}
 
           {positions.length === 0 ? (
-            <p className="text-center text-muted-foreground py-6 text-sm">No open positions. Log your first trade above.</p>
+            <p className="text-center text-muted-foreground py-6 text-sm">موقعیت بازی وجود ندارد. اولین معامله خود را در بالا ثبت کنید.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b text-muted-foreground text-xs">
-                    <th className="text-left py-2">Symbol</th>
-                    <th className="text-right py-2">Qty</th>
-                    <th className="text-right py-2">Avg Cost</th>
-                    <th className="text-right py-2">Current</th>
-                    <th className="text-right py-2">Market Value</th>
-                    <th className="text-right py-2">P&L</th>
-                    <th className="text-right py-2">P&L %</th>
+                    <th className="text-left py-2">نماد</th>
+                    <th className="text-right py-2">تعداد</th>
+                    <th className="text-right py-2">میانگین قیمت</th>
+                    <th className="text-right py-2">قیمت فعلی</th>
+                    <th className="text-right py-2">ارزش بازار</th>
+                    <th className="text-right py-2">سود/زیان</th>
+                    <th className="text-right py-2">درصد سود/زیان</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -300,14 +300,14 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
       {/* Trade History */}
       {trades.length > 0 && (
         <Card>
-          <CardHeader><CardTitle className="text-base">Trade History</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">تاریخچه معاملات</CardTitle></CardHeader>
           <CardContent>
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {trades.map((t) => (
                 <div key={t.id} className="flex items-center justify-between p-2 rounded-lg border text-sm">
                   <div className="flex items-center gap-3">
                     <Badge variant={t.side === 'buy' ? 'default' : 'destructive'} className="uppercase text-xs">
-                      {t.side}
+                      {t.side === 'buy' ? 'خرید' : 'فروش'}
                     </Badge>
                     <span className="font-semibold">{t.symbol}</span>
                     <span className="text-muted-foreground">
@@ -316,7 +316,7 @@ export function TradeTracker({ prices: externalPrices = {} }: TradeTrackerProps)
                     {t.note && <span className="text-muted-foreground italic text-xs">{t.note}</span>}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground">{new Date(t.timestamp).toLocaleDateString()}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(t.timestamp).toLocaleDateString('fa-IR')}</span>
                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0" onClick={() => removeTrade(t.id)}>
                       <Trash2 className="h-3 w-3 text-muted-foreground" />
                     </Button>

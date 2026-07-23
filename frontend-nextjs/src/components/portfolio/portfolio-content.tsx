@@ -45,9 +45,9 @@ interface Position {
 }
 
 const DEFAULT_SECTOR: Record<string, string> = {
-  AAPL: 'Technology', MSFT: 'Technology', GOOGL: 'Technology', GOOG: 'Technology',
-  AMZN: 'Consumer', META: 'Technology', NVDA: 'Technology', TSLA: 'Consumer',
-  JNJ: 'Healthcare', PG: 'Consumer', KO: 'Consumer', JPM: 'Financials',
+  AAPL: 'فناوری', MSFT: 'فناوری', GOOGL: 'فناوری', GOOG: 'فناوری',
+  AMZN: 'مصرفی', META: 'فناوری', NVDA: 'فناوری', TSLA: 'مصرفی',
+  JNJ: 'سلامت', PG: 'مصرفی', KO: 'مصرفی', JPM: 'مالی',
 };
 
 function normalizePortfolios(raw: unknown): Portfolio[] {
@@ -116,8 +116,8 @@ export function PortfolioContent() {
       } catch (error) {
         console.error('Error fetching portfolios:', error);
         const mock: Portfolio[] = [
-          { id: '1', name: 'Main Portfolio', description: 'Primary', initial_capital: 100000, current_value: 125000, cash_balance: 25000, total_return: 25000, total_return_percent: 25 },
-          { id: '2', name: 'Tech Stocks', description: 'Tech focus', initial_capital: 50000, current_value: 62000, cash_balance: 12000, total_return: 12000, total_return_percent: 24 },
+          { id: '1', name: 'پورتفولیو اصلی', description: 'اصلی', initial_capital: 100000, current_value: 125000, cash_balance: 25000, total_return: 25000, total_return_percent: 25 },
+          { id: '2', name: 'سهام فناوری', description: 'تمرکز بر فناوری', initial_capital: 50000, current_value: 62000, cash_balance: 12000, total_return: 12000, total_return_percent: 24 },
         ];
         setPortfolios(mock);
         setSelectedPortfolio(mock[0]);
@@ -162,7 +162,7 @@ export function PortfolioContent() {
       name: p.symbol,
       marketValue: p.market_value,
       allocation: (p.market_value / total) * 100,
-      sector: DEFAULT_SECTOR[p.symbol] ?? 'Equities',
+      sector: DEFAULT_SECTOR[p.symbol] ?? 'سهام',
       type: 'stock' as const,
     }));
   }, [positions, investedValue, totalValue]);
@@ -211,7 +211,7 @@ export function PortfolioContent() {
                   </button>
                 ))}
               </div>
-              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Portfolio value</p>
+              <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">ارزش پورتفولیو</p>
               <p className="text-3xl font-bold tracking-tight text-foreground mt-1">{fmt(totalValue)}</p>
               <div className="flex items-center gap-3 mt-2">
                 <span className={cn(
@@ -219,7 +219,7 @@ export function PortfolioContent() {
                   totalPnl >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                 )}>
                   {totalPnl >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                  {totalPnl >= 0 ? '+' : ''}{fmt(totalPnl)} total P&L
+                  {totalPnl >= 0 ? '+' : ''}{fmt(totalPnl)} سود/زیان کل
                 </span>
                 <span className={cn(
                   'text-sm font-medium',
@@ -231,21 +231,21 @@ export function PortfolioContent() {
             </div>
             <div className="flex flex-wrap gap-6">
               <div className="text-right">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">Cash</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">نقد</p>
                 <p className="text-lg font-semibold flex items-center gap-1.5 justify-end">
                   <Wallet className="h-4 w-4 text-muted-foreground" />
                   {fmt(cashBalance)}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">Invested</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">سرمایه‌گذاری‌شده</p>
                 <p className="text-lg font-semibold flex items-center gap-1.5 justify-end">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
                   {fmt(investedValue)}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">Positions</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">موقعیت‌ها</p>
                 <p className="text-lg font-semibold">{positions.length}</p>
               </div>
             </div>
@@ -255,7 +255,7 @@ export function PortfolioContent() {
 
       {/* Portfolio selector */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm font-medium text-muted-foreground mr-2">Portfolio:</span>
+        <span className="text-sm font-medium text-muted-foreground mr-2">پورتفولیو:</span>
         {portfolios.map((p) => (
           <Button
             key={String(p.id)}
@@ -278,14 +278,14 @@ export function PortfolioContent() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <PieChartIcon className="h-5 w-5" />
-                  Allocation
+                  تخصیص دارایی
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
                   <DollarSign className="h-12 w-12 mb-3 opacity-50" />
-                  <p className="font-medium">No positions yet</p>
-                  <p className="text-sm">Add positions to see allocation and sector breakdown</p>
+                  <p className="font-medium">هنوز موقعیتی وجود ندارد</p>
+                  <p className="text-sm">برای مشاهده تخصیص و تفکیک بخش، موقعیت اضافه کنید</p>
                 </div>
               </CardContent>
             </Card>
@@ -293,30 +293,30 @@ export function PortfolioContent() {
         </div>
         <Card className="border-white/30 dark:border-white/20">
           <CardHeader>
-            <CardTitle className="text-lg">Quick stats</CardTitle>
+            <CardTitle className="text-lg">آمار سریع</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Initial capital</span>
+              <span className="text-muted-foreground">سرمایه اولیه</span>
               <span className="font-medium">{fmt(totalCost)}</span>
             </div>
             {topGainer && (
               <div className="rounded-lg bg-green-500/10 dark:bg-green-500/20 p-3 border border-green-500/20">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">Top gainer</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">بیشترین سود</p>
                 <p className="font-semibold text-green-600 dark:text-green-400">{topGainer.symbol}</p>
                 <p className="text-sm">+{fmt(topGainer.unrealized_pnl)}</p>
               </div>
             )}
             {topLoser && topLoser.symbol !== topGainer?.symbol && (
               <div className="rounded-lg bg-red-500/10 dark:bg-red-500/20 p-3 border border-red-500/20">
-                <p className="text-xs text-muted-foreground uppercase tracking-wider">Top loser</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wider">بیشترین زیان</p>
                 <p className="font-semibold text-red-600 dark:text-red-400">{topLoser.symbol}</p>
                 <p className="text-sm">{fmt(topLoser.unrealized_pnl)}</p>
               </div>
             )}
             {selectedPortfolio?.risk_tolerance && (
               <div className="flex justify-between text-sm pt-2 border-t">
-                <span className="text-muted-foreground">Risk</span>
+                <span className="text-muted-foreground">ریسک</span>
                 <span className="font-medium capitalize">{selectedPortfolio.risk_tolerance}</span>
               </div>
             )}
@@ -328,31 +328,31 @@ export function PortfolioContent() {
       {selectedPortfolio && (
         <Card className="border-white/30 dark:border-white/20">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Holdings — {selectedPortfolio.name}</CardTitle>
+            <CardTitle>دارایی‌ها — {selectedPortfolio.name}</CardTitle>
             <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              Add position
+              افزودن موقعیت
             </Button>
           </CardHeader>
           <CardContent>
             {positions.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
                 <Briefcase className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                <p className="font-medium">No positions</p>
-                <p className="text-sm">Add positions to track performance and allocation</p>
+                <p className="font-medium">موقعیتی وجود ندارد</p>
+                <p className="text-sm">برای پیگیری عملکرد و تخصیص، موقعیت اضافه کنید</p>
               </div>
             ) : (
               <div className="overflow-x-auto rounded-lg border border-border">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="text-left py-3 px-4 font-medium">Symbol</th>
-                      <th className="text-right py-3 px-4 font-medium">Qty</th>
-                      <th className="text-right py-3 px-4 font-medium">Avg cost</th>
-                      <th className="text-right py-3 px-4 font-medium">Market value</th>
-                      <th className="text-right py-3 px-4 font-medium">Weight</th>
-                      <th className="text-right py-3 px-4 font-medium">P&L</th>
-                      <th className="text-right py-3 px-4 font-medium">P&L %</th>
+                      <th className="text-left py-3 px-4 font-medium">نماد</th>
+                      <th className="text-right py-3 px-4 font-medium">تعداد</th>
+                      <th className="text-right py-3 px-4 font-medium">میانگین قیمت</th>
+                      <th className="text-right py-3 px-4 font-medium">ارزش بازار</th>
+                      <th className="text-right py-3 px-4 font-medium">وزن</th>
+                      <th className="text-right py-3 px-4 font-medium">سود/زیان</th>
+                      <th className="text-right py-3 px-4 font-medium">درصد سود/زیان</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -5,13 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
-import { 
-  BarChart, 
-  LineChart, 
-  PieChart, 
-  TrendingUp, 
-  Download, 
-  Settings, 
+import {
+  BarChart,
+  LineChart,
+  PieChart,
+  TrendingUp,
+  Download,
+  Settings,
   Activity,
   Zap,
   Target,
@@ -39,46 +39,46 @@ interface ChartData {
 export function VisualizationContent() {
   const [selectedChart, setSelectedChart] = useState<string>('portfolio-performance');
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [charts] = useState<ChartData[]>([
     {
       id: 'portfolio-performance',
-      name: 'Portfolio Performance',
+      name: 'عملکرد پورتفولیو',
       type: 'line',
       data: [],
-      timeframe: '1Y',
-      description: 'Track your portfolio growth over time',
+      timeframe: '۱ سال',
+      description: 'رشد پورتفولیوی خود را در طول زمان دنبال کنید',
       icon: TrendingUp,
       gradient: 'from-blue-600 via-purple-600 to-blue-800'
     },
     {
       id: 'asset-allocation',
-      name: 'Asset Allocation',
+      name: 'تخصیص دارایی',
       type: 'pie',
       data: [],
-      timeframe: 'Current',
-      description: 'Visualize your investment distribution',
+      timeframe: 'فعلی',
+      description: 'توزیع سرمایه‌گذاری خود را مشاهده کنید',
       icon: Target,
       gradient: 'from-emerald-500 via-teal-600 to-cyan-600'
     },
     {
       id: 'price-chart',
-      name: 'Market Analysis',
+      name: 'تحلیل بازار',
       type: 'candlestick',
       data: [],
-      timeframe: '1M',
+      timeframe: '۱ ماه',
       symbol: 'AAPL',
-      description: 'Real-time market movements and trends',
+      description: 'حرکات و روندهای بازار به‌صورت بلادرنگ',
       icon: Activity,
       gradient: 'from-amber-500 via-orange-600 to-red-600'
     },
     {
       id: 'sector-performance',
-      name: 'Sector Insights',
+      name: 'تحلیل بخش‌ها',
       type: 'bar',
       data: [],
-      timeframe: '1M',
-      description: 'Compare sector performance metrics',
+      timeframe: '۱ ماه',
+      description: 'مقایسه معیارهای عملکرد بخش‌های مختلف',
       icon: Globe,
       gradient: 'from-violet-600 via-purple-600 to-indigo-800'
     }
@@ -94,19 +94,19 @@ export function VisualizationContent() {
   ];
 
   const allocationData = [
-    { name: 'Technology', value: 45.2, amount: 49232, color: '#3b82f6', trend: '+12.3%' },
-    { name: 'Healthcare', value: 23.1, amount: 25152, color: '#10b981', trend: '+8.7%' },
-    { name: 'Financial', value: 18.7, amount: 20360, color: '#f59e0b', trend: '-2.1%' },
-    { name: 'Energy', value: 8.9, amount: 9692, color: '#ef4444', trend: '+15.6%' },
-    { name: 'Consumer', value: 4.1, amount: 4464, color: '#8b5cf6', trend: '+5.2%' },
+    { name: 'فناوری', value: 45.2, amount: 49232, color: '#3b82f6', trend: '+12.3%' },
+    { name: 'سلامت', value: 23.1, amount: 25152, color: '#10b981', trend: '+8.7%' },
+    { name: 'مالی', value: 18.7, amount: 20360, color: '#f59e0b', trend: '-2.1%' },
+    { name: 'انرژی', value: 8.9, amount: 9692, color: '#ef4444', trend: '+15.6%' },
+    { name: 'مصرفی', value: 4.1, amount: 4464, color: '#8b5cf6', trend: '+5.2%' },
   ];
 
   const sectorData = [
-    { sector: 'Technology', performance: 12.5, volume: '2.4B', momentum: 'Strong' },
-    { sector: 'Healthcare', performance: 8.3, volume: '1.8B', momentum: 'Moderate' },
-    { sector: 'Financial', performance: -2.1, volume: '3.1B', momentum: 'Weak' },
-    { sector: 'Energy', performance: 15.7, volume: '1.2B', momentum: 'Very Strong' },
-    { sector: 'Consumer', performance: 5.2, volume: '2.0B', momentum: 'Moderate' },
+    { sector: 'فناوری', performance: 12.5, volume: '2.4B', momentum: 'قوی' },
+    { sector: 'سلامت', performance: 8.3, volume: '1.8B', momentum: 'متوسط' },
+    { sector: 'مالی', performance: -2.1, volume: '3.1B', momentum: 'ضعیف' },
+    { sector: 'انرژی', performance: 15.7, volume: '1.2B', momentum: 'بسیار قوی' },
+    { sector: 'مصرفی', performance: 5.2, volume: '2.0B', momentum: 'متوسط' },
   ];
 
   const handleRefresh = () => {
@@ -116,14 +116,14 @@ export function VisualizationContent() {
 
   const renderChart = () => {
     const currentChart = charts.find(c => c.id === selectedChart);
-    
+
     switch (selectedChart) {
       case 'portfolio-performance':
         return (
           <div className="relative">
             {/* Background with animated gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-pink-500/5 rounded-xl" />
-            
+
             {/* Content */}
             <div className="relative p-8">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -134,7 +134,7 @@ export function VisualizationContent() {
                     <div className="absolute inset-0 opacity-5">
                       <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-600 transform rotate-12 scale-150" />
                     </div>
-                    
+
                     <div className="relative z-10 flex flex-col h-full">
                       <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center space-x-3">
@@ -142,23 +142,23 @@ export function VisualizationContent() {
                             <TrendingUp className="h-6 w-6 text-blue-400" />
                           </div>
                           <div>
-                            <h3 className="text-xl font-bold text-white">Portfolio Timeline</h3>
-                            <p className="text-gray-400 text-sm">YTD Performance</p>
+                            <h3 className="text-xl font-bold text-white">جدول زمانی پورتفولیو</h3>
+                            <p className="text-gray-400 text-sm">عملکرد از ابتدای سال</p>
                           </div>
                         </div>
                         <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                          +8.9% YTD
+                          ۸.۹٪+ از ابتدای سال
                         </Badge>
                       </div>
-                      
+
                       {/* Simulated line chart with points */}
                       <div className="flex-1 flex items-end space-x-4">
                         {portfolioData.map((point, index) => (
                           <div key={index} className="flex-1 flex flex-col items-center group">
                             <div className="relative mb-2">
-                              <div 
+                              <div
                                 className="bg-gradient-to-t from-blue-500 to-purple-500 rounded-t transition-all duration-300 group-hover:scale-105"
-                                style={{ 
+                                style={{
                                   height: `${(point.value - 95000) / 1000}px`,
                                   minHeight: '20px',
                                   width: '24px'
@@ -184,29 +184,29 @@ export function VisualizationContent() {
                 <div className="space-y-4">
                   <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-green-500/20 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-gray-400 text-sm">Total Value</span>
+                      <span className="text-gray-400 text-sm">ارزش کل</span>
                       <ArrowUpRight className="h-4 w-4 text-green-400" />
                     </div>
                     <div className="text-2xl font-bold text-white">$108,900</div>
                     <div className="text-green-400 text-sm">+$8,900 (+8.9%)</div>
                   </div>
-                  
+
                   <div className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border border-blue-500/20 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-gray-400 text-sm">Day's Change</span>
+                      <span className="text-gray-400 text-sm">تغییر روزانه</span>
                       <Sparkles className="h-4 w-4 text-blue-400" />
                     </div>
                     <div className="text-xl font-bold text-white">+$1,250</div>
-                    <div className="text-blue-400 text-sm">+1.15% today</div>
+                    <div className="text-blue-400 text-sm">+۱.۱۵٪ امروز</div>
                   </div>
-                  
+
                   <div className="bg-gradient-to-br from-purple-500/10 to-violet-600/10 border border-purple-500/20 rounded-xl p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-gray-400 text-sm">Best Performer</span>
+                      <span className="text-gray-400 text-sm">بهترین عملکرد</span>
                       <Zap className="h-4 w-4 text-purple-400" />
                     </div>
                     <div className="text-lg font-bold text-white">NVDA</div>
-                    <div className="text-purple-400 text-sm">+15.7% this month</div>
+                    <div className="text-purple-400 text-sm">+۱۵.۷٪ این ماه</div>
                   </div>
                 </div>
               </div>
@@ -218,7 +218,7 @@ export function VisualizationContent() {
         return (
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-xl" />
-            
+
             <div className="relative p-8">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Pie Chart Visualization */}
@@ -232,7 +232,7 @@ export function VisualizationContent() {
                           const circumference = 2 * Math.PI * 40;
                           const strokeDasharray = `${(item.value / 100) * circumference} ${circumference}`;
                           const strokeDashoffset = `-${(offset / 100) * circumference}`;
-                          
+
                           return (
                             <circle
                               key={index}
@@ -250,12 +250,12 @@ export function VisualizationContent() {
                           );
                         })}
                       </svg>
-                      
+
                       {/* Center content */}
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-white">100%</div>
-                          <div className="text-gray-400 text-sm">Allocated</div>
+                          <div className="text-2xl font-bold text-white">۱۰۰٪</div>
+                          <div className="text-gray-400 text-sm">تخصیص‌یافته</div>
                         </div>
                       </div>
                     </div>
@@ -266,27 +266,27 @@ export function VisualizationContent() {
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2 mb-6">
                     <Target className="h-6 w-6 text-emerald-400" />
-                    <h3 className="text-xl font-bold text-white">Asset Breakdown</h3>
+                    <h3 className="text-xl font-bold text-white">تفکیک دارایی‌ها</h3>
                   </div>
-                  
+
                   {allocationData.map((item, index) => (
                     <div key={index} className="group">
                       <div className="bg-gray-800/50 border border-gray-700/50 rounded-lg p-4 transition-all duration-300 hover:bg-gray-700/50 hover:border-gray-600/50 hover:transform hover:scale-[1.02]">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-3">
-                            <div 
+                            <div
                               className="w-4 h-4 rounded-full shadow-lg"
-                              style={{ 
+                              style={{
                                 backgroundColor: item.color,
                                 boxShadow: `0 0 12px ${item.color}40`
                               }}
                             />
                             <span className="font-medium text-white">{item.name}</span>
                           </div>
-                          <Badge 
+                          <Badge
                             className={`${
-                              item.trend.startsWith('+') 
-                                ? 'bg-green-500/20 text-green-400 border-green-500/30' 
+                              item.trend.startsWith('+')
+                                ? 'bg-green-500/20 text-green-400 border-green-500/30'
                                 : 'bg-red-500/20 text-red-400 border-red-500/30'
                             }`}
                           >
@@ -297,7 +297,7 @@ export function VisualizationContent() {
                           <div className="text-2xl font-bold text-white">{item.value}%</div>
                           <div className="text-right">
                             <div className="text-gray-300 font-medium">{formatCurrency(item.amount)}</div>
-                            <div className="text-gray-400 text-sm">Market Value</div>
+                            <div className="text-gray-400 text-sm">ارزش بازار</div>
                           </div>
                         </div>
                       </div>
@@ -313,7 +313,7 @@ export function VisualizationContent() {
         return (
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-orange-500/5 to-red-500/5 rounded-xl" />
-            
+
             <div className="relative p-8">
               <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
                 {/* Main Price Display */}
@@ -326,7 +326,7 @@ export function VisualizationContent() {
                         </div>
                         <div>
                           <h3 className="text-2xl font-bold text-white">AAPL</h3>
-                          <p className="text-gray-400">Apple Inc.</p>
+                          <p className="text-gray-400">شرکت اپل</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -337,7 +337,7 @@ export function VisualizationContent() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Simulated candlestick chart */}
                     <div className="h-48 flex items-end justify-between space-x-2">
                       {Array.from({ length: 20 }, (_, i) => {
@@ -345,16 +345,16 @@ export function VisualizationContent() {
                         const isGreen = Math.random() > 0.5;
                         return (
                           <div key={i} className="flex-1 flex flex-col items-center group">
-                            <div 
+                            <div
                               className={`w-full transition-all duration-300 group-hover:scale-110 ${
-                                isGreen 
-                                  ? 'bg-gradient-to-t from-green-500 to-green-400' 
+                                isGreen
+                                  ? 'bg-gradient-to-t from-green-500 to-green-400'
                                   : 'bg-gradient-to-t from-red-500 to-red-400'
                               }`}
                               style={{ height: `${height}px` }}
                             />
                             {/* Volume bars at bottom */}
-                            <div 
+                            <div
                               className="w-full bg-gray-600 mt-1"
                               style={{ height: `${5 + Math.random() * 15}px` }}
                             />
@@ -369,33 +369,33 @@ export function VisualizationContent() {
                 <div className="space-y-4">
                   <div className="bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-green-500/20 rounded-xl p-4">
                     <div className="text-center">
-                      <div className="text-sm text-gray-400 mb-1">24h Volume</div>
+                      <div className="text-sm text-gray-400 mb-1">حجم ۲۴ ساعته</div>
                       <div className="text-lg font-bold text-white">52.3M</div>
-                      <div className="text-green-400 text-xs">+12.5%</div>
+                      <div className="text-green-400 text-xs">+۱۲.۵٪</div>
                     </div>
                   </div>
-                  
+
                   <div className="bg-gradient-to-br from-blue-500/10 to-cyan-600/10 border border-blue-500/20 rounded-xl p-4">
                     <div className="text-center">
-                      <div className="text-sm text-gray-400 mb-1">Market Cap</div>
+                      <div className="text-sm text-gray-400 mb-1">ارزش بازار</div>
                       <div className="text-lg font-bold text-white">$2.7T</div>
-                      <div className="text-blue-400 text-xs">Rank #1</div>
+                      <div className="text-blue-400 text-xs">رتبه #۱</div>
                     </div>
                   </div>
-                  
+
                   <div className="bg-gradient-to-br from-purple-500/10 to-violet-600/10 border border-purple-500/20 rounded-xl p-4">
                     <div className="text-center">
-                      <div className="text-sm text-gray-400 mb-1">P/E Ratio</div>
+                      <div className="text-sm text-gray-400 mb-1">نسبت P/E</div>
                       <div className="text-lg font-bold text-white">28.5</div>
-                      <div className="text-purple-400 text-xs">Fair Value</div>
+                      <div className="text-purple-400 text-xs">ارزش منصفانه</div>
                     </div>
                   </div>
-                  
+
                   <div className="bg-gradient-to-br from-orange-500/10 to-red-600/10 border border-orange-500/20 rounded-xl p-4">
                     <div className="text-center">
-                      <div className="text-sm text-gray-400 mb-1">52W Range</div>
+                      <div className="text-sm text-gray-400 mb-1">بازه ۵۲ هفته</div>
                       <div className="text-sm font-bold text-white">$164-$199</div>
-                      <div className="text-orange-400 text-xs">Mid Range</div>
+                      <div className="text-orange-400 text-xs">میانه بازه</div>
                     </div>
                   </div>
                 </div>
@@ -408,78 +408,78 @@ export function VisualizationContent() {
         return (
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-purple-500/5 to-indigo-500/5 rounded-xl" />
-            
+
             <div className="relative p-8">
               <div className="flex items-center space-x-3 mb-8">
                 <div className="p-3 bg-violet-500/20 rounded-xl">
                   <Globe className="h-6 w-6 text-violet-400" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-white">Sector Analysis</h3>
-                  <p className="text-gray-400">Market performance by sector</p>
+                  <h3 className="text-2xl font-bold text-white">تحلیل بخش‌ها</h3>
+                  <p className="text-gray-400">عملکرد بازار به تفکیک بخش</p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {sectorData.map((item, index) => {
                   const isPositive = item.performance >= 0;
                   const momentum = item.momentum;
-                  const momentumColor = 
-                    momentum === 'Very Strong' ? 'text-emerald-400 bg-emerald-500/20' :
-                    momentum === 'Strong' ? 'text-green-400 bg-green-500/20' :
-                    momentum === 'Moderate' ? 'text-blue-400 bg-blue-500/20' :
+                  const momentumColor =
+                    momentum === 'بسیار قوی' ? 'text-emerald-400 bg-emerald-500/20' :
+                    momentum === 'قوی' ? 'text-green-400 bg-green-500/20' :
+                    momentum === 'متوسط' ? 'text-blue-400 bg-blue-500/20' :
                     'text-red-400 bg-red-500/20';
-                  
+
                   return (
                     <div key={index} className="group">
                       <div className="bg-gradient-to-br from-gray-900/60 to-gray-800/60 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 transition-all duration-300 hover:border-violet-500/30 hover:transform hover:scale-[1.02] hover:shadow-2xl">
                         <div className="flex items-center justify-between mb-4">
                           <div>
                             <h4 className="text-xl font-bold text-white">{item.sector}</h4>
-                            <p className="text-gray-400 text-sm">Volume: {item.volume}</p>
+                            <p className="text-gray-400 text-sm">حجم: {item.volume}</p>
                           </div>
                           <Badge className={momentumColor}>
                             {momentum}
                           </Badge>
                         </div>
-                        
+
                         <div className="space-y-4">
                           {/* Performance bar */}
                           <div>
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-gray-300 text-sm">Performance</span>
+                              <span className="text-gray-300 text-sm">عملکرد</span>
                               <span className={`font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                                 {isPositive ? '+' : ''}{item.performance}%
                               </span>
                             </div>
                             <div className="relative">
                               <div className="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-                                <div 
+                                <div
                                   className={`h-full transition-all duration-1000 ease-out ${
-                                    isPositive 
-                                      ? 'bg-gradient-to-r from-green-500 to-emerald-400' 
+                                    isPositive
+                                      ? 'bg-gradient-to-r from-green-500 to-emerald-400'
                                       : 'bg-gradient-to-r from-red-500 to-red-400'
                                   }`}
-                                  style={{ 
+                                  style={{
                                     width: `${Math.min(Math.abs(item.performance) * 4, 100)}%`,
-                                    boxShadow: isPositive 
-                                      ? '0 0 12px rgba(34, 197, 94, 0.5)' 
+                                    boxShadow: isPositive
+                                      ? '0 0 12px rgba(34, 197, 94, 0.5)'
                                       : '0 0 12px rgba(239, 68, 68, 0.5)'
                                   }}
                                 />
                               </div>
                               {/* Glow effect */}
-                              <div 
+                              <div
                                 className={`absolute top-0 h-full rounded-full blur-sm ${
-                                  isPositive 
-                                    ? 'bg-gradient-to-r from-green-400/30 to-emerald-300/30' 
+                                  isPositive
+                                    ? 'bg-gradient-to-r from-green-400/30 to-emerald-300/30'
                                     : 'bg-gradient-to-r from-red-400/30 to-red-300/30'
                                 }`}
                                 style={{ width: `${Math.min(Math.abs(item.performance) * 4, 100)}%` }}
                               />
                             </div>
                           </div>
-                          
+
                           {/* Additional metrics */}
                           <div className="grid grid-cols-2 gap-4 pt-2">
                             <div className="text-center">
@@ -487,7 +487,7 @@ export function VisualizationContent() {
                               <div className="text-white font-semibold">{(Math.random() * 40 + 30).toFixed(1)}</div>
                             </div>
                             <div className="text-center">
-                              <div className="text-gray-400 text-xs">Beta</div>
+                              <div className="text-gray-400 text-xs">بتا</div>
                               <div className="text-white font-semibold">{(Math.random() * 0.8 + 0.6).toFixed(2)}</div>
                             </div>
                           </div>
@@ -506,7 +506,7 @@ export function VisualizationContent() {
           <div className="h-96 bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 rounded-xl flex items-center justify-center">
             <div className="text-center">
               <Eye className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg">Select a visualization to explore</p>
+              <p className="text-gray-400 text-lg">یک نمودار را برای مشاهده انتخاب کنید</p>
             </div>
           </div>
         );
@@ -526,43 +526,43 @@ export function VisualizationContent() {
                   <Sparkles className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl text-white">Advanced Analytics</CardTitle>
-                  <p className="text-gray-400">Interactive market visualizations and insights</p>
+                  <CardTitle className="text-2xl text-white">تحلیل‌های پیشرفته</CardTitle>
+                  <p className="text-gray-400">نمودارها و بینش‌های تعاملی بازار</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="border-gray-600 text-gray-300 hover:bg-gray-700"
                   onClick={handleRefresh}
                   disabled={isLoading}
                 >
                   <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                  Refresh
+                  به‌روزرسانی
                 </Button>
                 <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                   <Filter className="h-4 w-4 mr-2" />
-                  Filters
+                  فیلترها
                 </Button>
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent>
             {/* Stylish Chart Selection */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {charts.map((chart) => {
                 const IconComponent = chart.icon;
                 const isSelected = selectedChart === chart.id;
-                
+
                 return (
                   <button
                     key={chart.id}
                     onClick={() => setSelectedChart(chart.id)}
                     className={`group relative p-6 rounded-xl border transition-all duration-300 text-left ${
-                      isSelected 
-                        ? 'border-blue-500/50 bg-gradient-to-br from-blue-500/10 to-purple-500/10 shadow-lg shadow-blue-500/25' 
+                      isSelected
+                        ? 'border-blue-500/50 bg-gradient-to-br from-blue-500/10 to-purple-500/10 shadow-lg shadow-blue-500/25'
                         : 'border-gray-700 bg-gray-800/50 hover:border-gray-600 hover:bg-gray-700/50'
                     }`}
                   >
@@ -570,29 +570,29 @@ export function VisualizationContent() {
                     {isSelected && (
                       <div className={`absolute inset-0 bg-gradient-to-br ${chart.gradient} opacity-5 rounded-xl`} />
                     )}
-                    
+
                     <div className="relative">
                       <div className={`p-3 rounded-lg mb-3 transition-all duration-300 ${
-                        isSelected 
-                          ? `bg-gradient-to-br ${chart.gradient} shadow-lg` 
+                        isSelected
+                          ? `bg-gradient-to-br ${chart.gradient} shadow-lg`
                           : 'bg-gray-700 group-hover:bg-gray-600'
                       }`}>
                         <IconComponent className="h-6 w-6 text-white" />
                       </div>
-                      
+
                       <h3 className={`font-semibold mb-1 transition-colors ${
                         isSelected ? 'text-white' : 'text-gray-300 group-hover:text-white'
                       }`}>
                         {chart.name}
                       </h3>
-                      
+
                       <p className="text-gray-400 text-sm">{chart.description}</p>
-                      
-                      <Badge 
-                        variant="outline" 
+
+                      <Badge
+                        variant="outline"
                         className={`mt-3 ${
-                          isSelected 
-                            ? 'border-blue-400/50 text-blue-400' 
+                          isSelected
+                            ? 'border-blue-400/50 text-blue-400'
                             : 'border-gray-600 text-gray-400'
                         }`}
                       >
@@ -608,15 +608,15 @@ export function VisualizationContent() {
             <div className="flex flex-wrap gap-3">
               <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                 <Download className="h-4 w-4 mr-2" />
-                Export Data
+                خروجی داده‌ها
               </Button>
               <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                 <Settings className="h-4 w-4 mr-2" />
-                Customize View
+                شخصی‌سازی نما
               </Button>
               <Button variant="outline" size="sm" className="border-gray-600 text-gray-300 hover:bg-gray-700">
                 <Activity className="h-4 w-4 mr-2" />
-                Real-time Mode
+                حالت بلادرنگ
               </Button>
             </div>
           </CardContent>
@@ -634,28 +634,28 @@ export function VisualizationContent() {
                 return (
                   <>
                     <IconComponent className="h-6 w-6 text-blue-400" />
-                    <span>{currentChart?.name || 'Chart'}</span>
+                    <span>{currentChart?.name || 'نمودار'}</span>
                   </>
                 );
               })()}
             </CardTitle>
-            
+
             <div className="flex items-center space-x-2">
               <div className="flex items-center space-x-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span className="text-green-400 text-sm">Live</span>
+                <span className="text-green-400 text-sm">زنده</span>
               </div>
               <Badge variant="outline" className="border-gray-600 text-gray-400">
-                {charts.find(c => c.id === selectedChart)?.timeframe || 'N/A'}
+                {charts.find(c => c.id === selectedChart)?.timeframe || 'نامشخص'}
               </Badge>
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent className="p-0">
           {renderChart()}
         </CardContent>
       </Card>
     </div>
   );
-} 
+}

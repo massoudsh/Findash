@@ -6,12 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Activity, 
-  FileText, 
-  Users, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Activity,
+  FileText,
+  Users,
   DollarSign,
   AlertTriangle,
   CheckCircle,
@@ -57,6 +57,13 @@ interface FundamentalAnalysisProps {
   symbol: string;
 }
 
+const SENTIMENT_LABELS: Record<string, string> = {
+  bullish: 'صعودی',
+  bearish: 'نزولی',
+  neutral: 'خنثی',
+  Unknown: 'نامشخص',
+};
+
 export function FundamentalAnalysis({ symbol }: FundamentalAnalysisProps) {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -101,22 +108,22 @@ export function FundamentalAnalysis({ symbol }: FundamentalAnalysisProps) {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Fundamental Analysis - {symbol}</CardTitle>
-          <CardDescription>Score: {data.score?.toFixed(1) || 'N/A'}</CardDescription>
+          <CardTitle>تحلیل بنیادی - {symbol}</CardTitle>
+          <CardDescription>امتیاز: {data.score?.toFixed(1) || 'نامشخص'}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center">
-              <div className="text-lg font-semibold">{data.summary?.overall_sentiment || 'Unknown'}</div>
-              <div className="text-sm text-gray-500">Sentiment</div>
+              <div className="text-lg font-semibold">{SENTIMENT_LABELS[data.summary?.overall_sentiment] || data.summary?.overall_sentiment || 'نامشخص'}</div>
+              <div className="text-sm text-gray-500">احساسات</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold">{data.summary?.signal_count || 0}</div>
-              <div className="text-sm text-gray-500">Signals</div>
+              <div className="text-sm text-gray-500">سیگنال‌ها</div>
             </div>
             <div className="text-center">
               <div className="text-lg font-semibold">{((data.confidence || 0) * 100).toFixed(0)}%</div>
-              <div className="text-sm text-gray-500">Confidence</div>
+              <div className="text-sm text-gray-500">اطمینان</div>
             </div>
           </div>
         </CardContent>
@@ -124,15 +131,15 @@ export function FundamentalAnalysis({ symbol }: FundamentalAnalysisProps) {
 
       <Tabs defaultValue="signals">
         <TabsList>
-          <TabsTrigger value="signals">Signals</TabsTrigger>
-          <TabsTrigger value="onchain">On-Chain</TabsTrigger>
-          <TabsTrigger value="whale">Whale Activity</TabsTrigger>
+          <TabsTrigger value="signals">سیگنال‌ها</TabsTrigger>
+          <TabsTrigger value="onchain">آنچین</TabsTrigger>
+          <TabsTrigger value="whale">فعالیت نهنگ‌ها</TabsTrigger>
         </TabsList>
 
         <TabsContent value="signals">
           <Card>
             <CardHeader>
-              <CardTitle>Fundamental Signals</CardTitle>
+              <CardTitle>سیگنال‌های بنیادی</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -155,39 +162,39 @@ export function FundamentalAnalysis({ symbol }: FundamentalAnalysisProps) {
         <TabsContent value="onchain">
           <Card>
             <CardHeader>
-              <CardTitle>On-Chain Metrics</CardTitle>
-              <CardDescription>Blockchain network activity and health indicators</CardDescription>
+              <CardTitle>معیارهای آنچین</CardTitle>
+              <CardDescription>فعالیت شبکه بلاک‌چین و شاخص‌های سلامت</CardDescription>
             </CardHeader>
             <CardContent>
               {data.on_chain_metrics ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <div className="text-sm text-gray-500">Active Addresses (24h)</div>
-                    <div className="text-lg font-semibold">{data.on_chain_metrics.active_addresses_24h?.toLocaleString() || 'N/A'}</div>
+                    <div className="text-sm text-gray-500">آدرس‌های فعال (۲۴ ساعت)</div>
+                    <div className="text-lg font-semibold">{data.on_chain_metrics.active_addresses_24h?.toLocaleString() || 'نامشخص'}</div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-sm text-gray-500">Transaction Volume (24h)</div>
-                    <div className="text-lg font-semibold">${(data.on_chain_metrics.transaction_volume_24h / 1e9)?.toFixed(2) || 'N/A'}B</div>
+                    <div className="text-sm text-gray-500">حجم تراکنش (۲۴ ساعت)</div>
+                    <div className="text-lg font-semibold">${(data.on_chain_metrics.transaction_volume_24h / 1e9)?.toFixed(2) || 'نامشخص'}B</div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-sm text-gray-500">MVRV Ratio</div>
-                    <div className="text-lg font-semibold">{data.on_chain_metrics.mvrv_ratio?.toFixed(2) || 'N/A'}</div>
+                    <div className="text-sm text-gray-500">نسبت MVRV</div>
+                    <div className="text-lg font-semibold">{data.on_chain_metrics.mvrv_ratio?.toFixed(2) || 'نامشخص'}</div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-sm text-gray-500">NVT Ratio</div>
-                    <div className="text-lg font-semibold">{data.on_chain_metrics.network_value_to_transactions?.toFixed(1) || 'N/A'}</div>
+                    <div className="text-sm text-gray-500">نسبت NVT</div>
+                    <div className="text-lg font-semibold">{data.on_chain_metrics.network_value_to_transactions?.toFixed(1) || 'نامشخص'}</div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-sm text-gray-500">Hash Rate</div>
-                    <div className="text-lg font-semibold">{data.on_chain_metrics.hash_rate || 'N/A'}</div>
+                    <div className="text-sm text-gray-500">هش‌ریت</div>
+                    <div className="text-lg font-semibold">{data.on_chain_metrics.hash_rate || 'نامشخص'}</div>
                   </div>
                   <div className="space-y-2">
-                    <div className="text-sm text-gray-500">Difficulty Adjustment</div>
-                    <div className="text-lg font-semibold">{data.on_chain_metrics.difficulty_adjustment || 'N/A'}</div>
+                    <div className="text-sm text-gray-500">تعدیل دشواری</div>
+                    <div className="text-lg font-semibold">{data.on_chain_metrics.difficulty_adjustment || 'نامشخص'}</div>
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500">On-chain data not available for {symbol}</p>
+                <p className="text-gray-500">داده آنچین برای {symbol} در دسترس نیست</p>
               )}
             </CardContent>
           </Card>
@@ -196,45 +203,45 @@ export function FundamentalAnalysis({ symbol }: FundamentalAnalysisProps) {
         <TabsContent value="whale">
           <Card>
             <CardHeader>
-              <CardTitle>Whale Activity</CardTitle>
-              <CardDescription>Large holder transaction patterns and flows</CardDescription>
+              <CardTitle>فعالیت نهنگ‌ها</CardTitle>
+              <CardDescription>الگوهای تراکنش و جریان دارندگان بزرگ</CardDescription>
             </CardHeader>
             <CardContent>
               {data.whale_metrics ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <div className="text-sm text-gray-500">Large Transactions (24h)</div>
-                      <div className="text-lg font-semibold">{data.whale_metrics.large_transactions_24h || 'N/A'}</div>
+                      <div className="text-sm text-gray-500">تراکنش‌های بزرگ (۲۴ ساعت)</div>
+                      <div className="text-lg font-semibold">{data.whale_metrics.large_transactions_24h || 'نامشخص'}</div>
                     </div>
                     <div className="space-y-2">
-                      <div className="text-sm text-gray-500">Accumulation Score</div>
-                      <div className="text-lg font-semibold">{data.whale_metrics.whale_accumulation_score?.toFixed(1) || 'N/A'}/10</div>
+                      <div className="text-sm text-gray-500">امتیاز انباشت</div>
+                      <div className="text-lg font-semibold">{data.whale_metrics.whale_accumulation_score?.toFixed(1) || 'نامشخص'}/۱۰</div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-3">
-                    <h4 className="font-medium">Exchange Flows</h4>
+                    <h4 className="font-medium">جریان‌های صرافی</h4>
                     <div className="grid grid-cols-3 gap-4">
                       <div className="text-center p-3 bg-red-50 rounded-lg">
-                        <div className="text-red-600 font-semibold">{data.whale_metrics.exchange_inflow?.toLocaleString() || 'N/A'}</div>
-                        <div className="text-xs text-red-500">Inflow</div>
+                        <div className="text-red-600 font-semibold">{data.whale_metrics.exchange_inflow?.toLocaleString() || 'نامشخص'}</div>
+                        <div className="text-xs text-red-500">ورودی</div>
                       </div>
                       <div className="text-center p-3 bg-green-50 rounded-lg">
-                        <div className="text-green-600 font-semibold">{data.whale_metrics.exchange_outflow?.toLocaleString() || 'N/A'}</div>
-                        <div className="text-xs text-green-500">Outflow</div>
+                        <div className="text-green-600 font-semibold">{data.whale_metrics.exchange_outflow?.toLocaleString() || 'نامشخص'}</div>
+                        <div className="text-xs text-green-500">خروجی</div>
                       </div>
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
                         <div className={`font-semibold ${data.whale_metrics.net_flow < 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {data.whale_metrics.net_flow?.toLocaleString() || 'N/A'}
+                          {data.whale_metrics.net_flow?.toLocaleString() || 'نامشخص'}
                         </div>
-                        <div className="text-xs text-blue-500">Net Flow</div>
+                        <div className="text-xs text-blue-500">جریان خالص</div>
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <p className="text-gray-500">Whale activity data not available for {symbol}</p>
+                <p className="text-gray-500">داده فعالیت نهنگ‌ها برای {symbol} در دسترس نیست</p>
               )}
             </CardContent>
           </Card>
@@ -242,4 +249,4 @@ export function FundamentalAnalysis({ symbol }: FundamentalAnalysisProps) {
       </Tabs>
     </div>
   );
-} 
+}

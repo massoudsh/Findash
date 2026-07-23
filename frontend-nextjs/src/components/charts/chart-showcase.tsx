@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AdvancedChart } from './advanced-chart';
-import { 
-  TrendingUp, 
-  BarChart3, 
-  PieChart, 
+import {
+  TrendingUp,
+  BarChart3,
+  PieChart,
   Activity,
   Target,
   Sparkles,
@@ -118,6 +118,14 @@ const categoryColors = {
   consumer: 'bg-pink-500/20 text-pink-300 border-pink-500/30'
 };
 
+const CATEGORY_LABELS: Record<string, string> = {
+  tech: 'فناوری',
+  finance: 'مالی',
+  healthcare: 'سلامت',
+  energy: 'انرژی',
+  consumer: 'مصرفی',
+};
+
 export function ChartShowcase() {
   const [selectedSymbol, setSelectedSymbol] = useState('AAPL');
   const [viewMode, setViewMode] = useState<'grid' | 'featured'>('featured');
@@ -130,27 +138,27 @@ export function ChartShowcase() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Advanced Charts</h1>
+          <h1 className="text-3xl font-bold tracking-tight">نمودارهای پیشرفته</h1>
           <p className="text-muted-foreground">
-            Professional-grade charting with technical analysis and real-time data
+            نمودارسازی حرفه‌ای همراه با تحلیل تکنیکال و داده زنده
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button 
-            variant={viewMode === 'featured' ? 'default' : 'outline'} 
+          <Button
+            variant={viewMode === 'featured' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('featured')}
           >
             <Eye className="h-4 w-4 mr-2" />
-            Featured
+            ویژه
           </Button>
-          <Button 
-            variant={viewMode === 'grid' ? 'default' : 'outline'} 
+          <Button
+            variant={viewMode === 'grid' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('grid')}
           >
             <BarChart3 className="h-4 w-4 mr-2" />
-            Grid View
+            نمای شبکه‌ای
           </Button>
         </div>
       </div>
@@ -158,7 +166,7 @@ export function ChartShowcase() {
       {/* Market Overview Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
         {marketData.map((stock) => (
-          <Card 
+          <Card
             key={stock.symbol}
             className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
               selectedSymbol === stock.symbol ? 'ring-2 ring-primary' : ''
@@ -171,7 +179,7 @@ export function ChartShowcase() {
                 {stock.trending && (
                   <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30">
                     <TrendingUp className="h-3 w-3 mr-1" />
-                    Hot
+                    داغ
                   </Badge>
                 )}
               </div>
@@ -180,15 +188,15 @@ export function ChartShowcase() {
                 <div className={`flex items-center text-sm ${
                   stock.change >= 0 ? 'text-green-500' : 'text-red-500'
                 }`}>
-                  {stock.change >= 0 ? 
-                    <ArrowUp className="h-3 w-3 mr-1" /> : 
+                  {stock.change >= 0 ?
+                    <ArrowUp className="h-3 w-3 mr-1" /> :
                     <ArrowDown className="h-3 w-3 mr-1" />
                   }
-                  {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} 
+                  {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)}
                   ({stock.changePercent.toFixed(2)}%)
                 </div>
                 <Badge className={categoryColors[stock.category]}>
-                  {stock.category}
+                  {CATEGORY_LABELS[stock.category] ?? stock.category}
                 </Badge>
               </div>
             </CardContent>
@@ -208,19 +216,19 @@ export function ChartShowcase() {
                     <span>{selectedStock.name} ({selectedStock.symbol})</span>
                   </CardTitle>
                   <Badge className={categoryColors[selectedStock.category]}>
-                    {selectedStock.category.toUpperCase()}
+                    {(CATEGORY_LABELS[selectedStock.category] ?? selectedStock.category).toUpperCase()}
                   </Badge>
                   {selectedStock.trending && (
                     <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30">
                       <Sparkles className="h-3 w-3 mr-1" />
-                      Trending
+                      پرطرفدار
                     </Badge>
                   )}
                 </div>
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <div>Vol: {selectedStock.volume}</div>
+                  <div>حجم: {selectedStock.volume}</div>
                   <div>•</div>
-                  <div>Mkt Cap: {selectedStock.marketCap}</div>
+                  <div>ارزش بازار: {selectedStock.marketCap}</div>
                   {selectedStock.pe && (
                     <>
                       <div>•</div>
@@ -246,7 +254,7 @@ export function ChartShowcase() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <PieChart className="h-5 w-5" />
-                  <span>Portfolio Breakdown</span>
+                  <span>تفکیک پورتفولیو</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -283,29 +291,29 @@ export function ChartShowcase() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Activity className="h-5 w-5" />
-                  <span>Performance Metrics</span>
+                  <span>معیارهای عملکرد</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Total Return</span>
+                    <span className="text-sm text-muted-foreground">بازده کل</span>
                     <span className="font-bold text-green-500">+12.45%</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Daily P&L</span>
+                    <span className="text-sm text-muted-foreground">سود/زیان روزانه</span>
                     <span className="font-bold text-green-500">+$2,847.32</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Win Rate</span>
+                    <span className="text-sm text-muted-foreground">نرخ برد</span>
                     <span className="font-bold">68.2%</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Sharpe Ratio</span>
+                    <span className="text-sm text-muted-foreground">نسبت شارپ</span>
                     <span className="font-bold">1.84</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Max Drawdown</span>
+                    <span className="text-sm text-muted-foreground">حداکثر افت سرمایه</span>
                     <span className="font-bold text-red-500">-5.23%</span>
                   </div>
                 </div>
@@ -316,7 +324,7 @@ export function ChartShowcase() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Target className="h-5 w-5" />
-                  <span>Market Alerts</span>
+                  <span>هشدارهای بازار</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -324,25 +332,25 @@ export function ChartShowcase() {
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 rounded-full bg-green-500 mt-2" />
                     <div>
-                      <div className="text-sm font-medium">AAPL Target Hit</div>
-                      <div className="text-xs text-muted-foreground">Price reached $185.00 resistance</div>
-                      <div className="text-xs text-green-500">2 minutes ago</div>
+                      <div className="text-sm font-medium">هدف AAPL محقق شد</div>
+                      <div className="text-xs text-muted-foreground">قیمت به مقاومت $185.00 رسید</div>
+                      <div className="text-xs text-green-500">۲ دقیقه پیش</div>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 rounded-full bg-blue-500 mt-2" />
                     <div>
-                      <div className="text-sm font-medium">RSI Oversold</div>
-                      <div className="text-xs text-muted-foreground">MSFT RSI below 30</div>
-                      <div className="text-xs text-blue-500">15 minutes ago</div>
+                      <div className="text-sm font-medium">RSI فروش‌افراطی</div>
+                      <div className="text-xs text-muted-foreground">RSI سهم MSFT زیر ۳۰</div>
+                      <div className="text-xs text-blue-500">۱۵ دقیقه پیش</div>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <div className="w-2 h-2 rounded-full bg-orange-500 mt-2" />
                     <div>
-                      <div className="text-sm font-medium">Volume Spike</div>
-                      <div className="text-xs text-muted-foreground">TSLA volume 3x average</div>
-                      <div className="text-xs text-orange-500">1 hour ago</div>
+                      <div className="text-sm font-medium">جهش حجم معاملات</div>
+                      <div className="text-xs text-muted-foreground">حجم TSLA سه برابر میانگین</div>
+                      <div className="text-xs text-orange-500">۱ ساعت پیش</div>
                     </div>
                   </div>
                 </div>
@@ -359,7 +367,7 @@ export function ChartShowcase() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{stock.symbol}</CardTitle>
                   <Badge className={categoryColors[stock.category]}>
-                    {stock.category}
+                    {CATEGORY_LABELS[stock.category] ?? stock.category}
                   </Badge>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -367,8 +375,8 @@ export function ChartShowcase() {
                   <div className={`flex items-center text-sm ${
                     stock.change >= 0 ? 'text-green-500' : 'text-red-500'
                   }`}>
-                    {stock.change >= 0 ? 
-                      <ArrowUp className="h-3 w-3 mr-1" /> : 
+                    {stock.change >= 0 ?
+                      <ArrowUp className="h-3 w-3 mr-1" /> :
                       <ArrowDown className="h-3 w-3 mr-1" />
                     }
                     {stock.changePercent.toFixed(2)}%
@@ -393,18 +401,18 @@ export function ChartShowcase() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <BarChart3 className="h-5 w-5" />
-            <span>Chart Types & Indicators</span>
+            <span>انواع نمودار و اندیکاتورها</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="candlestick" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="candlestick">Candlestick</TabsTrigger>
-              <TabsTrigger value="technical">Technical Analysis</TabsTrigger>
-              <TabsTrigger value="volume">Volume Analysis</TabsTrigger>
-              <TabsTrigger value="indicators">Indicators</TabsTrigger>
+              <TabsTrigger value="candlestick">شمعی</TabsTrigger>
+              <TabsTrigger value="technical">تحلیل تکنیکال</TabsTrigger>
+              <TabsTrigger value="volume">تحلیل حجم</TabsTrigger>
+              <TabsTrigger value="indicators">اندیکاتورها</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="candlestick" className="mt-6">
               <AdvancedChart
                 symbol="DEMO"
@@ -413,7 +421,7 @@ export function ChartShowcase() {
                 showIndicators={false}
               />
             </TabsContent>
-            
+
             <TabsContent value="technical" className="mt-6">
               <AdvancedChart
                 symbol="DEMO"
@@ -422,7 +430,7 @@ export function ChartShowcase() {
                 showIndicators={true}
               />
             </TabsContent>
-            
+
             <TabsContent value="volume" className="mt-6">
               <AdvancedChart
                 symbol="DEMO"
@@ -431,7 +439,7 @@ export function ChartShowcase() {
                 showIndicators={false}
               />
             </TabsContent>
-            
+
             <TabsContent value="indicators" className="mt-6">
               <div className="space-y-4">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -439,28 +447,28 @@ export function ChartShowcase() {
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-green-500">72.4</div>
                       <div className="text-sm text-muted-foreground">RSI</div>
-                      <Badge className="bg-red-500/20 text-red-300">Overbought</Badge>
+                      <Badge className="bg-red-500/20 text-red-300">خرید افراطی</Badge>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-blue-500">1.23</div>
                       <div className="text-sm text-muted-foreground">MACD</div>
-                      <Badge className="bg-green-500/20 text-green-300">Bullish</Badge>
+                      <Badge className="bg-green-500/20 text-green-300">صعودی</Badge>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-purple-500">24.8</div>
-                      <div className="text-sm text-muted-foreground">Bollinger %B</div>
-                      <Badge className="bg-yellow-500/20 text-yellow-300">Neutral</Badge>
+                      <div className="text-sm text-muted-foreground">باند بولینگر %B</div>
+                      <Badge className="bg-yellow-500/20 text-yellow-300">خنثی</Badge>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="p-4 text-center">
                       <div className="text-2xl font-bold text-orange-500">45.2</div>
-                      <div className="text-sm text-muted-foreground">Williams %R</div>
-                      <Badge className="bg-blue-500/20 text-blue-300">Oversold</Badge>
+                      <div className="text-sm text-muted-foreground">ویلیامز %R</div>
+                      <Badge className="bg-blue-500/20 text-blue-300">فروش افراطی</Badge>
                     </CardContent>
                   </Card>
                 </div>
@@ -477,4 +485,4 @@ export function ChartShowcase() {
       </Card>
     </div>
   );
-} 
+}

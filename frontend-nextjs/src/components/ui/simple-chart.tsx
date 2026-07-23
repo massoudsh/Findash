@@ -55,11 +55,11 @@ export function SimpleChart({ data, symbol, className }: SimpleChartProps) {
     return (
       <Card className={`glass-card ${className}`}>
         <CardHeader>
-          <CardTitle>{symbol} - No Data Available</CardTitle>
+          <CardTitle>{symbol} - داده‌ای در دسترس نیست</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-64 flex items-center justify-center text-muted-foreground">
-            <p>No chart data to display</p>
+            <p>داده‌ای برای نمایش نمودار وجود ندارد</p>
           </div>
         </CardContent>
       </Card>
@@ -85,8 +85,8 @@ export function SimpleChart({ data, symbol, className }: SimpleChartProps) {
             </CardTitle>
             {latestPrice && (
               <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                <span>Price: ${latestPrice.close.toFixed(2)}</span>
-                <span>Volume: {(latestPrice.volume / 1000000).toFixed(1)}M</span>
+                <span>قیمت: ${latestPrice.close.toFixed(2)}</span>
+                <span>حجم: {(latestPrice.volume / 1000000).toFixed(1)}M</span>
               </div>
             )}
           </div>
@@ -117,7 +117,7 @@ export function SimpleChart({ data, symbol, className }: SimpleChartProps) {
                     borderRadius: '8px',
                     color: '#F9FAFB'
                   }}
-                  formatter={(value: number) => [`$${value.toFixed(2)}`, 'Price']}
+                  formatter={(value: number) => [`$${value.toFixed(2)}`, 'قیمت']}
                 />
                 <Line
                   type="monotone"
@@ -153,7 +153,7 @@ export function SimpleChart({ data, symbol, className }: SimpleChartProps) {
                     borderRadius: '8px',
                     color: '#F9FAFB'
                   }}
-                  formatter={(value: number) => [`${(value / 1000000).toFixed(1)}M`, 'Volume']}
+                  formatter={(value: number) => [`${(value / 1000000).toFixed(1)}M`, 'حجم']}
                 />
                 <Bar
                   dataKey="volume"

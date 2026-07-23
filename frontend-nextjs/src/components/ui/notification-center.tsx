@@ -31,32 +31,32 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     const mockNotifications: Notification[] = [
       {
         id: '1',
-        title: 'Trade Executed',
-        message: 'Your order for 100 shares of AAPL has been executed at $150.25',
+        title: 'معامله انجام شد',
+        message: 'سفارش شما برای ۱۰۰ سهم AAPL با قیمت $150.25 اجرا شد',
         type: 'trade',
         timestamp: new Date(Date.now() - 5 * 60 * 1000),
         read: false,
       },
       {
         id: '2',
-        title: 'Price Alert Triggered',
-        message: 'TSLA has reached your target price of $800.00',
+        title: 'هشدار قیمت فعال شد',
+        message: 'TSLA به قیمت هدف شما یعنی $800.00 رسید',
         type: 'alert',
         timestamp: new Date(Date.now() - 15 * 60 * 1000),
         read: false,
       },
       {
         id: '3',
-        title: 'System Maintenance',
-        message: 'Scheduled maintenance will occur tonight from 2-4 AM EST',
+        title: 'تعمیر و نگهداری سیستم',
+        message: 'تعمیر و نگهداری برنامه‌ریزی‌شده امشب از ساعت ۲ تا ۴ بامداد انجام می‌شود',
         type: 'system',
         timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
         read: true,
       },
       {
         id: '4',
-        title: 'Social Signal',
-        message: 'High sentiment detected for NVDA - 85% bullish mentions',
+        title: 'سیگنال اجتماعی',
+        message: 'احساسات مثبت بالایی برای NVDA شناسایی شد - ۸۵٪ اشاره‌های صعودی',
         type: 'social',
         timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
         read: false,
@@ -107,10 +107,10 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    return `${diffDays}d ago`;
+    if (diffMins < 1) return 'همین الان';
+    if (diffMins < 60) return `${diffMins} دقیقه پیش`;
+    if (diffHours < 24) return `${diffHours} ساعت پیش`;
+    return `${diffDays} روز پیش`;
   };
 
   return (
@@ -144,7 +144,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
           <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-              <h3 className="font-semibold text-sm">Notifications</h3>
+              <h3 className="font-semibold text-sm">اعلان‌ها</h3>
               {unreadCount > 0 && (
                 <Button
                   variant="ghost"
@@ -152,7 +152,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                   onClick={markAllAsRead}
                   className="text-xs"
                 >
-                  Mark all read
+                  علامت‌گذاری همه به‌عنوان خوانده‌شده
                 </Button>
               )}
             </div>
@@ -161,7 +161,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
             <div className="max-h-64 overflow-y-auto">
               {notifications.length === 0 ? (
                 <div className="p-4 text-center text-gray-500 text-sm">
-                  No notifications
+                  اعلانی وجود ندارد
                 </div>
               ) : (
                 notifications.map((notification) => (
@@ -183,7 +183,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                               <button
                                 onClick={() => markAsRead(notification.id)}
                                 className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
-                                title="Mark as read"
+                                title="علامت‌گذاری به‌عنوان خوانده‌شده"
                               >
                                 <Check className="h-3 w-3 text-green-600" />
                               </button>
@@ -191,7 +191,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                             <button
                               onClick={() => removeNotification(notification.id)}
                               className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded"
-                              title="Remove"
+                              title="حذف"
                             >
                               <X className="h-3 w-3 text-gray-400" />
                             </button>
@@ -233,7 +233,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                     window.location.href = '/notifications';
                   }}
                 >
-                  View all notifications
+                  مشاهده همه اعلان‌ها
                 </Button>
               </div>
             )}
