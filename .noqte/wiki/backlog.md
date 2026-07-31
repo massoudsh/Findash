@@ -710,7 +710,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 
 ### TASK-025 — رفع اجرای test suite بک‌اند (pytest/make exit 127)
 
-**وضعیت:** `✅ Done` — ۲ فایل stale باقی‌مانده (`test_options_trading.py`, `test_websocket.py`) در `2026-07-22` بازنویسی شدند و از `--ignore` در `pytest.ini` حذف شدند (جزئیات کامل: `log.md` تاریخ ۲۰۲۶-۰۷-۲۲). failureهای باقی‌مانده (`test_auth.py`, `test_main_endpoints.py`, `test_phase2_api.py`, `test_allocation_copilot.py`, `test_phase4_integration.py`, `test_ingestion_pipeline.py`) ریشه در پین‌نبودن نسخه `fastapi`/ناسازگاری `statsmodels` و نیاز به Postgres واقعی دارند — مستقل از test-infra، خارج از scope این تسک.
+**وضعیت:** `✅ Done (کامل)` — ۲ فایل stale باقی‌مانده (`test_options_trading.py`, `test_websocket.py`) در `2026-07-22` بازنویسی شدند و از `--ignore` در `pytest.ini` حذف شدند (جزئیات کامل: `log.md` تاریخ ۲۰۲۶-۰۷-۲۲). دو یافتهٔ باقی‌مانده هم در `2026-07-30` واقعاً رفع شدند (نه فقط مستند): `fastapi==0.104.1` پین شد (رفع ناسازگاری `prometheus-fastapi-instrumentator`) و `statsmodels` به `0.14.6` ارتقا یافت (رفع ناسازگاری `deprecate_kwarg`/pandas 3.x). یک باگ واقعی جدید هم کشف/رفع شد: `HTTPBearer` پیش‌فرض روی هدر Authorization غایب 403 می‌داد نه 401 (`Bearer401` در `security.py`). نتیجه نهایی: **۲۱۰ passed / ۰ failed / ۱ error** — تنها `test_ingestion_pipeline.py` باقی می‌ماند که به Postgres واقعی نیاز دارد (محدودیت زیرساخت کانتینر، نه باگ کد؛ خارج از scope این تسک). جزئیات کامل: `log.md` تاریخ ۲۰۲۶-۰۷-۳۰.
 **اندازه:** M
 **نوع:** DevOps / Test Infra
 **تیم:** Backend
@@ -817,7 +817,7 @@ find /opt/backups -name "backup-*.sql.gz" -mtime +30 -delete
 | TASK-022 Nginx + SSL | M | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-023 Monitoring Alerts | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
 | TASK-024 DB Backup | S | 🔵 DevOps | ✅ Done (`8e6bcc3`) | DevOps |
-| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (partial) (`7094617`, `bd3edfc`, `e4a15ca`, `17094cf`, `b3f05f2`) | Backend |
+| TASK-025 Test Suite (pytest exit 127) | M | 🔴 Critical | ✅ Done (کامل، 210 passed/0 failed/1 error) | Backend |
 
 ---
 

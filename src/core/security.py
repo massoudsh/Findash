@@ -25,9 +25,31 @@ from .config import get_settings
 logger = logging.getLogger(__name__)
 settings = get_settings()
 
+class Bearer401(HTTPBearer):
+    """HTTPBearer که هنگام نبود کامل هدر Authorization هم 401 برمی‌گرداند.
+
+    پیاده‌سازی پیش‌فرض FastAPI برای HTTPBearer در این حالت 403 می‌دهد که با
+    معنای HTTP (401 = احراز هویت نشده، 403 = احراز هویت شده ولی مجاز نیست)
+    و با رفتار get_current_user (که برای توکن نامعتبر/گم‌شده 401 می‌دهد)
+    ناسازگار است.
+    """
+
+    async def __call__(self, request: Request) -> Optional[HTTPAuthorizationCredentials]:
+        try:
+            return await super().__call__(request)
+        except HTTPException as exc:
+            if exc.status_code == status.HTTP_403_FORBIDDEN:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=exc.detail,
+                    headers={"WWW-Authenticate": "Bearer"},
+                ) from exc
+            raise
+
+
 # Security configuration
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-security = HTTPBearer()
+security = Bearer401()
 security_optional = HTTPBearer(auto_error=False)
 
 # Redis for rate limiting and session management

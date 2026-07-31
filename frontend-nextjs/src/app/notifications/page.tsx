@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -173,19 +174,22 @@ export default function NotificationsPage() {
   });
   const [alertsLoading, setAlertsLoading] = useState(false);
   const [alertsError, setAlertsError] = useState<string | null>(null);
-  const userId = 1; // TODO: Replace with real user ID
+  const { data: session } = useSession();
+  const userId = Number(session?.user?.id) || null;
 
   // Fetch alert rules from backend
   useEffect(() => {
+    if (!userId) return;
     setAlertsLoading(true);
     fetchAlertRules(userId)
       .then(setAlertRules)
       .catch((err) => setAlertsError(err.message))
       .finally(() => setAlertsLoading(false));
-  }, []);
+  }, [userId]);
 
   // Create alert rule handler
   async function handleCreateAlertRule(data: any) {
+    if (!userId) return;
     setAlertsLoading(true);
     try {
       const newRule = await createAlertRule(userId, data);

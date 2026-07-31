@@ -3,7 +3,7 @@
 # ========================================
 
 # --- Core FastAPI and Web Framework ---
-fastapi
+fastapi==0.104.1
 uvicorn
 celery
 redis
@@ -49,7 +49,7 @@ mcp>=1.2.0  # Model Context Protocol SDK (used by Alpha Vantage MCP client)
 matplotlib==3.8.3
 seaborn==0.13.2
 plotly==5.19.0
-statsmodels==0.14.2
+statsmodels==0.14.6
 backtrader==1.9.76.123
 cvxpy==1.4.2
 empyrical==0.5.5
@@ -132,7 +132,7 @@ typing-extensions>=4.8.0  # For Python 3.9 compatibility
 # Phase 4 Dependencies - Real-Time Execution & Portfolio Management
 cvxpy>=1.4.1             # Convex optimization for portfolio optimization
 scipy>=1.11.3            # Scientific computing and optimization algorithms
-statsmodels>=0.14.0      # Statistical analysis and tests for backtesting
+statsmodels>=0.14.6      # Statistical analysis and tests for backtesting (pandas 3.x compat fix)
 cvxopt>=1.3.2            # Additional optimization solvers
 quadprog>=0.1.11         # Quadratic programming for mean-variance optimization
 
