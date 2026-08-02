@@ -111,24 +111,33 @@ _DEMO_USERS_SEED = [
 
 def _ensure_demo_users(db: Session) -> None:
     """Idempotently seed the fixed demo accounts into the real `users` table
-    if they don't exist yet. Cheap no-op after the first call per database."""
-    created = False
+    if they don't exist yet. If a demo account already exists but its stored
+    hash no longer matches the expected password (e.g. it was created before
+    a bcrypt/passlib fix, or the env var changed since), the hash is
+    re-synced so the credentials advertised on the sign-in page always work.
+    Cheap no-op after the first call once everything is in sync."""
+    changed = False
     for seed in _DEMO_USERS_SEED:
-        if db_crud.get_user_by_email(db, seed["email"]):
-            continue
         password = os.getenv(seed["password_env"], seed["default_password"])
-        db.add(User(
-            username=seed["username"],
-            email=seed["email"],
-            password_hash=hash_password(password),
-            first_name=seed["first_name"],
-            last_name=seed["last_name"],
-            role=seed["role"],
-            permissions=seed["permissions"],
-            is_active=True,
-        ))
-        created = True
-    if created:
+        existing = db_crud.get_user_by_email(db, seed["email"])
+        if existing is None:
+            db.add(User(
+                username=seed["username"],
+                email=seed["email"],
+                password_hash=hash_password(password),
+                first_name=seed["first_name"],
+                last_name=seed["last_name"],
+                role=seed["role"],
+                permissions=seed["permissions"],
+                is_active=True,
+            ))
+            changed = True
+            continue
+        if not existing.is_active or not verify_password(password, existing.password_hash):
+            existing.password_hash = hash_password(password)
+            existing.is_active = True
+            changed = True
+    if changed:
         db.commit()
 
 

@@ -16,6 +16,7 @@ from src.core.security import (
     hash_password,
 )
 from src.core.config import get_settings
+from src.database.models import User
 
 settings = get_settings()
 
@@ -511,4 +512,52 @@ class TestIntegration:
         
         # 6. Logout
         logout_response = client.post("/api/auth/logout", headers=new_headers)
-        assert logout_response.status_code == 200 
+        assert logout_response.status_code == 200
+
+
+class TestDemoAccountSelfHeal:
+    """
+    Regression test for a real bug found via a screenshot of the sign-in page:
+    the demo credential hint buttons (email/password) always advertise the
+    *current* default demo passwords, but the old `_ensure_demo_users()` only
+    set the password hash once, at first creation. If a demo account row
+    already existed in the `users` table with a different/stale hash (e.g.
+    left over from before this seeding logic existed, or from a period where
+    password hashing was broken), login with the password shown on the
+    sign-in page would fail forever with "Invalid email or password", even
+    though nothing was wrong with the credentials shown to the user.
+    """
+
+    def test_login_self_heals_stale_demo_password_hash(self, db_session, client):
+        # Simulate a demo account that already exists with a stale/wrong hash
+        # (as if it drifted from the currently advertised default password).
+        db_session.add(User(
+            username="trader",
+            email="trader@octopus.trading",
+            password_hash=hash_password("SomeOldStalePassword1"),
+            first_name="Professional",
+            last_name="Trader",
+            role="trader",
+            permissions=["trade", "view_portfolio", "view_analytics"],
+            is_active=True,
+        ))
+        db_session.commit()
+
+        # Login with the password actually shown on the sign-in page's
+        # "demo accounts" hint must succeed, not fail.
+        response = client.post("/api/auth/login", json={
+            "email": "trader@octopus.trading",
+            "password": "TraderPro2025!",
+        })
+        assert response.status_code == 200
+        data = response.json()
+        assert data["success"] is True
+        assert data["access_token"]
+
+        # Subsequent logins keep working (no re-drift / idempotent).
+        response2 = client.post("/api/auth/login", json={
+            "email": "trader@octopus.trading",
+            "password": "TraderPro2025!",
+        })
+        assert response2.status_code == 200
+        assert response2.json()["success"] is True 
