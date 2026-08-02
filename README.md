@@ -6,8 +6,8 @@
 
 # Findash
 
-**A full-stack fintech dashboard built for the Iranian market.**
-Real-time market data · Portfolio tracking · Risk management · Persian UI (RTL) · ZarinPal payments
+**داشبورد فین‌تک فول‌استک، ساخته‌شده برای بازار ایران.**
+داده‌های لحظه‌ای بازار · رهگیری پرتفوی · مدیریت ریسک · رابط کاربری فارسی (راست‌به‌چپ) · درگاه پرداخت زرین‌پال
 
 <br/>
 
@@ -20,125 +20,125 @@ Real-time market data · Portfolio tracking · Risk management · Persian UI (RT
 
 <br/>
 
-> **Live demo · screenshots · GIF walkthrough coming soon**
-> *Clone → configure `.env` → `docker compose up` — that's it.*
+> **دموی زنده · اسکرین‌شات · ویدیوی معرفی به‌زودی**
+> *کلون کن ← `.env` را تنظیم کن ← `docker compose up` — همین!*
 
 </div>
 
 ---
 
-## What is Findash?
+## Findash چیست؟
 
-Findash is an open-source **Iranian fintech dashboard** that consolidates everything a trader or investor needs in one clean, Persian-first interface:
+Findash یک **داشبورد فین‌تک ایرانی متن‌باز** است که هر چیزی که یک معامله‌گر یا سرمایه‌گذار نیاز دارد را در یک رابط کاربری تمیز و فارسی‌محور کنار هم می‌آورد:
 
-- Live prices for gold, currencies, crypto, and housing
-- Portfolio P&L with trade history
-- Real-time risk gauge (VaR, drawdown, beta)
-- ZarinPal payment integration (create → redirect → verify)
-- AI-powered analysis via 11 orchestrated agents
-- Full RTL support with the Dana font
+- قیمت لحظه‌ای طلا، ارز، رمزارز و مسکن
+- سود و زیان پرتفوی همراه با تاریخچه معاملات
+- گیج ریسک لحظه‌ای (VaR، افت سرمایه، بتا)
+- یکپارچگی کامل با درگاه زرین‌پال (ایجاد ← ریدایرکت ← تأیید)
+- تحلیل هوشمند با ۱۱ ایجنت هوش مصنوعی هماهنگ‌شده
+- پشتیبانی کامل راست‌به‌چپ با فونت دانا
 
 ---
 
-## Demo
+## دمو
 
 <div align="center">
 
-<!-- Replace with your actual GIF/screenshot once available -->
+<!-- پس از آماده شدن، با GIF/اسکرین‌شات واقعی جایگزین شود -->
 ```
 ┌─────────────────────────────────────────────────────┐
-│  📊 Dashboard  💼 Portfolio  📈 Markets  ⚠️ Alerts  │
+│  📊 داشبورد  💼 پرتفوی  📈 بازارها  ⚠️ هشدارها      │
 │ ─────────────────────────────────────────────────── │
-│  Portfolio Value     ↑ 12.4%    Risk Level: Medium  │
+│  ارزش پرتفوی        ↑ 12.4%    سطح ریسک: متوسط      │
 │  ₿ BTC  47,200 $     طلا  3,850,000 ت               │
 │  دلار   58,200 ت     سکه  42,000,000 ت              │
 │  ─────────────────────────────────────── ──────────  │
-│  [Chart] ████████████░░░  Sharpe: 1.42              │
+│  [نمودار] ████████████░░░  شارپ: 1.42               │
 └─────────────────────────────────────────────────────┘
 ```
 
-*Full animated demo GIF will be added here.*
+*ویدیوی متحرک کامل دمو به‌زودی اینجا اضافه می‌شود.*
 
 </div>
 
 ---
 
-## Features
+## امکانات
 
-| Category | Highlights |
+| دسته | نکات برجسته |
 |---|---|
-| 📊 **Dashboard** | Live ticker, portfolio overview, cash-flow charts, asset allocation |
-| 💼 **Portfolio** | Trade tracker, P&L, Iranian physical assets (gold, silver, housing, crypto) |
-| ⚡ **Realtime** | WebSocket market feed with auto-reconnect hook |
-| ⚠️ **Risk Engine** | Live risk gauge, VaR, max drawdown, portfolio beta |
-| 🧠 **AI Agents** | 11-agent orchestrator for data collection, analysis, strategy & reports |
-| 💳 **Payments** | Full ZarinPal cycle — create, redirect, callback, verify, history |
-| 🔐 **Auth** | JWT-based sign-in / sign-up with route protection |
-| 🌐 **Persian-first** | RTL layout, Jalali dates, Toman/Dollar toggle, Dana font |
-| 📱 **Mobile-ready** | Mobile-first design, max 5 nav items, readable card density |
+| 📊 **داشبورد** | تیکر لحظه‌ای، نمای کلی پرتفوی، نمودار جریان نقدی، تخصیص دارایی |
+| 💼 **پرتفوی** | رهگیر معاملات، سود و زیان، دارایی‌های فیزیکی ایرانی (طلا، نقره، مسکن، رمزارز) |
+| ⚡ **لحظه‌ای** | فید بازار با WebSocket و اتصال مجدد خودکار |
+| ⚠️ **موتور ریسک** | گیج ریسک لحظه‌ای، VaR، حداکثر افت سرمایه، بتای پرتفوی |
+| 🧠 **ایجنت‌های هوش مصنوعی** | ارکستریتور ۱۱ ایجنته برای جمع‌آوری داده، تحلیل، استراتژی و گزارش |
+| 💳 **پرداخت** | چرخه کامل زرین‌پال — ایجاد، ریدایرکت، بازگشت، تأیید، تاریخچه |
+| 🔐 **احراز هویت** | ورود/ثبت‌نام مبتنی بر JWT با محافظت مسیر |
+| 🌐 **فارسی‌محور** | چیدمان راست‌به‌چپ، تاریخ جلالی، تبدیل تومان/دلار، فونت دانا |
+| 📱 **آماده موبایل** | طراحی موبایل‌محور، حداکثر ۵ آیتم ناوبری، تراکم کارت خوانا |
 
 ---
 
-## Architecture
+## معماری
 
 ```
-User
+کاربر
  │
- ├─► Next.js 15 (Frontend · port 3003)
+ ├─► Next.js 15 (فرانت‌اند · پورت 3003)
  │       │ REST / WebSocket
  │       ▼
- └─► FastAPI (Backend · port 8011)
-         ├─► Auth (JWT)
-         ├─► ZarinPal Payment
-         ├─► AI Agents (×11)
+ └─► FastAPI (بک‌اند · پورت 8011)
+         ├─► احراز هویت (JWT)
+         ├─► پرداخت زرین‌پال
+         ├─► ایجنت‌های هوش مصنوعی (×۱۱)
          ├─► PostgreSQL / TimescaleDB
-         └─► Redis Cache
+         └─► کش Redis
 ```
 
-| Layer | Technology |
+| لایه | فناوری |
 |---|---|
-| Frontend | Next.js 15, TypeScript, Tailwind CSS, Shadcn UI, Recharts |
-| Backend | FastAPI, Python 3.10+, Celery |
-| Database | PostgreSQL 14+, TimescaleDB |
-| Cache / Queue | Redis, Celery Workers |
-| Realtime | WebSocket (custom hook) |
-| AI / ML | PyTorch, scikit-learn, 11 orchestrated agents |
-| Payments | ZarinPal (sandbox + production) |
-| Monitoring | Prometheus (9090), Grafana (3001) |
+| فرانت‌اند | Next.js 15، TypeScript، Tailwind CSS، Shadcn UI، Recharts |
+| بک‌اند | FastAPI، Python 3.10+، Celery |
+| پایگاه داده | PostgreSQL 14+، TimescaleDB |
+| کش / صف | Redis، Celery Workers |
+| لحظه‌ای | WebSocket (هوک اختصاصی) |
+| هوش مصنوعی / یادگیری ماشین | PyTorch، scikit-learn، ۱۱ ایجنت هماهنگ‌شده |
+| پرداخت | زرین‌پال (سندباکس + محیط عملیاتی) |
+| مانیتورینگ | Prometheus (9090)، Grafana (3001) |
 
 ---
 
-## Quick Start
+## شروع سریع
 
-### Option A — Docker (recommended)
+### گزینه الف — داکر (پیشنهادی)
 
 ```bash
 git clone https://github.com/massoudsh/Findash.git
 cd Findash
-cp .env.example .env          # fill in your values
+cp .env.example .env          # مقادیر خودتان را وارد کنید
 docker compose -f docker-compose-core.yml up --build -d
 ```
 
-| Service | URL |
+| سرویس | آدرس |
 |---|---|
-| Frontend | http://localhost:3003 |
-| Backend API | http://localhost:8011 |
-| Swagger docs | http://localhost:8011/docs |
+| فرانت‌اند | http://localhost:3003 |
+| API بک‌اند | http://localhost:8011 |
+| مستندات Swagger | http://localhost:8011/docs |
 | Grafana | http://localhost:3001 |
 
 ```bash
-# View logs
+# مشاهده لاگ‌ها
 docker compose -f docker-compose-core.yml logs -f
 
-# Stop
+# توقف
 docker compose -f docker-compose-core.yml down
 ```
 
 ---
 
-### Option B — Local (without Docker)
+### گزینه ب — اجرای محلی (بدون داکر)
 
-**Backend**
+**بک‌اند**
 
 ```bash
 python -m venv venv && source venv/bin/activate
@@ -146,7 +146,7 @@ pip install -r requirements/requirements.txt
 python3 start.py --reload
 ```
 
-**Frontend**
+**فرانت‌اند**
 
 ```bash
 cd frontend-nextjs
@@ -156,18 +156,18 @@ npm run dev        # http://localhost:3003
 
 ---
 
-## Environment Variables
+## متغیرهای محیطی
 
-Create a `.env` file at the project root:
+یک فایل `.env` در ریشه پروژه بسازید:
 
 ```env
-# Database
+# پایگاه داده
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/trading_db
 
-# Cache
+# کش
 REDIS_URL=redis://localhost:6379/0
 
-# Security  (change before production!)
+# امنیت (پیش از استفاده عملیاتی تغییر دهید!)
 SECRET_KEY=change-this-secret-key-min-32-chars
 JWT_SECRET_KEY=change-this-jwt-secret-min-32-chars
 
@@ -175,39 +175,39 @@ JWT_SECRET_KEY=change-this-jwt-secret-min-32-chars
 NEXT_PUBLIC_API_URL=http://localhost:8011
 APP_BASE_URL=http://localhost:3003
 
-# ZarinPal
+# زرین‌پال
 ZARINPAL_MERCHANT_ID=your-zarinpal-merchant-id
 ```
 
-> **Sandbox mode:** use ZarinPal's test merchant ID for local development. Switch to a real merchant for production.
+> **حالت سندباکس:** برای توسعه محلی از مرچنت آزمایشی زرین‌پال استفاده کنید. برای محیط عملیاتی، مرچنت واقعی را جایگزین کنید.
 
 ---
 
-## Payment Flow
+## گردش پرداخت
 
 ```
-POST /create  →  Redirect to ZarinPal  →  GET /callback  →  POST verify  →  ✅ / ❌
+POST /create  →  ریدایرکت به زرین‌پال  →  GET /callback  →  POST verify  →  ✅ / ❌
 ```
 
-**Backend routes**
+**مسیرهای بک‌اند**
 
-| Route | Description |
+| مسیر | توضیح |
 |---|---|
-| `POST /api/payment/zarinpal/create` | Create payment order |
-| `GET  /api/payment/zarinpal/callback` | Handle gateway return & verify |
-| `GET  /api/payment/zarinpal/status/{id}` | Order status |
-| `GET  /api/payment/zarinpal/history` | User payment history |
+| `POST /api/payment/zarinpal/create` | ایجاد سفارش پرداخت |
+| `GET  /api/payment/zarinpal/callback` | مدیریت بازگشت از درگاه و تأیید |
+| `GET  /api/payment/zarinpal/status/{id}` | وضعیت سفارش |
+| `GET  /api/payment/zarinpal/history` | تاریخچه پرداخت کاربر |
 
-**Frontend pages**
+**صفحات فرانت‌اند**
 
-| Path | Description |
+| مسیر | توضیح |
 |---|---|
-| `/payment/checkout` | Plan selection & payment initiation |
-| `/payment/callback/zarinpal` | Gateway return bridge |
-| `/payment/success` | Success confirmation |
-| `/payment/failed` | Failure page |
+| `/payment/checkout` | انتخاب پلن و آغاز پرداخت |
+| `/payment/callback/zarinpal` | پل بازگشت از درگاه |
+| `/payment/success` | تأیید موفقیت |
+| `/payment/failed` | صفحه خطا |
 
-Run the DB migration once:
+مایگریشن دیتابیس را یک‌بار اجرا کنید:
 
 ```bash
 psql -d trading_db -f database/schemas/payment_orders.sql
@@ -215,55 +215,55 @@ psql -d trading_db -f database/schemas/payment_orders.sql
 
 ---
 
-## Project Structure
+## ساختار پروژه
 
 ```
 Findash/
 ├── frontend-nextjs/
 │   └── src/
 │       ├── app/
-│       │   ├── dashboard/          # Main dashboard
-│       │   ├── portfolio/          # Portfolio & trades
-│       │   ├── auth/               # Sign-in / sign-up
-│       │   └── payment/            # Checkout, success, failed
+│       │   ├── dashboard/          # داشبورد اصلی
+│       │   ├── portfolio/          # پرتفوی و معاملات
+│       │   ├── auth/               # ورود / ثبت‌نام
+│       │   └── payment/            # پرداخت، موفقیت، خطا
 │       ├── components/
-│       │   ├── realtime/           # WebSocket feed
-│       │   ├── portfolio/          # Trade tracker, P&L
-│       │   └── risk/               # Risk gauge
+│       │   ├── realtime/           # فید WebSocket
+│       │   ├── portfolio/          # رهگیر معاملات، سود و زیان
+│       │   └── risk/               # گیج ریسک
 │       └── lib/
-│           └── hooks/              # use-market-ws, etc.
+│           └── hooks/              # use-market-ws و غیره
 ├── src/
-│   ├── main_refactored.py          # FastAPI app entry
-│   ├── api/endpoints/              # payment, auth, assets ...
-│   └── core/config.py              # App settings
+│   ├── main_refactored.py          # نقطه ورود اپ FastAPI
+│   ├── api/endpoints/              # پرداخت، احراز هویت، دارایی‌ها ...
+│   └── core/config.py              # تنظیمات اپ
 └── database/
-    └── schemas/                    # SQL migrations
+    └── schemas/                    # مایگریشن‌های SQL
 ```
 
 ---
 
-## Roadmap
+## نقشه راه
 
-- [ ] Subscription plan management
-- [ ] KYC / financial identity verification
-- [ ] Rial wallet integration
-- [ ] PDF report generation (Persian)
-- [ ] Push & SMS alerts
-- [ ] Risk policy engine
-- [ ] Live Iranian market data (TGJU, Nobitex)
-- [ ] Admin panel for transactions & users
-
----
-
-## Contributing
-
-1. Fork the repository and create a feature branch
-2. Keep changes small and focused
-3. Test main user flows manually before opening a PR
-4. For payment or auth changes — cover error scenarios too
+- [ ] مدیریت پلن اشتراک
+- [ ] احراز هویت مالی / KYC
+- [ ] یکپارچگی کیف پول ریالی
+- [ ] تولید گزارش PDF (فارسی)
+- [ ] هشدارهای پوش و پیامک
+- [ ] موتور سیاست ریسک
+- [ ] داده لحظه‌ای بازار ایران (tgju، نوبیتکس)
+- [ ] پنل مدیریت برای تراکنش‌ها و کاربران
 
 ---
 
-## License
+## مشارکت
 
-MIT © [massoudsh](https://github.com/massoudsh) — see [`LICENSE`](LICENSE) for details.
+۱. ریپازیتوری را فورک کرده و یک برنچ برای فیچر بسازید
+۲. تغییرات را کوچک و متمرکز نگه دارید
+۳. پیش از باز کردن PR، جریان‌های اصلی کاربر را به‌صورت دستی تست کنید
+۴. برای تغییرات پرداخت یا احراز هویت — سناریوهای خطا را هم پوشش دهید
+
+---
+
+## مجوز
+
+MIT © [massoudsh](https://github.com/massoudsh) — برای جزئیات به [`LICENSE`](LICENSE) مراجعه کنید.
