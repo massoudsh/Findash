@@ -9,7 +9,7 @@ try:
     from pydantic_settings import BaseSettings
 except ImportError:
     from pydantic import BaseSettings
-from pydantic import Field, validator
+from pydantic import Field, validator, root_validator
 from functools import lru_cache
 from dataclasses import dataclass, field
 
@@ -126,7 +126,7 @@ class MonitoringSettings(BaseSettings):
     """Monitoring and observability settings"""
     prometheus_port: int = Field(9090, env="PROMETHEUS_PORT")
     grafana_port: int = Field(3001, env="GRAFANA_PORT")
-    grafana_admin_password: str = Field("admin123", env="GRAFANA_ADMIN_PASSWORD")
+    grafana_admin_password: str = Field("admin123", env="GRAFANA_ADMIN_PASSWORD")  # dev-only default, enforced in Settings.validate_production_security
     sentry_dsn: Optional[str] = Field(None, env="SENTRY_DSN")
 
 
@@ -181,7 +181,7 @@ class TradingSettings(BaseSettings):
 class PaymentSettings(BaseSettings):
     """Payment gateway configuration"""
     zarinpal_merchant_id: str = Field(
-        "1344b5d4-0048-11e8-94db-005056a205be",
+        "",
         env="ZARINPAL_MERCHANT_ID"
     )
 
@@ -233,7 +233,33 @@ class Settings(BaseSettings):
         if v.upper() not in valid_levels:
             raise ValueError(f"Log level must be one of: {valid_levels}")
         return v.upper()
-    
+
+    @root_validator(skip_on_failure=True)
+    def validate_production_security(cls, values):
+        """Fail closed at startup if insecure dev defaults are still in use in production."""
+        if values.get("environment") != "production":
+            return values
+
+        errors = []
+        if values.get("debug"):
+            errors.append("DEBUG must be false in production")
+
+        db = values.get("database")
+        if db and (db.user == "postgres" and db.password == "postgres"):
+            errors.append("DATABASE credentials must not use the default postgres/postgres in production (set DB_USER/DB_PASSWORD or DATABASE_URL)")
+
+        monitoring = values.get("monitoring")
+        if monitoring and monitoring.grafana_admin_password == "admin123":
+            errors.append("GRAFANA_ADMIN_PASSWORD must not be the default 'admin123' in production")
+
+        payment = values.get("payment")
+        if payment and not payment.zarinpal_merchant_id:
+            errors.append("ZARINPAL_MERCHANT_ID must be set in production (no default is provided)")
+
+        if errors:
+            raise ValueError("Insecure production configuration:\n- " + "\n- ".join(errors))
+        return values
+
     @property
     def is_development(self) -> bool:
         return self.environment == "development"

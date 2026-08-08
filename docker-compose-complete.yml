@@ -109,7 +109,7 @@ services:
     environment:
       - ENVIRONMENT=production
       - LOG_LEVEL=INFO
-      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD:-postgres}@db:5432/trading_db
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD:?Set DB_PASSWORD in .env — no insecure default allowed}@db:5432/trading_db
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=${SECRET_KEY}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
@@ -164,7 +164,7 @@ services:
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     environment:
       - POSTGRES_USER=${DB_USER:-postgres}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:?Set DB_PASSWORD in .env — no insecure default allowed}
       - POSTGRES_DB=${DB_NAME:-trading_db}
       - TIMESCALE_TELEMETRY=off
     ports:
@@ -211,7 +211,7 @@ services:
       - ./logs:/app/logs
       - ./models:/app/models
     environment:
-      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD:-postgres}@db:5432/trading_db
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD:?Set DB_PASSWORD in .env — no insecure default allowed}@db:5432/trading_db
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -230,7 +230,7 @@ services:
     restart: unless-stopped
     command: celery -A src.core.celery_app beat -l info
     environment:
-      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD:-postgres}@db:5432/trading_db
+      - DATABASE_URL=postgresql://postgres:${DB_PASSWORD:?Set DB_PASSWORD in .env — no insecure default allowed}@db:5432/trading_db
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -366,7 +366,7 @@ services:
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
       - grafana_data:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env — no insecure default allowed}
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_SERVER_ROOT_URL=http://localhost:3001
     depends_on:
@@ -405,7 +405,7 @@ services:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
       KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Set KEYCLOAK_DB_PASSWORD in .env — no insecure default allowed}
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
       KC_PROXY: edge
@@ -426,7 +426,7 @@ services:
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?Set KEYCLOAK_DB_PASSWORD in .env — no insecure default allowed}
     volumes:
       - keycloak_data:/var/lib/postgresql/data
     networks:
