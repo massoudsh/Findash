@@ -244,14 +244,16 @@ Findash/
 
 ## نقشه راه
 
-- [ ] مدیریت پلن اشتراک
-- [ ] احراز هویت مالی / KYC
-- [ ] یکپارچگی کیف پول ریالی
-- [ ] تولید گزارش PDF (فارسی)
-- [ ] هشدارهای پوش و پیامک
-- [ ] موتور سیاست ریسک
-- [ ] داده لحظه‌ای بازار ایران (tgju، نوبیتکس)
-- [ ] پنل مدیریت برای تراکنش‌ها و کاربران
+- [x] داده لحظه‌ای بازار ایران (tgju، نوبیتکس) — تب «بازار» و ticker زنده
+- [ ] مدیریت پلن اشتراک ([#13](https://github.com/massoudsh/Findash/issues/13))
+- [ ] احراز هویت مالی / KYC ([#20](https://github.com/massoudsh/Findash/issues/20))
+- [ ] یکپارچگی کیف پول ریالی ([#21](https://github.com/massoudsh/Findash/issues/21))
+- [ ] تولید گزارش PDF (فارسی) ([#18](https://github.com/massoudsh/Findash/issues/18))
+- [ ] هشدارهای پوش و پیامک ([#19](https://github.com/massoudsh/Findash/issues/19))
+- [ ] موتور سیاست ریسک ([#22](https://github.com/massoudsh/Findash/issues/22))
+- [ ] پنل مدیریت برای تراکنش‌ها و کاربران ([#12](https://github.com/massoudsh/Findash/issues/12))
+
+برای فهرست کامل issue های باز، به [GitHub Issues](https://github.com/massoudsh/Findash/issues) مراجعه کنید.
 
 ---
 

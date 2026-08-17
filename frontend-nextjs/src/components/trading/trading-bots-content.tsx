@@ -35,7 +35,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useBackendHealth } from '@/hooks/use-backend-health';
+import { useBackendHealth } from '@/lib/hooks/use-backend-health';
 import { BackendOfflineBanner } from '@/components/ui/backend-offline-banner';
 
 /** Best-practice strategy types (fin market aligned). */

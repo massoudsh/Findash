@@ -25,25 +25,25 @@ High-level roadmap for the Octopus Trading Platform (Findash). Detailed issues l
 
 ## Phase 3 In progress
 
-- **E2E tests** – Playwright for critical flows (app load, dashboard, trading bots, backend health).
+- **E2E tests** – Playwright for critical flows ([#17](https://github.com/massoudsh/Findash/issues/17)).
 - **Observability** – Use existing `/health` and `/health/detailed`; optional structured logging and metrics.
 - **Production hardening** – Env validation, security headers, deploy configuration.
+- **Integration DB in CI** – real Postgres service for `test_ingestion_pipeline.py` ([#15](https://github.com/massoudsh/Findash/issues/15)).
 
 ---
 
 ## Backlog
 
-- Technical page: Screener, Watchlist, Economic Calendar data wiring ([#9](https://github.com/massoudsh/Findash/issues/9))
-- Development roadmap doc and phase checklist maintenance ([#11](https://github.com/massoudsh/Findash/issues/11))
-- E2E or integration tests for critical flows
+- Admin panel wired to real backend (currently mock data) ([#12](https://github.com/massoudsh/Findash/issues/12))
+- Subscription plan management ([#13](https://github.com/massoudsh/Findash/issues/13))
+- Real auth/premium gating design (currently disabled) ([#14](https://github.com/massoudsh/Findash/issues/14))
+- Wire M6–M11 AI agents with real torch/prophet on a real server ([#16](https://github.com/massoudsh/Findash/issues/16))
+- Persian PDF report generation ([#18](https://github.com/massoudsh/Findash/issues/18))
+- Push/SMS price alert delivery ([#19](https://github.com/massoudsh/Findash/issues/19))
+- Financial KYC ([#20](https://github.com/massoudsh/Findash/issues/20))
+- Toman wallet integration ([#21](https://github.com/massoudsh/Findash/issues/21))
+- Risk policy engine ([#22](https://github.com/massoudsh/Findash/issues/22))
 - Deploy: configure repo secrets and replace placeholder steps (e.g. AWS/ECS)
-
----
-
-## Phase 3 (in progress)
-
-- E2E tests (Playwright), observability, production hardening — see Phase 3 section above.
-- Broader test coverage and accessibility audit in backlog.
 
 ---
 
