@@ -46,7 +46,7 @@ export default function DemoPage() {
                 پیش‌نمایش عمومی — بدون نیاز به ورود
               </div>
               <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
-                فین دَش را قبل از ثبت‌نام امتحان کنید
+                اختاپوس را قبل از ثبت‌نام امتحان کنید
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
                 این نمای کلی داشبورد با داده‌های نمونه پر شده تا حس واقعی از تجربه سرمایه‌گذاری، ریسک و پرتفولیو بگیرید.

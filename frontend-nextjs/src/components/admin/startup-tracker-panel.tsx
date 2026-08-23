@@ -166,7 +166,7 @@ export function StartupTrackerPanel() {
           استارتاپ‌تراکر (اعتبارسنجی محصول)
         </h2>
         <p className="text-muted-foreground text-sm">
-          فرضیه‌های GTM، مکالمات با مشتری، و داده traction تیم Findash — فقط برای استفاده داخلی.
+          فرضیه‌های GTM، مکالمات با مشتری، و داده traction تیم اختاپوس — فقط برای استفاده داخلی.
         </p>
       </div>
 

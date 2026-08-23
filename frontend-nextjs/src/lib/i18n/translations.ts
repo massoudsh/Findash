@@ -159,7 +159,7 @@ export const translations: Record<Locale, Record<string, string>> = {
   },
 };
 
-const LOCALE_STORAGE_KEY = 'findash-locale';
+const LOCALE_STORAGE_KEY = 'octopus-locale';
 
 export function getStoredLocale(): Locale {
   if (typeof window === 'undefined') return 'fa';
