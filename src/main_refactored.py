@@ -62,6 +62,7 @@ from src.api.endpoints.startup_tracker import router as startup_tracker_router
 from src.api.endpoints.allocation_copilot import router as allocation_copilot_router
 from src.api.endpoints.search import router as search_router
 from src.api.endpoints.payment_zarinpal import router as zarinpal_router
+from src.api.endpoints.subscriptions import router as subscriptions_router
 from src.api.endpoints.iran_market import router as iran_market_router
 from src.api.endpoints.investor_tools import router as investor_tools_router
 from src.api.endpoints.otp_auth import router as otp_auth_router
@@ -210,6 +211,7 @@ app.include_router(agents_router, tags=["Agent Monitoring"])
 app.include_router(wallet_router, tags=["Wallet & Funding"])
 app.include_router(admin_panel_router, tags=["Admin Panel"])
 app.include_router(zarinpal_router, tags=["ZarinPal Payment"])
+app.include_router(subscriptions_router, tags=["Subscriptions"])
 app.include_router(iran_market_router, tags=["Iran Market Data"])
 app.include_router(investor_tools_router, tags=["Investor Tools"])
 app.include_router(otp_auth_router, tags=["OTP Authentication"])

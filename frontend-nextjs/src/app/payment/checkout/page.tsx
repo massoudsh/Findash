@@ -28,13 +28,10 @@ export default function CheckoutPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/payment/zarinpal/create', {
+      const res = await fetch('/api/subscriptions/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount_toman: plan.price,
-          description: `اشتراک اختاپوس — پلن ${plan.label}`,
-        }),
+        body: JSON.stringify({ plan_code: plan.id }),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
