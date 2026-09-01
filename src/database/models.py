@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Numeric, ForeignKey, TIMESTAMP, Float, DateTime, UniqueConstraint, Boolean, JSON
+from sqlalchemy import Column, Integer, BigInteger, String, Text, Numeric, ForeignKey, TIMESTAMP, Float, DateTime, UniqueConstraint, Boolean, JSON
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.sql import func
 
@@ -226,15 +226,20 @@ class WalletTransaction(Base):
     bank_account = relationship('BankAccount', backref='transactions')
 
 class BankAccount(Base):
+    """حساب بانکی/شبا کاربر برای برداشت از کیف پول (issue #21).
+
+    برداشت واقعی وجه از طریق درگاه‌های Payout ایرانی (مانند زرین‌پال Payout یا جیبیت)
+    نیاز به قرارداد جداگانه با ارائه‌دهنده دارد؛ اینجا فقط ثبت/تأیید شماره شبا انجام می‌شود
+    و رکورد withdrawal با وضعیت pending برای پردازش دستی/بعدی ایجاد می‌گردد.
+    """
     __tablename__ = 'bank_accounts'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     name = Column(String(128), nullable=False)
-    account_number_hash = Column(String(256), nullable=False)  # Hashed for security
-    account_number_last4 = Column(String(4), nullable=False)
-    routing_number = Column(String(32), nullable=False)
+    sheba_number = Column(String(26), nullable=False)     # IRxxxxxxxxxxxxxxxxxxxxxxxx
+    card_number_last4 = Column(String(4), nullable=True)
     bank_name = Column(String(128), nullable=False)
-    type = Column(String(20), nullable=False)  # checking, savings
+    type = Column(String(20), nullable=False, default='sheba')  # sheba
     verified = Column(Boolean, default=False)
     last_used = Column(TIMESTAMP, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
@@ -282,4 +287,148 @@ class TradingPermission(Base):
     restrictions = Column(JSON, nullable=True)  # {max_order_size, allowed_symbols, etc.}
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
-    user = relationship('User', backref='trading_permissions') 
+    user = relationship('User', backref='trading_permissions')
+
+# ─────────────────────────────────────────────
+# Admin panel (issue #12): real audit log + generic in-app notifications
+# ─────────────────────────────────────────────
+
+class AuditLog(Base):
+    """هر رویداد مهم (تغییر نقش، مسدودسازی، ورود ادمین، ...) اینجا ثبت می‌شود."""
+    __tablename__ = 'audit_logs'
+    id = Column(Integer, primary_key=True)
+    actor_user_id = Column(Integer, ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+    action = Column(String(64), nullable=False)          # e.g. 'user.role_changed'
+    target_type = Column(String(32), nullable=True)       # e.g. 'user', 'subscription'
+    target_id = Column(String(64), nullable=True)
+    detail = Column(JSON, nullable=True)
+    ip_address = Column(String(45), nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now(), index=True)
+    actor = relationship('User', foreign_keys=[actor_user_id])
+
+
+class Notification(Base):
+    """اعلان درون‌برنامه‌ای عمومی — یادآوری اشتراک، هشدار قیمت، وضعیت KYC و ..."""
+    __tablename__ = 'notifications'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    category = Column(String(32), nullable=False)   # subscription | price_alert | kyc | admin | system
+    title = Column(String(255), nullable=False)
+    body = Column(Text, nullable=True)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(TIMESTAMP, server_default=func.now(), index=True)
+    user = relationship('User', backref='notifications')
+
+# ─────────────────────────────────────────────
+# Subscription plan management (issue #13)
+# ─────────────────────────────────────────────
+
+class SubscriptionPlan(Base):
+    __tablename__ = 'subscription_plans'
+    id = Column(Integer, primary_key=True)
+    code = Column(String(32), unique=True, nullable=False)   # 'free' | 'pro_monthly' | 'pro_yearly'
+    name_fa = Column(String(128), nullable=False)
+    price_toman = Column(Integer, nullable=False, default=0)
+    duration_days = Column(Integer, nullable=False, default=30)
+    features = Column(JSON, nullable=True)   # لیست entitlement های واقعی این پلن
+    is_active = Column(Boolean, default=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+
+class UserSubscription(Base):
+    __tablename__ = 'user_subscriptions'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    plan_id = Column(Integer, ForeignKey('subscription_plans.id'), nullable=False)
+    status = Column(String(16), nullable=False, default='active')  # active | expired | cancelled
+    start_at = Column(TIMESTAMP, server_default=func.now())
+    end_at = Column(TIMESTAMP, nullable=False)
+    auto_renew = Column(Boolean, default=False)
+    reminder_sent_at = Column(TIMESTAMP, nullable=True)
+    last_payment_order_id = Column(BigInteger, nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    user = relationship('User', backref='subscriptions')
+    plan = relationship('SubscriptionPlan')
+
+# ─────────────────────────────────────────────
+# Risk Policy Engine (issue #22)
+# ─────────────────────────────────────────────
+
+class RiskPolicy(Base):
+    """سیاست ریسک قابل‌تنظیم هر کاربر برای توقف/هشدار خودکار ربات‌های معاملاتی."""
+    __tablename__ = 'risk_policies'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), unique=True, nullable=False)
+    max_daily_drawdown_pct = Column(Numeric(5, 2), nullable=False, default=5.0)     # حداکثر افت روزانه مجاز
+    max_position_concentration_pct = Column(Numeric(5, 2), nullable=False, default=30.0)  # حداکثر تمرکز روی یک دارایی
+    action_on_breach = Column(String(16), nullable=False, default='alert')  # alert | stop_bots
+    enabled = Column(Boolean, default=True)
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    user = relationship('User', backref='risk_policy', uselist=False)
+
+
+class RiskPolicyBreach(Base):
+    """تاریخچه‌ی هر بار نقض سیاست ریسک — برای پنل و اعلان."""
+    __tablename__ = 'risk_policy_breaches'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    rule = Column(String(64), nullable=False)   # 'max_daily_drawdown' | 'max_position_concentration'
+    value = Column(Numeric(10, 4), nullable=False)
+    threshold = Column(Numeric(10, 4), nullable=False)
+    action_taken = Column(String(16), nullable=False)  # alert | stop_bots
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+# ─────────────────────────────────────────────
+# Price alerts via Push/SMS (issue #19)
+# ─────────────────────────────────────────────
+
+class PriceAlertRule(Base):
+    __tablename__ = 'price_alert_rules'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    symbol = Column(String(32), nullable=False)
+    direction = Column(String(8), nullable=False)   # above | below
+    target_price = Column(Numeric(20, 4), nullable=False)
+    channels = Column(JSON, nullable=False, default=lambda: ['in_app'])  # in_app, push, sms
+    note = Column(String(255), nullable=True)
+    is_active = Column(Boolean, default=True)
+    triggered_at = Column(TIMESTAMP, nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    user = relationship('User', backref='price_alert_rules')
+
+
+class PushSubscription(Base):
+    """اشتراک Web Push مرورگر کاربر (طبق استاندارد VAPID)."""
+    __tablename__ = 'push_subscriptions'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    endpoint = Column(Text, nullable=False, unique=True)
+    p256dh_key = Column(String(255), nullable=False)
+    auth_key = Column(String(255), nullable=False)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    user = relationship('User', backref='push_subscriptions')
+
+# ─────────────────────────────────────────────
+# KYC — احراز هویت مالی (issue #20)
+# نکته مهم: طبق خودِ issue، استعلام هویت واقعی نیازمند انتخاب یک ارائه‌دهنده
+# مجاز (Finnotech/Jibit/Zibal و ...) و تأیید حقوقی/رگولاتوری است که تصمیم
+# محصول/کسب‌وکار است، نه یک تصمیم فنی. این مدل فقط زیرساخت فرم + وضعیت را
+# آماده می‌کند؛ فیلد provider_reference برای زمانی است که آن تصمیم گرفته شد.
+# ─────────────────────────────────────────────
+
+class KYCProfile(Base):
+    __tablename__ = 'kyc_profiles'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), unique=True, nullable=False)
+    national_code = Column(String(10), nullable=False)
+    full_name = Column(String(255), nullable=False)
+    birth_date_shamsi = Column(String(10), nullable=True)   # YYYY-MM-DD شمسی
+    mobile_number = Column(String(20), nullable=False)
+    status = Column(String(20), nullable=False, default='pending_review')
+    # pending_review | verified | rejected  (تا زمانی که provider واقعی وصل نشده، فقط pending_review/rejected ممکن است)
+    rejection_reason = Column(Text, nullable=True)
+    provider = Column(String(32), nullable=True)      # نام سرویس احراز هویت، وقتی انتخاب شد
+    provider_reference = Column(String(128), nullable=True)
+    submitted_at = Column(TIMESTAMP, server_default=func.now())
+    reviewed_at = Column(TIMESTAMP, nullable=True)
+    user = relationship('User', backref='kyc_profile', uselist=False) 
