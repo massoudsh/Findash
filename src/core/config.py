@@ -186,6 +186,20 @@ class PaymentSettings(BaseSettings):
     )
 
 
+class SMSSettings(BaseSettings):
+    """SMS provider configuration (OTP + price alerts + subscription reminders)."""
+    provider: str = Field("", env="SMS_PROVIDER")
+    api_key: str = Field("", env="SMS_API_KEY")
+    sender_line: str = Field("", env="SMS_SENDER_LINE")
+
+
+class WebPushSettings(BaseSettings):
+    """Web Push (VAPID) configuration for price-alert notifications."""
+    vapid_public_key: str = Field("", env="VAPID_PUBLIC_KEY")
+    vapid_private_key: str = Field("", env="VAPID_PRIVATE_KEY")
+    vapid_admin_email: str = Field("admin@example.com", env="VAPID_ADMIN_EMAIL")
+
+
 class TestSettings(BaseSettings):
     """Testing configuration"""
     database_url: str = Field(
@@ -218,6 +232,8 @@ class Settings(BaseSettings):
     cors: CORSSettings = Field(default_factory=CORSSettings)
     trading: TradingSettings = Field(default_factory=TradingSettings)
     payment: PaymentSettings = Field(default_factory=PaymentSettings)
+    sms: SMSSettings = Field(default_factory=SMSSettings)
+    webpush: WebPushSettings = Field(default_factory=WebPushSettings)
     testing: TestSettings = Field(default_factory=TestSettings)
     
     @validator("environment")

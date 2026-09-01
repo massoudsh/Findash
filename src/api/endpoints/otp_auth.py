@@ -65,8 +65,8 @@ async def _send_sms(phone: str, code: str) -> bool:
     """Send OTP via SMS provider.
     Configure SMS_PROVIDER and SMS_API_KEY in .env to enable real SMS.
     """
-    provider = getattr(settings, "SMS_PROVIDER", None) or ""
-    api_key = getattr(settings, "SMS_API_KEY", None) or ""
+    provider = settings.sms.provider or ""
+    api_key = settings.sms.api_key or ""
 
     if provider.lower() == "kavenegar" and api_key:
         try:
