@@ -15,13 +15,13 @@ from typing import Optional
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from sqlalchemy import Column, BigInteger, String, Text, DateTime, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Session
 
 from src.core.config import get_settings
-from src.core.security import get_current_active_user
+from src.core.security import get_current_active_user, TokenData
 from src.database.postgres_connection import get_db, Base
 
 logger = logging.getLogger(__name__)
@@ -44,6 +44,9 @@ class PaymentOrder(Base):
     amount_rial = Column(BigInteger,  nullable=False)
     amount_toman= Column(BigInteger,  nullable=False)
     description = Column(Text,        nullable=True)
+    # مقصد پرداخت: general (پرداخت یک‌باره قدیمی) | wallet_topup | subscription
+    purpose     = Column(String(32),  nullable=False, default="general")
+    purpose_ref = Column(String(64),  nullable=True)   # مثلاً کد پلن اشتراک
     status      = Column(String(16),  nullable=False, default="pending")   # pending|paid|failed|expired
     ref_id      = Column(String(64),  nullable=True)
     card_pan    = Column(String(20),  nullable=True)
@@ -62,6 +65,15 @@ class CreatePaymentRequest(BaseModel):
     amount_toman: int = Field(..., ge=1000, description="مبلغ به تومان (حداقل ۱۰۰۰ تومان)")
     description: str  = Field(..., max_length=255, description="توضیح تراکنش")
     callback_url: Optional[str] = Field(None, description="آدرس بازگشت (اختیاری — پیش‌فرض از config)")
+    purpose: str = Field("general", description="general | wallet_topup — این endpoint عمومی است، برای اشتراک از /api/subscriptions/subscribe استفاده کنید")
+
+    @validator("purpose")
+    def _validate_purpose(cls, v):
+        # 'subscription' عمداً اینجا مجاز نیست: مبلغ آن باید سمت سرور از روی
+        # پلن محاسبه شود (نه از بدنه درخواست کلاینت) — به /api/subscriptions/subscribe مراجعه کنید.
+        if v not in ("general", "wallet_topup"):
+            raise ValueError("purpose باید general یا wallet_topup باشد")
+        return v
 
 
 class CreatePaymentResponse(BaseModel):
@@ -181,6 +193,37 @@ async def _zarinpal_verify(authority: str, amount_toman: int) -> dict:
     return {"success": False, "code": code, "message": msg, "raw": data}
 
 
+async def create_order(
+    db: Session,
+    user_id: str,
+    amount_toman: int,
+    description: str,
+    purpose: str,
+    purpose_ref: Optional[str] = None,
+    callback_url: Optional[str] = None,
+) -> "PaymentOrder":
+    """ایجاد سفارش زرین‌پال قابل reuse برای هر جریان دیگر (کیف پول، اشتراک، ...).
+
+    مبلغ همیشه باید سمت سرور (نه از بدنه درخواست کاربر) تعیین شود.
+    """
+    cb_url = _callback_url(callback_url)
+    authority = await _zarinpal_create(amount_toman, cb_url, description)
+    order = PaymentOrder(
+        user_id=str(user_id), gateway="zarinpal", authority=authority,
+        amount_rial=amount_toman * 10, amount_toman=amount_toman,
+        description=description, purpose=purpose, purpose_ref=purpose_ref,
+        status="pending",
+    )
+    db.add(order)
+    db.commit()
+    db.refresh(order)
+    return order
+
+
+def order_redirect_url(order: "PaymentOrder") -> str:
+    return f"https://www.zarinpal.com/pg/StartPay/{order.authority}"
+
+
 # ─────────────────────────────────────────────
 # Endpoints
 # ─────────────────────────────────────────────
@@ -188,7 +231,7 @@ async def _zarinpal_verify(authority: str, amount_toman: int) -> dict:
 @router.post("/create", response_model=CreatePaymentResponse, summary="ایجاد درخواست پرداخت")
 async def create_payment(
     body: CreatePaymentRequest,
-    current_user: dict = Depends(get_current_active_user),
+    current_user: TokenData = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """
@@ -198,25 +241,14 @@ async def create_payment(
     - authority و redirect_url را به frontend برمی‌گرداند.
     - پیش از ریدایرکت، سفارش در DB ثبت می‌شود.
     """
-    cb_url = _callback_url(body.callback_url)
-    authority = await _zarinpal_create(body.amount_toman, cb_url, body.description)
-
-    order = PaymentOrder(
-        user_id      = str(current_user.get("id") or current_user.get("user_id") or "unknown"),
-        gateway      = "zarinpal",
-        authority    = authority,
-        amount_rial  = body.amount_toman * 10,
-        amount_toman = body.amount_toman,
-        description  = body.description,
-        status       = "pending",
+    order = await create_order(
+        db, current_user.user_id, body.amount_toman, body.description,
+        purpose=body.purpose, callback_url=body.callback_url,
     )
-    db.add(order)
-    db.commit()
-    db.refresh(order)
 
     return CreatePaymentResponse(
-        authority    = authority,
-        redirect_url = f"https://www.zarinpal.com/pg/StartPay/{authority}",
+        authority    = order.authority,
+        redirect_url = order_redirect_url(order),
         order_id     = order.id,
     )
 
@@ -271,19 +303,100 @@ async def zarinpal_callback(
     order.paid_at  = datetime.utcnow()
     db.commit()
 
+    try:
+        _dispatch_payment_success(db, order)
+    except Exception as e:
+        # پرداخت قبلاً موفق ثبت شده؛ خطای dispatch نباید کاربر را به صفحه شکست بفرستد،
+        # اما باید لاگ شود تا با پیگیری دستی جبران شود.
+        logger.error(f"Payment success but dispatch failed for order={order.id}: {e}")
+
     return RedirectResponse(
         f"{base_url}/payment/success?id={order.id}&ref={result['ref_id']}"
     )
 
 
+def _dispatch_payment_success(db: Session, order: "PaymentOrder") -> None:
+    """اثر جانبی پرداخت موفق را بر اساس purpose سفارش اعمال می‌کند.
+
+    - wallet_topup: افزایش موجودی کیف پول ریالی کاربر + ثبت تراکنش
+    - subscription: فعال‌سازی/تمدید اشتراک کاربر بر اساس purpose_ref (کد پلن)
+    - general: بدون اثر جانبی (پرداخت آزاد قدیمی)
+    """
+    if order.purpose == "wallet_topup":
+        from src.database.models import WalletBalance, WalletTransaction
+        import uuid
+
+        user_id_int = int(order.user_id)
+        balance = (
+            db.query(WalletBalance)
+            .filter(WalletBalance.user_id == user_id_int, WalletBalance.currency == "IRT")
+            .first()
+        )
+        if not balance:
+            balance = WalletBalance(user_id=user_id_int, currency="IRT", balance=0, available=0)
+            db.add(balance)
+            db.flush()
+
+        balance.balance = (balance.balance or 0) + order.amount_toman
+        balance.available = (balance.available or 0) + order.amount_toman
+
+        db.add(WalletTransaction(
+            id=str(uuid.uuid4()),
+            user_id=user_id_int,
+            type="deposit",
+            amount=order.amount_toman,
+            currency="IRT",
+            status="completed",
+            method="card",
+            description=f"شارژ کیف پول از طریق زرین‌پال — سفارش #{order.id}",
+            reference=order.ref_id,
+        ))
+        db.commit()
+
+    elif order.purpose == "subscription":
+        from src.database.models import SubscriptionPlan, UserSubscription
+        from datetime import timedelta
+
+        plan = db.query(SubscriptionPlan).filter(
+            SubscriptionPlan.code == order.purpose_ref, SubscriptionPlan.is_active == True
+        ).first()
+        if not plan:
+            logger.error(f"Subscription plan not found for code={order.purpose_ref} (order={order.id})")
+            return
+
+        user_id_int = int(order.user_id)
+        sub = (
+            db.query(UserSubscription)
+            .filter(UserSubscription.user_id == user_id_int, UserSubscription.status == "active")
+            .order_by(UserSubscription.end_at.desc())
+            .first()
+        )
+        now = datetime.utcnow()
+        if sub and sub.end_at and sub.end_at > now:
+            # تمدید: مدت پلن جدید را به انتهای اشتراک فعلی اضافه می‌کند
+            sub.end_at = sub.end_at + timedelta(days=plan.duration_days)
+            sub.plan_id = plan.id
+            sub.last_payment_order_id = order.id
+        else:
+            sub = UserSubscription(
+                user_id=user_id_int,
+                plan_id=plan.id,
+                status="active",
+                end_at=now + timedelta(days=plan.duration_days),
+                last_payment_order_id=order.id,
+            )
+            db.add(sub)
+        db.commit()
+
+
 @router.get("/status/{order_id}", response_model=PaymentStatusResponse, summary="وضعیت سفارش پرداخت")
 async def payment_status(
     order_id: int,
-    current_user: dict = Depends(get_current_active_user),
+    current_user: TokenData = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """وضعیت یک سفارش پرداخت را برمی‌گرداند."""
-    user_id = str(current_user.get("id") or current_user.get("user_id") or "unknown")
+    user_id = str(current_user.user_id)
     order: Optional[PaymentOrder] = db.query(PaymentOrder).filter(
         PaymentOrder.id      == order_id,
         PaymentOrder.user_id == user_id,
@@ -305,11 +418,11 @@ async def payment_status(
 
 @router.get("/history", summary="تاریخچه پرداخت‌های کاربر")
 async def payment_history(
-    current_user: dict = Depends(get_current_active_user),
+    current_user: TokenData = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
     """لیست تمام پرداخت‌های کاربر جاری."""
-    user_id = str(current_user.get("id") or current_user.get("user_id") or "unknown")
+    user_id = str(current_user.user_id)
     orders = (
         db.query(PaymentOrder)
         .filter(PaymentOrder.user_id == user_id)
