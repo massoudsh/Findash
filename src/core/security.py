@@ -143,7 +143,12 @@ def verify_token(token: str, token_type: str = "access") -> Optional[TokenData]:
         user_id = payload.get("sub")
         # Refresh tokens only carry "sub" (no email/roles/permissions)
         email = payload.get("email", "")
-        roles = payload.get("roles", [])
+        # login endpoints embed a singular "role" claim (e.g. "admin"), not a
+        # "roles" list — normalize both shapes so role-based checks work.
+        roles = list(payload.get("roles", []))
+        single_role = payload.get("role")
+        if single_role and single_role not in roles:
+            roles.append(single_role)
         permissions = payload.get("permissions", [])
 
         if user_id is None:
@@ -186,6 +191,13 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 async def get_current_active_user(current_user: TokenData = Depends(get_current_user)) -> TokenData:
     """Dependency to ensure user is active"""
     # Add additional checks here (user status, account expiry, etc.)
+    return current_user
+
+
+async def require_admin(current_user: TokenData = Depends(get_current_active_user)) -> TokenData:
+    """Dependency that restricts an endpoint to users with the 'admin' role."""
+    if "admin" not in current_user.roles:
+        raise HTTPException(status_code=403, detail="دسترسی محدود به مدیران سیستم است")
     return current_user
 
 
