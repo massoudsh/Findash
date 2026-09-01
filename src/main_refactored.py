@@ -47,6 +47,7 @@ from src.api.endpoints.onchain_data import router as onchain_router
 from src.api.endpoints.social_data import router as social_router
 from src.api.endpoints.agents import router as agents_router
 from src.api.endpoints.wallet import router as wallet_router
+from src.api.endpoints.admin_panel import router as admin_panel_router
 from src.api.endpoints.security import router as security_router
 from src.api.endpoints.scenarios import router as scenarios_router
 # Unified WebSocket API (replaces websocket_realtime, websocket, realtime endpoints)
@@ -207,6 +208,7 @@ app.include_router(alpha_vantage_mcp_router, tags=["Alpha Vantage MCP"])
 # Phase 3: Backend Integration APIs
 app.include_router(agents_router, tags=["Agent Monitoring"])
 app.include_router(wallet_router, tags=["Wallet & Funding"])
+app.include_router(admin_panel_router, tags=["Admin Panel"])
 app.include_router(zarinpal_router, tags=["ZarinPal Payment"])
 app.include_router(iran_market_router, tags=["Iran Market Data"])
 app.include_router(investor_tools_router, tags=["Investor Tools"])
