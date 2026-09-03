@@ -152,3 +152,24 @@ def has_active_subscription(db: Session, user_id: int) -> bool:
         .first()
     )
     return bool(sub and sub.end_at and sub.end_at > datetime.utcnow())
+
+
+async def require_active_subscription(
+    current_user: TokenData = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+) -> TokenData:
+    """وابستگی FastAPI برای گیت کردن ویژگی‌های اشتراکی (issue #14).
+
+    قبلاً هیچ auth/premium gating‌ای وجود نداشت — ویژگی‌های «فقط برای مشترکین»
+    (مثل ربات معاملاتی خودکار، طبق فیچرلیست پلن pro در DEFAULT_PLANS) بدون
+    هیچ محدودیتی برای همه (حتی کاربر مهمان) در دسترس بود. ادمین از این محدودیت
+    معاف است تا بتواند بدون خرید اشتراک روی پنل تست کند.
+    """
+    if "admin" in current_user.roles:
+        return current_user
+    if not has_active_subscription(db, int(current_user.user_id)):
+        raise HTTPException(
+            status_code=402,
+            detail="این ویژگی نیازمند اشتراک فعال است — از /api/subscriptions/plans یک پلن انتخاب کنید",
+        )
+    return current_user

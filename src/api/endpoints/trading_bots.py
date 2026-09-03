@@ -11,6 +11,7 @@ import logging
 
 from src.core.security import get_current_active_user, get_optional_user, TokenData
 from src.api.bots_persistence import load_bots, save_bots
+from src.api.endpoints.subscriptions import require_active_subscription
 
 logger = logging.getLogger(__name__)
 
@@ -198,9 +199,15 @@ async def get_trading_bot(
 @router.post("/{bot_id}/start")
 async def start_trading_bot(
     bot_id: str,
-    current_user: Optional[TokenData] = Depends(get_optional_user),
+    current_user: TokenData = Depends(require_active_subscription),
 ):
-    """Start a trading bot. Execution uses bot's execution_mode (paper/live) when execution layer is connected."""
+    """Start a trading bot. Execution uses bot's execution_mode (paper/live) when execution layer is connected.
+
+    Gated (issue #14): معاملات خودکار خصلت پلن‌های اشتراکی است (فیچر «هوش مصنوعی
+    معاملاتی» در پلن pro/elite) — پس فعال‌سازی ربات نیازمند ورود واقعی + اشتراک
+    فعال است، نه دسترسی مهمان. ساخت/توقف/حذف ربات محدود نشده تا کاربر بتواند
+    قبل از خرید اشتراک، ربات را پیکربندی و تست (paper) کند؛ فقط شروع واقعی گیت دارد.
+    """
     db = _get_bots_db()
     if bot_id not in db:
         raise HTTPException(status_code=404, detail="Trading bot not found")
