@@ -66,6 +66,9 @@ from src.api.endpoints.subscriptions import router as subscriptions_router
 from src.api.endpoints.iran_market import router as iran_market_router
 from src.api.endpoints.investor_tools import router as investor_tools_router
 from src.api.endpoints.otp_auth import router as otp_auth_router
+from src.api.endpoints.price_alerts import router as price_alerts_router
+from src.api.endpoints.risk_policy import router as risk_policy_router
+from src.api.endpoints.kyc import router as kyc_router
 
 # Orphaned routers (previously unregistered)
 from src.api.endpoints.fundamental_data import router as fundamental_router
@@ -212,6 +215,9 @@ app.include_router(wallet_router, tags=["Wallet & Funding"])
 app.include_router(admin_panel_router, tags=["Admin Panel"])
 app.include_router(zarinpal_router, tags=["ZarinPal Payment"])
 app.include_router(subscriptions_router, tags=["Subscriptions"])
+app.include_router(price_alerts_router, tags=["Price Alerts"])
+app.include_router(risk_policy_router, tags=["Risk Policy"])
+app.include_router(kyc_router, tags=["KYC"])
 app.include_router(iran_market_router, tags=["Iran Market Data"])
 app.include_router(investor_tools_router, tags=["Investor Tools"])
 app.include_router(otp_auth_router, tags=["OTP Authentication"])
