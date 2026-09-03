@@ -28,6 +28,7 @@ celery_app = Celery(
         "src.data_processing.collection_tasks",
         "src.trading.bot_tasks",
         "src.llm.tasks.finetuning_task",
+        "src.notifications.tasks",
     ]
 )
 
@@ -84,6 +85,16 @@ celery_app.conf.update(
             'task': 'market_data.cleanup_old_data',
             'schedule': 86400.0,  # 24 hours
             'kwargs': {'days_to_keep': 30}
+        },
+        # Price alert evaluation (issue #19) — every 1 minute
+        'evaluate-price-alerts': {
+            'task': 'notifications.evaluate_price_alerts',
+            'schedule': 60.0,
+        },
+        # Risk policy breach evaluation (issue #22) — every 5 minutes
+        'evaluate-risk-policies': {
+            'task': 'notifications.evaluate_risk_policies',
+            'schedule': 300.0,
         },
     },
     # Default queue configuration - Redis uses direct exchanges
