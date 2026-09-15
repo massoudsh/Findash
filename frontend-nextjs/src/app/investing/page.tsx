@@ -77,7 +77,7 @@ export default function InvestingPage() {
     setMessage('واچ‌لیست به‌روزرسانی شد.'); load();
   }
 
-  async function placePaperOrder(event: FormEvent) {
+  async function placePaperOrder(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const response = await fetch('/api/investor-tools/paper/orders', {
@@ -88,7 +88,7 @@ export default function InvestingPage() {
     setMessage('سفارش فقط در حساب آزمایشی ثبت شد.'); (event.target as HTMLFormElement).reset(); load();
   }
 
-  async function addDividend(event: FormEvent) {
+  async function addDividend(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const response = await fetch('/api/investor-tools/dividends', {
