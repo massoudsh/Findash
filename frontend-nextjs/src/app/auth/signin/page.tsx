@@ -3,8 +3,11 @@
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { ArrowLeft, LockKeyhole, Mail, ShieldCheck, TrendingUp } from "lucide-react";
+
+// DEPLOYMENT: Set to true and restore middleware authorized: ({ token }) => !!token before requiring login.
+const LOGIN_ENABLED = false;
 
 function SignInForm() {
   const [error, setError] = useState("");
@@ -124,6 +127,10 @@ function SignInForm() {
 }
 
 export default function SignInPage() {
+  if (!LOGIN_ENABLED) {
+    redirect("/dashboard");
+  }
+
   return (
     <Suspense fallback={<div className="flex min-h-screen items-center justify-center">در حال بارگذاری…</div>}>
       <SignInForm />

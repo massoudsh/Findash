@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 // موقتاً باز: تا زمانی که سیستم تفکیک محتوای پرمیوم/رایگان پیاده‌سازی شود،
 // همه‌ی صفحات (dashboard/portfolio/trading/analytics/settings) بدون ورود هم قابل مشاهده‌اند.
-// برای بازگرداندن محدودیت لاگین، خط `authorized` را به `!!token` برگردانید.
+// DEPLOYMENT: Restore authorized: ({ token }) => !!token and set LOGIN_ENABLED = true in app/auth/signin/page.tsx.
 export default withAuth(
   function middleware(req) {
     return NextResponse.next();
