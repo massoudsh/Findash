@@ -40,6 +40,7 @@ const authOptions: NextAuthOptions = {
               : (user.name ?? credentials.email),
             accessToken: data.access_token ?? data.token ?? null,
             refreshToken: data.refresh_token ?? null,
+            role: user.role ?? null,
           };
         } catch {
           return null;
@@ -57,6 +58,7 @@ const authOptions: NextAuthOptions = {
         token.accessToken = user.accessToken;
         token.refreshToken = user.refreshToken;
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
@@ -64,6 +66,7 @@ const authOptions: NextAuthOptions = {
     async session({ session, token }: { session: any; token: any }) {
       session.accessToken = token.accessToken;
       session.user.id = token.id;
+      session.user.role = token.role;
       return session;
     },
   },

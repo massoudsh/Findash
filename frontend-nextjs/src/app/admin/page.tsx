@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -66,19 +66,18 @@ import {
 import { StartupTrackerPanel } from '@/components/admin/startup-tracker-panel';
 
 interface AdminUser {
-  id: string;
+  id: number;
   name: string;
   email: string;
-  role: 'admin' | 'trader' | 'analyst' | 'viewer';
-  status: 'active' | 'inactive' | 'suspended' | 'pending';
-  lastLogin: string;
-  createdAt: string;
-  totalTrades: number;
-  portfolioValue: number;
-  riskLevel: 'low' | 'medium' | 'high';
+  phone: string | null;
+  role: string;
+  is_active: boolean;
+  risk_tolerance: string;
   permissions: string[];
-  location: string;
-  department: string;
+  last_login: string | null;
+  created_at: string | null;
+  total_trades: number;
+  portfolio_value: number;
 }
 
 interface SystemHealth {
@@ -93,15 +92,14 @@ interface SystemHealth {
 }
 
 interface AuditLog {
-  id: string;
+  id: number;
   timestamp: string;
-  user: string;
+  actor: string;
   action: string;
-  resource: string;
-  details: string;
-  ipAddress: string;
-  result: 'success' | 'failure';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  target_type: string | null;
+  target_id: string | null;
+  detail: Record<string, unknown> | null;
+  ip_address: string | null;
 }
 
 interface ConfigSetting {
@@ -151,239 +149,61 @@ export default function AdminPage() {
   const [selectedRole, setSelectedRole] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
 
-  // Sample data initialization
-  useEffect(() => {
-    const sampleUsers: AdminUser[] = [
-      {
-        id: 'user-1',
-        name: 'علی احمدی',
-        email: 'ali.ahmadi@company.com',
-        role: 'admin',
-        status: 'active',
-        lastLogin: '2024-01-20T14:30:00Z',
-        createdAt: '2024-01-01T00:00:00Z',
-        totalTrades: 1247,
-        portfolioValue: 2500000,
-        riskLevel: 'medium',
-        permissions: ['USER_MANAGEMENT', 'SYSTEM_CONFIG', 'AUDIT_LOGS', 'TRADING_OVERRIDE'],
-        location: 'تهران، ایران',
-        department: 'عملیات معاملاتی'
-      },
-      {
-        id: 'user-2',
-        name: 'سارا کریمی',
-        email: 'sara.karimi@company.com',
-        role: 'trader',
-        status: 'active',
-        lastLogin: '2024-01-20T15:45:00Z',
-        createdAt: '2024-01-05T00:00:00Z',
-        totalTrades: 856,
-        portfolioValue: 1800000,
-        riskLevel: 'high',
-        permissions: ['PORTFOLIO_MANAGEMENT', 'ORDER_EXECUTION', 'RISK_OVERRIDE'],
-        location: 'لندن، انگلستان',
-        department: 'معاملات سهام'
-      },
-      {
-        id: 'user-3',
-        name: 'محمد رضایی',
-        email: 'mohammad.rezaei@company.com',
-        role: 'analyst',
-        status: 'active',
-        lastLogin: '2024-01-20T12:15:00Z',
-        createdAt: '2024-01-10T00:00:00Z',
-        totalTrades: 234,
-        portfolioValue: 750000,
-        riskLevel: 'low',
-        permissions: ['ANALYTICS_ACCESS', 'REPORT_GENERATION', 'DATA_EXPORT'],
-        location: 'سنگاپور',
-        department: 'پژوهش و تحلیل'
-      },
-      {
-        id: 'user-4',
-        name: 'مریم داوودی',
-        email: 'maryam.davoodi@company.com',
-        role: 'viewer',
-        status: 'suspended',
-        lastLogin: '2024-01-18T09:30:00Z',
-        createdAt: '2024-01-15T00:00:00Z',
-        totalTrades: 0,
-        portfolioValue: 0,
-        riskLevel: 'low',
-        permissions: ['READ_ONLY_ACCESS'],
-        location: 'تورنتو، کانادا',
-        department: 'انطباق'
-      }
-    ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [pendingUserId, setPendingUserId] = useState<number | null>(null);
 
-    const sampleSystemHealth: SystemHealth[] = [
-      {
-        service: 'موتور معاملات',
-        status: 'healthy',
-        uptime: '99.98%',
-        cpu: 45.2,
-        memory: 68.7,
-        responseTime: 12,
-        lastCheck: '2024-01-20T16:00:00Z',
-        version: 'v2.4.1'
-      },
-      {
-        service: 'فید داده بازار',
-        status: 'healthy',
-        uptime: '99.95%',
-        cpu: 32.1,
-        memory: 54.3,
-        responseTime: 8,
-        lastCheck: '2024-01-20T16:00:00Z',
-        version: 'v1.8.3'
-      },
-      {
-        service: 'مدیریت ریسک',
-        status: 'warning',
-        uptime: '99.12%',
-        cpu: 78.9,
-        memory: 82.1,
-        responseTime: 45,
-        lastCheck: '2024-01-20T16:00:00Z',
-        version: 'v3.1.0'
-      },
-      {
-        service: 'خوشه پایگاه‌داده',
-        status: 'healthy',
-        uptime: '99.99%',
-        cpu: 23.4,
-        memory: 45.8,
-        responseTime: 15,
-        lastCheck: '2024-01-20T16:00:00Z',
-        version: 'PostgreSQL 15.2'
-      },
-      {
-        service: 'دروازه API',
-        status: 'healthy',
-        uptime: '99.87%',
-        cpu: 38.7,
-        memory: 62.3,
-        responseTime: 22,
-        lastCheck: '2024-01-20T16:00:00Z',
-        version: 'v1.2.8'
-      },
-      {
-        service: 'موتور تحلیل',
-        status: 'critical',
-        uptime: '87.23%',
-        cpu: 95.4,
-        memory: 98.2,
-        responseTime: 156,
-        lastCheck: '2024-01-20T16:00:00Z',
-        version: 'v4.0.1'
-      }
-    ];
-
-    const sampleAuditLogs: AuditLog[] = [
-      {
-        id: 'log-1',
-        timestamp: '2024-01-20T15:45:23Z',
-        user: 'ali.ahmadi@company.com',
-        action: 'USER_SUSPENDED',
-        resource: 'users/maryam.davoodi',
-        details: 'کاربر به دلیل نقض سیاست‌ها معلق شد',
-        ipAddress: '192.168.1.145',
-        result: 'success',
-        severity: 'high'
-      },
-      {
-        id: 'log-2',
-        timestamp: '2024-01-20T15:30:12Z',
-        user: 'sara.karimi@company.com',
-        action: 'LARGE_ORDER_EXECUTED',
-        resource: 'orders/ord-789456',
-        details: 'سفارش خرید ۵۰,۰۰۰ سهم AAPL اجرا شد',
-        ipAddress: '10.0.0.234',
-        result: 'success',
-        severity: 'medium'
-      },
-      {
-        id: 'log-3',
-        timestamp: '2024-01-20T15:15:45Z',
-        user: 'system',
-        action: 'CONFIG_CHANGED',
-        resource: 'settings/risk_limits',
-        details: 'حد VaR پرتفوی از ۴۵ هزار دلار به ۵۰ هزار دلار تغییر یافت',
-        ipAddress: '127.0.0.1',
-        result: 'success',
-        severity: 'medium'
-      },
-      {
-        id: 'log-4',
-        timestamp: '2024-01-20T14:58:33Z',
-        user: 'mohammad.rezaei@company.com',
-        action: 'LOGIN_FAILED',
-        resource: 'auth/login',
-        details: 'تلاش ناموفق برای ورود - اطلاعات نامعتبر',
-        ipAddress: '203.45.67.89',
-        result: 'failure',
-        severity: 'low'
-      }
-    ];
-
-    const sampleConfigSettings: ConfigSetting[] = [
-      {
-        id: 'config-1',
-        category: 'Trading',
-        key: 'max_order_size',
-        value: '1000000',
-        type: 'number',
-        description: 'حداکثر حجم سفارش به دلار',
-        modified: '2024-01-20T10:30:00Z',
-        modifiedBy: 'ali.ahmadi@company.com',
-        requiresRestart: false
-      },
-      {
-        id: 'config-2',
-        category: 'Risk',
-        key: 'portfolio_var_limit',
-        value: '50000',
-        type: 'number',
-        description: 'حد ارزش در معرض ریسک پرتفوی به دلار',
-        modified: '2024-01-20T15:15:00Z',
-        modifiedBy: 'system',
-        requiresRestart: false
-      },
-      {
-        id: 'config-3',
-        category: 'System',
-        key: 'session_timeout',
-        value: '3600',
-        type: 'number',
-        description: 'مهلت زمانی نشست کاربر به ثانیه',
-        modified: '2024-01-19T14:20:00Z',
-        modifiedBy: 'ali.ahmadi@company.com',
-        requiresRestart: true
-      },
-      {
-        id: 'config-4',
-        category: 'Security',
-        key: 'enable_2fa',
-        value: 'true',
-        type: 'boolean',
-        description: 'الزام تأیید دومرحله‌ای',
-        modified: '2024-01-18T09:45:00Z',
-        modifiedBy: 'security-admin@company.com',
-        requiresRestart: false
-      }
-    ];
-
-    setUsers(sampleUsers);
-    setSystemHealth(sampleSystemHealth);
-    setAuditLogs(sampleAuditLogs);
-    setConfigSettings(sampleConfigSettings);
+  // داده‌های واقعی از بک‌اند (issue #12) — دیگر mock نیست.
+  const loadUsers = useCallback(async () => {
+    const res = await fetch('/api/admin/users', { cache: 'no-store' });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail ?? 'خطا در دریافت کاربران');
+    setUsers(await res.json());
   }, []);
+
+  const loadAuditLogs = useCallback(async () => {
+    const res = await fetch('/api/admin/audit-log?limit=100', { cache: 'no-store' });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail ?? 'خطا در دریافت لاگ');
+    setAuditLogs(await res.json());
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        await Promise.all([loadUsers(), loadAuditLogs()]);
+        setError('');
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'خطا در بارگذاری داده‌ها');
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [loadUsers, loadAuditLogs]);
+
+  const updateUser = async (userId: number, patch: { role?: string; is_active?: boolean }) => {
+    setPendingUserId(userId);
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail ?? 'خطا در بروزرسانی کاربر');
+      setUsers(prev => prev.map(u => (u.id === userId ? { ...u, ...patch } as AdminUser : u)));
+      await loadAuditLogs();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'خطا در بروزرسانی کاربر');
+    } finally {
+      setPendingUserId(null);
+    }
+  };
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole === 'all' || user.role === selectedRole;
-    const matchesStatus = selectedStatus === 'all' || user.status === selectedStatus;
+    const matchesStatus = selectedStatus === 'all'
+      || (selectedStatus === 'active' ? user.is_active : !user.is_active);
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -421,9 +241,9 @@ export default function AdminPage() {
   };
 
   const totalUsers = users.length;
-  const activeUsers = users.filter(u => u.status === 'active').length;
-  const healthyServices = systemHealth.filter(s => s.status === 'healthy').length;
-  const criticalIssues = systemHealth.filter(s => s.status === 'critical').length;
+  const activeUsers = users.filter(u => u.is_active).length;
+  const adminCount = users.filter(u => u.role === 'admin').length;
+  const inactiveUsers = users.filter(u => !u.is_active).length;
 
   return (
     <div className="space-y-6">
@@ -454,14 +274,14 @@ export default function AdminPage() {
           </Card>
           <Card className="w-32">
             <CardContent className="p-3 text-center">
-              <div className="text-2xl font-bold text-green-600">{healthyServices}</div>
-              <div className="text-xs text-gray-500">سرویس‌های سالم</div>
+              <div className="text-2xl font-bold text-purple-600">{adminCount}</div>
+              <div className="text-xs text-gray-500">مدیران</div>
             </CardContent>
           </Card>
           <Card className="w-32">
             <CardContent className="p-3 text-center">
-              <div className="text-2xl font-bold text-red-600">{criticalIssues}</div>
-              <div className="text-xs text-gray-500">مشکلات بحرانی</div>
+              <div className="text-2xl font-bold text-red-600">{inactiveUsers}</div>
+              <div className="text-xs text-gray-500">غیرفعال</div>
             </CardContent>
           </Card>
         </div>
@@ -479,32 +299,42 @@ export default function AdminPage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* System Status Overview */}
+          {error && (
+            <Card>
+              <CardContent className="p-4 text-red-600 text-sm">{error}</CardContent>
+            </Card>
+          )}
+
+          {/* User Status Overview */}
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Monitor className="w-5 h-5" />
-                  وضعیت سیستم
+                  <Users className="w-5 h-5" />
+                  ترکیب نقش‌ها
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {systemHealth.slice(0, 4).map(service => (
-                    <div key={service.service} className="flex items-center justify-between p-2 border rounded">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${
-                          service.status === 'healthy' ? 'bg-green-500' :
-                          service.status === 'warning' ? 'bg-yellow-500' :
-                          service.status === 'critical' ? 'bg-red-500' : 'bg-gray-500'
-                        }`} />
-                        <span className="font-medium text-sm">{service.service}</span>
+                  {loading ? (
+                    <div className="text-sm text-muted-foreground">در حال بارگذاری…</div>
+                  ) : users.length === 0 ? (
+                    <div className="text-sm text-muted-foreground">کاربری ثبت نشده است</div>
+                  ) : (
+                    Object.entries(
+                      users.reduce<Record<string, number>>((acc, u) => {
+                        acc[u.role] = (acc[u.role] ?? 0) + 1;
+                        return acc;
+                      }, {})
+                    ).map(([role, count]) => (
+                      <div key={role} className="flex items-center justify-between p-2 border rounded">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm">{ROLE_LABELS[role] ?? role}</span>
+                        </div>
+                        <Badge className={getRoleColor(role)}>{count}</Badge>
                       </div>
-                      <Badge className={getStatusColor(service.status)}>
-                        {STATUS_LABELS[service.status] ?? service.status}
-                      </Badge>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -523,16 +353,18 @@ export default function AdminPage() {
                     <span className="font-medium">{activeUsers} / {totalUsers}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">معلق</span>
-                    <span className="font-medium">{users.filter(u => u.status === 'suspended').length}</span>
+                    <span className="text-sm text-gray-600">غیرفعال</span>
+                    <span className="font-medium">{inactiveUsers}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">در انتظار</span>
-                    <span className="font-medium">{users.filter(u => u.status === 'pending').length}</span>
+                    <span className="text-sm text-gray-600">مدیران</span>
+                    <span className="font-medium">{adminCount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">کل معاملات امروز</span>
-                    <span className="font-medium">۲,۳۳۷</span>
+                    <span className="text-sm text-gray-600">کل معاملات ثبت‌شده</span>
+                    <span className="font-medium">
+                      {users.reduce((sum, u) => sum + u.total_trades, 0).toLocaleString()}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -549,24 +381,30 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {auditLogs.slice(0, 5).map(log => (
-                  <div key={log.id} className="flex items-center justify-between p-3 border rounded">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${
-                        log.severity === 'critical' ? 'bg-red-500' :
-                        log.severity === 'high' ? 'bg-orange-500' :
-                        log.severity === 'medium' ? 'bg-yellow-500' : 'bg-green-500'
-                      }`} />
-                      <div>
-                        <div className="font-medium text-sm">{log.action.replace('_', ' ')}</div>
-                        <div className="text-xs text-gray-500">{log.user} • {formatTimestamp(log.timestamp)}</div>
+                {loading ? (
+                  <div className="text-sm text-muted-foreground">در حال بارگذاری…</div>
+                ) : auditLogs.length === 0 ? (
+                  <div className="text-sm text-muted-foreground">رویدادی ثبت نشده است</div>
+                ) : (
+                  auditLogs.slice(0, 5).map(log => (
+                    <div key={log.id} className="flex items-center justify-between p-3 border rounded">
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-blue-500" />
+                        <div>
+                          <div className="font-medium text-sm">{log.action.replace(/_/g, ' ')}</div>
+                          <div className="text-xs text-gray-500">
+                            {log.actor} • {formatTimestamp(log.timestamp)}
+                          </div>
+                        </div>
                       </div>
+                      {log.target_type && (
+                        <Badge variant="outline">
+                          {log.target_type}{log.target_id ? ` #${log.target_id}` : ''}
+                        </Badge>
+                      )}
                     </div>
-                    <Badge className={log.result === 'success' ? getStatusColor('healthy') : getStatusColor('critical')}>
-                      {STATUS_LABELS[log.result] ?? log.result}
-                    </Badge>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -630,61 +468,74 @@ export default function AdminPage() {
           <Card>
             <CardContent className="p-0">
               <div className="space-y-3 p-6">
-                {filteredUsers.map(user => (
-                  <div key={user.id} className="border rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <User className="w-5 h-5 text-blue-600" />
+                {loading ? (
+                  <div className="text-sm text-muted-foreground">در حال بارگذاری…</div>
+                ) : filteredUsers.length === 0 ? (
+                  <div className="text-sm text-muted-foreground">کاربری با این فیلترها پیدا نشد</div>
+                ) : (
+                  filteredUsers.map(user => (
+                    <div key={user.id} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <User className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-sm text-gray-500">{user.email}</div>
+                          </div>
+                          <Badge className={getRoleColor(user.role)}>
+                            {ROLE_LABELS[user.role] ?? user.role}
+                          </Badge>
+                          <Badge className={getStatusColor(user.is_active ? 'active' : 'inactive')}>
+                            {user.is_active ? 'فعال' : 'غیرفعال'}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <select
+                            value={user.role}
+                            disabled={pendingUserId === user.id}
+                            onChange={(e) => updateUser(user.id, { role: e.target.value })}
+                            className="px-2 py-1 border rounded-md text-sm disabled:opacity-50"
+                          >
+                            <option value="admin">مدیر</option>
+                            <option value="trader">معامله‌گر</option>
+                            <option value="demo">دمو</option>
+                          </select>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={pendingUserId === user.id}
+                            onClick={() => updateUser(user.id, { is_active: !user.is_active })}
+                          >
+                            {user.is_active ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 text-sm">
+                        <div>
+                          <div className="text-gray-500">ریسک‌پذیری</div>
+                          <div className="font-medium">{user.risk_tolerance}</div>
                         </div>
                         <div>
-                          <div className="font-medium">{user.name}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
+                          <div className="text-gray-500">کل معاملات</div>
+                          <div className="font-medium">{user.total_trades.toLocaleString()}</div>
                         </div>
-                        <Badge className={getRoleColor(user.role)}>
-                          {ROLE_LABELS[user.role] ?? user.role}
-                        </Badge>
-                        <Badge className={getStatusColor(user.status)}>
-                          {STATUS_LABELS[user.status] ?? user.status}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          {user.status === 'active' ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-                        </Button>
-                        <Button variant="outline" size="sm" className="text-red-600">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <div>
+                          <div className="text-gray-500">ارزش پرتفوی</div>
+                          <div className="font-medium">{formatCurrency(user.portfolio_value)}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">آخرین ورود</div>
+                          <div className="font-medium">
+                            {user.last_login ? formatTimestamp(user.last_login) : '—'}
+                          </div>
+                        </div>
                       </div>
                     </div>
-
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5 text-sm">
-                      <div>
-                        <div className="text-gray-500">واحد</div>
-                        <div className="font-medium">{user.department}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">موقعیت</div>
-                        <div className="font-medium">{user.location}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">کل معاملات</div>
-                        <div className="font-medium">{user.totalTrades.toLocaleString()}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">ارزش پرتفوی</div>
-                        <div className="font-medium">{formatCurrency(user.portfolioValue)}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">آخرین ورود</div>
-                        <div className="font-medium">{formatTimestamp(user.lastLogin)}</div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
