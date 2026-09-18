@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Settings } from 'lucide-react';
+import { User, Settings, CreditCard } from 'lucide-react';
 
 const ProfilePage = dynamic(() => import('@/app/profile/page').then((m) => m.default), {
   ssr: false,
@@ -16,19 +16,24 @@ const SettingsPage = dynamic(() => import('@/app/settings/page').then((m) => m.d
   loading: () => <div className="p-6 text-muted-foreground">در حال بارگذاری تنظیمات…</div>,
 });
 
-type AccountTab = 'profile' | 'settings';
+const SubscriptionPage = dynamic(() => import('@/app/account/subscription/page').then((m) => m.default), {
+  ssr: false,
+  loading: () => <div className="p-6 text-muted-foreground">در حال بارگذاری اشتراک…</div>,
+});
+
+type AccountTab = 'profile' | 'subscription' | 'settings';
 
 export default function AccountPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState<AccountTab>(() => {
-    if (tabParam === 'settings' || tabParam === 'profile') return tabParam;
+    if (tabParam === 'settings' || tabParam === 'profile' || tabParam === 'subscription') return tabParam;
     return 'profile';
   });
 
   useEffect(() => {
-    if (tabParam === 'settings' || tabParam === 'profile') setActiveTab(tabParam);
+    if (tabParam === 'settings' || tabParam === 'profile' || tabParam === 'subscription') setActiveTab(tabParam);
   }, [tabParam]);
 
   function handleTabChange(value: string) {
@@ -50,10 +55,14 @@ export default function AccountPage() {
         </p>
       </div>
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             پروفایل
+          </TabsTrigger>
+          <TabsTrigger value="subscription" className="flex items-center gap-2">
+            <CreditCard className="h-4 w-4" />
+            اشتراک
           </TabsTrigger>
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />

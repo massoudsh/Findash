@@ -122,8 +122,8 @@ async def update_user(
     if not user:
         raise HTTPException(404, "کاربر پیدا نشد")
 
-    if user_id == int(admin.user_id) and body.is_active is False:
-        raise HTTPException(400, "نمی‌توانید حساب خودتان را غیرفعال کنید")
+    if user_id == int(admin.user_id) and (body.is_active is False or body.role not in (None, "admin")):
+        raise HTTPException(400, "نمی‌توانید دسترسی مدیریتی حساب خودتان را حذف کنید")
 
     changes = {}
     if body.role is not None:

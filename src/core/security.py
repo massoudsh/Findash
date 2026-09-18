@@ -21,6 +21,9 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 
 from .config import get_settings
+from sqlalchemy.orm import Session
+from src.database.postgres_connection import get_db
+from src.database.models import User
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -188,10 +191,19 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         logger.error(f"Authentication error: {e}")
         raise credentials_exception
 
-async def get_current_active_user(current_user: TokenData = Depends(get_current_user)) -> TokenData:
-    """Dependency to ensure user is active"""
-    # Add additional checks here (user status, account expiry, etc.)
-    return current_user
+async def get_current_active_user(
+    current_user: TokenData = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> TokenData:
+    if not current_user.user_id or not str(current_user.user_id).isdigit():
+        raise HTTPException(status_code=401, detail="Invalid account")
+    user = db.query(User).filter(User.id == int(current_user.user_id)).first()
+    if user is None or not user.is_active:
+        raise HTTPException(status_code=401, detail="Account inactive or unavailable")
+    return TokenData(
+        user_id=str(user.id), email=user.email,
+        roles=[user.role] if user.role else [], permissions=user.permissions or [],
+    )
 
 
 async def require_admin(current_user: TokenData = Depends(get_current_active_user)) -> TokenData:

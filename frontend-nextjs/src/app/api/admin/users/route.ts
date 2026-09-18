@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth-options';
 import { getBackendUrl } from '@/lib/backend-url';
 
 // Proxy to backend /api/admin/users (issue #12). دسترسی فقط برای role=admin؛
 // ادمین‌بودن هم از session چک می‌شود تا مهمان حتی یک درخواست به بک‌اند نفرستد.
 export async function GET() {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ detail: 'احراز هویت لازم است' }, { status: 401 });
   }
