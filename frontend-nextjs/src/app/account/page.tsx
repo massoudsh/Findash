@@ -72,6 +72,9 @@ export default function AccountPage() {
         <TabsContent value="profile" className="mt-6">
           <ProfilePage />
         </TabsContent>
+        <TabsContent value="subscription" className="mt-6">
+          <SubscriptionPage />
+        </TabsContent>
         <TabsContent value="settings" className="mt-6">
           <SettingsPage />
         </TabsContent>

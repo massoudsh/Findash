@@ -6,6 +6,17 @@ import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowLeft, LockKeyhole, Mail, ShieldCheck, TrendingUp } from "lucide-react";
 
+function safeRedirect(raw: string | null): string {
+  if (!raw) return "/dashboard";
+  try {
+    const url = new URL(raw, window.location.origin);
+    if (url.origin === window.location.origin) return url.pathname + url.search;
+  } catch {
+    // ignore malformed callbackUrl
+  }
+  return "/dashboard";
+}
+
 
 function SignInForm() {
   const [error, setError] = useState("");
@@ -25,9 +36,7 @@ function SignInForm() {
       setError("ایمیل یا رمز عبور اشتباه است");
       setLoading(false);
     } else {
-      const destination = searchParams.get('callbackUrl');
-      window.location.href = destination === '/admin' || destination === '/account' || destination === '/risk/policy'
-        ? destination : '/dashboard';
+      window.location.href = safeRedirect(searchParams.get("callbackUrl"));
     }
   }
 
