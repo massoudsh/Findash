@@ -455,8 +455,25 @@ ORDER BY idx_scan ASC;
 
 ---
 
+## Account platform tables (2026-09)
+
+Live models: `src/database/models.py` and `PaymentOrder` in `payment_zarinpal.py`. Integer `users.id` FKs (not the UUID sketch above). Migration `admin_risk_sub_001`. Details: [[Account Platform]].
+
+| Table | Role |
+|-------|------|
+| `payment_orders` | ZarinPal; `purpose` + `purpose_ref` |
+| `wallet_balances`, `wallet_transactions`, `bank_accounts` | IRT ledger + Sheba |
+| `subscription_plans`, `user_subscriptions` | Plans and entitlements |
+| `kyc_profiles` | One KYC row per user |
+| `price_alert_rules`, `push_subscriptions` | Alerts + VAPID |
+| `risk_policies`, `risk_policy_breaches` | Policy + daily-deduped breaches |
+| `audit_logs`, `notifications` | Admin trail + in-app inbox |
+
+---
+
 ## Next Steps
 
+- [[Account Platform]] - How these tables are written
 - [[Architecture]] - System architecture
 - [[API Reference]] - API documentation
 - [[Deployment]] - Production setup

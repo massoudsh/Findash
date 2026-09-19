@@ -89,6 +89,29 @@ So the **flow you see** is: Beat (every 5s) → Redis (queue) → Worker (runs `
 
 So the **flow you see** is: HTTP POST → FastAPI calls `.delay()` → Redis (queue) → Worker (runs task) → Redis (result) + logs; client can use `task_id` to poll or wait for result.
 
+### C. Beat-scheduled account-platform tasks (alerts + risk)
+
+Registered in `src/core/celery_app.py` (`include` has `src.notifications.tasks`):
+
+| Beat name | Task | Interval | Implementation |
+|-----------|------|----------|----------------|
+| `evaluate-price-alerts` | `notifications.evaluate_price_alerts` | 60s | `evaluate_price_alerts()` in `src/api/endpoints/price_alerts.py` |
+| `evaluate-risk-policies` | `notifications.evaluate_risk_policies` | 300s | `evaluate_all_risk_policies()` in `src/api/endpoints/risk_policy.py` |
+
+**Price alerts:** worker loads Iran-market overview prices, deactivates matching rules, and sends in-app / SMS / Web Push via `src/services/notifications.py`.
+
+**Risk policy:** worker walks enabled policies, compares `PortfolioSnapshot.daily_pnl_percent` and position concentration, records at most one breach per rule per user per day, optionally stops JSON-persisted bots.
+
+Manual equivalents (admin JWT): `POST /api/alerts/evaluate`, `POST /api/risk-policy/evaluate-all`.
+
+How to see it:
+
+```bash
+docker compose -f docker-compose-core.yml logs -f celery-beat celery-worker
+```
+
+Look for `Price alerts evaluated:` and `Risk policies evaluated:`. If those never appear, beat is not running or `src.notifications.tasks` failed to import.
+
 ---
 
 ## 3. Key files (trace the flow)
@@ -97,6 +120,7 @@ So the **flow you see** is: HTTP POST → FastAPI calls `.delay()` → Redis (qu
 |------|------|
 | Celery app, beat schedule, task routes | `src/core/celery_app.py` |
 | Market data tasks (fetch single/multiple, BTC, watchlist, cleanup) | `src/data_processing/market_data_tasks.py` |
+| Price-alert + risk-policy beat tasks | `src/notifications/tasks.py` |
 | API that triggers fetch (returns task_id) | `src/api/endpoints/unified_market_data.py` (e.g. `/fetch/async`) |
 | Risk task example | `src/risk/tasks.py` (`evaluate_trade_risk`) |
 | Portfolio / training / prediction / backtesting tasks | `src/portfolio/tasks.py`, `src/training/tasks.py`, `src/prediction/tasks.py`, `src/backtesting/tasks.py` |
@@ -130,7 +154,7 @@ So the **flow you see** is: HTTP POST → FastAPI calls `.delay()` → Redis (qu
 
 - [ ] Start stack: `docker compose -f docker-compose-core.yml up -d` (at least redis, celery-worker, celery-beat).
 - [ ] Tail worker: `docker compose -f docker-compose-core.yml logs -f celery-worker`.
-- [ ] **Beat path**: Wait a few seconds and confirm `market_data.fetch_btc_price_realtime` (or similar) in logs.
+- [ ] **Beat path**: Wait a few seconds and confirm `market_data.fetch_btc_price_realtime` (or similar) in logs. Within a minute you should also see `notifications.evaluate_price_alerts`.
 - [ ] **API path**: Call `POST .../market-data/fetch/async` with `{"symbols":["AAPL"]}`, note `task_id`, then confirm the same task in worker logs.
 - [ ] (Optional) Add Flower and open its UI to see the same tasks in the queue and in history.
 

@@ -26,6 +26,7 @@
 | **Fix common problems** | [[Troubleshooting]] |
 | **Deploy to production** | [[Deployment]] |
 | **Use or extend the API** | [[API Reference]] |
+| **Payments, wallet, KYC, alerts, risk policy** | [[Account Platform]] |
 | **Work on the frontend** | [[Frontend]] |
 | **Contribute** | [[Contributing]] |
 
@@ -109,6 +110,7 @@ flowchart TD
 | Page | Description |
 |------|-------------|
 | [[API Reference]] | REST API overview and request lifecycle |
+| [[Account Platform]] | ZarinPal, IRT wallet, subscriptions, KYC, alerts, risk policy, admin, PDF |
 | [[Frontend]] | Next.js app structure, pages, components |
 | [[Contributing]] | How to contribute to the project |
 
@@ -138,9 +140,17 @@ flowchart TD
 
 ### Risk & analytics
 - **Risk** – VaR, stress testing, correlation  
+- **Risk policy** – Daily drawdown + concentration; optional automatic bot stop  
 - **Backtesting** – Historical strategy testing  
-- **Reports** – Trading analytics  
+- **Reports** – Persian portfolio PDF + trading analytics  
 - **Data explorer** – Advanced querying  
+
+### Account & Iran-market commerce
+- **ZarinPal** – Create → redirect → verify → purpose dispatch  
+- **IRT wallet** – Deposit after verify; Sheba withdraw locks funds  
+- **Subscriptions** – basic / pro / elite; bot start returns 402 without an active plan  
+- **KYC** – National-code form + admin review (no live registry)  
+- **Alerts** – One-shot price rules (in-app / push / SMS)  
 
 ---
 
@@ -149,7 +159,7 @@ flowchart TD
 ```mermaid
 flowchart TB
     subgraph Frontend["🖥️ Frontend"]
-        N[Next.js 14]
+        N[Next.js 15]
         TS[TypeScript]
         TW[Tailwind]
         SH[Shadcn UI]
@@ -173,7 +183,7 @@ flowchart TB
 
 | Layer | Technologies |
 |-------|---------------|
-| **Frontend** | Next.js 14, TypeScript, Tailwind CSS, Shadcn UI, Recharts |
+| **Frontend** | Next.js 15, TypeScript, Tailwind CSS, Shadcn UI, Recharts |
 | **Backend** | FastAPI, Python 3.10+, SQLAlchemy, Celery, Redis |
 | **Data** | PostgreSQL, TimescaleDB, Docker, Prometheus, Grafana |
 
