@@ -87,6 +87,11 @@ pre-commit>=3.6.0
 # --- Email and Notifications ---
 fastapi-mail>=1.4.1
 
+# --- Persian PDF Reports (issue #18) ---
+reportlab>=4.0.0        # PDF generation
+arabic_reshaper>=3.0.0  # اتصال حروف فارسی (presentation forms)
+python-bidi>=0.4.2      # ترتیب راست‌به‌چپ متن فارسی
+
 # --- API Rate Limiting ---
 fastapi-limiter>=0.1.6
 
