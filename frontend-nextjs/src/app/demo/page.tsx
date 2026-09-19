@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { OverviewDashboard } from '@/app/dashboard/page';
+import { OverviewDashboard } from '@/components/dashboard/overview-dashboard';
 import { ArrowLeft, Info, LogIn, Sparkles } from 'lucide-react';
 
 export default function DemoPage() {
