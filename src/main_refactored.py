@@ -69,6 +69,7 @@ from src.api.endpoints.otp_auth import router as otp_auth_router
 from src.api.endpoints.price_alerts import router as price_alerts_router
 from src.api.endpoints.risk_policy import router as risk_policy_router
 from src.api.endpoints.kyc import router as kyc_router
+from src.api.endpoints.pdf_reports import router as pdf_reports_router
 
 # Orphaned routers (previously unregistered)
 from src.api.endpoints.fundamental_data import router as fundamental_router
@@ -218,6 +219,7 @@ app.include_router(subscriptions_router, tags=["Subscriptions"])
 app.include_router(price_alerts_router, tags=["Price Alerts"])
 app.include_router(risk_policy_router, tags=["Risk Policy"])
 app.include_router(kyc_router, tags=["KYC"])
+app.include_router(pdf_reports_router, tags=["Reports"])
 app.include_router(iran_market_router, tags=["Iran Market Data"])
 app.include_router(investor_tools_router, tags=["Investor Tools"])
 app.include_router(otp_auth_router, tags=["OTP Authentication"])
