@@ -80,10 +80,36 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 - `GET /api/alt-data/crypto` - Cryptocurrency data
 
 ### 🔔 Notifications
-- `GET /api/notifications/` - List notifications
-- `POST /api/notifications/rules` - Create alert rule
-- `PUT /api/notifications/rules/{id}` - Update alert rule
-- `DELETE /api/notifications/rules/{id}` - Delete alert rule
+> The historical `/api/notifications/rules` catalog below is **not** the current price-alert API.
+> Live alert rules live at `/api/alerts/*`. In-app rows are written to `notifications` by `src/services/notifications.py`; there is no dedicated list router in `src/main_refactored.py`.
+
+### Account, payments, and ops (verified 2026-09)
+
+Registered in `src/main_refactored.py`. Full workflows, examples, and constraints: [ACCOUNT_PLATFORM.md](ACCOUNT_PLATFORM.md).
+
+| Prefix | Router | Purpose |
+|--------|--------|---------|
+| `/api/payment/zarinpal` | `payment_zarinpal.py` | Create / callback / status / history |
+| `/api/wallet` | `wallet.py` | IRT balances, Sheba, deposit, withdraw |
+| `/api/subscriptions` | `subscriptions.py` | Plans, subscribe, `GET /me` |
+| `/api/kyc` | `kyc.py` | Submit / status / admin review |
+| `/api/alerts` | `price_alerts.py` | Price rules, Web Push, admin evaluate |
+| `/api/risk-policy` | `risk_policy.py` | Policy CRUD, breaches, evaluate |
+| `/api/admin` | `admin_panel.py` | Users, roles, audit log |
+| `/api/reports` | `pdf_reports.py` | Persian portfolio PDF |
+| `/api/auth/send-otp`, `/verify-otp` | `otp_auth.py` | SMS OTP login |
+| `/api/trading-bots/{id}/start` | `trading_bots.py` | **402** unless active subscription (admins exempt) |
+
+```bash
+# Wallet deposit (credits only after ZarinPal verify)
+curl -X POST "http://localhost:8011/api/wallet/deposit" \
+  -H "Authorization: Bearer YOUR_TOKEN" -H "Content-Type: application/json" \
+  -d '{"amount_toman": 100000}'
+
+# Subscription status
+curl -H "Authorization: Bearer YOUR_TOKEN" \
+  "http://localhost:8011/api/subscriptions/me"
+```
 
 ## WebSocket Endpoints
 
@@ -195,10 +221,14 @@ The API uses standard HTTP status codes and returns detailed error messages:
 - `201` - Created
 - `400` - Bad Request
 - `401` - Unauthorized
+- `402` - Payment Required (active subscription missing — trading-bot start)
 - `403` - Forbidden
-- `404` - Not Found
+- `404` - Not Found (also used when a PDF/portfolio is not owned by the caller)
 - `422` - Validation Error
+- `429` - OTP send/verify rate limit
 - `500` - Internal Server Error
+- `502` - ZarinPal create/verify upstream error
+- `503` - Missing merchant, missing Persian PDF font, or backend unreachable
 
 ## Rate Limiting
 
@@ -269,4 +299,4 @@ client.subscribe('AAPL', (quote) => {
 
 ---
 
-*Last updated: January 2025* 
+*Last updated: September 2026 — account-platform routes verified against `src/main_refactored.py`.* 

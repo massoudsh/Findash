@@ -72,8 +72,10 @@ Findash یک **داشبورد فین‌تک ایرانی متن‌باز** اس�
 | ⚡ **لحظه‌ای** | فید بازار با WebSocket و اتصال مجدد خودکار |
 | ⚠️ **موتور ریسک** | گیج ریسک لحظه‌ای، VaR، حداکثر افت سرمایه، بتای پرتفوی |
 | 🧠 **ایجنت‌های هوش مصنوعی** | ارکستریتور ۱۱ ایجنته برای جمع‌آوری داده، تحلیل، استراتژی و گزارش |
-| 💳 **پرداخت** | چرخه کامل زرین‌پال — ایجاد، ریدایرکت، بازگشت، تأیید، تاریخچه |
-| 🔐 **احراز هویت** | ورود/ثبت‌نام مبتنی بر JWT با محافظت مسیر |
+| 💳 **پرداخت و کیف پول** | زرین‌پال با `purpose` (شارژ / اشتراک / آزاد)، کیف پول ریالی، برداشت شبا (قفل تا تسویه عملیاتی) |
+| 🪪 **اشتراک و KYC** | پلن‌های basic/pro/elite، گیت شروع ربات (۴۰۲)، فرم کد ملی + بازبینی ادمین |
+| ⚠️ **هشدار و سیاست ریسک** | هشدار قیمت (Celery هر ۶۰ث)، سیاست افت/تمرکز با توقف ربات |
+| 🔐 **احراز هویت** | ورود/ثبت‌نام JWT + OTP پیامکی |
 | 🌐 **فارسی‌محور** | چیدمان راست‌به‌چپ، تاریخ جلالی، تبدیل تومان/دلار، فونت دانا |
 | 📱 **آماده موبایل** | طراحی موبایل‌محور، حداکثر ۵ آیتم ناوبری، تراکم کارت خوانا |
 
@@ -242,16 +244,24 @@ Findash/
 
 ---
 
+## مستندات حساب و پرداخت
+
+جریان‌های زرین‌پال، کیف پول، اشتراک، KYC، هشدار قیمت، سیاست ریسک، پنل ادمین و PDF:
+
+- [docs/ACCOUNT_PLATFORM.md](docs/ACCOUNT_PLATFORM.md) — معماری، API، محدودیت‌ها، runbook عملیاتی
+- [docs/api.md](docs/api.md) — فهرست مسیرهای ثبت‌شده
+- [docs/CELERY_FLOW.md](docs/CELERY_FLOW.md) — ارزیابی دوره‌ای هشدار و ریسک
+
 ## نقشه راه
 
 - [x] داده لحظه‌ای بازار ایران (tgju، نوبیتکس) — تب «بازار» و ticker زنده
-- [ ] مدیریت پلن اشتراک ([#13](https://github.com/massoudsh/Findash/issues/13))
-- [ ] احراز هویت مالی / KYC ([#20](https://github.com/massoudsh/Findash/issues/20))
-- [ ] یکپارچگی کیف پول ریالی ([#21](https://github.com/massoudsh/Findash/issues/21))
-- [ ] تولید گزارش PDF (فارسی) ([#18](https://github.com/massoudsh/Findash/issues/18))
-- [ ] هشدارهای پوش و پیامک ([#19](https://github.com/massoudsh/Findash/issues/19))
-- [ ] موتور سیاست ریسک ([#22](https://github.com/massoudsh/Findash/issues/22))
-- [ ] پنل مدیریت برای تراکنش‌ها و کاربران ([#12](https://github.com/massoudsh/Findash/issues/12))
+- [x] مدیریت پلن اشتراک ([#13](https://github.com/massoudsh/Findash/issues/13)) + گیت ربات ([#14](https://github.com/massoudsh/Findash/issues/14))
+- [x] احراز هویت مالی / KYC — فرم + بازبینی ادمین ([#20](https://github.com/massoudsh/Findash/issues/20))
+- [x] کیف پول ریالی + شارژ زرین‌پال + درخواست برداشت شبا ([#21](https://github.com/massoudsh/Findash/issues/21))
+- [x] گزارش PDF فارسی پرتفوی ([#18](https://github.com/massoudsh/Findash/issues/18))
+- [x] هشدار قیمت با in-app / پوش / پیامک ([#19](https://github.com/massoudsh/Findash/issues/19))
+- [x] موتور سیاست ریسک با توقف ربات ([#22](https://github.com/massoudsh/Findash/issues/22))
+- [x] پنل مدیریت کاربران و audit log ([#12](https://github.com/massoudsh/Findash/issues/12))
 
 برای فهرست کامل issue های باز، به [GitHub Issues](https://github.com/massoudsh/Findash/issues) مراجعه کنید.
 
