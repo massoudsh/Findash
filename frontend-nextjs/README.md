@@ -1,65 +1,48 @@
-# Frontend Documentation
+# Frontend (Next.js)
 
-This document provides an overview of the Next.js frontend for the Octopus trading platform.
+Next.js 15 App Router UI for Findash / Octopus. Port **3003** (`npm run dev` / `npm start`). Session, BFF, dashboard, and navigation: **[docs/FRONTEND_SESSION.md](../docs/FRONTEND_SESSION.md)**.
 
-## Table of Contents
+## Getting started
 
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Architecture](#architecture)
-  - [Pages and Layouts](#pages-and-layouts)
-  - [Components](#components)
-- [API Communication](#api-communication)
-  - [Mock Services](#mock-services)
-  - [API Proxies](#api-proxies)
+```bash
+cd frontend-nextjs
+npm install
+# optional: frontend-nextjs/.env.local
+# NEXT_PUBLIC_API_URL=http://localhost:8000   # local uvicorn
+# NEXT_PUBLIC_API_URL=http://localhost:8011   # docker-compose-core.yml host mapping
+npm run dev
+```
 
-## Getting Started
+App: [http://localhost:3003](http://localhost:3003). Sign-in: `/auth/signin` (Credentials → FastAPI `POST /api/auth/login`).
 
-1.  **Navigate to the frontend directory**:
-    ```bash
-    cd frontend-nextjs
-    ```
-2.  **Install dependencies**:
-    ```bash
-    npm install
-    ```
-3.  **Run the development server**:
-    ```bash
-    npm run dev
-    ```
-The application will be available at [http://localhost:3000](http://localhost:3000).
+## Project structure
 
-## Project Structure
+- `src/app` — App Router pages and Route Handlers (`src/app/api/`).
+- `src/components` — feature UI (`dashboard/`, `navigation/`, `portfolio/`, `ui/`).
+- `src/lib` — `auth-options.ts`, `backend-url.ts`, `services/api.ts`, hooks (`use-iran-ticker.ts`).
 
-The frontend code is organized into the following key directories:
+Pages stay thin: route `page.tsx` composes a content component, usually behind `Suspense`.
 
--   `src/app`: Contains the pages and layouts of the application, following the Next.js App Router convention. Each subdirectory represents a route.
--   `src/components`: Contains all reusable React components. They are further organized into subdirectories based on the feature they belong to (e.g., `dashboard`, `portfolio`, `risk`).
--   `src/lib`: Contains utility functions (`utils.ts`) and API service modules (`services/`).
+## How the UI talks to FastAPI
 
-## Architecture
+Two paths (not “mocks first, proxies second”):
 
-### Pages and Layouts
+1. **Browser → FastAPI** using `NEXT_PUBLIC_API_URL` (axios in `lib/services/api.ts`, Iran ticker, wallet/KYC/PDF).
+2. **Browser → Next.js BFF → FastAPI** for subscriptions, risk-policy, admin, and ZarinPal create. Those handlers attach `session.accessToken` when `getServerSession(authOptions)` is used.
 
-The application uses the Next.js App Router. Each page is defined by a `page.tsx` file within a route directory in `src/app`. These page files are kept minimal and are primarily responsible for rendering the main content component for that page, often wrapped in a `Suspense` boundary for better loading states.
+`middleware.ts` currently authorizes all matched routes (`authorized: () => true`). `/admin` is gated in `app/admin/layout.tsx` by session + `role === 'admin'`.
 
-### Components
+Default URL **fallbacks differ** (`getBackendUrl` → `:8000`, NextAuth `authorize` → `:8011`). Set `NEXT_PUBLIC_API_URL` (and in Docker, `BACKEND_INTERNAL_URL=http://api:8000`) or login/ticker/BFF will disagree. Full matrix: [docs/FRONTEND_SESSION.md](../docs/FRONTEND_SESSION.md).
 
-The UI is built with a component-based architecture. Each page's functionality is encapsulated within a "content" component (e.g., `DashboardContent`, `PortfolioContent`). These content components are responsible for fetching data and composing smaller, reusable UI components to build the page.
+## Dashboard
 
-## API Communication
+`/dashboard` tabs: overview (mostly static `OverviewDashboard`), portfolio, market, trades, analytics, help. Live strip: `BlueTickerBar` → `GET /api/iran-market/ticker`. `/demo` reuses the overview with a sample-data banner.
 
-The frontend communicates with the backend through a two-layered approach to facilitate development and maintain a clean architecture.
+## Scripts
 
-### Mock Services
-
-During development, each feature area has its own mock API service file (e.g., `src/lib/services/portfolio_api.ts`). These files export asynchronous functions that return hardcoded mock data, allowing for UI development and testing without a live backend connection.
-
-### API Proxies
-
-For production and integration, the frontend does not call the FastAPI backend directly. Instead, it calls API routes within the Next.js application itself, located in `src/app/api/`. These routes act as proxies, forwarding requests to the actual backend.
-
-This approach offers several advantages:
--   It hides the backend URL from the client.
--   It provides a single place to handle authentication, logging, or other middleware for API requests.
--   It avoids CORS issues during development. 
+```bash
+npm run dev    # next dev -p 3003
+npm run build
+npm start      # next start -p 3003
+npm run lint
+```

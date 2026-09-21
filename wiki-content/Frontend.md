@@ -1,6 +1,6 @@
 # Frontend Architecture
 
-The Octopus Trading Platform frontend is built with Next.js 14, TypeScript, and Tailwind CSS, featuring a modern glassmorphism design.
+The UI is built with Next.js **15**, TypeScript, and Tailwind CSS (glassmorphism cards). Dev/prod scripts bind **port 3003**, not 3000.
 
 ## App Structure & Page Flow
 
@@ -448,11 +448,15 @@ npm run type-check
 ## Environment Variables
 
 ```bash
-# .env.local
-NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXT_PUBLIC_WS_URL=ws://localhost:8000
-NEXT_PUBLIC_APP_NAME=Octopus Trading
+# frontend-nextjs/.env.local
+# Docker Compose host mapping:
+NEXT_PUBLIC_API_URL=http://localhost:8011
+# Local uvicorn (API_PORT default):
+# NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXTAUTH_URL=http://localhost:3003
 ```
+
+`getBackendUrl()` falls back to `:8000`; NextAuth login falls back to `:8011`. Inside Compose, set `BACKEND_INTERNAL_URL=http://api:8000` so the Next.js **server** can reach the API. Session, BFF, and dashboard details: [[Frontend Auth]].
 
 ---
 

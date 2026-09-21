@@ -59,7 +59,8 @@ flowchart LR
 | Route | Page / content |
 |-------|-----------------|
 | `/` | Home (redirect or landing) |
-| `/dashboard` | Dashboard (bar, waterfall, pie, line charts; wallet cards; tabs) |
+| `/dashboard` | Tabs via `?tab=` (`overview` default). Overview is `OverviewDashboard` (mostly static + live Iran ticker). See [FRONTEND_SESSION.md](FRONTEND_SESSION.md). |
+| `/demo` | Same overview component with a sample-data banner |
 | `/options` | Options: **Trade** tab (terminal) + **Strategies** tab (options strategy library) |
 | `/strategies` | Strategies: list, create, details, mini-charts; “Options Strategies” link |
 | `/trades` | Trading center (order entry, open orders) |
@@ -142,9 +143,10 @@ flowchart LR
 
 ## 6. API base URL and backend
 
-- Frontend calls the backend using **`NEXT_PUBLIC_API_URL`** (e.g. `http://localhost:8000`).
-- **`lib/services/api.ts`** uses axios with that base URL for portfolios, strategies, trades, etc.
-- Backend is the FastAPI app in `src/main_refactored.py`; routes include `/strategies/`, `/portfolios/`, `/api/trading-bots/`, `/api/backtesting/`, and others.
+- Docker frontend: `NEXT_PUBLIC_API_URL=http://localhost:8011`. Local `python3 start.py` / uvicorn defaults to **`:8000`** (`API_PORT`). Next.js itself is **`:3003`**.
+- **`lib/services/api.ts`** (axios) and **`getBackendUrl()`** fall back to `:8000` if env is unset. NextAuth `authorize()` and `useIranTicker` fall back to `:8011`. Set env explicitly — see [FRONTEND_SESSION.md](FRONTEND_SESSION.md).
+- Session-aware BFF routes under `frontend-nextjs/src/app/api/` proxy subscriptions, risk-policy, admin, and ZarinPal create. Wallet, KYC, alerts, and PDF have no BFF; send a JWT to FastAPI.
+- Backend entry: `src/main_refactored.py`.
 
 ---
 
@@ -152,8 +154,9 @@ flowchart LR
 
 | What | Where |
 |------|--------|
-| Layout + sidebars | `frontend-nextjs/src/components/navigation/navigation-wrapper.tsx` |
-| Dashboard charts | `frontend-nextjs/src/components/dashboard/dashboard-content.tsx` + `dashboard-charts.tsx` |
+| Layout + sidebars | `frontend-nextjs/src/components/navigation/navigation-wrapper.tsx` (dual sidebar lg+; Sheet + bottom nav on mobile) |
+| Dashboard overview | `frontend-nextjs/src/components/dashboard/overview-dashboard.tsx` (extracted from the page module for Next.js build size) |
+| Session / BFF | [FRONTEND_SESSION.md](FRONTEND_SESSION.md) |
 | Strategies list + create | `frontend-nextjs/src/components/strategies/strategies-content.tsx` |
 | Strategies API (frontend) | `frontend-nextjs/src/lib/services/api.ts` → `getStrategies`, `createStrategy` |
 | Strategies API (backend) | `src/api/endpoints/strategies_crud.py` → GET/POST `/strategies/` |

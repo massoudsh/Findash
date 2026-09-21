@@ -53,6 +53,7 @@ Visit https://github.com/massoudsh/Findash/wiki to see your wiki!
 | Data-Sources.md | Market/news providers and API keys |
 | API-Reference.md | REST API documentation |
 | Frontend.md | Frontend architecture |
+| Frontend-Auth.md | NextAuth session, BFF, dashboard, PDF font |
 | Deployment.md | Production deployment guide |
 | Troubleshooting.md | Common issues and fixes |
 | Contributing.md | Contribution guidelines |

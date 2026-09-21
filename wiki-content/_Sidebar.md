@@ -16,6 +16,7 @@
 ### Development
 - [[API Reference]]
 - [[Frontend]]
+- [[Frontend Auth]]
 - [[Contributing]]
 
 ### Operations

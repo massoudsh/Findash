@@ -8,8 +8,8 @@ High-level layout of the Findash / Octopus Trading Platform repo and where to fi
 |------|--------|
 | `config/` | Environment template and API key placeholders (no secrets). Use `config/env.example` to create `.env`. |
 | `docker/` | Dockerfiles for API, Celery, and LLM inference. Compose files stay at root. |
-| `docs/` | Architecture, guides, deployment, and archived notes. |
-| `frontend-nextjs/` | Next.js app (dashboard, trading UI, reports). Run: `cd frontend-nextjs && npm run dev`. |
+| `docs/` | Architecture, guides, deployment, and archived notes. Session/BFF/dashboard: `docs/FRONTEND_SESSION.md`. |
+| `frontend-nextjs/` | Next.js 15 app (port **3003**). Run: `cd frontend-nextjs && npm run dev`. |
 | `requirements/` | Python dependency lists: `requirements.txt` (main), `requirements-dev.txt`, `requirements-llm.txt`, etc. |
 | `scripts/` | One-off and automation: deploy, DB init, health checks, `start-dev.sh`, `start-services.sh`. |
 | `src/` | Backend Python: FastAPI app, agents, strategies, LLM, data pipelines. |
@@ -36,6 +36,6 @@ High-level layout of the Findash / Octopus Trading Platform repo and where to fi
 ## Quick commands
 
 - Backend: `make dev` or `python3 start.py --reload`
-- Frontend: `cd frontend-nextjs && npm run dev`
+- Frontend: `cd frontend-nextjs && npm run dev` (http://localhost:3003)
 - Full stack: `./scripts/start-services.sh` or `make up`
 - Tests: `make test`
