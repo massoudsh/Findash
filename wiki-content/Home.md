@@ -110,6 +110,7 @@ flowchart TD
 |------|-------------|
 | [[API Reference]] | REST API overview and request lifecycle |
 | [[Frontend]] | Next.js app structure, pages, components |
+| [[Frontend Auth]] | NextAuth, BFF, dashboard ticker, port pitfalls |
 | [[Contributing]] | How to contribute to the project |
 
 ### Operations

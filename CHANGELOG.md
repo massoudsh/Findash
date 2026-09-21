@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Frontend session, BFF, dashboard, and navigation runbook (`docs/FRONTEND_SESSION.md`)
 - Comprehensive GitHub Wiki documentation
 - Modern glassmorphism UI card components
 - Dual sidebar navigation (left + right)
