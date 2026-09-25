@@ -96,7 +96,7 @@ export default function FundamentalDataPage() {
   const generateDeepResearchReport = async () => {
     setReportGenerating(true);
     try {
-      // Generate AI-powered research report
+      // تولید گزارش تحقیقاتی با کمک هوش مصنوعی
       const response = await fetch('/api/llm/reports/generate-insights', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -106,23 +106,22 @@ export default function FundamentalDataPage() {
           include_pdf: true
         })
       });
-      
+
       const result = await response.json();
-      
-      // Simulate PDF generation
+
       const pdfBlob = new Blob([`
-        DEEP FUNDAMENTAL ANALYSIS REPORT
-        Asset: ${selectedAsset}
-        Generated: ${new Date().toISOString()}
-        
-        ${result.raw_ai_response || 'Comprehensive analysis completed'}
-        
-        This report contains detailed fundamental analysis including:
-        - Financial metrics and ratios
-        - Competitive landscape analysis
-        - Market position assessment
-        - Risk factors and opportunities
-        - AI-powered insights and recommendations
+        گزارش تحلیل بنیادی عمیق
+        دارایی: ${selectedAsset}
+        زمان تولید: ${new Date().toLocaleString('fa-IR')}
+
+        ${result.raw_ai_response || 'تحلیل جامع با موفقیت انجام شد'}
+
+        این گزارش شامل تحلیل بنیادی تفصیلی است:
+        - متریک‌ها و نسبت‌های مالی
+        - تحلیل فضای رقابتی
+        - ارزیابی جایگاه بازار
+        - عوامل ریسک و فرصت‌ها
+        - بینش‌ها و پیشنهادهای مبتنی بر هوش مصنوعی
       `], { type: 'application/pdf' });
       
       const url = URL.createObjectURL(pdfBlob);
@@ -175,7 +174,7 @@ export default function FundamentalDataPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">تحقیق بنیادی</h1>
           <p className="text-muted-foreground mt-1">
-            تحلیل و تحقیق بنیادی — داشبورد از API در صورت در دسترس بودن
+            تحلیل و تحقیق بنیادی — داشبورد از سرویس داده در صورت در دسترس بودن
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
@@ -185,7 +184,7 @@ export default function FundamentalDataPage() {
           </Button>
           <Button onClick={generateDeepResearchReport} disabled={reportGenerating} variant="secondary" size="sm">
             <FileText className="h-4 w-4 mr-2" />
-            {reportGenerating ? 'در حال تولید...' : 'تولید PDF'}
+            {reportGenerating ? 'در حال تولید...' : 'تولید پی‌دی‌اف'}
           </Button>
         </div>
       </div>
@@ -484,7 +483,7 @@ export default function FundamentalDataPage() {
                           className="w-full btn-morphic"
                         >
                           <Download className="h-4 w-4 mr-2" />
-                          {reportGenerating ? 'در حال تولید...' : 'تولید PDF'}
+                          {reportGenerating ? 'در حال تولید...' : 'تولید پی‌دی‌اف'}
                         </Button>
                       </div>
 
