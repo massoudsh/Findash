@@ -1,44 +1,10 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { ArrowLeft, LockKeyhole, Mail, ShieldCheck, TrendingUp } from "lucide-react";
-
-function safeRedirect(raw: string | null): string {
-  if (!raw) return "/dashboard";
-  try {
-    const url = new URL(raw, window.location.origin);
-    if (url.origin === window.location.origin) return url.pathname + url.search;
-  } catch {
-    // ignore malformed callbackUrl
-  }
-  return "/dashboard";
-}
-
+import { Suspense } from "react";
+import { ArrowLeft, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
 
 function SignInForm() {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const searchParams = useSearchParams();
-  const signupSuccess = searchParams.get("signup") === "success";
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    const form = e.currentTarget;
-    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
-    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
-    const res = await signIn("credentials", { redirect: false, email, password });
-    if (res?.error) {
-      setError("ایمیل یا رمز عبور اشتباه است");
-      setLoading(false);
-    } else {
-      window.location.href = safeRedirect(searchParams.get("callbackUrl"));
-    }
-  }
 
   return (
     <main className="min-h-screen grid lg:grid-cols-2 persian-pattern-bg">
@@ -66,70 +32,28 @@ function SignInForm() {
 
       {/* Form side */}
       <section className="flex items-center justify-center px-4 py-10">
-        <form onSubmit={handleSubmit} className="w-full max-w-md persian-card p-6 sm:p-8 rounded-3xl">
+        <div className="w-full max-w-md persian-card p-6 sm:p-8 rounded-3xl">
           <div className="text-center mb-8">
             <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 border border-green-500/20 mb-4">
               <ShieldCheck className="h-7 w-7 text-green-400" />
             </div>
-            <h1 className="text-2xl font-black mb-2">ورود به حساب</h1>
-            <p className="text-sm text-muted-foreground">برای ادامه وارد داشبورد معاملاتی شوید</p>
+            <h1 className="text-2xl font-black mb-2">داشبورد برای همه باز است</h1>
+            <p className="text-sm text-muted-foreground leading-7">بدون ایمیل و رمز عبور وارد داشبورد شوید و پلتفرم را با داده‌های نمونه ببینید.</p>
           </div>
 
-          {signupSuccess && <div className="mb-4 rounded-xl border border-green-500/20 bg-green-500/10 text-green-400 text-sm text-center p-3">ثبت‌نام موفق! لطفاً وارد شوید.</div>}
-          {error && <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-sm text-center p-3">{error}</div>}
+          <Link href="/dashboard" className="btn-persian w-full h-12 rounded-2xl mt-6 flex items-center justify-center gap-2">
+            مشاهده داشبورد نمونه
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
 
-          <div className="space-y-4">
-            <label className="block">
-              <span className="block text-sm font-medium mb-1.5">ایمیل</span>
-              <div className="relative">
-                <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input name="email" type="email" dir="ltr" required className="w-full h-12 rounded-2xl border border-input bg-background/70 px-4 pr-10 text-sm outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500" />
-              </div>
-            </label>
-
-            <label className="block">
-              <span className="block text-sm font-medium mb-1.5">رمز عبور</span>
-              <div className="relative">
-                <LockKeyhole className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <input name="password" type="password" dir="ltr" required className="w-full h-12 rounded-2xl border border-input bg-background/70 px-4 pr-10 text-sm outline-none focus:ring-2 focus:ring-green-500/40 focus:border-green-500" />
-              </div>
-            </label>
-          </div>
-
-          <button type="submit" className="btn-persian w-full h-12 rounded-2xl mt-6 flex items-center justify-center gap-2 disabled:opacity-60" disabled={loading}>
-            {loading ? "در حال ورود..." : "ورود"}
-            {!loading && <ArrowLeft className="h-4 w-4" />}
-          </button>
-
-          <div className="text-sm text-center text-muted-foreground mt-6">
-            حساب ندارید؟{' '}
-            <Link href="/auth/signup" className="text-green-400 hover:underline font-medium">ثبت‌نام کنید</Link>
-          </div>
-
-          {/* Demo accounts hint */}
           <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs text-muted-foreground space-y-2">
-            <p className="font-semibold text-foreground/70">حساب‌های آزمایشی:</p>
-            {[
-              { email: "trader@octopus.trading", pass: "TraderPro2025!" },
-              { email: "admin@octopus.trading", pass: "SecureAdmin2025!" },
-            ].map((a) => (
-              <button
-                key={a.email}
-                type="button"
-                onClick={() => {
-                  const form = document.querySelector("form")!;
-                  (form.elements.namedItem("email") as HTMLInputElement).value = a.email;
-                  (form.elements.namedItem("password") as HTMLInputElement).value = a.pass;
-                }}
-                className="w-full text-right rounded-xl border border-white/5 bg-white/[0.02] px-3 py-2 hover:border-green-500/20 hover:text-green-400 transition-colors"
-                dir="ltr"
-              >
-                {a.email}
-              </button>
-            ))}
-            <p className="text-[10px] opacity-50">کلیک کن تا فیلدها پر شوند</p>
+            <p className="font-semibold text-foreground/80 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-green-400" />
+              داده‌ها نمایشی هستند
+            </p>
+            <p className="leading-6">برای دیدن نمای کلی، پرتفولیو، بازار، معاملات و تحلیل نیازی به حساب کاربری نیست.</p>
           </div>
-        </form>
+        </div>
       </section>
     </main>
   );

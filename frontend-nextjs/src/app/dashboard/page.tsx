@@ -71,13 +71,13 @@ function DashboardPageContent() {
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-3 py-1.5 text-xs font-bold text-blue-300">
                 <Landmark className="h-3.5 w-3.5" />
-                داشبورد مالی بازار ایران
+                داشبورد عمومی با داده نمونه
               </div>
               <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl">
                 نمای یکپارچه سرمایه‌گذاری
               </h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
-                رصد دارایی‌ها، ریسک، معاملات، جریان نقدی و فعالیت‌های مهم در یک صفحه مدرن، شبکه‌ای و موبایل‌محور.
+                رصد دارایی‌ها، ریسک، معاملات، جریان نقدی و فعالیت‌های مهم با داده‌های نمایشی؛ بدون نیاز به ایمیل یا رمز عبور.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">

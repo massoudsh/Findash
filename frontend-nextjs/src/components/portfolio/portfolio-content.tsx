@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, GlassCard } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercentage, CurrencyUnit } from '@/lib/utils';
-import { getPortfolios, getPositions } from '@/lib/services/api';
 import { PortfolioChart } from '@/components/portfolio/portfolio-chart';
 import { IranPortfolioSection } from '@/components/portfolio/iran-portfolio-section';
 import {
@@ -50,102 +49,31 @@ const DEFAULT_SECTOR: Record<string, string> = {
   JNJ: 'سلامت', PG: 'مصرفی', KO: 'مصرفی', JPM: 'مالی',
 };
 
-function normalizePortfolios(raw: unknown): Portfolio[] {
-  const arr = Array.isArray(raw) ? raw : (raw as { data?: unknown })?.data;
-  if (!Array.isArray(arr)) return [];
-  return arr.map((p: Record<string, unknown>) => ({
-    id: (typeof p.id === 'string' || typeof p.id === 'number') ? p.id : String(p.id ?? ''),
-    name: String(p.name ?? ''),
-    description: p.description != null ? String(p.description) : undefined,
-    initial_capital: Number(p.initial_capital ?? 0),
-    current_value: Number(p.current_value ?? 0),
-    cash_balance: p.cash_balance != null ? Number(p.cash_balance) : undefined,
-    total_return: p.total_return != null ? Number(p.total_return) : undefined,
-    total_return_percent: p.total_return_percent != null ? Number(p.total_return_percent) : undefined,
-    risk_tolerance: p.risk_tolerance != null ? String(p.risk_tolerance) : undefined,
-    created_at: p.created_at != null ? String(p.created_at) : undefined,
-    updated_at: p.updated_at != null ? String(p.updated_at) : undefined,
-  }));
-}
-
-function normalizePositions(raw: unknown, totalValue: number): Position[] {
-  const arr = Array.isArray(raw) ? raw : (raw as { data?: unknown })?.data;
-  if (!Array.isArray(arr)) return [];
-  const total = arr.reduce((sum: number, p: Record<string, unknown>) => sum + Number(p.market_value ?? 0), 0) || totalValue || 1;
-  return arr.map((p: Record<string, unknown>) => {
-    const marketValue = Number(p.market_value ?? 0);
-    const qty = Number(p.quantity ?? 0);
-    const avg = Number(p.average_cost ?? p.average_price ?? 0);
-    const pnl = Number(p.unrealized_pnl ?? 0);
-    const cost = avg * qty;
-    const pnlPct = cost ? (pnl / cost) * 100 : 0;
-    return {
-      symbol: String(p.symbol ?? ''),
-      quantity: qty,
-      average_cost: avg,
-      market_value: marketValue,
-      unrealized_pnl: pnl,
-      unrealized_pnl_percent: pnlPct,
-      weight: (marketValue / total) * 100,
-    };
-  });
-}
-
 const CURRENCY_LABELS: Record<CurrencyUnit, string> = {
   IRT: 'تومان',
   IRR: 'ریال',
   USD: 'دلار',
 };
 
+const MOCK_PORTFOLIOS: Portfolio[] = [
+  { id: '1', name: 'پورتفولیو نمونه', description: 'نمایش عمومی', initial_capital: 1_000_000_000, current_value: 1_247_500_000, cash_balance: 185_000_000, total_return: 247_500_000, total_return_percent: 24.75 },
+  { id: '2', name: 'سبد رشد', description: 'تمرکز بر سهام رشدی', initial_capital: 650_000_000, current_value: 782_000_000, cash_balance: 92_000_000, total_return: 132_000_000, total_return_percent: 20.3 },
+];
+
+const MOCK_POSITIONS: Position[] = [
+  { symbol: 'فولاد', quantity: 12_500, average_cost: 5600, market_value: 82_500_000, unrealized_pnl: 12_500_000, unrealized_pnl_percent: 17.85, weight: 18.6 },
+  { symbol: 'شستا', quantity: 24_000, average_cost: 1180, market_value: 34_800_000, unrealized_pnl: 6_480_000, unrealized_pnl_percent: 22.88, weight: 7.85 },
+  { symbol: 'خودرو', quantity: 18_000, average_cost: 410, market_value: 6_930_000, unrealized_pnl: -450_000, unrealized_pnl_percent: -6.1, weight: 1.56 },
+  { symbol: 'BTC', quantity: 0.18, average_cost: 2_750_000_000, market_value: 585_000_000, unrealized_pnl: 90_000_000, unrealized_pnl_percent: 18.18, weight: 42.1 },
+];
+
 export function PortfolioContent() {
-  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
-  const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null);
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [portfolios] = useState<Portfolio[]>(MOCK_PORTFOLIOS);
+  const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(MOCK_PORTFOLIOS[0]);
+  const [positions] = useState<Position[]>(MOCK_POSITIONS);
   const [currencyUnit, setCurrencyUnit] = useState<CurrencyUnit>('IRT');
 
   const fmt = (v: number) => formatCurrency(v, currencyUnit);
-
-  useEffect(() => {
-    async function fetchPortfolios() {
-      try {
-        const response = await getPortfolios();
-        const data = normalizePortfolios(response?.data ?? response);
-        setPortfolios(data);
-        if (data.length > 0 && !selectedPortfolio) setSelectedPortfolio(data[0]);
-      } catch (error) {
-        console.error('Error fetching portfolios:', error);
-        const mock: Portfolio[] = [
-          { id: '1', name: 'پورتفولیو اصلی', description: 'اصلی', initial_capital: 100000, current_value: 125000, cash_balance: 25000, total_return: 25000, total_return_percent: 25 },
-          { id: '2', name: 'سهام فناوری', description: 'تمرکز بر فناوری', initial_capital: 50000, current_value: 62000, cash_balance: 12000, total_return: 12000, total_return_percent: 24 },
-        ];
-        setPortfolios(mock);
-        setSelectedPortfolio(mock[0]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchPortfolios();
-  }, []);
-
-  useEffect(() => {
-    if (!selectedPortfolio) return;
-    async function fetchPositions() {
-      try {
-        const response = await getPositions(selectedPortfolio.id);
-        const total = selectedPortfolio.current_value || 1;
-        setPositions(normalizePositions(response?.data ?? response, total));
-      } catch (error) {
-        console.error('Error fetching positions:', error);
-        const fallbackTotal = selectedPortfolio?.current_value || 1;
-        setPositions(normalizePositions([
-          { symbol: 'AAPL', quantity: 100, average_cost: 150, market_value: 17500, unrealized_pnl: 2500 },
-          { symbol: 'MSFT', quantity: 50, average_cost: 300, market_value: 16000, unrealized_pnl: 1000 },
-        ], fallbackTotal));
-      }
-    }
-    fetchPositions();
-  }, [selectedPortfolio]);
 
   const totalValue = selectedPortfolio?.current_value ?? 0;
   const totalCost = selectedPortfolio?.initial_capital ?? 0;
@@ -169,18 +97,6 @@ export function PortfolioContent() {
 
   const topGainer = positions.length ? [...positions].sort((a, b) => b.unrealized_pnl - a.unrealized_pnl)[0] : null;
   const topLoser = positions.length ? [...positions].sort((a, b) => a.unrealized_pnl - b.unrealized_pnl)[0] : null;
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-32 rounded-lg bg-muted/50" />
-        <div className="grid gap-4 md:grid-cols-3">
-          {[1, 2, 3].map((i) => <div key={i} className="h-24 rounded-lg bg-muted/50" />)}
-        </div>
-        <div className="h-64 rounded-lg bg-muted/50" />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
