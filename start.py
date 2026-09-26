@@ -13,6 +13,10 @@ import argparse
 from pathlib import Path
 from typing import Optional
 
+# Add project root to Python path before importing application modules
+project_root = Path(__file__).resolve().parent
+sys.path.insert(0, str(project_root))
+
 # Load environment variables from .env file first
 from dotenv import load_dotenv
 load_dotenv(override=True)
@@ -20,10 +24,6 @@ load_dotenv(override=True)
 import uvicorn
 from src.core.config import get_settings
 from src.core.logging_config import setup_logging
-
-# Add project root to Python path
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
 
 # Configure logging
 setup_logging()
