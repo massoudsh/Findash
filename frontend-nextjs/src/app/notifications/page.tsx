@@ -724,12 +724,12 @@ export default function NotificationsPage() {
                   <Input type="password" placeholder="webhook-secret-token" />
                 </div>
                 <div className="space-y-2">
-                  <Label>قالب Payload</Label>
+                  <Label>قالب داده ارسالی</Label>
                   <select className="w-full p-2 border rounded-md">
-                    <option>JSON</option>
-                    <option>Slack</option>
-                    <option>Discord</option>
-                    <option>Teams</option>
+                    <option>داده ساختاریافته (JSON)</option>
+                    <option>اسلک</option>
+                    <option>دیسکورد</option>
+                    <option>تیمز</option>
                   </select>
                 </div>
                 <Button className="w-full">تست وبهوک</Button>
@@ -909,10 +909,10 @@ export default function NotificationsPage() {
                 <div className="space-y-2">
                   <Label>منطقه زمانی</Label>
                   <select className="w-full p-2 border rounded-md">
-                    <option>UTC-8 (وقت اقیانوس آرام)</option>
-                    <option>UTC-5 (وقت شرقی)</option>
-                    <option>UTC+0 (GMT)</option>
-                    <option>UTC+1 (CET)</option>
+                    <option>وقت اقیانوس آرام (UTC-8)</option>
+                    <option>وقت شرقی آمریکا (UTC-5)</option>
+                    <option>گرینویچ (UTC+0)</option>
+                    <option>وقت اروپای مرکزی (UTC+1)</option>
                   </select>
                 </div>
 
@@ -929,9 +929,9 @@ export default function NotificationsPage() {
                 <div className="space-y-2">
                   <Label>قالب تاریخ</Label>
                   <select className="w-full p-2 border rounded-md">
-                    <option>MM/DD/YYYY</option>
-                    <option>DD/MM/YYYY</option>
-                    <option>YYYY-MM-DD</option>
+                    <option>ماه/روز/سال</option>
+                    <option>روز/ماه/سال</option>
+                    <option>سال/ماه/روز</option>
                   </select>
                 </div>
               </CardContent>

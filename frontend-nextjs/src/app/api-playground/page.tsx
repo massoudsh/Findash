@@ -526,10 +526,10 @@ export default function APIPlaygroundPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
             <Terminal className="w-8 h-8 text-blue-600" />
-            محیط آزمایش API
+            محیط آزمایش رابط برنامه‌نویسی
           </h1>
           <p className="text-muted-foreground">
-            کاوشگر تعاملی API برای تست و اشکال‌زدایی مسیرهای پلتفرم اکتپوس
+            کاوشگر تعاملی رابط برنامه‌نویسی برای تست و اشکال‌زدایی مسیرهای پلتفرم اکتپوس
           </p>
         </div>
 
@@ -573,7 +573,7 @@ export default function APIPlaygroundPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="apiKey">کلید API</Label>
+              <Label htmlFor="apiKey">کلید رابط برنامه‌نویسی</Label>
               <div className="flex gap-2">
                 <Key className="w-4 h-4 mt-2 text-gray-500" />
                 <Input
@@ -581,7 +581,7 @@ export default function APIPlaygroundPage() {
                   type={showApiKey ? 'text' : 'password'}
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="کلید API شما"
+                  placeholder="کلید رابط برنامه‌نویسی شما"
                 />
                 <Button
                   variant="outline"
@@ -603,7 +603,7 @@ export default function APIPlaygroundPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
-                مسیرهای API
+                مسیرهای رابط برنامه‌نویسی
               </CardTitle>
               <div className="flex gap-2 flex-wrap">
                 {categories.map(category => (
@@ -762,7 +762,7 @@ export default function APIPlaygroundPage() {
                           className="w-full h-32 p-3 border rounded-md font-mono text-sm mt-2"
                           value={requestBody}
                           onChange={(e) => setRequestBody(e.target.value)}
-                          placeholder="بدنه درخواست JSON"
+                          placeholder="بدنه درخواست با ساختار داده‌ای"
                         />
                       </div>
                     )}
@@ -920,7 +920,7 @@ export default function APIPlaygroundPage() {
             <Card>
               <CardContent className="p-8 text-center">
                 <Code2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">یک مسیر API را انتخاب کنید</h3>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">یک مسیر رابط برنامه‌نویسی را انتخاب کنید</h3>
                 <p className="text-gray-600">
                   یک مسیر را از فهرست انتخاب کنید تا تست و کاوش API را شروع کنید
                 </p>

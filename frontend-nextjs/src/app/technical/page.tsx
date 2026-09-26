@@ -410,7 +410,7 @@ export default function TechnicalPage() {
               )}
               {activePanel === 'calendar' && (
                 <>
-                  <p className="text-sm text-gray-400">رویدادهای اقتصادی پیش‌رو از API در صورت در دسترس بودن بک‌اند؛ در غیر این صورت فهرست پیش‌فرض.</p>
+                  <p className="text-sm text-gray-400">رویدادهای اقتصادی پیش‌رو از سرویس داده در صورت در دسترس بودن بک‌اند؛ در غیر این صورت فهرست پیش‌فرض.</p>
                   {calendarLoading ? (
                     <p className="text-sm text-muted-foreground py-4">در حال بارگذاری تقویم…</p>
                   ) : (
@@ -439,7 +439,7 @@ export default function TechnicalPage() {
               )}
               {activePanel === 'marketOverview' && (
                 <>
-                  <p className="text-sm text-gray-400">تصویر زنده از API.</p>
+                  <p className="text-sm text-gray-400">تصویر زنده از سرویس داده.</p>
                   <div className="space-y-2">
                     {Object.entries(realMarketData).slice(0, 8).map(([sym, d]) => (
                       <div key={sym} className="flex justify-between items-center p-2 rounded bg-slate-800/50 text-sm">

@@ -101,10 +101,10 @@ export default function MacroContent() {
   }, []);
 
   const monetaryIndicators = macroData ? [
-    { name: 'Fed Funds Rate', value: `${macroData.monetary_policy.FED_FUNDS_RATE?.value ?? 5.25}%`, change: `${(macroData.monetary_policy.FED_FUNDS_RATE?.change_pct ?? 0) >= 0 ? '+' : ''}${macroData.monetary_policy.FED_FUNDS_RATE?.change_pct ?? 0}%`, trend: (macroData.monetary_policy.FED_FUNDS_RATE?.change_pct ?? 0) > 0 ? 'up' : (macroData.monetary_policy.FED_FUNDS_RATE?.change_pct ?? 0) < 0 ? 'down' : 'neutral', impact: 'high' },
-    { name: 'Fed Balance Sheet', value: `$${((macroData.monetary_policy.FED_BALANCE_SHEET?.value ?? 7200000) / 1000000).toFixed(1)}T`, change: `${(macroData.monetary_policy.FED_BALANCE_SHEET?.change_pct ?? -2.1) >= 0 ? '+' : ''}${macroData.monetary_policy.FED_BALANCE_SHEET?.change_pct ?? -2.1}%`, trend: (macroData.monetary_policy.FED_BALANCE_SHEET?.change_pct ?? -2.1) > 0 ? 'up' : 'down', impact: 'high' },
-    { name: 'ECB Deposit Rate', value: '4.00%', change: '+0.00%', trend: 'neutral', impact: 'high' },
-    { name: 'BoJ Policy Rate', value: '-0.10%', change: '+0.00%', trend: 'neutral', impact: 'medium' },
+    { name: 'نرخ وجوه فدرال', value: `${macroData.monetary_policy.FED_FUNDS_RATE?.value ?? 5.25}%`, change: `${(macroData.monetary_policy.FED_FUNDS_RATE?.change_pct ?? 0) >= 0 ? '+' : ''}${macroData.monetary_policy.FED_FUNDS_RATE?.change_pct ?? 0}%`, trend: (macroData.monetary_policy.FED_FUNDS_RATE?.change_pct ?? 0) > 0 ? 'up' : (macroData.monetary_policy.FED_FUNDS_RATE?.change_pct ?? 0) < 0 ? 'down' : 'neutral', impact: 'high' },
+    { name: 'ترازنامه فدرال رزرو', value: `$${((macroData.monetary_policy.FED_BALANCE_SHEET?.value ?? 7200000) / 1000000).toFixed(1)}T`, change: `${(macroData.monetary_policy.FED_BALANCE_SHEET?.change_pct ?? -2.1) >= 0 ? '+' : ''}${macroData.monetary_policy.FED_BALANCE_SHEET?.change_pct ?? -2.1}%`, trend: (macroData.monetary_policy.FED_BALANCE_SHEET?.change_pct ?? -2.1) > 0 ? 'up' : 'down', impact: 'high' },
+    { name: 'نرخ سپرده بانک مرکزی اروپا', value: '4.00%', change: '+0.00%', trend: 'neutral', impact: 'high' },
+    { name: 'نرخ سیاستی بانک ژاپن', value: '-0.10%', change: '+0.00%', trend: 'neutral', impact: 'medium' },
   ] : [];
 
   const yieldCurveIndicators = macroData ? [
@@ -165,7 +165,7 @@ export default function MacroContent() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">اقتصاد کلان</h1>
-          <p className="text-muted-foreground mt-1">بازده اوراق خزانه، تورم و سیاست پولی — داده زنده از FRED در صورت دسترسی به بک‌اند</p>
+          <p className="text-muted-foreground mt-1">بازده اوراق خزانه، تورم و سیاست پولی — داده زنده از منبع اقتصادی فدرال رزرو در صورت دسترسی به بک‌اند</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {lastUpdated && <span className="text-xs text-muted-foreground">به‌روزرسانی {new Date(lastUpdated).toLocaleTimeString('fa-IR')}</span>}

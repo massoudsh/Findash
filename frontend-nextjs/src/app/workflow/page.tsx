@@ -307,7 +307,7 @@ export default function WorkflowPage() {
           <CardContent className="p-0">
             <div
               className="mermaid-diagram-container min-h-[320px] overflow-auto rounded-b-lg border-t border-border bg-stone-100/80 dark:bg-stone-900/60 p-8 flex items-center justify-center ring-1 ring-inset ring-border/30"
-              aria-label="Detailed pipeline flowchart"
+              aria-label="نمودار جزئی جریان داده"
             >
               <pre id="mermaid-pipeline" className="mermaid text-sm m-0 flex items-center justify-center [&_svg]:max-w-full [&_svg]:h-auto">
                 {diagram1}
@@ -324,7 +324,7 @@ export default function WorkflowPage() {
           <CardContent className="p-0">
             <div
               className="mermaid-diagram-container min-h-[380px] overflow-auto rounded-b-lg border-t border-border bg-stone-100/80 dark:bg-stone-900/60 p-8 flex items-center justify-center ring-1 ring-inset ring-border/30"
-              aria-label="Decision flow in 4 phases"
+              aria-label="جریان تصمیم‌گیری در ۴ فاز"
             >
               <pre id="mermaid-phases" className="mermaid text-sm m-0 flex items-center justify-center [&_svg]:max-w-full [&_svg]:h-auto">
                 {diagram2}
@@ -341,7 +341,7 @@ export default function WorkflowPage() {
           <CardContent className="p-0">
             <div
               className="mermaid-diagram-container min-h-[340px] overflow-auto rounded-b-lg border-t border-border bg-stone-100/80 dark:bg-stone-900/60 p-8 flex items-center justify-center ring-1 ring-inset ring-border/30"
-              aria-label="You and the agents sequence diagram"
+              aria-label="نمودار توالی تعامل شما و عامل‌ها"
             >
               <pre id="mermaid-sequence" className="mermaid text-sm m-0 flex items-center justify-center [&_svg]:max-w-full [&_svg]:h-auto">
                 {diagram3}

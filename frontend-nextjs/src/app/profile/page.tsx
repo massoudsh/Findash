@@ -297,7 +297,7 @@ export default function ProfilePage() {
           <TabsTrigger value="personal">اطلاعات شخصی</TabsTrigger>
           <TabsTrigger value="security">امنیت</TabsTrigger>
           <TabsTrigger value="trading">معاملات</TabsTrigger>
-          <TabsTrigger value="api">کلیدهای API</TabsTrigger>
+          <TabsTrigger value="api">کلیدهای رابط برنامه‌نویسی</TabsTrigger>
           <TabsTrigger value="notifications">اعلان‌ها</TabsTrigger>
         </TabsList>
 
@@ -468,7 +468,7 @@ export default function ProfilePage() {
                     className="w-full px-3 py-2 border rounded-md"
                   >
                     <option value="market">بازار</option>
-                    <option value="limit">محدود (Limit)</option>
+                    <option value="limit">محدود</option>
                     <option value="stop">استاپ</option>
                     <option value="stop-limit">استاپ محدود</option>
                   </select>

@@ -374,7 +374,7 @@ export default function FundamentalDataPage() {
                       <Brain className="h-5 w-5 text-purple-400" />
                       <span>هوشمندی بازار با هوش مصنوعی</span>
                     </CardTitle>
-                    <CardDescription>بینش‌های مبتنی بر LLM از تحلیل جامع بازار</CardDescription>
+                    <CardDescription>بینش‌های مبتنی بر مدل زبانی از تحلیل جامع بازار</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -464,7 +464,7 @@ export default function FundamentalDataPage() {
                   <FileText className="h-5 w-5 text-green-400" />
                   <span>گزارش‌های تحقیقاتی</span>
                 </CardTitle>
-                <CardDescription>تولید گزارش‌های جامع PDF با استفاده از تحلیل هوش مصنوعی</CardDescription>
+                <CardDescription>تولید گزارش‌های جامع پی‌دی‌اف با استفاده از تحلیل هوش مصنوعی</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -526,7 +526,7 @@ export default function FundamentalDataPage() {
                       </div>
                       <div className="flex items-center space-x-3">
                         <CheckCircle className="h-5 w-5 text-green-400" />
-                        <span className="text-sm">قالب‌بندی حرفه‌ای PDF</span>
+                        <span className="text-sm">قالب‌بندی حرفه‌ای پی‌دی‌اف</span>
                       </div>
                       <div className="flex items-center space-x-3">
                         <CheckCircle className="h-5 w-5 text-green-400" />

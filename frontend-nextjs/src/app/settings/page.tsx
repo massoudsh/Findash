@@ -378,8 +378,8 @@ export default function SettingsPage() {
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
                     <option value="fa">فارسی</option>
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
+                    <option value="en">انگلیسی</option>
+                    <option value="es">اسپانیایی</option>
                   </select>
                 </div>
 
@@ -412,9 +412,9 @@ export default function SettingsPage() {
                     }}
                     className="w-full px-3 py-2 border rounded-md mt-1"
                   >
-                    <option value="yyyy-MM-dd">yyyy-MM-dd (شمسی/میلادی ISO)</option>
-                    <option value="MM/dd/yyyy">MM/dd/yyyy (آمریکایی)</option>
-                    <option value="dd/MM/yyyy">dd/MM/yyyy (اروپایی)</option>
+                    <option value="yyyy-MM-dd">سال/ماه/روز (استاندارد)</option>
+                    <option value="MM/dd/yyyy">ماه/روز/سال (آمریکایی)</option>
+                    <option value="dd/MM/yyyy">روز/ماه/سال (اروپایی)</option>
                   </select>
                 </div>
 
@@ -954,8 +954,8 @@ export default function SettingsPage() {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-medium">دسترسی API</div>
-                    <div className="text-sm text-gray-600">مجاز بودن استفاده از کلید API</div>
+                    <div className="font-medium">دسترسی رابط برنامه‌نویسی</div>
+                    <div className="text-sm text-gray-600">مجاز بودن استفاده از کلید رابط برنامه‌نویسی</div>
                   </div>
                   <input
                     type="checkbox"

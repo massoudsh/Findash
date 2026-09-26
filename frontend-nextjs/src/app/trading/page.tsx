@@ -141,7 +141,7 @@ function TradingCenterContent() {
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-4 min-h-[480px]">
             <div className="min-w-0 -mx-4 xl:mx-0 min-h-[480px] flex flex-col">
               <ErrorBoundary>
-                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">Loading options…</div>}>
+                <Suspense fallback={<div className="p-6 text-muted-foreground animate-pulse">در حال بارگذاری اختیار معامله...</div>}>
                   <OptionsPageContent />
                 </Suspense>
               </ErrorBoundary>

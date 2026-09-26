@@ -143,7 +143,7 @@ function OptionsTablePanel() {
       <div className="flex items-center justify-between">
         <div className="flex gap-1">
           <IconBtn title="اکسل"><FileSpreadsheet className="h-4 w-4 text-green-500" /></IconBtn>
-          <IconBtn title="JSON"><FileJson className="h-4 w-4" /></IconBtn>
+          <IconBtn title="ساختار داده‌ای"><FileJson className="h-4 w-4" /></IconBtn>
           <IconBtn title="دانلود"><Download className="h-4 w-4" /></IconBtn>
         </div>
         <span className="text-sm font-semibold text-muted-foreground">بیشترین ارزش معاملات</span>
@@ -225,7 +225,7 @@ function ExpiryPanel() {
       </div>
       <div className="flex gap-1">
         <IconBtn title="اکسل"><FileSpreadsheet className="h-4 w-4 text-green-500" /></IconBtn>
-        <IconBtn title="JSON"><FileJson className="h-4 w-4" /></IconBtn>
+        <IconBtn title="ساختار داده‌ای"><FileJson className="h-4 w-4" /></IconBtn>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-xs">

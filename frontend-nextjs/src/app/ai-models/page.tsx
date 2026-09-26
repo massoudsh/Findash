@@ -701,7 +701,7 @@ export default function AIModelsPage() {
                 </div>
 
                 <div>
-                  <Label>تعداد epoch آموزش</Label>
+                  <Label>تعداد دوره‌های آموزش</Label>
                   <Input
                     type="number"
                     value={epochs}
@@ -733,7 +733,7 @@ export default function AIModelsPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label>تعداد Estimator</Label>
+                    <Label>تعداد برآوردگرها</Label>
                     <Input
                       type="number"
                       value={xgboostConfig.n_estimators}
@@ -845,7 +845,7 @@ export default function AIModelsPage() {
                   />
                 </div>
                 <div>
-                  <Label>بعد نهفته (Latent)</Label>
+                  <Label>بعد فضای نهفته</Label>
                   <Input
                     type="number"
                     value={ganConfig.latent_dim}
@@ -874,7 +874,7 @@ export default function AIModelsPage() {
                   />
                 </div>
                 <div>
-                  <Label>تعداد Epoch</Label>
+                  <Label>تعداد دوره‌ها</Label>
                   <Input
                     type="number"
                     value={ganConfig.num_epochs}
@@ -886,7 +886,7 @@ export default function AIModelsPage() {
                   />
                 </div>
                 <div>
-                  <Label>اندازه دسته (Batch)</Label>
+                  <Label>اندازه دسته آموزشی</Label>
                   <Input
                     type="number"
                     value={ganConfig.batch_size}
@@ -1032,7 +1032,7 @@ export default function AIModelsPage() {
                   {job.status === 'running' && (
                     <div className="mb-3">
                       <div className="flex justify-between text-sm mb-1">
-                        <span>پیشرفت: {job.epochs_completed}/{job.total_epochs} epoch</span>
+                        <span>پیشرفت: {job.epochs_completed}/{job.total_epochs} دوره</span>
                         <span>{job.progress}%</span>
                       </div>
                       <Progress value={job.progress} className="h-2" />
@@ -1041,7 +1041,7 @@ export default function AIModelsPage() {
 
                   <div className="grid grid-cols-4 gap-4 text-sm">
                     <div>
-                      <p className="text-muted-foreground">خطا (Loss)</p>
+                      <p className="text-muted-foreground">خطای آموزش</p>
                       <p className="text-red-400 font-bold">{job.loss.toFixed(4)}</p>
                     </div>
                     <div>
