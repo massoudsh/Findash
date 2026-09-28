@@ -1,6 +1,12 @@
 # Frontend Architecture
 
-The Octopus Trading Platform frontend is built with Next.js 14, TypeScript, and Tailwind CSS, featuring a modern glassmorphism design.
+The Octopus Trading Platform frontend is built with **Next.js 15**, TypeScript, and Tailwind CSS, featuring a modern glassmorphism design.
+
+**Dev port:** `npm run dev` binds **3003**, not 3000.
+
+**Public sample dashboard (2026-09):** `/dashboard` is open without a session. `/auth/signin` is a CTA, not a login form. Overview/portfolio are hardcoded samples; the blue ticker calls `GET /api/iran-market/ticker`. Runbook: [[Public Demo Dashboard]].
+
+**i18n:** `translations.ts` covers nav and the command palette. Feature pages use hardcoded Persian — the language switcher does not rewrite them.
 
 ## App Structure & Page Flow
 

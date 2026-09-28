@@ -154,6 +154,8 @@ npm install
 npm run dev        # http://localhost:3003
 ```
 
+داشبورد روی `/dashboard` بدون ورود باز می‌شود (دادهٔ نمونه). تیکر بازار به `NEXT_PUBLIC_API_URL` می‌زند — پیش‌فرض فرانت `:8011` است، در حالی که `start.py` روی `:8000` گوش می‌دهد. جزئیات: [`docs/PUBLIC_DEMO_DASHBOARD.md`](docs/PUBLIC_DEMO_DASHBOARD.md).
+
 ---
 
 ## متغیرهای محیطی

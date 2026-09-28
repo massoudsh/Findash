@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `docs/PUBLIC_DEMO_DASHBOARD.md` — public sample dashboard, local `start.py` import path, port matrix, leftover auth pitfalls
 - Comprehensive GitHub Wiki documentation
 - Modern glassmorphism UI card components
 - Dual sidebar navigation (left + right)

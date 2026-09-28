@@ -16,6 +16,7 @@
 ### Development
 - [[API Reference]]
 - [[Frontend]]
+- [[Public Demo Dashboard]]
 - [[Contributing]]
 
 ### Operations

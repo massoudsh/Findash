@@ -27,6 +27,7 @@
 | **Deploy to production** | [[Deployment]] |
 | **Use or extend the API** | [[API Reference]] |
 | **Work on the frontend** | [[Frontend]] |
+| **Public sample dashboard / local ports** | [[Public Demo Dashboard]] |
 | **Contribute** | [[Contributing]] |
 
 ---
@@ -70,7 +71,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[Landing / Login] --> B[Dashboard]
+    A[Landing / sign-in CTA] --> B[Public sample dashboard]
     B --> C{User Action}
     C -->|View portfolio| D[Portfolio & Positions]
     C -->|Trade| E[Command Center]
@@ -110,6 +111,7 @@ flowchart TD
 |------|-------------|
 | [[API Reference]] | REST API overview and request lifecycle |
 | [[Frontend]] | Next.js app structure, pages, components |
+| [[Public Demo Dashboard]] | Sample dashboard, ports, leftover auth |
 | [[Contributing]] | How to contribute to the project |
 
 ### Operations
@@ -123,7 +125,7 @@ flowchart TD
 ## Features overview
 
 ### Core trading
-- **Dashboard** – Portfolio overview, watchlists, live data  
+- **Dashboard** – Public sample overview (mock cards); live Iran-market ticker when the API is up  
 - **Real-time market data** – Prices, orderbook, tick data  
 - **Options** – Options chain and strategies  
 - **Trading bots** – Automated trading with configurable rules  

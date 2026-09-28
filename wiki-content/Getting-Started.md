@@ -109,10 +109,14 @@ REDIS_URL=redis://localhost:6379/0
 
 #### Step 5: Start the Application
 
-**Terminal 1 - Backend:**
+**Terminal 1 - Backend** (from the **repository root**, not `src/`):
 ```bash
 python3 start.py --reload
 ```
+
+`start.py` adds the repo root to `sys.path` **before** importing `src.core.config`. `src/__init__.py` marks the backend as a package. If you still see `ModuleNotFoundError: No module named 'src'`, you are not in the repo root.
+
+`make dev` starts uvicorn on `:8000` without those env/dependency checks.
 
 **Terminal 2 - Frontend:**
 ```bash
@@ -124,7 +128,7 @@ npm run dev
 
 ```mermaid
 flowchart LR
-    YOU[You] --> FE[Frontend :3000]
+    YOU[You] --> FE[Frontend :3003]
     YOU --> API[Backend :8000]
     YOU --> DOCS[Swagger /docs]
     FE --> API
@@ -132,10 +136,10 @@ flowchart LR
 
 | Service | URL |
 |---------|-----|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:8000 |
-| API Docs (Swagger) | http://localhost:8000/docs |
-| API Docs (ReDoc) | http://localhost:8000/redoc |
+| Frontend | http://localhost:3003 |
+| Backend API (`start.py` / `make dev`) | http://localhost:8000 |
+| Backend API (`docker-compose-core.yml`) | http://localhost:8011 |
+| API Docs (Swagger) | http://localhost:8000/docs (local) or :8011/docs (Compose) |
 
 ---
 
@@ -247,11 +251,9 @@ Visit http://localhost:8000/docs to see the interactive API documentation.
 #### 1. Port Already in Use
 
 ```bash
-# Find process using port 8000
+# Find process using port 8000 (local API) or 3003 (frontend)
 lsof -i :8000
-
-# Kill the process
-kill -9 <PID>
+lsof -i :3003
 ```
 
 #### 2. Python Dependencies Fail
@@ -295,24 +297,30 @@ ls -la .env
 cat .env
 ```
 
+#### 6. `ModuleNotFoundError: No module named 'src'`
+
+Run `python3 start.py` from the repository root. The script inserts that directory on `sys.path` before `from src...` imports.
+
+#### 7. Ticker never leaves “در حال دریافت”
+
+Client market/ticker code defaults to `http://localhost:8011`. Local `start.py` listens on **8000**. Set `NEXT_PUBLIC_API_URL=http://localhost:8000` in `frontend-nextjs/.env.local`, or use Compose (`8011:8000`).
+
+#### 8. Sign-in has no email field
+
+Expected. `/auth/signin` is a CTA to the public sample dashboard. See [[Public Demo Dashboard]].
+
 ---
 
 ## Next Steps
 
 - [[Architecture]] - Understand the system architecture
 - [[API Reference]] - Explore available API endpoints
+- [[Public Demo Dashboard]] - Sample dashboard, ports, leftover auth
 - [[AI Agents]] - Learn about the 11 AI agents
 - [[Configuration]] - Advanced configuration options
 
 ---
 
-## Demo Credentials
+## Demo access
 
-For testing purposes, use these demo credentials:
-
-| Field | Value |
-|-------|-------|
-| Email | demo@octopus.trading |
-| Password | demo123 |
-
-**Note**: Demo credentials are for local development only.
+Open http://localhost:3003/dashboard. No email or password is collected on `/auth/signin` (it is a CTA to the sample dashboard). Overview/portfolio numbers are mock; the ticker is a live API call when the backend is reachable. See [[Public Demo Dashboard]].

@@ -1,5 +1,14 @@
 # 🚀 Octopus Trading Platform - Quick Start Guide
 
+> **Current local run (2026-09):** this page still describes an older `Modules/` + `:3000` flow. Use repo-root commands instead:
+>
+> - Backend: `python3 start.py --reload` → http://localhost:8000
+> - Frontend: `cd frontend-nextjs && npm run dev` → http://localhost:3003
+> - Docker: `docker compose -f docker-compose-core.yml up` → UI `:3003`, API `:8011`
+> - The dashboard is a **public sample** (no demo email/password on `/auth/signin`). See [PUBLIC_DEMO_DASHBOARD.md](../PUBLIC_DEMO_DASHBOARD.md).
+>
+> Commands below that `cd Modules` or open `:3000` are stale.
+
 **Get your trading platform running in under 5 minutes using FREE services only!**
 
 ## ⚡ Ultra-Quick Start (Recommended)
