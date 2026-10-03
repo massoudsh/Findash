@@ -116,6 +116,14 @@ Each entry should include these fields where applicable:
 
 ---
 
+### 2026-10 · Docs: investing tools
+
+| Date       | Version | Area     | Type    | Summary | Details | Ref |
+|------------|---------|----------|---------|---------|---------|-----|
+| 2026-10-03 | —       | docs     | added   | Allocation copilot + investor-tools runbook. | HHI API, file-backed watchlists/paper/dividends, `/investing` missing BFF, port `:8000` vs `:8011`. | |
+
+---
+
 ## Version reference
 
 | Version | Date       | Notes |
@@ -130,4 +138,4 @@ Each entry should include these fields where applicable:
 
 ---
 
-*Last updated: 2026-02-19. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*
+*Last updated: 2026-10-03. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*

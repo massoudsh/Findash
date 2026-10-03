@@ -269,4 +269,11 @@ client.subscribe('AAPL', (quote) => {
 
 ---
 
-*Last updated: January 2025* 
+## See also (verified routers)
+
+The lists above are historical. For the file-backed investing APIs that are actually registered in `src/main_refactored.py`, see [INVESTING_TOOLS.md](./INVESTING_TOOLS.md):
+
+- `POST /api/copilot/allocation-analysis`
+- `/api/investor-tools/*` (watchlists, screener, paper, events placeholder, dividends)
+
+*Last updated: 2026-10-03* 

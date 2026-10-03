@@ -26,6 +26,7 @@
 | **Fix common problems** | [[Troubleshooting]] |
 | **Deploy to production** | [[Deployment]] |
 | **Use or extend the API** | [[API Reference]] |
+| **Allocation copilot / investing tools** | [[Investing Tools]] |
 | **Work on the frontend** | [[Frontend]] |
 | **Contribute** | [[Contributing]] |
 
@@ -110,6 +111,7 @@ flowchart TD
 |------|-------------|
 | [[API Reference]] | REST API overview and request lifecycle |
 | [[Frontend]] | Next.js app structure, pages, components |
+| [[Investing Tools]] | Allocation copilot + `/investing` APIs (file-backed) |
 | [[Contributing]] | How to contribute to the project |
 
 ### Operations

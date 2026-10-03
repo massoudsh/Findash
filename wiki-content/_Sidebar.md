@@ -16,6 +16,7 @@
 ### Development
 - [[API Reference]]
 - [[Frontend]]
+- [[Investing Tools]]
 - [[Contributing]]
 
 ### Operations

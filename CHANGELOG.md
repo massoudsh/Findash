@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Investing-tools runbook (`docs/INVESTING_TOOLS.md`) for allocation copilot and `/api/investor-tools`
 - Comprehensive GitHub Wiki documentation
 - Modern glassmorphism UI card components
 - Dual sidebar navigation (left + right)

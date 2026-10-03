@@ -158,4 +158,15 @@ flowchart LR
 | Strategies API (frontend) | `frontend-nextjs/src/lib/services/api.ts` → `getStrategies`, `createStrategy` |
 | Strategies API (backend) | `src/api/endpoints/strategies_crud.py` → GET/POST `/strategies/` |
 | Options page | `frontend-nextjs/src/app/options/page.tsx` (tabs: Trade, Strategies) |
+| Iran allocation copilot | `components/portfolio/allocation-copilot.tsx` → `POST /api/copilot/allocation-analysis` |
+| Investing tools page | `app/investing/page.tsx` (not in sidebar; same-origin fetch has no BFF) |
 | App layout | `frontend-nextjs/src/app/layout.tsx` |
+
+---
+
+## 8. Investing tools (allocation + `/investing`)
+
+See **[INVESTING_TOOLS.md](./INVESTING_TOOLS.md)** for endpoints, examples, and pitfalls.
+
+- **Portfolio tab:** `/portfolio` → `/dashboard?tab=portfolio` → `IranPortfolioSection` (localStorage) + allocation copilot (FastAPI via `getBackendUrl()`).
+- **`/investing`:** watchlists, screener, paper, dividends. Browser calls `/api/investor-tools/*` on the Next.js origin; those routes are implemented only on FastAPI today.
