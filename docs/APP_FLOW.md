@@ -39,8 +39,6 @@ flowchart LR
         L7[/portfolio]
         L8[/strategies]
         L9[/risk]
-        L10[/risk/policy]
-        L11[/alerts]
     end
     subgraph Right["Right sidebar – Analysis & Tools"]
         R1[/technical]
@@ -60,25 +58,16 @@ flowchart LR
 
 | Route | Page / content |
 |-------|-----------------|
-| `/` | Home (redirect or landing) |
-| `/dashboard` | Tabs via `?tab=` (`overview` default). Overview is `OverviewDashboard` (mostly static + live Iran ticker). See [FRONTEND_SESSION.md](FRONTEND_SESSION.md). |
-| `/demo` | Same overview component with a sample-data banner |
+| `/` | Landing (Persian marketing page; CTA to `/dashboard`) |
+| `/dashboard` | Public sample dashboard — tabs: overview, portfolio, market, trades, analytics, help. See [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md). |
+| `/auth/signin` | CTA to the sample dashboard (no email/password form) |
 | `/options` | Options: **Trade** tab (terminal) + **Strategies** tab (options strategy library) |
 | `/strategies` | Strategies: list, create, details, mini-charts; “Options Strategies” link |
 | `/trades` | Trading center (order entry, open orders) |
 | `/trading-bots` | Trading bots list and control |
 | `/backtesting` | Backtest config and results |
 | `/portfolio` | Portfolio view |
-| `/risk` | Risk assessment (metrics) |
-| `/risk/policy` | Per-user risk policy (drawdown / concentration / stop-bots) |
-| `/account` | Profile, subscription tab (`?tab=subscription`), settings |
-| `/account/subscription` | Plan status (also embedded in `/account`) |
-| `/alerts` | Price-alert rules |
-| `/payment/checkout` | Plan picker → ZarinPal |
-| `/payment/callback/zarinpal` | Gateway return bridge |
-| `/payment/success`, `/payment/failed` | Payment result |
-| `/auth/otp`, `/auth/phone` | SMS OTP login |
-| `/audit-log` | Admin audit trail |
+| `/risk` | Risk assessment |
 | Others | Technical, Fundamental, Macro, On-chain, Social, AI Models, Data Explorer, Visualization, Reports, API Playground, Notifications, Admin |
 
 ---
@@ -136,61 +125,31 @@ flowchart TB
 ## 5. Dashboard data flow
 
 ```mermaid
-flowchart LR
-    D[Dashboard page] --> DC[DashboardContent]
-    DC --> Wallet[Wallet cards]
-    DC --> Summary[Summary cards]
-    DC --> Tabs[Overview / Holdings / Markets / Activity / Analytics]
-    Tabs --> Charts[Bar, Waterfall, Pie, Line]
-    DC --> API[getPortfolios, getTrades]
-    API --> Backend[FastAPI]
-    Backend --> DB[(DB) or mock]
+flowchart TB
+    SignIn["/auth/signin — CTA only"] --> Dash["/dashboard"]
+    Landing["/"] --> Dash
+    Dash --> Ticker[BlueTickerBar]
+    Ticker --> LiveAPI["GET /api/iran-market/ticker — live, TEDPIX placeholder"]
+    Dash --> Tabs[tab= overview / portfolio / market / trades / analytics / help]
+    Tabs --> Overview[OverviewDashboard — hardcoded cards]
+    Tabs --> Port[PortfolioContent — MOCK_PORTFOLIOS]
+    Tabs --> Mkt[IranMarketOverview — mock, then overview API]
 ```
 
-- Dashboard uses **Overview** (one bar, one waterfall, one pie, one line), **Holdings**, **Markets**, **Activity**, **Analytics**.
-- Portfolio/trade data comes from `api.ts` (e.g. `getPortfolios`, `getTrades`) when available; some cards use local/mock data.
+- **Public by design:** no session is required. Header copy: «داشبورد عمومی با داده نمونه».
+- **Live:** ticker only (`useIranTicker` → FastAPI `/api/iran-market/ticker`). TEDPIX is not sourced from tgju/Nobitex.
+- **Sample:** overview stats/positions/activity, portfolio holdings, and the market-tab seed/fallback.
+- Tab query: `?tab=portfolio` etc. `overview` is omitted from the URL.
+- Runbook: [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md).
 
 ---
 
 ## 6. API base URL and backend
 
-- Docker frontend: `NEXT_PUBLIC_API_URL=http://localhost:8011`. Local `python3 start.py` / uvicorn defaults to **`:8000`** (`API_PORT`). Next.js itself is **`:3003`**.
-- **`lib/services/api.ts`** (axios) and **`getBackendUrl()`** fall back to `:8000` if env is unset. NextAuth `authorize()` and `useIranTicker` fall back to `:8011`. Set env explicitly — see [FRONTEND_SESSION.md](FRONTEND_SESSION.md).
-- Session-aware **Next.js BFF** routes under `frontend-nextjs/src/app/api/` proxy subscriptions, risk-policy, admin, and ZarinPal create with the NextAuth `accessToken`. Wallet, KYC, alerts, and PDF reports are FastAPI routes and require a JWT.
-- Backend entry is `src/main_refactored.py`. Account-platform workflows: [ACCOUNT_PLATFORM.md](ACCOUNT_PLATFORM.md).
-
----
-
-## 8. Payment and subscription flow
-
-```mermaid
-sequenceDiagram
-    participant U as User
-    participant FE as Next.js (/payment/checkout)
-    participant API as FastAPI
-    participant ZP as ZarinPal
-    U->>FE: Choose plan
-    FE->>API: POST /api/subscriptions/subscribe
-    API->>ZP: payment/request.json
-    API-->>FE: authority + redirect_url
-    FE->>ZP: StartPay
-    ZP->>API: GET /api/payment/zarinpal/callback
-    API->>ZP: payment/verify.json
-    API->>API: _dispatch_payment_success (subscription)
-    API-->>U: Redirect /payment/success
-```
-
-- Price always comes from `SubscriptionPlan` in the database, never from the client.
-- Wallet top-up uses the same verify/dispatch path with `purpose=wallet_topup`.
-- `POST /api/trading-bots/{id}/start` returns **402** without an unexpired active subscription (admins exempt).
-
----
-
-## 9. Alerts and risk-policy evaluation
-
-- Price alerts: Celery beat every 60s compares `price_alert_rules` to `/api/iran-market/overview`.
-- Risk policy: Celery beat every 5 minutes compares snapshots/positions to `risk_policies`.
-- Manual: `POST /api/alerts/evaluate` and `POST /api/risk-policy/evaluate-all` (admin).
+- Client ticker/market/signup fall back to **`NEXT_PUBLIC_API_URL` or `http://localhost:8011`**.
+- Some BFF helpers (`lib/backend-url.ts`) fall back to **`http://localhost:8000`**.
+- Local `python3 start.py` / `make dev` bind FastAPI to **8000**. Docker Compose publishes the API at **8011**.
+- Backend app: `src/main_refactored.py`.
 
 ---
 
@@ -198,9 +157,9 @@ sequenceDiagram
 
 | What | Where |
 |------|--------|
-| Layout + sidebars | `frontend-nextjs/src/components/navigation/navigation-wrapper.tsx` (dual sidebar lg+; Sheet + bottom nav on mobile) |
-| Dashboard overview | `frontend-nextjs/src/components/dashboard/overview-dashboard.tsx` (extracted from the page module for Next.js build size) |
-| Session / BFF | [FRONTEND_SESSION.md](FRONTEND_SESSION.md) |
+| Layout + sidebars | `frontend-nextjs/src/components/navigation/navigation-wrapper.tsx` |
+| Dashboard | `frontend-nextjs/src/app/dashboard/page.tsx` + `components/dashboard/overview-dashboard.tsx` |
+| Sign-in CTA | `frontend-nextjs/src/app/auth/signin/page.tsx` |
 | Strategies list + create | `frontend-nextjs/src/components/strategies/strategies-content.tsx` |
 | Strategies API (frontend) | `frontend-nextjs/src/lib/services/api.ts` → `getStrategies`, `createStrategy` |
 | Strategies API (backend) | `src/api/endpoints/strategies_crud.py` → GET/POST `/strategies/` |

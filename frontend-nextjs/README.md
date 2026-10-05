@@ -1,48 +1,65 @@
 # Frontend (Next.js)
 
-Next.js 15 App Router UI for Findash / Octopus. Port **3003** (`npm run dev` / `npm start`). Session, BFF, dashboard, and navigation: **[docs/FRONTEND_SESSION.md](../docs/FRONTEND_SESSION.md)**.
+Persian RTL UI for Findash. **Next.js 15**, App Router, Tailwind, Shadcn/Radix.
+
+Dev server: **http://localhost:3003** (`npm run dev` / `npm start` both pass `-p 3003`).
 
 ## Getting started
 
 ```bash
 cd frontend-nextjs
 npm install
-# optional: frontend-nextjs/.env.local
-# NEXT_PUBLIC_API_URL=http://localhost:8000   # local uvicorn
-# NEXT_PUBLIC_API_URL=http://localhost:8011   # docker-compose-core.yml host mapping
 npm run dev
 ```
 
-App: [http://localhost:3003](http://localhost:3003). Sign-in: `/auth/signin` (Credentials → FastAPI `POST /api/auth/login`).
-
-## Project structure
-
-- `src/app` — App Router pages and Route Handlers (`src/app/api/`).
-- `src/components` — feature UI (`dashboard/`, `navigation/`, `portfolio/`, `ui/`).
-- `src/lib` — `auth-options.ts`, `backend-url.ts`, `services/api.ts`, hooks (`use-iran-ticker.ts`).
-
-Pages stay thin: route `page.tsx` composes a content component, usually behind `Suspense`.
-
-## How the UI talks to FastAPI
-
-Two paths (not “mocks first, proxies second”):
-
-1. **Browser → FastAPI** using `NEXT_PUBLIC_API_URL` (axios in `lib/services/api.ts`, Iran ticker, wallet/KYC/PDF).
-2. **Browser → Next.js BFF → FastAPI** for subscriptions, risk-policy, admin, and ZarinPal create. Those handlers attach `session.accessToken` when `getServerSession(authOptions)` is used.
-
-`middleware.ts` currently authorizes all matched routes (`authorized: () => true`). `/admin` is gated in `app/admin/layout.tsx` by session + `role === 'admin'`.
-
-Default URL **fallbacks differ** (`getBackendUrl` → `:8000`, NextAuth `authorize` → `:8011`). Set `NEXT_PUBLIC_API_URL` (and in Docker, `BACKEND_INTERNAL_URL=http://api:8000`) or login/ticker/BFF will disagree. Full matrix: [docs/FRONTEND_SESSION.md](../docs/FRONTEND_SESSION.md).
-
-## Dashboard
-
-`/dashboard` tabs: overview (mostly static `OverviewDashboard`), portfolio, market, trades, analytics, help. Live strip: `BlueTickerBar` → `GET /api/iran-market/ticker`. `/demo` reuses the overview with a sample-data banner.
-
-## Scripts
+Optional `frontend-nextjs/.env.local`:
 
 ```bash
-npm run dev    # next dev -p 3003
+NEXT_PUBLIC_API_URL=http://localhost:8000   # local start.py / make dev
+# NEXT_PUBLIC_API_URL=http://localhost:8011 # docker-compose-core.yml
+```
+
+Without this file, ticker/market/signup fall back to **`:8011`**. Some server BFF helpers (`src/lib/backend-url.ts`) fall back to **`:8000`**. Match the URL to how you started FastAPI. Details: [docs/PUBLIC_DEMO_DASHBOARD.md](../docs/PUBLIC_DEMO_DASHBOARD.md).
+
+## Layout
+
+| Path | Role |
+|------|------|
+| `src/app/` | App Router pages and `src/app/api/` BFF routes |
+| `src/components/` | Feature UI (`dashboard`, `portfolio`, `navigation`, `ui`) |
+| `src/lib/` | `auth-options.ts`, `backend-url.ts`, `i18n/`, hooks, services |
+
+Root layout (`app/layout.tsx`): `LocaleProvider` (default **fa**), NextAuth `SessionProviderWrapper`, `NavigationWrapper`, Vazirmatn.
+
+## Public sample dashboard
+
+`/dashboard` does **not** require a session. `/auth/signin` is a link to that page, not a credentials form.
+
+| Surface | Source |
+|---------|--------|
+| Overview cards, mock portfolio | Hardcoded in the component |
+| Market tab | Mock seed; replaced only if `GET /api/iran-market/overview` returns items |
+| Blue ticker | `useIranTicker` → `GET /api/iran-market/ticker` (TEDPIX is a backend placeholder) |
+
+`middleware.ts` allow-lists dashboard/trading/settings routes with `authorized: () => true`. Admin is still gated in `app/admin/layout.tsx`.
+
+## API communication
+
+1. **Browser → FastAPI** for Iran market (`NEXT_PUBLIC_API_URL`, default `:8011`).
+2. **Browser → Next.js BFF** (`src/app/api/subscriptions`, `risk-policy`, `admin`, `payment`, …) which call FastAPI with `getServerSession`.
+3. **Hardcoded sample data** on the public dashboard/portfolio (not the old `lib/services/*_api.ts` mock layer).
+
+NextAuth `authorize()` still posts email/password to `POST /api/auth/login`. There is no matching form on `/auth/signin`. `/auth/phone` and `/auth/otp` call `/api/proxy/auth/*`, which is not implemented under `src/app/api/`.
+
+## i18n
+
+`src/lib/i18n/translations.ts` + `useTranslations()`: navigation and command palette (`en` / `es` / `fa`). Feature pages (dashboard, trading, fundamental, options, …) use hardcoded Persian. Switching language does not rewrite those pages.
+
+## Commands
+
+```bash
+npm run dev    # :3003
 npm run build
-npm start      # next start -p 3003
+npm start      # :3003
 npm run lint
 ```

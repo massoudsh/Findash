@@ -1,6 +1,12 @@
 # Frontend Architecture
 
-The UI is built with Next.js **15**, TypeScript, and Tailwind CSS (glassmorphism cards). Dev/prod scripts bind **port 3003**, not 3000.
+The Octopus Trading Platform frontend is built with **Next.js 15**, TypeScript, and Tailwind CSS, featuring a modern glassmorphism design.
+
+**Dev port:** `npm run dev` binds **3003**, not 3000.
+
+**Public sample dashboard (2026-09):** `/dashboard` is open without a session. `/auth/signin` is a CTA, not a login form. Overview/portfolio are hardcoded samples; the blue ticker calls `GET /api/iran-market/ticker`. Runbook: [[Public Demo Dashboard]].
+
+**i18n:** `translations.ts` covers nav and the command palette. Feature pages use hardcoded Persian — the language switcher does not rewrite them.
 
 ## App Structure & Page Flow
 
@@ -12,9 +18,6 @@ flowchart TB
     ROOT --> MKT[/market-data]
     ROOT --> AGENTS[/agents]
     ROOT --> RISK[/risk]
-    ROOT --> ACCT[/account]
-    ROOT --> PAY[/payment]
-    ROOT --> ALERTS[/alerts]
     DASH --> DASH_C[Dashboard Content\nAccount Cards, Charts]
     TRADE --> TC[Command Center\nOptions, Bots]
     PORT --> PORT_C[Portfolio Views\nPositions, Performance]
@@ -74,12 +77,7 @@ frontend-nextjs/
 │   │   ├── portfolios/         # Portfolio pages
 │   │   ├── market-data/        # Market data pages
 │   │   ├── agents/             # AI agents pages
-│   │   ├── risk/               # Risk metrics + policy/
-│   │   ├── account/            # Profile + subscription tabs
-│   │   ├── payment/            # checkout, zarinpal callback, success/failed
-│   │   ├── alerts/             # Price-alert UI
-│   │   ├── admin/              # Real admin panel (JWT admin role)
-│   │   ├── auth/               # signin, signup, otp, phone
+│   │   ├── risk/               # Risk management
 │   │   └── settings/           # Settings pages
 │   ├── components/
 │   │   ├── ui/                 # Base UI components
@@ -100,22 +98,6 @@ frontend-nextjs/
 ├── next.config.js              # Next.js configuration
 └── package.json
 ```
-
----
-
-## Account-platform pages and BFF
-
-| Route | File | Backend |
-|-------|------|---------|
-| `/account`, `/account/subscription` | `app/account/` | `/api/subscriptions/*` via Next.js BFF |
-| `/payment/checkout` | `app/payment/checkout/` | BFF `app/api/payment/zarinpal/create` + subscribe |
-| `/payment/callback/zarinpal` | `app/payment/callback/zarinpal/` | ZarinPal returns here (`APP_BASE_URL`) |
-| `/alerts` | `app/alerts/page.tsx` | FastAPI `/api/alerts` |
-| `/risk/policy` | `app/risk/policy/page.tsx` | BFF `/api/risk-policy/*` |
-| `/admin`, `/audit-log` | `app/admin/`, `app/audit-log/` | BFF `/api/admin/*` |
-| `/auth/otp`, `/auth/phone` | `app/auth/` | FastAPI `/api/auth/send-otp` |
-
-BFF handlers (`frontend-nextjs/src/app/api/`) attach NextAuth `accessToken` and forward to `getBackendUrl()`. Wallet, KYC, and PDF do not have BFF routes yet — call FastAPI with JWT. See [[Account Platform]].
 
 ---
 
@@ -472,15 +454,11 @@ npm run type-check
 ## Environment Variables
 
 ```bash
-# frontend-nextjs/.env.local
-# Docker Compose host mapping:
-NEXT_PUBLIC_API_URL=http://localhost:8011
-# Local uvicorn (API_PORT default):
-# NEXT_PUBLIC_API_URL=http://localhost:8000
-NEXTAUTH_URL=http://localhost:3003
+# .env.local
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_WS_URL=ws://localhost:8000
+NEXT_PUBLIC_APP_NAME=Octopus Trading
 ```
-
-`getBackendUrl()` falls back to `:8000`; NextAuth login falls back to `:8011`. Inside Compose, set `BACKEND_INTERNAL_URL=http://api:8000` so the Next.js **server** can reach the API. Session, BFF, and dashboard details: [[Frontend Auth]].
 
 ---
 

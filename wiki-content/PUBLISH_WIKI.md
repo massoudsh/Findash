@@ -52,9 +52,8 @@ Visit https://github.com/massoudsh/Findash/wiki to see your wiki!
 | Database.md | Database schema and models |
 | Data-Sources.md | Market/news providers and API keys |
 | API-Reference.md | REST API documentation |
-| Account-Platform.md | Payments, wallet, KYC, alerts, risk policy |
 | Frontend.md | Frontend architecture |
-| Frontend-Auth.md | NextAuth session, BFF, dashboard, PDF font |
+| Public-Demo-Dashboard.md | Public sample dashboard, ports, leftover auth |
 | Deployment.md | Production deployment guide |
 | Troubleshooting.md | Common issues and fixes |
 | Contributing.md | Contribution guidelines |

@@ -15,9 +15,8 @@
 
 ### Development
 - [[API Reference]]
-- [[Account Platform]]
 - [[Frontend]]
-- [[Frontend Auth]]
+- [[Public Demo Dashboard]]
 - [[Contributing]]
 
 ### Operations
