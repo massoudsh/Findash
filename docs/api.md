@@ -271,9 +271,10 @@ client.subscribe('AAPL', (quote) => {
 
 ## See also (verified routers)
 
-The lists above are historical. For the file-backed investing APIs that are actually registered in `src/main_refactored.py`, see [INVESTING_TOOLS.md](./INVESTING_TOOLS.md):
+The lists above are historical. Registered routers that are easy to miss:
 
-- `POST /api/copilot/allocation-analysis`
-- `/api/investor-tools/*` (watchlists, screener, paper, events placeholder, dividends)
+- File-backed investing APIs: [INVESTING_TOOLS.md](./INVESTING_TOOLS.md) (`POST /api/copilot/allocation-analysis`, `/api/investor-tools/*`)
+- Persian portfolio PDF: FastAPI `GET /api/reports/portfolio.pdf` (JWT). Browser path is Next.js `GET /api/reports/portfolio` — [FRONTEND_SESSION.md](./FRONTEND_SESSION.md) §7.
+- Account platform (wallet, ZarinPal, KYC, alerts, risk): [ACCOUNT_PLATFORM.md](./ACCOUNT_PLATFORM.md)
 
-*Last updated: 2026-10-03* 
+*Last updated: 2026-10-05* 

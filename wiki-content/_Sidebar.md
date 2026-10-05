@@ -16,6 +16,9 @@
 ### Development
 - [[API Reference]]
 - [[Frontend]]
+- [[Frontend Auth]]
+- [[Account Platform]]
+- [[Public Demo Dashboard]]
 - [[Investing Tools]]
 - [[Contributing]]
 

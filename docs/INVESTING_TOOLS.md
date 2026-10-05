@@ -2,7 +2,7 @@
 
 Operational runbook for the two investor-facing modules that are registered in `src/main_refactored.py` but missing from `docs/api.md` and the wiki API index.
 
-Draft PRs #28–#30 cover account platform, session/BFF, and the public sample dashboard. This page covers **what those PRs do not**: rule-based allocation analysis and the JSON-backed investor-tools API.
+Account platform, session/BFF, and the public sample dashboard are documented in `docs/ACCOUNT_PLATFORM.md`, `docs/FRONTEND_SESSION.md`, and `docs/PUBLIC_DEMO_DASHBOARD.md`. This page covers rule-based allocation analysis and the JSON-backed investor-tools API.
 
 ---
 
@@ -183,6 +183,6 @@ curl -s -X POST http://localhost:8000/api/investor-tools/paper/orders \
 
 ## Related
 
-- Iran market + TEDPIX placeholder: `src/api/endpoints/iran_market.py` (covered in draft PR #30)
-- Account / wallet / ZarinPal: draft PR #28 (`docs/ACCOUNT_PLATFORM.md` when merged)
-- Session / BFF / `getBackendUrl`: draft PR #29 (`docs/FRONTEND_SESSION.md` when merged)
+- Iran market + TEDPIX placeholder: `src/api/endpoints/iran_market.py` ([PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md))
+- Account / wallet / ZarinPal: [ACCOUNT_PLATFORM.md](ACCOUNT_PLATFORM.md)
+- Session / BFF / `getBackendUrl`: [FRONTEND_SESSION.md](FRONTEND_SESSION.md)

@@ -38,7 +38,7 @@ To add a new set of endpoints:
     app.include_router(my_new_router, prefix="/my-new-route", tags=["My New Route"])
     ```
 
-Routers are registered in `src/main_refactored.py` (not `src/main.py`). Investor-facing allocation + watchlist/paper APIs: [docs/INVESTING_TOOLS.md](../../docs/INVESTING_TOOLS.md).
+Routers are registered in `src/main_refactored.py` (not `src/main.py`). Investor-facing allocation + watchlist/paper APIs: [docs/INVESTING_TOOLS.md](../../docs/INVESTING_TOOLS.md). Persian portfolio PDF: `src/api/endpoints/pdf_reports.py` (`GET /api/reports/portfolio.pdf`); the Next.js UI reaches it through `frontend-nextjs/src/app/api/reports/portfolio/route.ts` — [docs/FRONTEND_SESSION.md](../../docs/FRONTEND_SESSION.md).
 
 ## Available Routers
 
