@@ -466,4 +466,5 @@ NEXT_PUBLIC_APP_NAME=Octopus Trading
 
 - [[Architecture]] - Overall system architecture
 - [[API Reference]] - Backend API documentation
+- [[Investing Tools]] - Allocation copilot (`/dashboard?tab=portfolio`) and `/investing`
 - [[Configuration]] - Environment configuration

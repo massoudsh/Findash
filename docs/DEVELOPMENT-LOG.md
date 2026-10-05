@@ -116,14 +116,11 @@ Each entry should include these fields where applicable:
 
 ---
 
-### 2026-09 · Public demo dashboard and local startup
+### 2026-10 · Docs: investing tools
 
 | Date       | Version | Area     | Type    | Summary | Details | Ref |
 |------------|---------|----------|---------|---------|---------|-----|
-| 2026-09-25 | —       | frontend | changed | Open dashboard with sample data. | Sign-in is a CTA; portfolio/market seed mock; ticker still hits `/api/iran-market/ticker`. | |
-| 2026-09-26 | —       | frontend | changed | Remaining page labels in Persian. | Feature pages hardcoded fa; `translations.ts` still nav/command-palette only. | |
-| 2026-09-26 | —       | backend  | fixed   | Local startup imports. | `start.py` puts repo root on `sys.path` before `src` imports; added `src/__init__.py`. | |
-| 2026-09-28 | —       | docs     | added   | Public demo + local-dev runbook. | `docs/PUBLIC_DEMO_DASHBOARD.md` plus APP_FLOW / Getting Started / frontend README. | |
+| 2026-10-03 | —       | docs     | added   | Allocation copilot + investor-tools runbook. | HHI API, file-backed watchlists/paper/dividends, `/investing` missing BFF, port `:8000` vs `:8011`. | |
 
 ---
 
@@ -141,4 +138,4 @@ Each entry should include these fields where applicable:
 
 ---
 
-*Last updated: 2026-09-28. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*
+*Last updated: 2026-10-03. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*

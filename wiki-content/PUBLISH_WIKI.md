@@ -53,7 +53,7 @@ Visit https://github.com/massoudsh/Findash/wiki to see your wiki!
 | Data-Sources.md | Market/news providers and API keys |
 | API-Reference.md | REST API documentation |
 | Frontend.md | Frontend architecture |
-| Public-Demo-Dashboard.md | Public sample dashboard, ports, leftover auth |
+| Investing-Tools.md | Allocation copilot and investor-tools API |
 | Deployment.md | Production deployment guide |
 | Troubleshooting.md | Common issues and fixes |
 | Contributing.md | Contribution guidelines |
