@@ -112,6 +112,7 @@ flowchart TD
 | [[API Reference]] | REST API overview and request lifecycle |
 | [[Account Platform]] | ZarinPal, IRT wallet, subscriptions, KYC, alerts, risk policy, admin, PDF |
 | [[Frontend]] | Next.js app structure, pages, components |
+| [[Frontend Auth]] | NextAuth, BFF, dashboard ticker, port pitfalls |
 | [[Contributing]] | How to contribute to the project |
 
 ### Operations

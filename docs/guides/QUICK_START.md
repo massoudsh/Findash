@@ -2,6 +2,8 @@
 
 **Get your trading platform running in under 5 minutes using FREE services only!**
 
+**Ports (verify against compose / `start.py`, not this file’s older examples):** Docker core stack exposes the API on **http://localhost:8011** and the frontend on **http://localhost:3003**. Local `python3 start.py` uses **`API_PORT` default 8000**. Next.js is always **3003** (`frontend-nextjs/package.json`). Session and URL pitfalls: [FRONTEND_SESSION.md](../FRONTEND_SESSION.md).
+
 ## ⚡ Ultra-Quick Start (Recommended)
 
 ```bash

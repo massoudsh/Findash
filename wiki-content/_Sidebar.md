@@ -17,6 +17,7 @@
 - [[API Reference]]
 - [[Account Platform]]
 - [[Frontend]]
+- [[Frontend Auth]]
 - [[Contributing]]
 
 ### Operations

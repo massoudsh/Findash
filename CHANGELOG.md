@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Account-platform engineering docs: payments, IRT wallet, subscriptions, KYC, alerts, risk policy, admin, OTP, and Persian PDF ([docs/ACCOUNT_PLATFORM.md](docs/ACCOUNT_PLATFORM.md), wiki [[Account Platform]])
+- Frontend session, BFF, dashboard, and navigation runbook (`docs/FRONTEND_SESSION.md`)
 - Comprehensive GitHub Wiki documentation
 - Modern glassmorphism UI card components
 - Dual sidebar navigation (left + right)
