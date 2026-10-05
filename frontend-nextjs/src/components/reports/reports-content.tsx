@@ -109,6 +109,7 @@ function getReportTextFromResponse(data: Record<string, unknown>): string | null
 
 export function ReportsContent() {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isDownloadingPortfolioPdf, setIsDownloadingPortfolioPdf] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState('7d');
   const [reportType, setReportType] = useState<string>('market_summary');
   const [activeTab, setActiveTab] = useState('insights');
@@ -297,6 +298,33 @@ export function ReportsContent() {
     URL.revokeObjectURL(url);
   };
 
+  const downloadPortfolioPdf = async () => {
+    setIsDownloadingPortfolioPdf(true);
+    try {
+      const response = await fetch('/api/reports/portfolio');
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.detail ?? 'تولید گزارش ناموفق بود');
+      }
+
+      const url = URL.createObjectURL(await response.blob());
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'portfolio-report.pdf';
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast({
+        title: 'دریافت گزارش ناموفق بود',
+        description: error instanceof Error ? error.message : 'خطای نامشخص رخ داد',
+        type: 'error',
+        duration: 6000,
+      });
+    } finally {
+      setIsDownloadingPortfolioPdf(false);
+    }
+  };
+
   const getInsightIcon = (type: string) => {
     switch (type) {
       case 'bullish': return <TrendingUp className="w-4 h-4 text-green-500" />;
@@ -355,6 +383,14 @@ export function ReportsContent() {
                 </SelectContent>
               </Select>
               <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={downloadPortfolioPdf} disabled={isDownloadingPortfolioPdf}>
+                  {isDownloadingPortfolioPdf ? (
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4 mr-2" />
+                  )}
+                  {isDownloadingPortfolioPdf ? 'در حال آماده‌سازی...' : 'PDF پرتفوی'}
+                </Button>
                 {lastReportText && (
                   <Button variant="outline" size="sm" onClick={downloadReport}>
                     <Download className="w-4 h-4 mr-2" />
