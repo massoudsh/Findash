@@ -24,17 +24,16 @@ Single source of truth for issue status and development phases.
 - **#14** – feat: طراحی و فعال‌سازی مجدد gating واقعی auth/premium → Closed by product decision. داشبورد عمومی باقی می‌ماند؛ اعمال مجدد gating با تصمیم صریح برای دسترسی آزاد همه به داشبورد تناقض دارد. مسیرهای حساس مدیریتی همچنان گیت‌شده‌اند.
 - **#15** – test: Postgres واقعی در CI → Closed. `.github/workflows/ci-cd.yml` سرویس `postgres:14` و `DATABASE_URL` را برای `test_ingestion_pipeline.py` دارد.
 - **#18** – feat: گزارش PDF فارسی پرتفوی → Closed. endpoint `GET /api/reports/portfolio.pdf` (reportlab + arabic_reshaper + python-bidi) و دکمهٔ «PDF پرتفوی» در `/reports` از طریق proxy احرازشده.
+- **#12، #13، #19 تا #27** – قابلیت‌های پلتفرم حساب و ابزارهای سرمایه‌گذاری → Closed. پنل ادمین، اشتراک، KYC، کیف پول، سیاست ریسک، هشدارهای Push/SMS، واچ‌لیست، اسکرینر، معاملات آزمایشی، تقویم رویداد و سود نقدی پیاده‌سازی و در router اصلی ثبت شده‌اند.
 
 ---
 
 ## Open issues (current)
 
-| # | Title | Priority |
-|---|--------|----------|
-| [8](https://github.com/massoudsh/Findash/issues/8) | ui: Dashboard real data wiring and API timeouts | Medium |
-| [9](https://github.com/massoudsh/Findash/issues/9) | feat: Technical page – wire Screener, Watchlist, Economic Calendar | Low (Calendar wired to API; Screener/Watchlist already use real data / localStorage) |
-| [10](https://github.com/massoudsh/Findash/issues/10) | feat: Trading bots execution – wire backend and run on platform | High |
-| [11](https://github.com/massoudsh/Findash/issues/11) | docs: Development roadmap and phase checklist | Low |
+| # | Title | دلیل باقی‌ماندن |
+|---|--------|------------------|
+| [16](https://github.com/massoudsh/Findash/issues/16) | اتصال واقعی ایجنت‌های M6-M11 با torch/prophet روی سرور | به اجرای محاسبات واقعی و بررسی روی سرور نیاز دارد. |
+| [17](https://github.com/massoudsh/Findash/issues/17) | تست‌های E2E با Playwright | به اجرای مرورگر نیاز دارد. |
 
 ---
 
@@ -55,4 +54,4 @@ Single source of truth for issue status and development phases.
 
 ---
 
-*Last updated: 2026-10-05. Closed #14 by product decision; documented #15 CI coverage and #18 Persian PDF delivery.*
+*Last updated: 2026-10-05. Closed implemented issues #12، #13 و #19 تا #27; only #16 and #17 remain open.*
