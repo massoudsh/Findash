@@ -46,7 +46,7 @@ Root layout (`app/layout.tsx`): `LocaleProvider` (default **fa**), NextAuth `Ses
 ## API communication
 
 1. **Browser → FastAPI** for Iran market (`NEXT_PUBLIC_API_URL`, default `:8011`).
-2. **Browser → Next.js BFF** (`src/app/api/subscriptions`, `risk-policy`, `admin`, `payment`, …) which call FastAPI with `getServerSession`.
+2. **Browser → Next.js BFF** (`src/app/api/subscriptions`, `risk-policy`, `admin`, `payment`, `reports/portfolio`, …) which call FastAPI. The portfolio PDF handler uses `getServerSession(authOptions)` and streams `application/pdf`. Details: [docs/FRONTEND_SESSION.md](../docs/FRONTEND_SESSION.md).
 3. **Hardcoded sample data** on the public dashboard/portfolio (not the old `lib/services/*_api.ts` mock layer).
 
 NextAuth `authorize()` still posts email/password to `POST /api/auth/login`. There is no matching form on `/auth/signin`. `/auth/phone` and `/auth/otp` call `/api/proxy/auth/*`, which is not implemented under `src/app/api/`.

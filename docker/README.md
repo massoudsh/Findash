@@ -26,6 +26,8 @@ The frontend image is built with `NEXT_PUBLIC_API_URL=http://localhost:8011` (br
 
 `Dockerfile.fastapi` does **not** copy or `apt-get install` those files. Without them the endpoint returns **HTTP 503**. Packages `reportlab`, `arabic_reshaper`, and `python-bidi` are in `requirements/requirements.txt`.
 
+The `/reports` UI does not call FastAPI directly. It hits Next.js `GET /api/reports/portfolio`, which forwards the NextAuth JWT to this endpoint (`docs/FRONTEND_SESSION.md` §7). Missing font, missing session, and `:8000` vs `:8011` all surface as a failed download toast.
+
 To enable PDF in the API image, bind-mount or copy those two TTFs into the paths above (as root in the image, before `USER trading`) and rebuild. Python deps alone are not enough: Helvetica has no Persian glyphs.
 
 Session and BFF URL pitfalls: [docs/FRONTEND_SESSION.md](../docs/FRONTEND_SESSION.md).

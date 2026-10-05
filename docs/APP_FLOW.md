@@ -166,6 +166,7 @@ flowchart TB
 | Options page | `frontend-nextjs/src/app/options/page.tsx` (tabs: Trade, Strategies) |
 | Iran allocation copilot | `components/portfolio/allocation-copilot.tsx` → `POST /api/copilot/allocation-analysis` |
 | Investing tools page | `app/investing/page.tsx` (not in sidebar; same-origin fetch has no BFF) |
+| Reports PDF download | `app/api/reports/portfolio/route.ts` → FastAPI `GET /api/reports/portfolio.pdf` (session JWT). UI: `/reports` «PDF پرتفوی». See [FRONTEND_SESSION.md](FRONTEND_SESSION.md) §7. |
 | App layout | `frontend-nextjs/src/app/layout.tsx` |
 
 ---

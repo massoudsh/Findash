@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wiki publish automation script
 
 ### Changed
+- Document `/reports` portfolio PDF BFF in `docs/FRONTEND_SESSION.md` (Next.js `GET /api/reports/portfolio` → FastAPI `GET /api/reports/portfolio.pdf`; CTA sign-in 401; Vazirmatn 503)
 - Enhanced card components with variants (glass, gradient, elevated, bordered)
 - Reorganized navigation tabs into logical groups
 - Improved dashboard styling with modern design patterns

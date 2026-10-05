@@ -59,8 +59,9 @@ Default plans if the table is empty: `basic` 99k, `pro` 249k, `elite` 499k toman
 | `/alerts`, `/risk/policy` | Rules and policy UI |
 | `/admin`, `/audit-log` | Admin |
 | `/auth/otp`, `/auth/phone` | OTP |
+| `/reports` | LLM insights + «PDF پرتفوی» (BFF) |
 
-Next.js BFF proxies subscriptions, risk-policy, admin, and payment create. Wallet / KYC / alerts / PDF talk to FastAPI with JWT.
+Next.js BFF proxies subscriptions, risk-policy, admin, payment create, and **portfolio PDF** (`GET /api/reports/portfolio` → FastAPI `/api/reports/portfolio.pdf`, with `authOptions`). Wallet / KYC / alerts talk to FastAPI with JWT. The PDF button needs a NextAuth `accessToken`; `/auth/signin` is a dashboard CTA, so visitors get 401. Sample dashboard holdings are not the SQLAlchemy `Portfolio` this endpoint reads.
 
 ---
 
@@ -71,6 +72,6 @@ Next.js BFF proxies subscriptions, risk-policy, admin, and payment create. Walle
 - Withdrawals stay `pending` until a payout provider exists.
 - Alerts/risk need **celery-worker and celery-beat**.
 - OTP does not survive multi-worker or restart (process memory).
-- PDF needs Vazirmatn + `arabic-reshaper` + `python-bidi`.
+- PDF needs Vazirmatn + `arabic-reshaper` + `python-bidi`. `/reports` download also needs a session and the BFF pointing at the API port (`:8000` local, `:8011` Compose).
 
 Celery schedule: alerts **60s**, risk **300s**. See [[Deployment]] and `docs/CELERY_FLOW.md`.
