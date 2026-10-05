@@ -124,18 +124,19 @@ npm run dev
 
 ```mermaid
 flowchart LR
-    YOU[You] --> FE[Frontend :3000]
-    YOU --> API[Backend :8000]
+    YOU[You] --> FE[Frontend :3003]
+    YOU --> API[Backend :8000 or :8011]
     YOU --> DOCS[Swagger /docs]
     FE --> API
 ```
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:8000 |
-| API Docs (Swagger) | http://localhost:8000/docs |
-| API Docs (ReDoc) | http://localhost:8000/redoc |
+| Service | Local (`npm` / `start.py`) | Docker (`docker-compose-core.yml`) |
+|---------|----------------------------|--------------------------------------|
+| Frontend | http://localhost:3003 | http://localhost:3003 |
+| Backend API | http://localhost:8000 | http://localhost:8011 → container `:8000` |
+| API Docs | http://localhost:8000/docs | http://localhost:8011/docs |
+
+Set `NEXT_PUBLIC_API_URL` to the API URL the browser should call (Docker: `http://localhost:8011`).
 
 ---
 
@@ -150,6 +151,8 @@ docker compose -f docker-compose-core.yml up -d
 # View logs
 docker compose -f docker-compose-core.yml logs -f
 ```
+
+Price alerts and risk-policy evaluation need **celery-worker** and **celery-beat**. See [[Account Platform]] and `docs/CELERY_FLOW.md`.
 
 #### Complete Stack (Production-like)
 

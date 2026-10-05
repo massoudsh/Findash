@@ -23,10 +23,15 @@ High-level layout of the Findash / Octopus Trading Platform repo and where to fi
 
 ## Backend (`src/`)
 
-- `src/main_refactored.py` – FastAPI app entry.
-- `src/core/` – Config, logging, Celery, security.
-- `src/api/` – REST endpoints and route modules.
+- `src/main_refactored.py` – FastAPI app entry (all routers are registered here, not `src/main.py`).
+- `src/core/` – Config, logging, Celery, security, `persian_utils`.
+- `src/api/endpoints/` – REST routers. Account/commerce: `wallet.py`, `payment_zarinpal.py`, `subscriptions.py`, `kyc.py`, `price_alerts.py`, `risk_policy.py`, `admin_panel.py`, `pdf_reports.py`, `otp_auth.py`.
+- `src/services/notifications.py` – SMS (KaveNegar), Web Push (VAPID), in-app rows.
+- `src/services/pdf_reports.py` – Persian RTL portfolio PDF.
+- `src/notifications/tasks.py` – Celery beat evaluation for alerts + risk policy.
 - `src/llm/`, `src/strategies/`, `src/trading/`, `src/risk/`, etc. – Feature domains.
+
+Account-platform workflows and ops: [ACCOUNT_PLATFORM.md](ACCOUNT_PLATFORM.md).
 
 ## Config and env
 

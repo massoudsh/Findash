@@ -15,6 +15,7 @@
 
 ### Development
 - [[API Reference]]
+- [[Account Platform]]
 - [[Frontend]]
 - [[Contributing]]
 

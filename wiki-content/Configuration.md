@@ -70,6 +70,23 @@ flowchart LR
 | `CELERY_RESULT_BACKEND` | No | redis://localhost:6379/1 | Result backend URL |
 | `CELERY_TASK_ALWAYS_EAGER` | No | false | Run tasks synchronously |
 
+### Payments, SMS, and Web Push
+
+Names only — copy values from `.env.example`. Production **fails closed** if `ZARINPAL_MERCHANT_ID` is empty (`src/core/config.py`).
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `APP_BASE_URL` | No | `http://localhost:3003` | Frontend origin for ZarinPal callback and success/fail redirects |
+| `ZARINPAL_MERCHANT_ID` | **Yes in production** | - | ZarinPal merchant; create/verify return 503 if missing |
+| `SMS_PROVIDER` | No | empty | Set `kavenegar` to send real OTP and alert SMS |
+| `SMS_API_KEY` | No | empty | KaveNegar API key; unset → log-only fallback |
+| `SMS_SENDER_LINE` | No | empty | KaveNegar sender for free-text SMS |
+| `VAPID_PUBLIC_KEY` | No | empty | Browser Web Push subscribe |
+| `VAPID_PRIVATE_KEY` | No | empty | Server Web Push; unset → log-only |
+| `VAPID_ADMIN_EMAIL` | No | `admin@example.com` | VAPID `mailto:` claim |
+
+OTP KaveNegar template name in code: `findash-otp`. See [[Account Platform]].
+
 ### API Keys
 
 | Variable | Required | Default | Description |

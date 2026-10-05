@@ -96,6 +96,59 @@ GET /api/auth/me
 Authorization: Bearer <token>
 ```
 
+### Phone OTP (Iran)
+
+```http
+POST /api/auth/send-otp
+Content-Type: application/json
+
+{ "phone": "09121234567" }
+```
+
+Limits (from `otp_auth.py`): 3 sends per 10 minutes per phone; 6-digit code; 5-minute TTL. Verify with `POST /api/auth/verify-otp` (`phone`, `code`, optional `device_id`). Store is **in-memory** — not shared across workers.
+
+---
+
+## Account platform (verified 2026-09)
+
+Full workflows: [[Account Platform]] and [docs/ACCOUNT_PLATFORM.md](https://github.com/massoudsh/Findash/blob/main/docs/ACCOUNT_PLATFORM.md).
+
+| Method | Path | Notes |
+|--------|------|--------|
+| POST | `/api/payment/zarinpal/create` | `purpose`: `general` \| `wallet_topup` (not `subscription`) |
+| GET | `/api/payment/zarinpal/callback` | Gateway; always verifies; redirects to frontend |
+| GET | `/api/payment/zarinpal/status/{order_id}` | Owner only |
+| GET | `/api/payment/zarinpal/history` | Last 50 |
+| GET | `/api/wallet/balances` | IRT create-on-read |
+| POST | `/api/wallet/deposit` | Min 10,000 toman; credit after verify |
+| POST | `/api/wallet/withdraw` | Locks available; pending until payout ops |
+| GET | `/api/subscriptions/plans` | Seeds basic/pro/elite if empty |
+| POST | `/api/subscriptions/subscribe` | Server-side plan price |
+| GET | `/api/subscriptions/me` | `active` false if expired |
+| POST | `/api/kyc/submit` | National-code checksum + Iranian mobile |
+| GET | `/api/kyc/me` | `not_submitted` if none |
+| GET | `/api/kyc/pending` | Admin |
+| POST | `/api/kyc/{id}/review` | Admin; reject requires reason |
+| POST/GET/DELETE | `/api/alerts/rules` | `above`/`below`; channels `in_app`/`push`/`sms` |
+| POST | `/api/alerts/evaluate` | Admin |
+| GET/PUT | `/api/risk-policy/me` | Defaults 5% / 30% / `alert` |
+| GET | `/api/risk-policy/breaches` | Caller only |
+| POST | `/api/risk-policy/evaluate-all` | Admin |
+| GET/PATCH | `/api/admin/users` | Admin; no self-demote |
+| GET | `/api/admin/audit-log` | Admin |
+| GET | `/api/reports/portfolio.pdf` | 404 if not owned; 503 if no Persian font |
+| POST | `/api/trading-bots/{id}/start` | **402** without active subscription |
+
+```http
+POST /api/wallet/deposit
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{ "amount_toman": 100000 }
+```
+
+**Response:** `{ "authority": "...", "redirect_url": "https://www.zarinpal.com/pg/StartPay/...", "order_id": 1 }`
+
 ---
 
 ## Market Data
@@ -569,8 +622,11 @@ ws.onopen = () => {
 | 403 | Forbidden |
 | 404 | Not Found |
 | 422 | Validation Error |
-| 429 | Rate Limit Exceeded |
+| 402 | Active subscription required (trading-bot start) |
+| 429 | Rate Limit Exceeded (includes OTP) |
 | 500 | Internal Server Error |
+| 502 | ZarinPal upstream error |
+| 503 | Missing merchant ID or Persian PDF font |
 
 ---
 
@@ -634,6 +690,7 @@ client.subscribe('AAPL', (quote) => {
 
 ## Next Steps
 
+- [[Account Platform]] - Payments, wallet, KYC, alerts, risk policy
 - [[Architecture]] - System architecture
 - [[AI Agents]] - AI agent endpoints
 - [[Database]] - Data models

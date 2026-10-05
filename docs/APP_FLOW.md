@@ -39,6 +39,8 @@ flowchart LR
         L7[/portfolio]
         L8[/strategies]
         L9[/risk]
+        L10[/risk/policy]
+        L11[/alerts]
     end
     subgraph Right["Right sidebar – Analysis & Tools"]
         R1[/technical]
@@ -66,7 +68,16 @@ flowchart LR
 | `/trading-bots` | Trading bots list and control |
 | `/backtesting` | Backtest config and results |
 | `/portfolio` | Portfolio view |
-| `/risk` | Risk assessment |
+| `/risk` | Risk assessment (metrics) |
+| `/risk/policy` | Per-user risk policy (drawdown / concentration / stop-bots) |
+| `/account` | Profile, subscription tab (`?tab=subscription`), settings |
+| `/account/subscription` | Plan status (also embedded in `/account`) |
+| `/alerts` | Price-alert rules |
+| `/payment/checkout` | Plan picker → ZarinPal |
+| `/payment/callback/zarinpal` | Gateway return bridge |
+| `/payment/success`, `/payment/failed` | Payment result |
+| `/auth/otp`, `/auth/phone` | SMS OTP login |
+| `/audit-log` | Admin audit trail |
 | Others | Technical, Fundamental, Macro, On-chain, Social, AI Models, Data Explorer, Visualization, Reports, API Playground, Notifications, Admin |
 
 ---
@@ -142,9 +153,44 @@ flowchart LR
 
 ## 6. API base URL and backend
 
-- Frontend calls the backend using **`NEXT_PUBLIC_API_URL`** (e.g. `http://localhost:8000`).
+- Docker frontend: `NEXT_PUBLIC_API_URL=http://localhost:8011`. Local uvicorn is often `:8000`.
 - **`lib/services/api.ts`** uses axios with that base URL for portfolios, strategies, trades, etc.
-- Backend is the FastAPI app in `src/main_refactored.py`; routes include `/strategies/`, `/portfolios/`, `/api/trading-bots/`, `/api/backtesting/`, and others.
+- Session-aware **Next.js BFF** routes under `frontend-nextjs/src/app/api/` proxy subscriptions, risk-policy, admin, and ZarinPal create (attach NextAuth `accessToken`).
+- Wallet, KYC, alerts, and PDF reports are FastAPI routes — call `NEXT_PUBLIC_API_URL` with a JWT.
+- Backend is `src/main_refactored.py`. Account-platform workflows: [ACCOUNT_PLATFORM.md](ACCOUNT_PLATFORM.md).
+
+---
+
+## 8. Payment and subscription flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant FE as Next.js (/payment/checkout)
+    participant API as FastAPI
+    participant ZP as ZarinPal
+    U->>FE: Choose plan
+    FE->>API: POST /api/subscriptions/subscribe
+    API->>ZP: payment/request.json
+    API-->>FE: authority + redirect_url
+    FE->>ZP: StartPay
+    ZP->>API: GET /api/payment/zarinpal/callback
+    API->>ZP: payment/verify.json
+    API->>API: _dispatch_payment_success (subscription)
+    API-->>U: Redirect /payment/success
+```
+
+- Price always comes from `SubscriptionPlan` in the database, never from the client.
+- Wallet top-up uses the same verify/dispatch path with `purpose=wallet_topup`.
+- `POST /api/trading-bots/{id}/start` returns **402** without an unexpired active subscription (admins exempt).
+
+---
+
+## 9. Alerts and risk-policy evaluation
+
+- Price alerts: Celery beat every 60s compares `price_alert_rules` to `/api/iran-market/overview`.
+- Risk policy: Celery beat every 5 minutes compares snapshots/positions to `risk_policies`.
+- Manual: `POST /api/alerts/evaluate` and `POST /api/risk-policy/evaluate-all` (admin).
 
 ---
 

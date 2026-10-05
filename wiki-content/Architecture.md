@@ -86,6 +86,7 @@ flowchart TB
 │  │  │  Trading  │  │ WebSocket │  │   Auth    │  │ Analytics │        │   │
 │  │  │    API    │  │  Manager  │  │  Service  │  │  Service  │        │   │
 │  │  └───────────┘  └───────────┘  └───────────┘  └───────────┘        │   │
+│  │  Wallet / ZarinPal · Subscriptions · KYC / Admin · Alerts / Risk policy │
 │  └─────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
           │
@@ -361,6 +362,7 @@ Structured Logs → ELK Stack → Kibana         PagerDuty/Slack
 
 ## Next Steps
 
+- [[Account Platform]] - Payments, wallet, KYC, alerts, risk policy
 - [[AI Agents]] - Deep dive into the 11 AI agents
 - [[API Reference]] - Complete API documentation
 - [[Database]] - Database schema details

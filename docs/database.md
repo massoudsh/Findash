@@ -438,5 +438,29 @@ random_page_cost = 1.1
 
 ---
 
-*Database schema version: 2.1*  
-*Last updated: January 2025* 
+## Account platform tables (SQLAlchemy, 2026-09)
+
+The UUID DDL earlier in this file is a historical sketch. The live account-platform models use **integer user FKs** and are defined in `src/database/models.py` plus `PaymentOrder` in `src/api/endpoints/payment_zarinpal.py`. Migration: `src/alembic/versions/20260919_admin_risk_subscription_schema.py` (`admin_risk_sub_001`).
+
+| Table | Purpose | Key columns / notes |
+|-------|---------|---------------------|
+| `payment_orders` | ZarinPal orders | `authority` unique; `purpose` `general` \| `wallet_topup` \| `subscription`; `purpose_ref` = plan code; `status` pending/paid/failed/expired |
+| `wallet_balances` | IRT ledger | Unique `(user_id, currency)`; `balance`, `available`, `locked`, `pending` |
+| `wallet_transactions` | Wallet history | `type` deposit/withdrawal/…; `status` pending/completed/… |
+| `bank_accounts` | Sheba payout targets | `sheba_number` `IR` + 24 digits; `verified` defaults false |
+| `subscription_plans` | Priced plans | `code` unique; `price_toman`; `duration_days` |
+| `user_subscriptions` | Entitlement | `status` active/expired/cancelled; `end_at` required |
+| `kyc_profiles` | One profile per user | `status` pending_review/verified/rejected; national code stored, masked on read |
+| `price_alert_rules` | One-shot alerts | `direction` above/below; `channels` JSON; deactivated on fire |
+| `push_subscriptions` | Web Push | Unique `endpoint` |
+| `risk_policies` | One policy per user | Defaults 5% daily DD, 30% concentration, `action_on_breach=alert` |
+| `risk_policy_breaches` | Breach history | `rule` + value/threshold/`action_taken` |
+| `audit_logs` | Admin / KYC actions | `actor_user_id`, `action`, JSON `detail` |
+| `notifications` | In-app inbox | `category` subscription/price_alert/kyc/admin/risk/system |
+
+Workflows that write these tables: [ACCOUNT_PLATFORM.md](ACCOUNT_PLATFORM.md).
+
+---
+
+*Database schema version: 2.2*  
+*Last updated: September 2026* 

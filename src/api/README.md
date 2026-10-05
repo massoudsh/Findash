@@ -1,67 +1,32 @@
 # API Documentation
 
-This document provides an overview of the FastAPI backend API for the Quantum Trading Matrix platform.
+FastAPI routers live in `src/api/endpoints/` and are registered in `src/main_refactored.py` (not `src/main.py`).
 
-## Table of Contents
+Interactive docs when the API is running: `/docs`, `/redoc`, `/openapi.json`.
 
-- [API Structure](#api-structure)
-- [Adding New Endpoints](#adding-new-endpoints)
-- [Available Routers](#available-routers)
-  - [LLM Service](#llm-service)
-  - [Portfolio API](#portfolio-api)
+Account, payment, KYC, alerts, and risk-policy workflows: [docs/ACCOUNT_PLATFORM.md](../../docs/ACCOUNT_PLATFORM.md).
 
-## API Structure
+## Adding new endpoints
 
-The API is built using FastAPI and is organized into a modular structure using `APIRouter`. Each distinct functional area of the application (e.g., LLM, Portfolio, Risk) has its own router file located in `src/api/endpoints/`.
+1. Create `src/api/endpoints/my_router.py` with an `APIRouter`.
+2. Import and `app.include_router(...)` in `src/main_refactored.py`.
+3. Prefer existing auth deps: `get_current_active_user`, `require_admin`, `require_active_subscription`.
 
-All routers are imported and registered in the main `src/main.py` file. This keeps the main application file clean and delegates route management to the specific router modules.
+## Account-platform routers (2026-09)
 
-## Adding New Endpoints
+| File | Prefix | Notes |
+|------|--------|--------|
+| `payment_zarinpal.py` | `/api/payment/zarinpal` | Shared `create_order()` + purpose dispatch |
+| `wallet.py` | `/api/wallet` | IRT ledger; deposit does not credit until verify |
+| `subscriptions.py` | `/api/subscriptions` | Server-side plan prices; `require_active_subscription` |
+| `kyc.py` | `/api/kyc` | National-code form + admin review |
+| `price_alerts.py` | `/api/alerts` | One-shot rules vs Iran-market overview |
+| `risk_policy.py` | `/api/risk-policy` | Drawdown / concentration; optional bot stop |
+| `admin_panel.py` | `/api/admin` | Users + audit log |
+| `pdf_reports.py` | `/api/reports` | Persian portfolio PDF |
+| `otp_auth.py` | `/api/auth` | `/send-otp`, `/verify-otp` (in-memory store) |
+| `trading_bots.py` | `/api/trading-bots` | `POST /{id}/start` is subscription-gated |
 
-To add a new set of endpoints:
+## Other routers
 
-1.  **Create a new router file**: In the `src/api/endpoints/` directory, create a new Python file (e.g., `my_new_router.py`).
-2.  **Define the router**: Inside the new file, create an `APIRouter` instance:
-    ```python
-    from fastapi import APIRouter
-    my_new_router = APIRouter()
-    ```
-3.  **Create your endpoints**: Define your path operations using the new router instance:
-    ```python
-    @my_new_router.get("/hello")
-    def say_hello():
-        return {"message": "Hello, World!"}
-    ```
-4.  **Register the router**: In `src/main.py`, import your new router and include it in the main FastAPI app:
-    ```python
-    from src.api.endpoints.my_new_router import my_new_router
-    app.include_router(my_new_router, prefix="/my-new-route", tags=["My New Route"])
-    ```
-
-## Available Routers
-
-### LLM Service
-
--   **File**: `src/api/endpoints/llm.py`
--   **Prefix**: `/llm`
--   **Description**: Manages language model operations, including fine-tuning and inference.
-
-**Endpoints**:
-
--   `POST /finetune`: Triggers an asynchronous fine-tuning job.
-    -   **Request Body**: `{ "output_dir": "string" }`
-    -   **Response**: `{ "message": "Fine-tuning job started.", "task_id": "string" }`
--   `GET /finetune/{task_id}`: Retrieves the status of a fine-tuning job.
-    -   **Response**: `{ "task_id": "string", "status": "string", "result": "any" }`
--   `GET /finetune`: (Mock) Lists all fine-tuning jobs.
-
-### Portfolio API
-
--   **File**: `src/api/endpoints/portfolio_api.py`
--   **Prefix**: `/portfolio`
--   **Description**: Provides access to portfolio and position data. Note: This currently serves mock data and is not connected to a database.
-
-**Endpoints**:
-
--   `GET /`: Retrieves a list of all portfolios.
--   `GET /{portfolio_id}/positions`: Retrieves all positions for a specific portfolio. 
+LLM (`llm.py` / `llm_simple.py`), portfolio (`portfolio_api.py`), market data (`unified_market_data.py`, `iran_market.py`), and remaining feature routers are also included from `src/main_refactored.py`. Treat `/docs` as the live catalog.
