@@ -141,7 +141,7 @@ export default function HomePage() {
           <LineChart className="h-10 w-10 text-green-400 mx-auto mb-4" />
           <h2 className="text-2xl font-black mb-3">یک داشبورد تمیز برای تصمیم‌های جدی</h2>
           <p className="text-muted-foreground mb-6">از تحلیل تا مدیریت ریسک، همه‌چیز برای تجربه موبایل و بازار ایران بازطراحی شده است.</p>
-          <Link href="/demo" className="btn-persian inline-flex items-center gap-2 rounded-2xl">
+          <Link href="/auth/signup" className="btn-persian inline-flex items-center gap-2 rounded-2xl">
             شروع کنید
             <ArrowLeft className="h-4 w-4" />
           </Link>
