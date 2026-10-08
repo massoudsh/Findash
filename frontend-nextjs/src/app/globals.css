@@ -813,7 +813,7 @@ main > * {
 }
 
 .animate-news-marquee {
-  animation: news-marquee 40s linear infinite;
+  animation: news-marquee 75s linear infinite;
 }
 
 .animate-news-marquee:hover {

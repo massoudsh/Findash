@@ -105,7 +105,7 @@ async def get_overview():
         if isinstance(result, dict):
             tgju_data[sym] = result
 
-    # map Nobitex crypto prices (prices are in Rial → divide by 10 for Toman)
+    # map Nobitex crypto prices (Nobitex returns Rial; keep the API contract in Rial)
     crypto_data: Dict[str, Any] = {}
     if nobitex_stats:
         for sym, nb_sym in NOBITEX_SYMBOLS.items():
@@ -114,10 +114,9 @@ async def get_overview():
                 s = nobitex_stats[key]
                 try:
                     price_rial = float(s.get("latest", 0))
-                    price_toman = price_rial / 10
-                    open_price = float(s.get("dayOpen", price_rial)) / 10
-                    change_pct = ((price_toman - open_price) / open_price * 100) if open_price else 0
-                    crypto_data[sym] = {"price": price_toman, "change_pct": round(change_pct, 2)}
+                    open_price = float(s.get("dayOpen", price_rial))
+                    change_pct = ((price_rial - open_price) / open_price * 100) if open_price else 0
+                    crypto_data[sym] = {"price": price_rial, "change_pct": round(change_pct, 2), "currency": "IRR"}
                 except Exception:
                     pass
 
