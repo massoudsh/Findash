@@ -5,7 +5,9 @@ import {
   ArrowLeft,
   BarChart3,
   BellRing,
+  ChevronDown,
   CreditCard,
+  FileText,
   LineChart,
   ShieldCheck,
   Sparkles,
@@ -20,12 +22,37 @@ const marketCards = [
   { title: 'طلا ۱۸ عیار', value: '۳,۴۵۰,۰۰۰', change: '+۱.۱٪', up: true },
 ];
 
-const features = [
-  { icon: BarChart3, title: 'داشبورد زنده', desc: 'قیمت‌ها، پرتفوی و هشدارها در یک صفحه تمیز.' },
-  { icon: ShieldCheck, title: 'مدیریت ریسک', desc: 'گیج ریسک ریل‌تایم، VaR و افت حداکثری.' },
-  { icon: CreditCard, title: 'امتیاز اعتباری', desc: 'رتبه معاملاتی بر اساس عملکرد و رفتار ریسک.' },
-  { icon: BellRing, title: 'هشدار هوشمند', desc: 'اعلان قیمت و تغییر روند برای بازار ایران.' },
-];
+const researchDirectory = [
+  {
+    title: 'بخش‌های بازار',
+    items: [
+      ['فناوری و سهام', '/technical'],
+      ['مالی و اقتصاد', '/macro'],
+      ['انرژی و کالا', '/fundamental-data'],
+      ['سلامت و مصرف‌کننده', '/fundamental-data'],
+      ['صنایع و مواد', '/data'],
+      ['خدمات عمومی و املاک', '/macro'],
+      ['ارتباطات', '/social'],
+    ],
+  },
+  {
+    title: 'صفحات کاربردی',
+    items: [
+      ['اقتصاد امروز', '/macro'],
+      ['نمودارهای کلان', '/data'],
+      ['ابزارک‌ها و داشبورد', '/dashboard'],
+    ],
+  },
+  {
+    title: 'پژوهش‌ها و تحلیل‌ها',
+    items: [
+      ['تحلیل بنیادی بازار', '/fundamental-data'],
+      ['تحلیل تکنیکال', '/technical'],
+      ['تحلیل اجتماعی و احساسات', '/social'],
+      ['مدل‌های هوش مصنوعی', '/ai-models'],
+    ],
+  },
+] as const;
 
 export default function HomePage() {
   return (
@@ -111,6 +138,45 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Research directory inspired by the reference information architecture */}
+      <section className="px-4 pb-16">
+        <div className="mx-auto max-w-6xl rounded-[2rem] border border-border/80 bg-card/70 p-5 shadow-sm backdrop-blur sm:p-8">
+          <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="mb-2 inline-flex items-center gap-2 text-xs font-semibold text-green-400">
+                <FileText className="h-4 w-4" />
+                فهرست بازار و پژوهش
+              </div>
+              <h2 className="text-2xl font-black sm:text-3xl">از هر زاویه‌ای بازار را بررسی کنید</h2>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-muted-foreground">
+                بخش‌ها، صفحات تحلیلی و پژوهش‌های Findash را در یک نمای ساده پیدا کنید.
+              </p>
+            </div>
+            <Link href="/workflow" className="text-sm font-semibold text-green-400 hover:text-green-300">
+              راهنمای جریان کار ←
+            </Link>
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-3">
+            {researchDirectory.map((group) => (
+              <details key={group.title} open className="group rounded-2xl border border-border/70 bg-background/50 p-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold marker:hidden">
+                  {group.title}
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <nav aria-label={group.title} className="mt-4 space-y-1 border-t border-border/60 pt-3">
+                  {group.items.map(([label, href]) => (
+                    <Link key={`${label}-${href}`} href={href} className="block rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-green-500/10 hover:text-green-300">
+                      {label}
+                    </Link>
+                  ))}
+                </nav>
+              </details>
+            ))}
           </div>
         </div>
       </section>
