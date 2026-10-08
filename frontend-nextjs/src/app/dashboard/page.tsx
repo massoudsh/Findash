@@ -1,12 +1,8 @@
 'use client';
 
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { PortfolioContent } from '@/components/portfolio/portfolio-content';
-import { TradeTracker } from '@/components/portfolio/trade-tracker';
-import { IranMarketOverview } from '@/components/market/iran-market-overview';
-import { AnalyticsOverview } from '@/components/analytics/analytics-overview';
-import { HelpCenter } from '@/components/help/help-center';
 import { OverviewDashboard, BlueTickerBar } from '@/components/dashboard/overview-dashboard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -19,7 +15,13 @@ import {
   LineChart,
 } from 'lucide-react';
 
-type Tab = 'overview' | 'portfolio' | 'market' | 'trades' | 'analytics' | 'help';
+const dashboardTabLoading = () => <div className="p-8 text-center text-sm text-slate-400">در حال بارگذاری…</div>;
+const PortfolioContent = dynamic(() => import('@/components/portfolio/portfolio-content').then((mod) => mod.PortfolioContent), { ssr: false, loading: dashboardTabLoading });
+const TradeTracker = dynamic(() => import('@/components/portfolio/trade-tracker').then((mod) => mod.TradeTracker), { ssr: false, loading: dashboardTabLoading });
+const IranMarketOverview = dynamic(() => import('@/components/market/iran-market-overview').then((mod) => mod.IranMarketOverview), { ssr: false, loading: dashboardTabLoading });
+const AnalyticsOverview = dynamic(() => import('@/components/analytics/analytics-overview').then((mod) => mod.AnalyticsOverview), { ssr: false, loading: dashboardTabLoading });
+const HelpCenter = dynamic(() => import('@/components/help/help-center').then((mod) => mod.HelpCenter), { ssr: false, loading: dashboardTabLoading });
+
 const VALID_TABS: Tab[] = ['overview', 'portfolio', 'market', 'trades', 'analytics', 'help'];
 
 const TABS = [
