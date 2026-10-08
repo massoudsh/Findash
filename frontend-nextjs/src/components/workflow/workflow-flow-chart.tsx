@@ -34,24 +34,23 @@ const nodeTypes = { default: WorkflowNode };
 
 const initialNodes: Node[] = [
   // Sources
-  { id: 'sources', type: 'default', position: { x: START_X, y: START_Y }, data: { label: '📡 Sources\nMarkets, News, Alt Data' }, className: '!rounded-xl !border-2 !border-amber-400/60 !bg-amber-50 dark:!bg-amber-950/30' },
+  { id: 'sources', type: 'default', position: { x: START_X, y: START_Y }, data: { label: '📡 منابع داده\nبازار، خبر و دادهٔ تکمیلی' }, className: '!rounded-xl !border-2 !border-sky-400/60 !bg-sky-50 dark:!bg-sky-950/30' },
   // Ingest
-  { id: 'm1', type: 'default', position: { x: START_X + COL_WIDTH, y: START_Y }, data: { label: 'Nexus M1' }, className: '!rounded-lg !border !border-primary/30' },
-  { id: 'm2', type: 'default', position: { x: START_X + COL_WIDTH, y: START_Y + ROW_HEIGHT }, data: { label: 'Vault M2' }, className: '!rounded-lg !border !border-primary/30' },
-  { id: 'm3', type: 'default', position: { x: START_X + COL_WIDTH, y: START_Y + ROW_HEIGHT * 2 }, data: { label: 'Pulse M3' }, className: '!rounded-lg !border !border-primary/30' },
-  { id: 'm9', type: 'default', position: { x: START_X + COL_WIDTH, y: START_Y + ROW_HEIGHT * 3 }, data: { label: 'Echo M9' }, className: '!rounded-lg !border !border-primary/30' },
+  { id: 'm1', type: 'default', position: { x: START_X + COL_WIDTH, y: START_Y }, data: { label: 'Nexus · M1\nدریافت داده' }, className: '!rounded-lg !border !border-primary/30' },
+  { id: 'm2', type: 'default', position: { x: START_X + COL_WIDTH, y: START_Y + ROW_HEIGHT }, data: { label: 'Vault · M2\nذخیره و اعتبارسنجی' }, className: '!rounded-lg !border !border-primary/30' },
+  { id: 'm3', type: 'default', position: { x: START_X + COL_WIDTH, y: START_Y + ROW_HEIGHT * 2 }, data: { label: 'Pulse · M3\nپخش زنده' }, className: '!rounded-lg !border !border-primary/30' },
+  { id: 'm9', type: 'default', position: { x: START_X + COL_WIDTH, y: START_Y + ROW_HEIGHT * 3 }, data: { label: 'Echo · M9\nتحلیل احساسات' }, className: '!rounded-lg !border !border-primary/30' },
   // Analyze
-  { id: 'm5', type: 'default', position: { x: START_X + COL_WIDTH * 2, y: START_Y }, data: { label: 'Neuron M5' }, className: '!rounded-lg !border !border-chart-1/50' },
-  { id: 'm7', type: 'default', position: { x: START_X + COL_WIDTH * 2, y: START_Y + ROW_HEIGHT }, data: { label: 'Oracle M7' }, className: '!rounded-lg !border !border-chart-1/50' },
-  { id: 'm4', type: 'default', position: { x: START_X + COL_WIDTH * 2, y: START_Y + ROW_HEIGHT * 2 }, data: { label: 'Atlas M4' }, className: '!rounded-lg !border !border-chart-1/50' },
-  { id: 'm6', type: 'default', position: { x: START_X + COL_WIDTH * 2, y: START_Y + ROW_HEIGHT * 3 }, data: { label: 'Guardian M6' }, className: '!rounded-lg !border !border-chart-1/50' },
-  // Decide
-  { id: 'you', type: 'default', position: { x: START_X + COL_WIDTH * 3, y: START_Y + ROW_HEIGHT * 1.5 }, data: { label: '👤 You\nApprove / Reject / Modify' }, className: '!rounded-xl !border-2 !border-amber-500 !bg-amber-100 dark:!bg-amber-900/40' },
+  { id: 'm5', type: 'default', position: { x: START_X + COL_WIDTH * 2, y: START_Y }, data: { label: 'Neuron · M5\nمدل‌های پیش‌بینی' }, className: '!rounded-lg !border !border-chart-1/50' },
+  { id: 'm7', type: 'default', position: { x: START_X + COL_WIDTH * 2, y: START_Y + ROW_HEIGHT }, data: { label: 'Oracle · M7\nسناریوی قیمت' }, className: '!rounded-lg !border !border-chart-1/50' },
+  { id: 'm4', type: 'default', position: { x: START_X + COL_WIDTH * 2, y: START_Y + ROW_HEIGHT * 2 }, data: { label: 'Atlas · M4\nترکیب سیگنال‌ها' }, className: '!rounded-lg !border !border-chart-1/50' },
+  { id: 'm6', type: 'default', position: { x: START_X + COL_WIDTH * 2, y: START_Y + ROW_HEIGHT * 3 }, data: { label: 'Guardian · M6\nریسک و حجم مجاز' }, className: '!rounded-lg !border !border-chart-1/50' },
+  { id: 'you', type: 'default', position: { x: START_X + COL_WIDTH * 3, y: START_Y + ROW_HEIGHT * 1.5 }, data: { label: '👤 شما\nتأیید، رد یا اصلاح' }, className: '!rounded-xl !border-2 !border-amber-500 !bg-amber-100 dark:!bg-amber-900/40' },
   // Execute
-  { id: 'm8', type: 'default', position: { x: START_X + COL_WIDTH * 4, y: START_Y }, data: { label: 'Shadow M8' }, className: '!rounded-lg !border !border-chart-2/50' },
-  { id: 'm10', type: 'default', position: { x: START_X + COL_WIDTH * 4, y: START_Y + ROW_HEIGHT }, data: { label: 'Chronicle M10' }, className: '!rounded-lg !border !border-chart-2/50' },
-  { id: 'm11', type: 'default', position: { x: START_X + COL_WIDTH * 4, y: START_Y + ROW_HEIGHT * 2 }, data: { label: 'Lens M11' }, className: '!rounded-lg !border !border-chart-2/50' },
-  { id: 'reports', type: 'default', position: { x: START_X + COL_WIDTH * 4, y: START_Y + ROW_HEIGHT * 3 }, data: { label: 'Reports & Dashboards' }, className: '!rounded-lg !border !border-chart-2/50' },
+  { id: 'm8', type: 'default', position: { x: START_X + COL_WIDTH * 4, y: START_Y }, data: { label: 'Shadow · M8\nاجرای سفارش' }, className: '!rounded-lg !border !border-chart-2/50' },
+  { id: 'm10', type: 'default', position: { x: START_X + COL_WIDTH * 4, y: START_Y + ROW_HEIGHT }, data: { label: 'Chronicle · M10\nبک‌تست' }, className: '!rounded-lg !border !border-chart-2/50' },
+  { id: 'm11', type: 'default', position: { x: START_X + COL_WIDTH * 4, y: START_Y + ROW_HEIGHT * 2 }, data: { label: 'Lens · M11\nگزارش و تجسم' }, className: '!rounded-lg !border !border-chart-2/50' },
+  { id: 'reports', type: 'default', position: { x: START_X + COL_WIDTH * 4, y: START_Y + ROW_HEIGHT * 3 }, data: { label: 'گزارش‌ها و داشبوردها' }, className: '!rounded-lg !border !border-chart-2/50' },
 ];
 
 const initialEdges: Edge[] = [
