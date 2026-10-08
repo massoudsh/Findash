@@ -13,7 +13,7 @@ export interface TickerItem {
   available: boolean;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8011';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const REFRESH_MS = 60_000;
 
 export function useIranTicker() {
@@ -27,10 +27,11 @@ export function useIranTicker() {
       const data = await res.json();
       if (Array.isArray(data.items)) {
         setItems(data.items);
-        setLoading(false);
       }
     } catch {
       // keep previous values on error
+    } finally {
+      setLoading(false);
     }
   }, []);
 
