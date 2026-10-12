@@ -121,6 +121,10 @@ Each entry should include these fields where applicable:
 | Date       | Version | Area     | Type    | Summary | Details | Ref |
 |------------|---------|----------|---------|---------|---------|-----|
 | 2026-10-03 | —       | docs     | added   | Allocation copilot + investor-tools runbook. | HHI API, file-backed watchlists/paper/dividends, `/investing` missing BFF, port `:8000` vs `:8011`. | |
+| 2026-10-08 | —       | frontend | changed | Landing, ticker, dashboard tabs, workflow guide. | Research directory; CTA to `/auth/signup`; `useIranTicker` default `:8000` + `finally` loading; Nobitex crypto kept in Rial; news marquee 75s; secondary dashboard tabs `next/dynamic`; `/workflow` React Flow rewrite. | |
+| 2026-10-08 | —       | backend  | changed | Python 3.12 portfolio-analytics deps. | `pyfolio-reloaded` / `empyrical-reloaded` replace unmaintained `pyfolio` / `empyrical`. Not imported in `src/` yet. | |
+| 2026-10-12 | —       | frontend | added   | Modified Dietz calculator on the portfolio tab. | Client-only `modifiedDietz()`; not wallet, not mock holdings, not annualized; `returnPercent` null if weighted capital ≤ 0. | |
+| 2026-10-12 | —       | docs     | added   | Modified Dietz runbook + ticker/landing/dashboard doc sync. | `docs/MODIFIED_DIETZ.md`; corrected ticker port/unit; documented lazy tabs, landing `features` ReferenceError, `/workflow` as static guide. | |
 
 ---
 
@@ -138,4 +142,4 @@ Each entry should include these fields where applicable:
 
 ---
 
-*Last updated: 2026-10-03. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*
+*Last updated: 2026-10-12. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*

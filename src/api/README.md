@@ -38,7 +38,7 @@ To add a new set of endpoints:
     app.include_router(my_new_router, prefix="/my-new-route", tags=["My New Route"])
     ```
 
-Routers are registered in `src/main_refactored.py` (not `src/main.py`). Investor-facing allocation + watchlist/paper APIs: [docs/INVESTING_TOOLS.md](../../docs/INVESTING_TOOLS.md).
+Routers are registered in `src/main_refactored.py` (not `src/main.py`). Investor-facing allocation + watchlist/paper APIs: [docs/INVESTING_TOOLS.md](../../docs/INVESTING_TOOLS.md). Iran-market ticker (Nobitex crypto in Rial): [docs/PUBLIC_DEMO_DASHBOARD.md](../../docs/PUBLIC_DEMO_DASHBOARD.md). Modified Dietz is client-only: [docs/MODIFIED_DIETZ.md](../../docs/MODIFIED_DIETZ.md).
 
 ## Available Routers
 

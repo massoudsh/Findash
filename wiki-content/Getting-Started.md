@@ -301,9 +301,9 @@ cat .env
 
 Run `python3 start.py` from the repository root. The script inserts that directory on `sys.path` before `from src...` imports.
 
-#### 7. Ticker never leaves “در حال دریافت”
+#### 7. Ticker empty or market tab empty
 
-Client market/ticker code defaults to `http://localhost:8011`. Local `start.py` listens on **8000**. Set `NEXT_PUBLIC_API_URL=http://localhost:8000` in `frontend-nextjs/.env.local`, or use Compose (`8011:8000`).
+`useIranTicker` (blue bar + nav ticker) defaults to `http://localhost:8000`. `IranMarketOverview` still defaults to `http://localhost:8011`. Local `start.py` listens on **8000**; Compose publishes **8011**. Set `NEXT_PUBLIC_API_URL` in `frontend-nextjs/.env.local` to the API you actually run.
 
 #### 8. Sign-in has no email field
 

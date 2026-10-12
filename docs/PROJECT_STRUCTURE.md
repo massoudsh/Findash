@@ -10,7 +10,7 @@ High-level layout of the Findash / Octopus Trading Platform repo and where to fi
 | `docker/` | Dockerfiles for API, Celery, and LLM inference. Compose files stay at root. |
 | `docs/` | Architecture, guides, deployment, and archived notes. |
 | `frontend-nextjs/` | Next.js 15 app (public sample dashboard, trading UI, reports). `npm run dev` listens on **:3003**. |
-| `requirements/` | Python dependency lists: `requirements.txt` (main), `requirements-dev.txt`, `requirements-llm.txt`, etc. |
+| `requirements/` | Python dependency lists: `requirements.txt` (main), `requirements-dev.txt`, `requirements-llm.txt`, etc. On 3.12 use the pinned `pyfolio-reloaded` / `empyrical-reloaded` lines (not the original PyPI names). |
 | `scripts/` | One-off and automation: deploy, DB init, health checks, `start-dev.sh`, `start-services.sh`. |
 | `src/` | Backend Python: FastAPI app, agents, strategies, LLM, data pipelines. |
 | `tests/` | Pytest tests for the backend. |
@@ -41,3 +41,4 @@ High-level layout of the Findash / Octopus Trading Platform repo and where to fi
 - Full stack: `docker compose -f docker-compose-core.yml up` → UI `:3003`, API `:8011`
 - Tests: `make test`
 - Public sample dashboard / ports / auth leftovers: [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md)
+- Modified Dietz calculator (portfolio tab): [MODIFIED_DIETZ.md](MODIFIED_DIETZ.md)

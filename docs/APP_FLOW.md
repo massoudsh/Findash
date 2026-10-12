@@ -58,8 +58,9 @@ flowchart LR
 
 | Route | Page / content |
 |-------|-----------------|
-| `/` | Landing (Persian marketing page; CTA to `/dashboard`) |
-| `/dashboard` | Public sample dashboard — tabs: overview, portfolio, market, trades, analytics, help. See [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md). |
+| `/` | Landing: hero → `/demo` and `/payment/checkout`; research directory; bottom CTA → `/auth/signup`. `page.tsx` maps undeclared `features` (render throws). See [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md). |
+| `/workflow` | Static Persian workflow guide (`workflow/page.tsx` + React Flow chart). Educational; not live agent status. See [AGENT_USER_DECISION_WORKFLOW.md](AGENT_USER_DECISION_WORKFLOW.md). |
+| `/dashboard` | Public sample dashboard — tabs: overview, portfolio, market, trades, analytics, help. Secondary tabs are `next/dynamic`. See [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md). |
 | `/auth/signin` | CTA to the sample dashboard (no email/password form) |
 | `/options` | Options: **Trade** tab (terminal) + **Strategies** tab (options strategy library) |
 | `/strategies` | Strategies: list, create, details, mini-charts; “Options Strategies” link |
@@ -126,19 +127,23 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    SignIn["/auth/signin — CTA only"] --> Dash["/dashboard"]
-    Landing["/"] --> Dash
+    Landing["/"] --> Demo["/demo — OverviewDashboard only"]
+    Landing --> Signup["/auth/signup"]
+    Landing --> Dash["/dashboard — research directory link"]
+    SignIn["/auth/signin — CTA only"] --> Dash
     Dash --> Ticker[BlueTickerBar]
-    Ticker --> LiveAPI["GET /api/iran-market/ticker — live, TEDPIX placeholder"]
+    Ticker --> LiveAPI["GET /api/iran-market/ticker — live, TEDPIX placeholder, prices in Rial"]
     Dash --> Tabs[tab= overview / portfolio / market / trades / analytics / help]
     Tabs --> Overview[OverviewDashboard — hardcoded cards]
-    Tabs --> Port[PortfolioContent — MOCK_PORTFOLIOS]
+    Tabs --> Port[PortfolioContent — Dietz + localStorage + MOCK_PORTFOLIOS]
     Tabs --> Mkt[IranMarketOverview — mock, then overview API]
 ```
 
 - **Public by design:** no session is required. Header copy: «داشبورد عمومی با داده نمونه».
-- **Live:** ticker only (`useIranTicker` → FastAPI `/api/iran-market/ticker`). TEDPIX is not sourced from tgju/Nobitex.
-- **Sample:** overview stats/positions/activity, portfolio holdings, and the market-tab seed/fallback.
+- **Live:** ticker only (`useIranTicker` → FastAPI `/api/iran-market/ticker`, default **`:8000`**). TEDPIX is not sourced from tgju/Nobitex. Nobitex crypto `price` is Rial. Nav `NewsTicker` labels quotes ریال (75s marquee).
+- **Sample:** overview stats/positions/activity, mock portfolio holdings, market-tab seed/fallback.
+- **Portfolio tab extras:** `IranPortfolioSection` (localStorage) + Modified Dietz (typed values) — [MODIFIED_DIETZ.md](MODIFIED_DIETZ.md).
+- Secondary tabs load with `next/dynamic({ ssr: false })`.
 - Tab query: `?tab=portfolio` etc. `overview` is omitted from the URL.
 - Runbook: [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md).
 
@@ -146,8 +151,8 @@ flowchart TB
 
 ## 6. API base URL and backend
 
-- Client ticker/market/signup fall back to **`NEXT_PUBLIC_API_URL` or `http://localhost:8011`**.
-- Some BFF helpers (`lib/backend-url.ts`) fall back to **`http://localhost:8000`**.
+- `useIranTicker` and most BFF helpers fall back to **`NEXT_PUBLIC_API_URL` or `http://localhost:8000`**.
+- `IranMarketOverview`, `/auth/signup`, and NextAuth `authorize()` still fall back to **`http://localhost:8011`**.
 - Local `python3 start.py` / `make dev` bind FastAPI to **8000**. Docker Compose publishes the API at **8011**.
 - Backend app: `src/main_refactored.py`.
 
@@ -165,6 +170,8 @@ flowchart TB
 | Strategies API (backend) | `src/api/endpoints/strategies_crud.py` → GET/POST `/strategies/` |
 | Options page | `frontend-nextjs/src/app/options/page.tsx` (tabs: Trade, Strategies) |
 | Iran allocation copilot | `components/portfolio/allocation-copilot.tsx` → `POST /api/copilot/allocation-analysis` |
+| Modified Dietz calculator | `lib/modified-dietz.ts` + `components/portfolio/modified-dietz-calculator.tsx` (no API) |
+| Workflow guide | `app/workflow/page.tsx` + `components/workflow/workflow-flow-chart.tsx` |
 | Investing tools page | `app/investing/page.tsx` (not in sidebar; same-origin fetch has no BFF) |
 | App layout | `frontend-nextjs/src/app/layout.tsx` |
 
@@ -174,5 +181,5 @@ flowchart TB
 
 See **[INVESTING_TOOLS.md](./INVESTING_TOOLS.md)** for endpoints, examples, and pitfalls.
 
-- **Portfolio tab:** `/portfolio` → `/dashboard?tab=portfolio` → `IranPortfolioSection` (localStorage) + allocation copilot (FastAPI via `getBackendUrl()`).
+- **Portfolio tab:** `/portfolio` → `/dashboard?tab=portfolio` → `IranPortfolioSection` (localStorage) + allocation copilot (FastAPI via `getBackendUrl()`) + Modified Dietz (client-only; [MODIFIED_DIETZ.md](MODIFIED_DIETZ.md)).
 - **`/investing`:** watchlists, screener, paper, dividends. Browser calls `/api/investor-tools/*` on the Next.js origin; those routes are implemented only on FastAPI today.

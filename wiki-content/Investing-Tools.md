@@ -9,6 +9,7 @@ Full runbook with examples, constraints, and troubleshooting: [docs/INVESTING_TO
 | If you want to… | Go to |
 |-----------------|--------|
 | Score concentration of local Iran holdings | `POST /api/copilot/allocation-analysis` — UI on `/dashboard?tab=portfolio` |
+| Type a cash-flow-weighted period return | [[Modified Dietz]] — same tab, no API |
 | Watchlists / paper / dividends | FastAPI `/api/investor-tools/*` — UI page `/investing` (not in the sidebar) |
 | Live Iran quotes used by the screener | `GET /api/iran-market/overview` |
 

@@ -27,6 +27,7 @@
 | **Deploy to production** | [[Deployment]] |
 | **Use or extend the API** | [[API Reference]] |
 | **Allocation copilot / investing tools** | [[Investing Tools]] |
+| **Modified Dietz period return** | [[Modified Dietz]] |
 | **Work on the frontend** | [[Frontend]] |
 | **Public sample dashboard / local ports** | [[Public Demo Dashboard]] |
 | **Contribute** | [[Contributing]] |
@@ -114,6 +115,7 @@ flowchart TD
 | [[Frontend]] | Next.js app structure, pages, components |
 | [[Public Demo Dashboard]] | Sample dashboard, ports, leftover auth |
 | [[Investing Tools]] | Allocation copilot + `/investing` APIs (file-backed) |
+| [[Modified Dietz]] | Client-only cash-flow-weighted period return on the portfolio tab |
 | [[Contributing]] | How to contribute to the project |
 
 ### Operations
@@ -127,7 +129,7 @@ flowchart TD
 ## Features overview
 
 ### Core trading
-- **Dashboard** – Public sample overview (mock cards); live Iran-market ticker when the API is up
+- **Dashboard** – Public sample overview (mock cards); live Iran-market ticker when the API is up (Rial); Modified Dietz on the portfolio tab
 - **Real-time market data** – Prices, orderbook, tick data  
 - **Options** – Options chain and strategies  
 - **Trading bots** – Automated trading with configurable rules  
