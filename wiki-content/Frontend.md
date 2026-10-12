@@ -4,7 +4,7 @@ The Octopus Trading Platform frontend is built with **Next.js 15**, TypeScript, 
 
 **Dev port:** `npm run dev` binds **3003**, not 3000.
 
-**Public sample dashboard (2026-09):** `/dashboard` is open without a session. `/auth/signin` is a CTA, not a login form. Overview/portfolio are hardcoded samples; the blue ticker calls `GET /api/iran-market/ticker`. Runbook: [[Public Demo Dashboard]].
+**Public sample dashboard (2026-10):** `/dashboard` is open without a session. `/auth/signin` is a CTA, not a login form. Overview/portfolio are hardcoded samples; secondary tabs are `next/dynamic`. The blue ticker calls `GET /api/iran-market/ticker` (default `:8000`, prices in Rial). Portfolio tab also mounts a client-only Modified Dietz calculator. Runbook: [[Public Demo Dashboard]], [[Modified Dietz]].
 
 **i18n:** `translations.ts` covers nav and the command palette. Feature pages use hardcoded Persian — the language switcher does not rewrite them.
 
@@ -467,4 +467,5 @@ NEXT_PUBLIC_APP_NAME=Octopus Trading
 - [[Architecture]] - Overall system architecture
 - [[API Reference]] - Backend API documentation
 - [[Investing Tools]] - Allocation copilot (`/dashboard?tab=portfolio`) and `/investing`
+- [[Modified Dietz]] - Client-only period return on the same portfolio tab
 - [[Configuration]] - Environment configuration

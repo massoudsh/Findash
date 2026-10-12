@@ -17,6 +17,7 @@
 - [[API Reference]]
 - [[Frontend]]
 - [[Investing Tools]]
+- [[Modified Dietz]]
 - [[Contributing]]
 
 ### Operations

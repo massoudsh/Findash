@@ -1,6 +1,6 @@
 # Frontend session, BFF, dashboard, and navigation
 
-Developer runbook for how the Next.js app (Findash / Octopus) authenticates, talks to FastAPI, and composes `/dashboard`. Verified against `frontend-nextjs` and `src/api/endpoints/professional_auth.py` as of September 2026.
+Developer runbook for how the Next.js app (Findash / Octopus) authenticates, talks to FastAPI, and composes `/dashboard`. Verified against `frontend-nextjs` and `src/api/endpoints/professional_auth.py` as of October 2026.
 
 Account-platform APIs (wallet, ZarinPal, KYC, alerts) are FastAPI-side; this page covers the **browser session** that carries the JWT.
 
@@ -141,9 +141,9 @@ const session = await getServerSession(authOptions);
 | `python3 start.py` / uvicorn | `http://localhost:8000` (`API_PORT` default) | same host, `:8000` |
 | Frontend `npm run dev` | port **3003** (`package.json` scripts) | — |
 
-`useIranTicker` defaults to `http://localhost:8011`. `getBackendUrl` and `lib/services/api.ts` default to `http://localhost:8000`. `use-backend-health` also defaults to `:8000`.
+`useIranTicker` (dashboard blue bar + nav `NewsTicker`) defaults to `http://localhost:8000`. `getBackendUrl` and `lib/services/api.ts` also default to `:8000`. Still on **`:8011`**: NextAuth `authorize()`, `/auth/signup`, and `IranMarketOverview`.
 
-**Symptom:** ticker empty on local uvicorn, or BFF 503 / ECONNREFUSED on Docker, while `/health` works in the browser.
+**Symptom:** market tab empty on local uvicorn, or BFF 503 / ECONNREFUSED on Docker, while `/health` works in the browser. The blue ticker now matches local `start.py` (`:8000`) and **misses Compose** unless `NEXT_PUBLIC_API_URL=http://localhost:8011`.
 
 **Fix:** set both in `frontend-nextjs/.env.local` (and rebuild Docker frontend if `NEXT_PUBLIC_*` is baked at build time):
 
@@ -162,20 +162,33 @@ Compose already sets those on the `frontend` service. `config/env.example` still
 
 **Route:** `frontend-nextjs/src/app/dashboard/page.tsx` (client). Tabs are URL state: `?tab=` via `useSearchParams` and `router.replace` (not `nuqs`).
 
+Secondary tabs are `next/dynamic(..., { ssr: false })` so overview does not download portfolio/market/trades/analytics/help until selected. `OverviewDashboard` + `BlueTickerBar` stay in the page bundle.
+
 | `?tab=` | Component | Data |
 |---------|-----------|------|
 | (default) `overview` | `OverviewDashboard` | **Hardcoded** stats, allocation, positions, activity. Risk gauge uses a local timer, not VaR. |
-| `portfolio` | `PortfolioContent` | Portfolio API / fallback |
-| `market` | `IranMarketOverview` | Iran market |
-| `trades` | `TradeTracker` | Trades |
-| `analytics` | `AnalyticsOverview` | Analytics |
+| `portfolio` | `PortfolioContent` | `IranPortfolioSection` (localStorage) + **Modified Dietz** (typed values only) + in-component `MOCK_PORTFOLIOS` / `MOCK_POSITIONS`. No `getPortfolios()`. |
+| `market` | `IranMarketOverview` | Mock seed, then `GET /api/iran-market/overview` |
+| `trades` | `TradeTracker` | UI-only |
+| `analytics` | `AnalyticsOverview` | UI-only |
 | `help` | `HelpCenter` | Static help cards |
 
-`OverviewDashboard` and `BlueTickerBar` live in `frontend-nextjs/src/components/dashboard/overview-dashboard.tsx` so the **page module stays small** (Next.js build; see commit that extracted it from `page.tsx`). `/demo` reuses `OverviewDashboard` with a banner that the numbers are sample data.
+`OverviewDashboard` and `BlueTickerBar` live in `frontend-nextjs/src/components/dashboard/overview-dashboard.tsx`. `/demo` reuses `OverviewDashboard` with a banner that the numbers are sample data.
 
-**Live ticker:** `BlueTickerBar` → `useIranTicker` → `GET /api/iran-market/ticker` every 60s. Backend (`src/api/endpoints/iran_market.py`) returns five symbols: `USD-IRR`, `GOLD18-IRT`, `COIN-IRT`, `BTC-IRT`, `TEDPIX`. TEDPIX is a placeholder (`available: false`, null price) when not in the overview feed.
+**Live ticker (two surfaces, one hook):**
+
+- Dashboard: `BlueTickerBar` → `useIranTicker` → `GET {NEXT_PUBLIC_API_URL\|\|http://localhost:8000}/api/iran-market/ticker` every 60s. Prints the raw number with **no unit**.
+- Global chrome: `NewsTicker` in `navigation-wrapper.tsx` (header + lg sticky). Mixes `/api/news?category=all` (120s) with the same ticker hook. Available quotes are labeled **ریال**, marquee is **75s** (`globals.css` `.animate-news-marquee`).
+
+Backend (`src/api/endpoints/iran_market.py`) ticker symbols: `USD-IRR`, `GOLD18-IRT`, `COIN-IRT`, `BTC-IRT`, `TEDPIX`. TEDPIX is a placeholder (`available: false`, null price). Nobitex crypto `price` is **Rial** (`currency: "IRR"`); the old `/10` Toman conversion is gone. Symbol suffixes (`-IRT` vs `-IRR`) are names, not a second conversion.
+
+`useIranTicker` sets `loading` to `false` in `finally`. A failed or non-OK first fetch no longer leaves the bar on “در حال دریافت”; it keeps `items = []` (or the last good list).
 
 Header buttons “گزارش امروز” / “افزودن دارایی” on `/dashboard` are **not wired**.
+
+The lazy-load refactor dropped the local `type Tab = …` alias while `VALID_TABS: Tab[]` and `useState<Tab>` remain — `next build` typechecks that page as an error until the alias is restored.
+
+Dietz formula, examples, tests: [MODIFIED_DIETZ.md](MODIFIED_DIETZ.md).
 
 ---
 
@@ -210,7 +223,11 @@ PDF generation (`src/services/pdf_reports.py`) needs Vazirmatn at `/usr/share/fo
 | Sign-in always “ایمیل یا رمز عبور اشتباه است” | `authorize()` cannot reach FastAPI (port mismatch) or login body is not `{success, user, access_token}`. |
 | Admin page shows “دسترسی محدود…” after login | NextAuth `session.user.role` is not the string `admin` (JWT/user.role from FastAPI). |
 | Admin BFF 401 with a session cookie | Handler used `getServerSession()` without `authOptions`, so `accessToken` is missing. |
-| Ticker shows “—” on local API | `useIranTicker` default `:8011` while uvicorn is `:8000`. |
+| Ticker shows “—” on **Compose** | `useIranTicker` default is now `:8000`; Compose publishes the API on `:8011`. Set `NEXT_PUBLIC_API_URL`. |
+| Market tab empty on local `start.py` | `IranMarketOverview` still defaults to `:8011`. |
+| Nav ticker numbers look 10× the old crypto quotes | Nobitex path no longer divides Rial by 10; `NewsTicker` always suffixes ریال. |
 | Docker BFF 503 | Server-side fetch used `localhost:8000` inside the frontend container; need `BACKEND_INTERNAL_URL=http://api:8000` or `getBackendUrl()` pointing at the Docker DNS name. |
 | PDF 503 | Vazirmatn TTF not on the API image/host. |
 | Middleware “restore LOGIN_ENABLED” comment | Flag removed from sign-in; only `authorized: () => true` remains. |
+| `next build` errors on `Tab` in `dashboard/page.tsx` | Lazy-load commit removed `type Tab = …` but still uses `Tab`. |
+| Landing `/` white-screens | `app/page.tsx` maps undeclared `features`. |

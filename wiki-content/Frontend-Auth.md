@@ -7,7 +7,7 @@ How the Next.js app signs in and talks to FastAPI. Full runbook (ports, BFF tabl
 - UI: Next.js 15, **port 3003**.
 - Login: Credentials provider → FastAPI `POST /api/auth/login` → JWT stored as NextAuth `session.accessToken`.
 - `middleware.ts` currently allows all matched routes (`authorized: () => true`). `/admin` is gated in `app/admin/layout.tsx` (`role === 'admin'`).
-- Docker host API is **8011**; local uvicorn is **8000**. `getBackendUrl()` defaults to `:8000`; NextAuth `authorize()` defaults to `:8011`. Set `NEXT_PUBLIC_API_URL` (and Compose `BACKEND_INTERNAL_URL=http://api:8000`).
-- `/dashboard` overview numbers are mostly static; the blue ticker is live (`GET /api/iran-market/ticker`). `/reports` is LLM insights; Persian PDF is `GET /api/reports/portfolio.pdf` (Vazirmatn required).
+- Docker host API is **8011**; local uvicorn is **8000**. `useIranTicker` and `getBackendUrl()` default to `:8000`; NextAuth `authorize()`, signup, and `IranMarketOverview` default to `:8011`. Set `NEXT_PUBLIC_API_URL` (and Compose `BACKEND_INTERNAL_URL=http://api:8000`).
+- `/dashboard` overview numbers are mostly static; the blue ticker is live (`GET /api/iran-market/ticker`, prices in Rial). Secondary tabs are lazy-loaded. Portfolio tab includes a client-only Modified Dietz card — [[Modified Dietz]]. `/reports` is LLM insights; Persian PDF is `GET /api/reports/portfolio.pdf` (Vazirmatn required).
 
 See also [[Frontend]] and [[Configuration]].

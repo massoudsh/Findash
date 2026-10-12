@@ -9,13 +9,21 @@ Verified against `frontend-nextjs` (sign-in, dashboard, portfolio, Iran market, 
 ## What a visitor sees
 
 ```
-/  (landing)
- └─ CTA → /dashboard          public sample data, no login
+/  (landing, frontend-nextjs/src/app/page.tsx)
+ ├─ Hero primary CTA     → /demo
+ ├─ Hero secondary CTA   → /payment/checkout
+ ├─ Research directory   → static links (/technical, /macro, /fundamental-data, /data, /social, /dashboard, /ai-models)
+ ├─ “راهنمای جریان کار” → /workflow
+ └─ Bottom CTA “شروع کنید” → /auth/signup
 /auth/signin                  CTA only: “مشاهده داشبورد نمونه” → /dashboard
 /auth/signup                  still posts email/password to FastAPI /api/auth/register
 /auth/phone → /auth/otp       leftover SMS login UI (see pitfalls)
 /admin                        still requires a NextAuth session with role admin
 ```
+
+The research directory is hardcoded `researchDirectory` in `page.tsx` (three `<details open>` groups). It is not a CMS or search index.
+
+The features grid below that directory maps a `features` constant that is **not declared** in `page.tsx`. Rendering `/` throws `ReferenceError: features is not defined` when that section evaluates. Hero + research directory are in the same component, so the landing page currently does not mount.
 
 `middleware.ts` matches `/dashboard`, `/portfolio`, `/trading`, `/analytics`, and `/settings`, then always returns `authorized: () => true`. The comment still mentions restoring `LOGIN_ENABLED` on the sign-in page; that flag is **not** in the current sign-in UI.
 
@@ -29,20 +37,23 @@ Route: `frontend-nextjs/src/app/dashboard/page.tsx`. Tab state is `?tab=` (`over
 
 | Tab | Component | Data |
 |-----|-----------|------|
-| overview | `OverviewDashboard` | Hardcoded Persian cards, allocation, sparkline, positions, activity. Risk gauge ticks locally every 3s (`Math.random()`), not from the API. |
-| portfolio | `PortfolioContent` | In-component `MOCK_PORTFOLIOS` / `MOCK_POSITIONS` (فولاد, شستا, خودرو, BTC). No `getPortfolios()` call. |
-| market | `IranMarketOverview` | Starts on `MOCK_MARKET_ITEMS`. Tries `GET {API}/api/iran-market/overview`; on non-OK or empty `items`, stays on mock. |
-| trades / analytics / help | `TradeTracker`, `AnalyticsOverview`, `HelpCenter` | UI-only; help copy notes TEDPIX is not live. |
+| overview | `OverviewDashboard` (eager) | Hardcoded Persian cards, allocation, sparkline, positions, activity. Risk gauge ticks locally every 3s (`Math.random()`), not from the API. |
+| portfolio | `PortfolioContent` (`next/dynamic`, `ssr: false`) | `IranPortfolioSection` + Modified Dietz calculator + `MOCK_PORTFOLIOS` / `MOCK_POSITIONS` (فولاد, شستا, خودرو, BTC). No `getPortfolios()` call. Dietz is typed values only — [MODIFIED_DIETZ.md](MODIFIED_DIETZ.md). |
+| market | `IranMarketOverview` (dynamic) | Starts on `MOCK_MARKET_ITEMS`. Tries `GET {API}/api/iran-market/overview`; on non-OK or empty `items`, stays on mock. **Default API `:8011`.** |
+| trades / analytics / help | `TradeTracker`, `AnalyticsOverview`, `HelpCenter` (dynamic) | UI-only; help copy notes TEDPIX is not live. |
 
-Blue ticker (`BlueTickerBar` → `useIranTicker`): `GET {API}/api/iran-market/ticker` every 60s. On failure it keeps the previous list (empty on first load). Label “بازار زنده” means the fetch ran, not that every symbol is live.
+Blue ticker (`BlueTickerBar` → `useIranTicker`): `GET {NEXT_PUBLIC_API_URL\|\|http://localhost:8000}/api/iran-market/ticker` every 60s. `loading` is cleared in `finally` (failed first fetch no longer sticks on “در حال دریافت”). On error it keeps the previous list (empty on first load). Label “بازار زنده” means the fetch ran, not that every symbol is live. The bar prints **no currency suffix**.
 
-Backend ticker (`src/api/endpoints/iran_market.py`):
+Nav `NewsTicker` (`navigation-wrapper.tsx`) is a second consumer of the same hook plus `/api/news`. Available quotes are shown as **ریال**; the marquee duration is **75s**.
+
+Backend (`src/api/endpoints/iran_market.py`):
 
 - Overview is cached 60s and pulls tgju.org + Nobitex.
 - Ticker symbols: `USD-IRR`, `GOLD18-IRT`, `COIN-IRT`, `BTC-IRT`, `TEDPIX`.
 - **TEDPIX is a placeholder** (`available: false`, `price: null`). It is not in the tgju/Nobitex payload.
+- Nobitex crypto `price` is kept in **Rial** (`currency: "IRR"`). Do not divide by 10 for Toman in new callers.
 
-Do not treat overview cards, mock portfolio rows, or TEDPIX as live holdings.
+Do not treat overview cards, mock portfolio rows, Dietz inputs, or TEDPIX as live holdings.
 
 ---
 
@@ -54,10 +65,15 @@ Do not treat overview cards, mock portfolio rows, or TEDPIX as live holdings.
 | `python3 start.py --reload` or `make dev` | — | **8000** (`API_PORT`, default) |
 | `docker compose -f docker-compose-core.yml up` | **3003** | host **8011** → container 8000 |
 
-Client ticker/market/signup fallbacks use `NEXT_PUBLIC_API_URL \|\| http://localhost:8011`.
-`getBackendUrl()` (`lib/backend-url.ts`) used by some BFF routes defaults to `http://localhost:8000`.
+Fallbacks are **not** uniform:
 
-Local UI + local `start.py` without `.env.local`: ticker/overview call **8011** while the API is on **8000**. Set `NEXT_PUBLIC_API_URL=http://localhost:8000` in `frontend-nextjs/.env.local`, or use Compose so 8011 matches.
+| Caller | Default without `NEXT_PUBLIC_API_URL` |
+|--------|----------------------------------------|
+| `useIranTicker` (blue bar + `NewsTicker`) | `http://localhost:8000` |
+| `getBackendUrl()` / `lib/services/api.ts` | `http://localhost:8000` |
+| `IranMarketOverview`, `/auth/signup`, NextAuth `authorize()` | `http://localhost:8011` |
+
+Local UI + local `start.py` without `.env.local`: the **blue ticker** hits **8000** (matches `start.py`); the **market tab and signup** still call **8011**. Compose without `.env.local`: ticker misses **8011**. Set `NEXT_PUBLIC_API_URL` to the API you actually run.
 
 ---
 
@@ -111,8 +127,11 @@ Add nav keys in `translations.ts`. For feature pages, either keep Persian source
 | Symptom | Cause | What to do |
 |---------|--------|------------|
 | `ModuleNotFoundError: src` | `start.py` not run from repo root, or an old copy that inserts `sys.path` after the `src` import | From repo root: `python3 start.py --reload` |
-| Ticker stays “در حال دریافت” | Frontend default API `:8011`, local API `:8000` | `NEXT_PUBLIC_API_URL=http://localhost:8000` or Compose on 8011 |
+| Blue ticker empty on Compose | `useIranTicker` default `:8000`, Compose API `:8011` | `NEXT_PUBLIC_API_URL=http://localhost:8011` |
+| Market tab empty on local `start.py` | `IranMarketOverview` still defaults to `:8011` | `NEXT_PUBLIC_API_URL=http://localhost:8000` or run Compose |
 | Market tab looks “live” with no backend | `IranMarketOverview` seed + fallback is mock | Expected; only a 200 with non-empty `items` replaces it |
+| Landing `/` white-screens | `page.tsx` maps undeclared `features` | Hero/research/CTA are in the same module; fix or stub `features` |
+| Crypto quotes ~10× older screenshots | Nobitex path dropped `/10` Toman conversion | API `price` is Rial; nav ticker labels ریال |
 | Cannot log in at `/auth/signin` | Page is a dashboard CTA, not a form | Expected for the demo path. Email login is NextAuth `authorize()` only (no UI). OTP UI is not wired (missing proxy + credential fields). |
 | Admin redirect loops to dashboard | Admin layout → sign-in → sample dashboard link | There is no admin login form on `/auth/signin` |
 | Frontend README said `:3000` | `npm run dev` binds **3003** | Use 3003 |
