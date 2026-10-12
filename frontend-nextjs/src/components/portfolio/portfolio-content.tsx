@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, GlassCard } from '@/component
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatPercentage, CurrencyUnit } from '@/lib/utils';
 import { PortfolioChart } from '@/components/portfolio/portfolio-chart';
+import { ModifiedDietzCalculator } from '@/components/portfolio/modified-dietz-calculator';
 import { IranPortfolioSection } from '@/components/portfolio/iran-portfolio-section';
 import {
   Plus,
@@ -102,6 +103,7 @@ export function PortfolioContent() {
     <div className="space-y-6">
       {/* Iranian Portfolio Section */}
       <IranPortfolioSection />
+      <ModifiedDietzCalculator />
 
       <div className="border-t pt-4" />
 
