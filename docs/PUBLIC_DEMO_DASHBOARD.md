@@ -10,16 +10,19 @@ Verified against `frontend-nextjs` (sign-in, dashboard, portfolio, Iran market, 
 
 ```
 /  (landing)
- └─ CTA → /dashboard          public sample data, no login
-/auth/signin                  CTA only: “مشاهده داشبورد نمونه” → /dashboard
-/auth/signup                  still posts email/password to FastAPI /api/auth/register
+ ├─ hero “دمو”     → /demo
+ ├─ hero “اشتراک”  → /payment/checkout   (plans BFF; pay requires session)
+ └─ bottom CTA     → /auth/signup
+/dashboard                    still public sample data, no login required
+/auth/signin                  email/password via NextAuth + “مشاهده داشبورد نمونه”
+/auth/signup                  POST {getBackendUrl()}/api/auth/register → /auth/signin?signup=success
 /auth/phone → /auth/otp       leftover SMS login UI (see pitfalls)
-/admin                        still requires a NextAuth session with role admin
+/admin                        NextAuth session with role admin; callbackUrl=/admin now has a form
 ```
 
 `middleware.ts` matches `/dashboard`, `/portfolio`, `/trading`, `/analytics`, and `/settings`, then always returns `authorized: () => true`. The comment still mentions restoring `LOGIN_ENABLED` on the sign-in page; that flag is **not** in the current sign-in UI.
 
-Admin is gated in `app/admin/layout.tsx` (`getServerSession(authOptions)` + `role === 'admin'`). Unauthenticated admin hits redirect to `/auth/signin?callbackUrl=/admin`, which now has **no credentials form**.
+Admin is gated in `app/admin/layout.tsx` (`getServerSession(authOptions)` + `role === 'admin'`). Unauthenticated admin hits `/auth/signin?callbackUrl=/admin`. `safeCallbackPath` keeps `/admin` after a successful login.
 
 ---
 
@@ -30,8 +33,8 @@ Route: `frontend-nextjs/src/app/dashboard/page.tsx`. Tab state is `?tab=` (`over
 | Tab | Component | Data |
 |-----|-----------|------|
 | overview | `OverviewDashboard` | Hardcoded Persian cards, allocation, sparkline, positions, activity. Risk gauge ticks locally every 3s (`Math.random()`), not from the API. |
-| portfolio | `PortfolioContent` | In-component `MOCK_PORTFOLIOS` / `MOCK_POSITIONS` (فولاد, شستا, خودرو, BTC). No `getPortfolios()` call. |
-| market | `IranMarketOverview` | Starts on `MOCK_MARKET_ITEMS`. Tries `GET {API}/api/iran-market/overview`; on non-OK or empty `items`, stays on mock. |
+| portfolio | `PortfolioContent` | localStorage holdings + client Dietz + in-component `MOCK_PORTFOLIOS` / `MOCK_POSITIONS`. `?addAsset=1` opens the add modal. No `getPortfolios()` call. |
+| market | `IranMarketOverview` | Live `GET /api/iran-market/overview` only. No mock seed; failure keeps last good list. Quote unit is rial — [IRAN_MARKET_PRICING.md](IRAN_MARKET_PRICING.md). |
 | trades / analytics / help | `TradeTracker`, `AnalyticsOverview`, `HelpCenter` | UI-only; help copy notes TEDPIX is not live. |
 
 Blue ticker (`BlueTickerBar` → `useIranTicker`): `GET {API}/api/iran-market/ticker` every 60s. On failure it keeps the previous list (empty on first load). Label “بازار زنده” means the fetch ran, not that every symbol is live.
@@ -42,7 +45,7 @@ Backend ticker (`src/api/endpoints/iran_market.py`):
 - Ticker symbols: `USD-IRR`, `GOLD18-IRT`, `COIN-IRT`, `BTC-IRT`, `TEDPIX`.
 - **TEDPIX is a placeholder** (`available: false`, `price: null`). It is not in the tgju/Nobitex payload.
 
-Do not treat overview cards, mock portfolio rows, or TEDPIX as live holdings.
+Do not treat overview cards, mock portfolio rows, or TEDPIX as live holdings. The **market tab** is live quotes (or empty), not a second mock dataset.
 
 ---
 
@@ -54,10 +57,9 @@ Do not treat overview cards, mock portfolio rows, or TEDPIX as live holdings.
 | `python3 start.py --reload` or `make dev` | — | **8000** (`API_PORT`, default) |
 | `docker compose -f docker-compose-core.yml up` | **3003** | host **8011** → container 8000 |
 
-Client ticker/market/signup fallbacks use `NEXT_PUBLIC_API_URL \|\| http://localhost:8011`.
-`getBackendUrl()` (`lib/backend-url.ts`) used by some BFF routes defaults to `http://localhost:8000`.
+Client ticker (`useIranTicker`), market tab, signup, and NextAuth `authorize()` all fall back through `NEXT_PUBLIC_API_URL` / `getBackendUrl()` to **`http://localhost:8000`**. Compose still publishes the API on **8011**.
 
-Local UI + local `start.py` without `.env.local`: ticker/overview call **8011** while the API is on **8000**. Set `NEXT_PUBLIC_API_URL=http://localhost:8000` in `frontend-nextjs/.env.local`, or use Compose so 8011 matches.
+Local UI + Compose without `.env.local`: ticker/overview call **8000** while the host mapping is **8011**. Set `NEXT_PUBLIC_API_URL=http://localhost:8011` in `frontend-nextjs/.env.local` (and rebuild the frontend image if that var is baked at build time).
 
 ---
 
@@ -87,12 +89,13 @@ Production: those four env vars are required; Redis/Postgres failure exits 1.
 
 | Path | Behavior |
 |------|----------|
-| NextAuth `authorize()` | `POST {backend}/api/auth/login` with **email + password**. Backend default in auth-options is `:8011`. |
-| `/auth/signup` | `POST {API}/api/auth/register` (same `:8011` fallback). Success redirects to `/auth/signin?signup=success`, which no longer shows a login form. |
+| NextAuth `authorize()` | `POST {BACKEND_INTERNAL_URL \|\| getBackendUrl()}/api/auth/login` with **email + password**. Fallback is **`:8000`**. |
+| `/auth/signin` | Credentials form + sample-dashboard link. `safeCallbackPath` keeps same-origin `callbackUrl` (checkout, admin). |
+| `/auth/signup` | `POST {getBackendUrl()}/api/auth/register`. Success → `/auth/signin?signup=success` (forwards `callbackUrl`). |
 | `/auth/phone`, `/auth/otp` | Call **`/api/proxy/auth/send-otp`** and **`/api/proxy/auth/verify-otp`**. There is **no** `frontend-nextjs/src/app/api/proxy/` tree. OTP verify then `signIn('credentials', { phone, otp_token })`, but `authOptions` only reads `email`/`password`. |
 | FastAPI OTP | `POST /api/auth/send-otp` and `/verify-otp` in `otp_auth.py`. In-memory store; KaveNegar if `SMS_PROVIDER`/`SMS_API_KEY` are set, otherwise the code is logged. |
 
-Session-backed pages (`/account/subscription`, `/risk/policy`, `/payment/checkout`, admin BFF) still call `useSession` / `getServerSession`. Without a session they prompt “وارد شوید” and send the user to the CTA-only sign-in page.
+Session-backed pages (`/account/subscription`, `/risk/policy`, `/payment/checkout`, admin BFF) still call `useSession` / `getServerSession`. Checkout loads plans from `GET /api/subscriptions/plans` (public BFF) and sends pay to `POST /api/subscriptions/subscribe`. Unauthenticated pay → `/auth/signin?callbackUrl=/payment/checkout`.
 
 ---
 
@@ -111,10 +114,10 @@ Add nav keys in `translations.ts`. For feature pages, either keep Persian source
 | Symptom | Cause | What to do |
 |---------|--------|------------|
 | `ModuleNotFoundError: src` | `start.py` not run from repo root, or an old copy that inserts `sys.path` after the `src` import | From repo root: `python3 start.py --reload` |
-| Ticker stays “در حال دریافت” | Frontend default API `:8011`, local API `:8000` | `NEXT_PUBLIC_API_URL=http://localhost:8000` or Compose on 8011 |
-| Market tab looks “live” with no backend | `IranMarketOverview` seed + fallback is mock | Expected; only a 200 with non-empty `items` replaces it |
-| Cannot log in at `/auth/signin` | Page is a dashboard CTA, not a form | Expected for the demo path. Email login is NextAuth `authorize()` only (no UI). OTP UI is not wired (missing proxy + credential fields). |
-| Admin redirect loops to dashboard | Admin layout → sign-in → sample dashboard link | There is no admin login form on `/auth/signin` |
+| Ticker / market empty under Compose | Client default API is now `:8000`; host mapping is `:8011` | `NEXT_PUBLIC_API_URL=http://localhost:8011` or use local `start.py` on 8000 |
+| Market tab empty (no fake cards) | Mock seed removed; need ≥1 `available` overview item | Expected. `curl` `/api/iran-market/overview` |
+| Login form errors “ورود ناموفق بود” | `authorize()` cannot reach FastAPI or body is not `{success, user, access_token}` | Match `NEXT_PUBLIC_API_URL` / `BACKEND_INTERNAL_URL` to the API |
+| Admin redirect used to dump you on the sample dashboard | Pre-`0aee22b` sign-in had no form | Sign in with an `admin` user; `callbackUrl=/admin` is kept |
 | Frontend README said `:3000` | `npm run dev` binds **3003** | Use 3003 |
 
 ---
@@ -122,6 +125,8 @@ Add nav keys in `translations.ts`. For feature pages, either keep Persian source
 ## Related
 
 - App routes and nav: [APP_FLOW.md](APP_FLOW.md)
+- Session / BFF: [FRONTEND_SESSION.md](FRONTEND_SESSION.md)
+- Quote units: [IRAN_MARKET_PRICING.md](IRAN_MARKET_PRICING.md)
 - Repo layout and commands: [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md)
 - Wiki setup: [Getting Started](../wiki-content/Getting-Started.md)
 - Frontend overview: [frontend-nextjs/README.md](../frontend-nextjs/README.md)

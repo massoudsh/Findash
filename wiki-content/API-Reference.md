@@ -691,6 +691,7 @@ client.subscribe('AAPL', (quote) => {
 ## Next Steps
 
 - [[Account Platform]] - Payments, wallet, KYC, alerts, risk policy
+- [[Iran Market Pricing]] - `/api/iran-market/*` rial contract
 - [[Architecture]] - System architecture
 - [[AI Agents]] - AI agent endpoints
 - [[Database]] - Data models

@@ -58,9 +58,9 @@ flowchart LR
 
 | Route | Page / content |
 |-------|-----------------|
-| `/` | Landing (Persian marketing page; CTA to `/dashboard`) |
+| `/` | Landing: hero → `/demo` + `/payment/checkout`; bottom CTA → `/auth/signup`; `features` is a real const (no longer an undeclared map). |
 | `/dashboard` | Public sample dashboard — tabs: overview, portfolio, market, trades, analytics, help. See [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md). |
-| `/auth/signin` | CTA to the sample dashboard (no email/password form) |
+| `/auth/signin` | Email/password via NextAuth + link to the sample dashboard. `safeCallbackPath` on `callbackUrl`. |
 | `/options` | Options: **Trade** tab (terminal) + **Strategies** tab (options strategy library) |
 | `/strategies` | Strategies: list, create, details, mini-charts; “Options Strategies” link |
 | `/trades` | Trading center (order entry, open orders) |
@@ -126,28 +126,30 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    SignIn["/auth/signin — CTA only"] --> Dash["/dashboard"]
-    Landing["/"] --> Dash
+    SignIn["/auth/signin — credentials + sample link"] --> Dash["/dashboard"]
+    Landing["/"] --> Demo["/demo"]
+    Landing --> Checkout["/payment/checkout"]
+    Landing --> Signup["/auth/signup"]
     Dash --> Ticker[BlueTickerBar]
-    Ticker --> LiveAPI["GET /api/iran-market/ticker — live, TEDPIX placeholder"]
+    Ticker --> LiveAPI["GET /api/iran-market/ticker — rial, TEDPIX placeholder"]
     Dash --> Tabs[tab= overview / portfolio / market / trades / analytics / help]
     Tabs --> Overview[OverviewDashboard — hardcoded cards]
-    Tabs --> Port[PortfolioContent — MOCK_PORTFOLIOS]
-    Tabs --> Mkt[IranMarketOverview — mock, then overview API]
+    Tabs --> Port[PortfolioContent — localStorage + MOCK_PORTFOLIOS]
+    Tabs --> Mkt[IranMarketOverview — live overview, no mock]
 ```
 
-- **Public by design:** no session is required. Header copy: «داشبورد عمومی با داده نمونه».
-- **Live:** ticker only (`useIranTicker` → FastAPI `/api/iran-market/ticker`). TEDPIX is not sourced from tgju/Nobitex.
-- **Sample:** overview stats/positions/activity, portfolio holdings, and the market-tab seed/fallback.
-- Tab query: `?tab=portfolio` etc. `overview` is omitted from the URL.
+- **Dashboard is public:** no session is required. Header copy: «داشبورد عمومی با داده نمونه».
+- **Live:** ticker + market tab (`/ticker`, `/overview`). Quote unit is rial. TEDPIX is not sourced from tgju/Nobitex. See [IRAN_MARKET_PRICING.md](IRAN_MARKET_PRICING.md).
+- **Sample:** overview stats/positions/activity and the mock USD-style portfolio cards. Iran holdings are localStorage (`iran_portfolio_v1`).
+- Tab query: `?tab=portfolio` etc. `overview` is omitted from the URL. `?addAsset=1` opens the add-asset modal.
 - Runbook: [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md).
 
 ---
 
 ## 6. API base URL and backend
 
-- Client ticker/market/signup fall back to **`NEXT_PUBLIC_API_URL` or `http://localhost:8011`**.
-- Some BFF helpers (`lib/backend-url.ts`) fall back to **`http://localhost:8000`**.
+- Client ticker, market tab, signup, NextAuth `authorize()`, and `getBackendUrl()` fall back to **`http://localhost:8000`**.
+- Compose still publishes the API at **`:8011`** — set `NEXT_PUBLIC_API_URL` to match.
 - Local `python3 start.py` / `make dev` bind FastAPI to **8000**. Docker Compose publishes the API at **8011**.
 - Backend app: `src/main_refactored.py`.
 
@@ -159,7 +161,8 @@ flowchart TB
 |------|--------|
 | Layout + sidebars | `frontend-nextjs/src/components/navigation/navigation-wrapper.tsx` |
 | Dashboard | `frontend-nextjs/src/app/dashboard/page.tsx` + `components/dashboard/overview-dashboard.tsx` |
-| Sign-in CTA | `frontend-nextjs/src/app/auth/signin/page.tsx` |
+| Sign-in form | `frontend-nextjs/src/app/auth/signin/page.tsx` (`safeCallbackPath` in `lib/utils.ts`) |
+| Checkout | `app/payment/checkout/page.tsx` → BFF `/api/subscriptions/{plans,subscribe}` |
 | Strategies list + create | `frontend-nextjs/src/components/strategies/strategies-content.tsx` |
 | Strategies API (frontend) | `frontend-nextjs/src/lib/services/api.ts` → `getStrategies`, `createStrategy` |
 | Strategies API (backend) | `src/api/endpoints/strategies_crud.py` → GET/POST `/strategies/` |

@@ -16,6 +16,10 @@
 ### Development
 - [[API Reference]]
 - [[Frontend]]
+- [[Frontend Auth]]
+- [[Public Demo Dashboard]]
+- [[Iran Market Pricing]]
+- [[Account Platform]]
 - [[Investing Tools]]
 - [[Contributing]]
 

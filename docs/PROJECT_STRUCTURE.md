@@ -40,4 +40,5 @@ High-level layout of the Findash / Octopus Trading Platform repo and where to fi
 - Frontend: `cd frontend-nextjs && npm run dev` → http://localhost:3003
 - Full stack: `docker compose -f docker-compose-core.yml up` → UI `:3003`, API `:8011`
 - Tests: `make test`
-- Public sample dashboard / ports / auth leftovers: [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md)
+- Public sample dashboard / ports / auth: [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md)
+- Iran-market quote unit (rial): [IRAN_MARKET_PRICING.md](IRAN_MARKET_PRICING.md)

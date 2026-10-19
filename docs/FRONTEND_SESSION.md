@@ -1,6 +1,6 @@
 # Frontend session, BFF, dashboard, and navigation
 
-Developer runbook for how the Next.js app (Findash / Octopus) authenticates, talks to FastAPI, and composes `/dashboard`. Verified against `frontend-nextjs` and `src/api/endpoints/professional_auth.py` as of September 2026.
+Developer runbook for how the Next.js app (Findash / Octopus) authenticates, talks to FastAPI, and composes `/dashboard`. Verified against `frontend-nextjs` and `src/api/endpoints/professional_auth.py` as of October 2026 (`0aee22b` restored the credentials form and aligned NextAuth with `getBackendUrl()`).
 
 Account-platform APIs (wallet, ZarinPal, KYC, alerts) are FastAPI-side; this page covers the **browser session** that carries the JWT.
 
@@ -19,7 +19,7 @@ Browser
   │  signIn("credentials")
   ▼
 NextAuth  GET/POST /api/auth/[...nextauth]
-  │  authorize() → POST {BACKEND_INTERNAL_URL|NEXT_PUBLIC_API_URL}/api/auth/login
+  │  authorize() → POST {BACKEND_INTERNAL_URL || getBackendUrl()}/api/auth/login
   ▼
 FastAPI  src/api/endpoints/professional_auth.py
   │  returns { success, user: { id, email, name, role }, access_token }
@@ -49,11 +49,14 @@ NextAuth JWT callback copies user.id, user.role, accessToken
 
 ## 1. Sign-in flow
 
-1. `/auth/signin` calls `signIn("credentials", { redirect: false, email, password })`.
-2. `authorize()` POSTs JSON `{ email, password }` to FastAPI `/api/auth/login`.
-3. Login must return `success === true`, a `user` object, and `access_token`. Inactive users get `success=false` without a 401 — NextAuth treats that as a failed sign-in.
-4. On success the page does a **full navigation** (`window.location.href`) to `callbackUrl` if it is same-origin; otherwise `/dashboard`. Open-redirects to other hosts are rejected (`safeRedirect`).
-5. FastAPI JWT claims include singular `"role"` (e.g. `"admin"`). `verify_token` copies that into `TokenData.roles` so `require_admin` (`"admin" in roles`) works.
+1. `/auth/signin` is a real email/password form (`SignInForm`). It still offers «مشاهده داشبورد نمونه» → `/dashboard` for visitors who only want the public sample.
+2. Submit calls `signIn("credentials", { redirect: false, email, password, callbackUrl })`.
+3. `authorize()` POSTs JSON `{ email, password }` to FastAPI `/api/auth/login`.
+4. Login must return `success === true`, a `user` object, and `access_token`. Inactive users get `success=false` without a 401 — NextAuth treats that as a failed sign-in.
+5. On success the page uses `router.push(callbackUrl)` then `router.refresh()` (not `window.location.href`). `callbackUrl` is passed through `safeCallbackPath()` in `lib/utils.ts`: same-origin path + query only; missing, external, protocol-relative, or `javascript:` values become `/dashboard`.
+6. FastAPI JWT claims include singular `"role"` (e.g. `"admin"`). `verify_token` copies that into `TokenData.roles` so `require_admin` (`"admin" in roles`) works.
+
+`/auth/signup` POSTs to `{getBackendUrl()}/api/auth/register` and then navigates to `/auth/signin?signup=success` (forwards `callbackUrl` when present). There are **no** demo-email fill buttons on the current sign-in page.
 
 ### Example — login then call a gated API
 
@@ -69,7 +72,7 @@ TOKEN=$(curl -s -X POST "$API/api/auth/login" \
 curl -s -H "Authorization: Bearer $TOKEN" "$API/api/admin/users"
 ```
 
-The sign-in form can fill demo emails (`trader@octopus.trading`, `admin@octopus.trading`); passwords still have to exist in the database.
+Checkout (`/payment/checkout`) sends unauthenticated users to `/auth/signin?callbackUrl=/payment/checkout`. That path is preserved by `safeCallbackPath`.
 
 ---
 
@@ -105,11 +108,10 @@ What *is* gated:
 2. `BACKEND_URL`
 3. fallback `http://localhost:8000`
 
-NextAuth `authorize()` uses a **different** chain:
+NextAuth `authorize()` (`auth-options.ts`) now shares the public fallback:
 
 1. `BACKEND_INTERNAL_URL` (Docker Compose sets `http://api:8000`)
-2. `NEXT_PUBLIC_API_URL`
-3. fallback `http://localhost:8011`
+2. else `getBackendUrl()` → `NEXT_PUBLIC_API_URL` / `BACKEND_URL` / `http://localhost:8000`
 
 | Next.js route | Forwards JWT? | `getServerSession(authOptions)`? |
 |---------------|---------------|----------------------------------|
@@ -141,9 +143,9 @@ const session = await getServerSession(authOptions);
 | `python3 start.py` / uvicorn | `http://localhost:8000` (`API_PORT` default) | same host, `:8000` |
 | Frontend `npm run dev` | port **3003** (`package.json` scripts) | — |
 
-`useIranTicker` defaults to `http://localhost:8011`. `getBackendUrl` and `lib/services/api.ts` default to `http://localhost:8000`. `use-backend-health` also defaults to `:8000`.
+`useIranTicker`, `getBackendUrl()`, `authorize()` (without `BACKEND_INTERNAL_URL`), signup, and `lib/services/api.ts` all default to `http://localhost:8000`. Compose still maps the API to **host `:8011`**.
 
-**Symptom:** ticker empty on local uvicorn, or BFF 503 / ECONNREFUSED on Docker, while `/health` works in the browser.
+**Symptom:** ticker / market tab empty under Compose if `NEXT_PUBLIC_API_URL` is unset (client hits `:8000` inside or outside the frontend container), or BFF 503 / ECONNREFUSED on Docker when the server used `localhost:8000` instead of `BACKEND_INTERNAL_URL=http://api:8000`.
 
 **Fix:** set both in `frontend-nextjs/.env.local` (and rebuild Docker frontend if `NEXT_PUBLIC_*` is baked at build time):
 
@@ -165,17 +167,17 @@ Compose already sets those on the `frontend` service. `config/env.example` still
 | `?tab=` | Component | Data |
 |---------|-----------|------|
 | (default) `overview` | `OverviewDashboard` | **Hardcoded** stats, allocation, positions, activity. Risk gauge uses a local timer, not VaR. |
-| `portfolio` | `PortfolioContent` | Portfolio API / fallback |
-| `market` | `IranMarketOverview` | Iran market |
+| `portfolio` | `PortfolioContent` (lazy `next/dynamic`) | `IranPortfolioSection` (localStorage) + client Dietz + **hardcoded** `MOCK_PORTFOLIOS` / `MOCK_POSITIONS`. IRT/IRR toggle uses `formatTomanValue` (toman stored → ×10 for rial **display**). |
+| `market` | `IranMarketOverview` (lazy) | Live `GET /api/iran-market/overview` only. No mock seed. See [IRAN_MARKET_PRICING.md](IRAN_MARKET_PRICING.md). |
 | `trades` | `TradeTracker` | Trades |
 | `analytics` | `AnalyticsOverview` | Analytics |
 | `help` | `HelpCenter` | Static help cards |
 
-`OverviewDashboard` and `BlueTickerBar` live in `frontend-nextjs/src/components/dashboard/overview-dashboard.tsx` so the **page module stays small** (Next.js build; see commit that extracted it from `page.tsx`). `/demo` reuses `OverviewDashboard` with a banner that the numbers are sample data.
+`OverviewDashboard` and `BlueTickerBar` live in `frontend-nextjs/src/components/dashboard/overview-dashboard.tsx` so the **page module stays small**. `/demo` reuses `OverviewDashboard` with a banner that the numbers are sample data. Secondary tabs are `next/dynamic` with `ssr: false`.
 
-**Live ticker:** `BlueTickerBar` → `useIranTicker` → `GET /api/iran-market/ticker` every 60s. Backend (`src/api/endpoints/iran_market.py`) returns five symbols: `USD-IRR`, `GOLD18-IRT`, `COIN-IRT`, `BTC-IRT`, `TEDPIX`. TEDPIX is a placeholder (`available: false`, null price) when not in the overview feed.
+**Live ticker:** `BlueTickerBar` → `useIranTicker` → `GET /api/iran-market/ticker` every 60s. Backend returns five symbols: `USD-IRR`, `GOLD18-IRT`, `COIN-IRT`, `BTC-IRT`, `TEDPIX`. TEDPIX is a placeholder (`available: false`, null price). Quote `price` is **rial**; the blue bar prints the number with **no** unit.
 
-Header buttons “گزارش امروز” / “افزودن دارایی” on `/dashboard` are **not wired**.
+Header «گزارش امروز» → `/reports`. «افزودن دارایی» → `/dashboard?tab=portfolio&addAsset=1`. `IranPortfolioSection` opens the add-asset modal and then `router.replace`s the query without `addAsset`.
 
 ---
 
@@ -210,7 +212,9 @@ PDF generation (`src/services/pdf_reports.py`) needs Vazirmatn at `/usr/share/fo
 | Sign-in always “ایمیل یا رمز عبور اشتباه است” | `authorize()` cannot reach FastAPI (port mismatch) or login body is not `{success, user, access_token}`. |
 | Admin page shows “دسترسی محدود…” after login | NextAuth `session.user.role` is not the string `admin` (JWT/user.role from FastAPI). |
 | Admin BFF 401 with a session cookie | Handler used `getServerSession()` without `authOptions`, so `accessToken` is missing. |
-| Ticker shows “—” on local API | `useIranTicker` default `:8011` while uvicorn is `:8000`. |
+| Ticker / market tab empty under Compose | Client defaults are now `:8000`; host mapping is `:8011`. Set `NEXT_PUBLIC_API_URL=http://localhost:8011`. |
+| Checkout pay button sends you to sign-in | Expected when `useSession` is empty. After login, `safeCallbackPath` returns `/payment/checkout`. |
+| Gold/crypto “looks 10× too big” | Overview `currency` is `IRR` (rial). Do not apply `formatTomanValue` to quotes. |
 | Docker BFF 503 | Server-side fetch used `localhost:8000` inside the frontend container; need `BACKEND_INTERNAL_URL=http://api:8000` or `getBackendUrl()` pointing at the Docker DNS name. |
 | PDF 503 | Vazirmatn TTF not on the API image/host. |
 | Middleware “restore LOGIN_ENABLED” comment | Flag removed from sign-in; only `authorized: () => true` remains. |

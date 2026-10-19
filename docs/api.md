@@ -271,9 +271,10 @@ client.subscribe('AAPL', (quote) => {
 
 ## See also (verified routers)
 
-The lists above are historical. For the file-backed investing APIs that are actually registered in `src/main_refactored.py`, see [INVESTING_TOOLS.md](./INVESTING_TOOLS.md):
+The lists above are historical. Verified routers registered in `src/main_refactored.py`:
 
-- `POST /api/copilot/allocation-analysis`
-- `/api/investor-tools/*` (watchlists, screener, paper, events placeholder, dividends)
+- [INVESTING_TOOLS.md](./INVESTING_TOOLS.md) — `POST /api/copilot/allocation-analysis`, `/api/investor-tools/*`
+- [IRAN_MARKET_PRICING.md](./IRAN_MARKET_PRICING.md) — `GET /api/iran-market/{overview,prices,ticker,assets}` (rial `currency: IRR`, no auth)
+- [ACCOUNT_PLATFORM.md](./ACCOUNT_PLATFORM.md) — wallet, ZarinPal, subscriptions, KYC, alerts, risk, admin, PDF, OTP
 
-*Last updated: 2026-10-03* 
+*Last updated: 2026-10-19* 

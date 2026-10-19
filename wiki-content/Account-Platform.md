@@ -39,7 +39,7 @@ Routers are included from `src/main_refactored.py`.
 | `/api/wallet` | user | IRT; deposit credits after verify; withdraw locks funds |
 | `/api/subscriptions` | plans public | Price from `SubscriptionPlan`; `/me` checks `end_at` |
 | `/api/kyc` | user / admin | Checksum + mobile validation; no live registry |
-| `/api/alerts` | user / admin evaluate | Symbols from `/api/iran-market/overview`; one-shot |
+| `/api/alerts` | user / admin evaluate | Symbols from `/api/iran-market/overview`; `target_price` is rial |
 | `/api/risk-policy` | user / admin evaluate-all | Defaults 5% DD / 30% concentration |
 | `/api/admin` | admin | Cannot self-demote |
 | `/api/reports` | user | Wrong portfolio → 404; missing Vazirmatn → 503 |
@@ -55,7 +55,7 @@ Default plans if the table is empty: `basic` 99k, `pro` 249k, `elite` 499k toman
 | Page | Role |
 |------|------|
 | `/account`, `/account/subscription` | Profile + plan |
-| `/payment/checkout` → callback → success/failed | ZarinPal loop |
+| `/payment/checkout` → callback → success/failed | Live plans BFF; unauthenticated pay → `/auth/signin?callbackUrl=/payment/checkout` |
 | `/alerts`, `/risk/policy` | Rules and policy UI |
 | `/admin`, `/audit-log` | Admin |
 | `/auth/otp`, `/auth/phone` | OTP |

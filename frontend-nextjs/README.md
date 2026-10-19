@@ -19,7 +19,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000   # local start.py / make dev
 # NEXT_PUBLIC_API_URL=http://localhost:8011 # docker-compose-core.yml
 ```
 
-Without this file, ticker/market/signup fall back to **`:8011`**. Some server BFF helpers (`src/lib/backend-url.ts`) fall back to **`:8000`**. Match the URL to how you started FastAPI. Details: [docs/PUBLIC_DEMO_DASHBOARD.md](../docs/PUBLIC_DEMO_DASHBOARD.md).
+Without this file, ticker, market tab, signup, and NextAuth fall back to **`:8000`**. Compose publishes the API on **`:8011`** — set `NEXT_PUBLIC_API_URL` to match. Details: [docs/PUBLIC_DEMO_DASHBOARD.md](../docs/PUBLIC_DEMO_DASHBOARD.md), [docs/IRAN_MARKET_PRICING.md](../docs/IRAN_MARKET_PRICING.md).
 
 ## Layout
 
@@ -33,23 +33,24 @@ Root layout (`app/layout.tsx`): `LocaleProvider` (default **fa**), NextAuth `Ses
 
 ## Public sample dashboard
 
-`/dashboard` does **not** require a session. `/auth/signin` is a link to that page, not a credentials form.
+`/dashboard` does **not** require a session. `/auth/signin` is an email/password form (NextAuth) plus a «مشاهده داشبورد نمونه» link.
 
 | Surface | Source |
 |---------|--------|
 | Overview cards, mock portfolio | Hardcoded in the component |
-| Market tab | Mock seed; replaced only if `GET /api/iran-market/overview` returns items |
-| Blue ticker | `useIranTicker` → `GET /api/iran-market/ticker` (TEDPIX is a backend placeholder) |
+| Iran holdings | `localStorage` `iran_portfolio_v1`; `?addAsset=1` opens the modal |
+| Market tab | Live `GET /api/iran-market/overview` only (rial). No mock seed |
+| Blue ticker | `useIranTicker` → `GET /api/iran-market/ticker` (TEDPIX placeholder; no unit suffix) |
 
 `middleware.ts` allow-lists dashboard/trading/settings routes with `authorized: () => true`. Admin is still gated in `app/admin/layout.tsx`.
 
 ## API communication
 
-1. **Browser → FastAPI** for Iran market (`NEXT_PUBLIC_API_URL`, default `:8011`).
+1. **Browser → FastAPI** for Iran market (`NEXT_PUBLIC_API_URL`, default `:8000`).
 2. **Browser → Next.js BFF** (`src/app/api/subscriptions`, `risk-policy`, `admin`, `payment`, …) which call FastAPI with `getServerSession`.
-3. **Hardcoded sample data** on the public dashboard/portfolio (not the old `lib/services/*_api.ts` mock layer).
+3. **Hardcoded sample data** on the public dashboard overview / mock portfolio cards.
 
-NextAuth `authorize()` still posts email/password to `POST /api/auth/login`. There is no matching form on `/auth/signin`. `/auth/phone` and `/auth/otp` call `/api/proxy/auth/*`, which is not implemented under `src/app/api/`.
+NextAuth `authorize()` posts email/password to `POST /api/auth/login` (`BACKEND_INTERNAL_URL` or `getBackendUrl()`). `/auth/phone` and `/auth/otp` still call `/api/proxy/auth/*`, which is not implemented under `src/app/api/`.
 
 ## i18n
 

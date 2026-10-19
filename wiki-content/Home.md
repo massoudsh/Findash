@@ -27,8 +27,10 @@
 | **Deploy to production** | [[Deployment]] |
 | **Use or extend the API** | [[API Reference]] |
 | **Allocation copilot / investing tools** | [[Investing Tools]] |
+| **Iran-market quote units (rial)** | [[Iran Market Pricing]] |
 | **Work on the frontend** | [[Frontend]] |
 | **Public sample dashboard / local ports** | [[Public Demo Dashboard]] |
+| **Sign-in / BFF / checkout session** | [[Frontend Auth]] |
 | **Contribute** | [[Contributing]] |
 
 ---
@@ -72,7 +74,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[Landing / sign-in CTA] --> B[Public sample dashboard]
+    A[Landing / demo / signup] --> B[Public sample dashboard]
     B --> C{User Action}
     C -->|View portfolio| D[Portfolio & Positions]
     C -->|Trade| E[Command Center]
@@ -112,7 +114,9 @@ flowchart TD
 |------|-------------|
 | [[API Reference]] | REST API overview and request lifecycle |
 | [[Frontend]] | Next.js app structure, pages, components |
-| [[Public Demo Dashboard]] | Sample dashboard, ports, leftover auth |
+| [[Public Demo Dashboard]] | Sample dashboard, ports, leftover OTP |
+| [[Iran Market Pricing]] | Overview/ticker rial contract; no mock market seed |
+| [[Frontend Auth]] | Credentials sign-in, BFF, checkout callback |
 | [[Investing Tools]] | Allocation copilot + `/investing` APIs (file-backed) |
 | [[Contributing]] | How to contribute to the project |
 
@@ -127,7 +131,7 @@ flowchart TD
 ## Features overview
 
 ### Core trading
-- **Dashboard** – Public sample overview (mock cards); live Iran-market ticker when the API is up
+- **Dashboard** – Public sample overview (mock cards); live Iran-market ticker and market tab (rial) when the API is up
 - **Real-time market data** – Prices, orderbook, tick data  
 - **Options** – Options chain and strategies  
 - **Trading bots** – Automated trading with configurable rules  
