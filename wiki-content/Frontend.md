@@ -4,7 +4,7 @@ The Octopus Trading Platform frontend is built with **Next.js 15**, TypeScript, 
 
 **Dev port:** `npm run dev` binds **3003**, not 3000.
 
-**Public sample dashboard (2026-09):** `/dashboard` is open without a session. `/auth/signin` is a CTA, not a login form. Overview/portfolio are hardcoded samples; the blue ticker calls `GET /api/iran-market/ticker`. Runbook: [[Public Demo Dashboard]].
+**Public sample dashboard:** `/dashboard` is open without a session. `/auth/signin` is a credentials form plus a sample-dashboard link. Overview/mock portfolio cards are hardcoded; the market tab and blue ticker call `/api/iran-market/*` (rial). Runbooks: [[Public Demo Dashboard]], [[Iran Market Pricing]], [[Frontend Auth]].
 
 **i18n:** `translations.ts` covers nav and the command palette. Feature pages use hardcoded Persian — the language switcher does not rewrite them.
 

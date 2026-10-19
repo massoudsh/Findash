@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Iran-market pricing contract: overview/ticker `price` is rial (`IRR`), market tab has no mock seed ([docs/IRAN_MARKET_PRICING.md](docs/IRAN_MARKET_PRICING.md), wiki [[Iran Market Pricing]])
 - Account-platform engineering docs: payments, IRT wallet, subscriptions, KYC, alerts, risk policy, admin, OTP, and Persian PDF ([docs/ACCOUNT_PLATFORM.md](docs/ACCOUNT_PLATFORM.md), wiki [[Account Platform]])
 - Frontend session, BFF, dashboard, and navigation runbook (`docs/FRONTEND_SESSION.md`)
 - `docs/PUBLIC_DEMO_DASHBOARD.md` — public sample dashboard, local `start.py` import path, port matrix, leftover auth pitfalls

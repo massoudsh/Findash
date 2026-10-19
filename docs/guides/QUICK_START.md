@@ -5,7 +5,7 @@
 > - Backend: `python3 start.py --reload` → http://localhost:8000
 > - Frontend: `cd frontend-nextjs && npm run dev` → http://localhost:3003
 > - Docker: `docker compose -f docker-compose-core.yml up` → UI `:3003`, API `:8011`
-> - The dashboard is a **public sample** (no demo email/password on `/auth/signin`). See [PUBLIC_DEMO_DASHBOARD.md](../PUBLIC_DEMO_DASHBOARD.md).
+> - `/dashboard` is a **public sample**. `/auth/signin` is a credentials form (plus a sample-dashboard link). Checkout needs a session. Quote unit is rial: [IRAN_MARKET_PRICING.md](../IRAN_MARKET_PRICING.md).
 >
 > Commands below that `cd Modules` or open `:3000` are stale.
 

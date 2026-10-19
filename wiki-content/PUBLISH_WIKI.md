@@ -53,6 +53,10 @@ Visit https://github.com/massoudsh/Findash/wiki to see your wiki!
 | Data-Sources.md | Market/news providers and API keys |
 | API-Reference.md | REST API documentation |
 | Frontend.md | Frontend architecture |
+| Frontend-Auth.md | Credentials sign-in, BFF, ports |
+| Public-Demo-Dashboard.md | Sample dashboard and leftover OTP |
+| Iran-Market-Pricing.md | Overview/ticker rial contract |
+| Account-Platform.md | Wallet, payments, KYC, alerts |
 | Investing-Tools.md | Allocation copilot and investor-tools API |
 | Deployment.md | Production deployment guide |
 | Troubleshooting.md | Common issues and fixes |

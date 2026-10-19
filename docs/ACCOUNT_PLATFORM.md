@@ -192,7 +192,7 @@ Review writes `audit_logs.action=kyc.reviewed` and an in-app notification (`cate
 
 **Code:** `src/api/endpoints/price_alerts.py`, `src/notifications/tasks.py`
 
-Rules fire against **current** `GET /api/iran-market/overview` prices (tgju + Nobitex). Symbols must match overview keys, for example:
+Rules fire against **current** `GET /api/iran-market/overview` prices (tgju + Nobitex). Those `price` values are **rial (`IRR`)** even when the symbol ends in `-IRT` — see [IRAN_MARKET_PRICING.md](IRAN_MARKET_PRICING.md). Store `target_price` in rial. Symbols must match overview keys, for example:
 
 `USD-IRR`, `EUR-IRR`, `GBP-IRR`, `GOLD18-IRT`, `GOLD24-IRT`, `COIN-IRT`, `HALFCOIN-IRT`, `QUARTERCOIN-IRT`, `BTC-IRT`, `ETH-IRT`, `USDT-IRT`, `BNB-IRT`, `TRX-IRT`.
 
@@ -363,7 +363,7 @@ In-memory store. Use a single API process locally, or move the store to Redis be
 | Route | Role |
 |-------|------|
 | `/account`, `/account?tab=subscription`, `/account/subscription` | Profile / plan status |
-| `/payment/checkout` | Plan picker |
+| `/payment/checkout` | Live plan picker: `GET /api/subscriptions/plans` (public BFF, `getBackendUrl()`). Selected default is `pro` if that code exists, else the first plan. Empty/failed list shows «تلاش مجدد». Unauthenticated «پرداخت» → `/auth/signin?callbackUrl=/payment/checkout`. Authenticated pay → `POST /api/subscriptions/subscribe` `{ plan_code }` then `window.location.href = redirect_url`. |
 | `/payment/callback/zarinpal`, `/payment/success`, `/payment/failed` | Gateway return |
 | `/alerts` | Price-alert UI |
 | `/risk/policy` | Risk-policy editor |

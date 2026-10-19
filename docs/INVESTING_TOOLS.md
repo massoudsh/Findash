@@ -2,7 +2,7 @@
 
 Operational runbook for the two investor-facing modules that are registered in `src/main_refactored.py` but missing from `docs/api.md` and the wiki API index.
 
-Draft PRs #28–#30 cover account platform, session/BFF, and the public sample dashboard. This page covers **what those PRs do not**: rule-based allocation analysis and the JSON-backed investor-tools API.
+Account-platform, session/BFF, and public-dashboard runbooks live in [ACCOUNT_PLATFORM.md](ACCOUNT_PLATFORM.md), [FRONTEND_SESSION.md](FRONTEND_SESSION.md), and [PUBLIC_DEMO_DASHBOARD.md](PUBLIC_DEMO_DASHBOARD.md). This page is the rule-based allocation analysis and the JSON-backed investor-tools API. Quote units for the screener: [IRAN_MARKET_PRICING.md](IRAN_MARKET_PRICING.md).
 
 ---
 

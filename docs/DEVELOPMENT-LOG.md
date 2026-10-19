@@ -121,6 +121,8 @@ Each entry should include these fields where applicable:
 | Date       | Version | Area     | Type    | Summary | Details | Ref |
 |------------|---------|----------|---------|---------|---------|-----|
 | 2026-10-03 | —       | docs     | added   | Allocation copilot + investor-tools runbook. | HHI API, file-backed watchlists/paper/dividends, `/investing` missing BFF, port `:8000` vs `:8011`. | |
+| 2026-10-19 | —       | frontend | fixed   | Restore credentials sign-in, checkout plans, rial quotes. | `safeCallbackPath`; NextAuth/`useIranTicker` default `:8000`; overview `currency: IRR`; no market mock seed; `?addAsset=1`. | `0aee22b` |
+| 2026-10-19 | —       | docs     | added   | Iran-market pricing runbook + account-flow doc sync. | `docs/IRAN_MARKET_PRICING.md`; sign-in is a form again; checkout BFF; alert targets are rial. | |
 
 ---
 
@@ -138,4 +140,4 @@ Each entry should include these fields where applicable:
 
 ---
 
-*Last updated: 2026-10-03. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*
+*Last updated: 2026-10-19. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*

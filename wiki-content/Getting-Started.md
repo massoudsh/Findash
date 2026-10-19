@@ -303,11 +303,11 @@ Run `python3 start.py` from the repository root. The script inserts that directo
 
 #### 7. Ticker never leaves “در حال دریافت”
 
-Client market/ticker code defaults to `http://localhost:8011`. Local `start.py` listens on **8000**. Set `NEXT_PUBLIC_API_URL=http://localhost:8000` in `frontend-nextjs/.env.local`, or use Compose (`8011:8000`).
+Client ticker / market / signup / NextAuth default to `http://localhost:8000`. Compose publishes the API on **8011**. Set `NEXT_PUBLIC_API_URL=http://localhost:8011` in `frontend-nextjs/.env.local` when using Compose.
 
-#### 8. Sign-in has no email field
+#### 8. Sign-in asks for email but login fails
 
-Expected. `/auth/signin` is a CTA to the public sample dashboard. See [[Public Demo Dashboard]].
+The form is real (`signIn("credentials")`). Failures are usually the API URL (`:8000` vs Compose `:8011`) or a missing user in the database. See [[Frontend Auth]] and [[Public Demo Dashboard]].
 
 ---
 
@@ -323,4 +323,4 @@ Expected. `/auth/signin` is a CTA to the public sample dashboard. See [[Public D
 
 ## Demo access
 
-Open http://localhost:3003/dashboard. No email or password is collected on `/auth/signin` (it is a CTA to the sample dashboard). Overview/portfolio numbers are mock; the ticker is a live API call when the backend is reachable. See [[Public Demo Dashboard]].
+Open http://localhost:3003/dashboard (no session). `/auth/signin` collects email/password for account flows (checkout, admin). Overview/mock portfolio numbers are sample data; the ticker and market tab are live rial quotes when the backend is reachable. See [[Public Demo Dashboard]] and [[Iran Market Pricing]].

@@ -1,8 +1,8 @@
 # Public Demo Dashboard
 
-The UI opens without login. `/dashboard` is a **sample** view; only the Iran-market ticker is a live FastAPI call (TEDPIX is a placeholder).
+The UI opens without login. `/dashboard` is a **sample** view for overview/mock portfolio. The Iran-market ticker **and** market tab are live FastAPI calls (rial; TEDPIX is a placeholder).
 
-Full runbook (ports, `start.py`, leftover OTP/admin login): **[docs/PUBLIC_DEMO_DASHBOARD.md](https://github.com/massoudsh/Findash/blob/main/docs/PUBLIC_DEMO_DASHBOARD.md)** in the repo.
+Full runbook (ports, `start.py`, leftover OTP): **[docs/PUBLIC_DEMO_DASHBOARD.md](https://github.com/massoudsh/Findash/blob/main/docs/PUBLIC_DEMO_DASHBOARD.md)** in the repo. Quote contract: [[Iran Market Pricing]].
 
 ## Quick facts
 
@@ -11,8 +11,9 @@ Full runbook (ports, `start.py`, leftover OTP/admin login): **[docs/PUBLIC_DEMO_
 | Frontend | http://localhost:3003 |
 | Local API (`start.py` / `make dev`) | http://localhost:8000 |
 | Compose API | http://localhost:8011 |
-| Sign-in | CTA → `/dashboard`, not a credentials form |
-| Admin | Still needs a NextAuth admin session; sign-in no longer collects one |
+| Sign-in | Credentials form + sample-dashboard link |
+| Market tab | Live overview; no mock seed |
+| Admin | NextAuth `role === 'admin'`; `callbackUrl=/admin` is kept |
 
 ## Next
 
