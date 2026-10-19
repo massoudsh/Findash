@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -120,6 +121,16 @@ function DonutChart({ segments, totalValue }: { segments: DonutSegment[]; totalV
 export function IranPortfolioSection() {
   const [assets, setAssets] = useState<IranPortfolioAsset[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (searchParams.get('addAsset') !== '1') return;
+    setModalOpen(true);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('addAsset');
+    router.replace(`/dashboard?${params}`, { scroll: false });
+  }, [searchParams, router]);
 
   useEffect(() => {
     setAssets(loadIranAssets());

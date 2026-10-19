@@ -22,6 +22,18 @@ export function formatCurrency(amount: number, unit: CurrencyUnit = 'USD'): stri
   }).format(amount);
 }
 
+export function formatTomanValue(amount: number, unit: 'IRT' | 'IRR'): string {
+  return formatCurrency(unit === 'IRR' ? amount * 10 : amount, unit);
+}
+
+export function safeCallbackPath(value: string | null, origin: string): string {
+  try {
+    const target = new URL(value || '/dashboard', origin);
+    if (target.origin === origin && !target.pathname.startsWith('//')) return target.pathname + target.search;
+  } catch {}
+  return '/dashboard';
+}
+
 export function formatPercentage(value: number): string {
   return new Intl.NumberFormat('en-US', {
     style: 'percent',

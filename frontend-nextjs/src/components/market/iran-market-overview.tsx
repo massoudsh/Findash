@@ -1,9 +1,11 @@
 'use client';
 
+import { getBackendUrl } from '@/lib/backend-url';
 import { useEffect, useState, useCallback } from 'react';
 import { TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
 
 interface MarketItem {
+  currency: 'IRR' | 'IRT';
   symbol: string;
   label: string;
   icon: string;
@@ -14,7 +16,7 @@ interface MarketItem {
   available: boolean;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8011';
+const API_URL = getBackendUrl();
 
 const CATEGORY_LABELS: Record<string, string> = {
   currency: 'ارز',
@@ -24,28 +26,10 @@ const CATEGORY_LABELS: Record<string, string> = {
   bourse: 'بورس',
 };
 
-const MOCK_MARKET_ITEMS: MarketItem[] = [
-  { symbol: 'USD-IRT', label: 'دلار آزاد', icon: '$', category: 'currency', price: 61_850, change_pct: 0.42, up: true, available: true },
-  { symbol: 'EUR-IRT', label: 'یورو', icon: '€', category: 'currency', price: 72_400, change_pct: -0.18, up: false, available: true },
-  { symbol: 'GOLD-18', label: 'طلای ۱۸ عیار', icon: 'Au', category: 'gold', price: 5_640_000, change_pct: 1.15, up: true, available: true },
-  { symbol: 'EMAMI', label: 'سکه امامی', icon: '◎', category: 'coin', price: 67_900_000, change_pct: 0.76, up: true, available: true },
-  { symbol: 'BTC-IRT', label: 'بیت‌کوین', icon: '₿', category: 'crypto', price: 6_215_000_000, change_pct: 2.31, up: true, available: true },
-  { symbol: 'ETH-IRT', label: 'اتریوم', icon: 'Ξ', category: 'crypto', price: 248_000_000, change_pct: -1.04, up: false, available: true },
-  { symbol: 'TEDPIX', label: 'شاخص کل', icon: 'TSE', category: 'bourse', price: 2_145_000, change_pct: 0.33, up: true, available: true },
-];
 
-function formatPrice(price: number | null, symbol: string): string {
+function formatPrice(price: number | null, currency: 'IRR' | 'IRT'): string {
   if (price === null) return '—';
-  if (symbol.endsWith('-IRR')) {
-    return new Intl.NumberFormat('fa-IR').format(Math.round(price)) + ' ریال';
-  }
-  if (price > 1_000_000) {
-    return new Intl.NumberFormat('fa-IR').format(Math.round(price / 1000)) + ' هزار ت';
-  }
-  if (price > 1_000) {
-    return new Intl.NumberFormat('fa-IR').format(Math.round(price)) + ' ت';
-  }
-  return new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 2 }).format(price) + ' ت';
+  return new Intl.NumberFormat('fa-IR', { maximumFractionDigits: 0 }).format(price) + (currency === 'IRR' ? ' ریال' : ' تومان');
 }
 
 function PriceCard({ item }: { item: MarketItem }) {
@@ -62,7 +46,7 @@ function PriceCard({ item }: { item: MarketItem }) {
       {item.available ? (
         <>
           <div className="text-base font-black tabular-nums" dir="ltr">
-            {formatPrice(item.price, item.symbol)}
+            {formatPrice(item.price, item.currency)}
           </div>
           <div
             className={`flex items-center gap-1 text-xs font-medium ${
@@ -95,31 +79,27 @@ function Skeleton() {
 }
 
 export function IranMarketOverview() {
-  const [items, setItems] = useState<MarketItem[]>(MOCK_MARKET_ITEMS);
-  const [loading, setLoading] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(new Date());
+  const [items, setItems] = useState<MarketItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/iran-market/overview`, { cache: 'no-store' });
-      if (!res.ok) {
-        setItems(MOCK_MARKET_ITEMS);
-        setLastUpdated(new Date());
-        setLoading(false);
-        return;
-      }
+      const res = await fetch(`${API_URL}/api/iran-market/overview`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+      if (!res.ok) throw new Error('دریافت قیمت‌ها ناموفق بود.');
       const data = await res.json();
-      if (Array.isArray(data.items) && data.items.length > 0) {
-        setItems(data.items);
-      } else {
-        setItems(MOCK_MARKET_ITEMS);
+      if (!Array.isArray(data.items) || !data.items.some((item: MarketItem) => item.available)) {
+        throw new Error('منابع بازار در دسترس نیستند.');
       }
-      setLastUpdated(new Date());
-      setLoading(false);
+      setItems(data.items);
+      setLastUpdated(new Date(data.cached_at * 1000));
+      setError('');
     } catch {
-      setItems(MOCK_MARKET_ITEMS);
-      setLastUpdated(new Date());
+      setError('ارتباط با بازار برقرار نشد. قیمت‌های قبلی، در صورت وجود، قدیمی هستند.');
+    } finally {
       setLoading(false);
     }
   }, []);
@@ -144,10 +124,11 @@ export function IranMarketOverview() {
           <p className="text-xs text-muted-foreground mt-0.5">
             {lastUpdated
               ? `آخرین بروزرسانی: ${lastUpdated.toLocaleTimeString('fa-IR')}`
-              : 'در حال دریافت داده…'}
+              : loading ? 'در حال دریافت داده…' : 'هنوز قیمت معتبری دریافت نشده'}
           </p>
         </div>
         <button
+          disabled={loading}
           onClick={fetchData}
           className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-green-400 transition-colors"
         >
@@ -156,6 +137,7 @@ export function IranMarketOverview() {
         </button>
       </div>
 
+      {error && <p role="alert" className="text-sm text-amber-500">{error}</p>}
       {/* Category filter */}
       <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
         {categories.map((cat) => (

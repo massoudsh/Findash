@@ -16,6 +16,13 @@ import {
   Zap,
 } from 'lucide-react';
 
+const features = [
+  { title: 'پایش بازار', desc: 'قیمت‌ها و تغییرات بازار ایران در یک نما.', icon: BarChart3 },
+  { title: 'مدیریت پرتفوی', desc: 'ثبت دارایی و بررسی ترکیب سرمایه‌گذاری.', icon: Wallet },
+  { title: 'تحلیل ریسک', desc: 'بررسی ریسک و عملکرد سرمایه‌گذاری.', icon: ShieldCheck },
+  { title: 'هشدار قیمت', desc: 'تنظیم هشدار برای قیمت‌های هدف.', icon: BellRing },
+];
+
 const marketCards = [
   { title: 'شاخص کل', value: '۲,۱۸۶,۴۴۰', change: '+۰.۹٪', up: true },
   { title: 'دلار آزاد', value: '۶۱,۲۰۰', change: '-۰.۲٪', up: false },

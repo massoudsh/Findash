@@ -1,3 +1,4 @@
+import { getBackendUrl } from '@/lib/backend-url';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import type { NextAuthOptions } from 'next-auth';
 
@@ -10,7 +11,7 @@ export const authOptions: NextAuthOptions = {
     },
     async authorize(credentials) {
       if (!credentials?.email || !credentials.password) return null;
-      const backend = process.env.BACKEND_INTERNAL_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8011';
+      const backend = process.env.BACKEND_INTERNAL_URL || getBackendUrl();
       try {
         const response = await fetch(`${backend}/api/auth/login`, {
           method: 'POST',

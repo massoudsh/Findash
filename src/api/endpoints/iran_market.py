@@ -109,7 +109,7 @@ async def get_overview():
     crypto_data: Dict[str, Any] = {}
     if nobitex_stats:
         for sym, nb_sym in NOBITEX_SYMBOLS.items():
-            key = nb_sym.lower()
+            key = f"{nb_sym[:-3].lower()}-rls"
             if key in nobitex_stats:
                 s = nobitex_stats[key]
                 try:
@@ -147,6 +147,7 @@ async def get_overview():
             "icon": icon,
             "category": category,
             "price": entry["price"] if entry else None,
+            "currency": "IRR",
             "change_pct": entry["change_pct"] if entry else None,
             "up": (entry["change_pct"] >= 0) if entry else None,
             "available": entry is not None,

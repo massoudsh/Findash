@@ -1,10 +1,43 @@
 "use client";
 
+import { safeCallbackPath } from '@/lib/utils';
 import Link from "next/link";
-import { Suspense } from "react";
+import { Suspense, useState, type FormEvent } from "react";
+import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
 
 function SignInForm() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setLoading(true);
+    setError('');
+    const form = new FormData(event.currentTarget);
+    const callbackUrl = safeCallbackPath(params.get('callbackUrl'), window.location.origin);
+    try {
+      const result = await signIn('credentials', {
+        email: String(form.get('email')),
+        password: String(form.get('password')),
+        redirect: false,
+        callbackUrl,
+      });
+      if (!result?.ok || result.error) {
+        setError('ورود ناموفق بود؛ اطلاعات حساب و اتصال به سرور را بررسی کنید.');
+        return;
+      }
+      router.push(callbackUrl);
+      router.refresh();
+    } catch {
+      setError('اتصال برقرار نشد. دوباره تلاش کنید.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <main className="min-h-screen grid lg:grid-cols-2 persian-pattern-bg">
@@ -37,9 +70,17 @@ function SignInForm() {
             <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/10 border border-green-500/20 mb-4">
               <ShieldCheck className="h-7 w-7 text-green-400" />
             </div>
-            <h1 className="text-2xl font-black mb-2">داشبورد برای همه باز است</h1>
-            <p className="text-sm text-muted-foreground leading-7">بدون ایمیل و رمز عبور وارد داشبورد شوید و پلتفرم را با داده‌های نمونه ببینید.</p>
+            <h1 className="text-2xl font-black mb-2">ورود به حساب</h1>
+            <p className="text-sm text-muted-foreground leading-7">برای پرداخت و امکانات حساب وارد شوید؛ داشبورد نمونه همچنان عمومی است.</p>
           </div>
+          {params.get('signup') === 'success' && <p className="mb-4 text-green-500">ثبت‌نام انجام شد؛ وارد حساب شوید.</p>}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <label className="block">ایمیل<input name="email" type="email" autoComplete="email" required dir="ltr" className="mt-1 w-full rounded-xl border bg-background p-3" /></label>
+            <label className="block">رمز عبور<input name="password" type="password" autoComplete="current-password" required dir="ltr" className="mt-1 w-full rounded-xl border bg-background p-3" /></label>
+            {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
+            <button disabled={loading} className="btn-persian w-full rounded-xl p-3 disabled:opacity-50">{loading ? 'در حال ورود…' : 'ورود'}</button>
+          </form>
+          <Link href={`/auth/signup?${new URLSearchParams({ callbackUrl: params.get('callbackUrl') || '/dashboard' })}`} className="mt-4 block text-center text-sm">ساخت حساب جدید</Link>
 
           <Link href="/dashboard" className="btn-persian w-full h-12 rounded-2xl mt-6 flex items-center justify-center gap-2">
             مشاهده داشبورد نمونه

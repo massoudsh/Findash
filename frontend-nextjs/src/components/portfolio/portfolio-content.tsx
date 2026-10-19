@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, GlassCard } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { formatCurrency, formatPercentage, CurrencyUnit } from '@/lib/utils';
+import { formatTomanValue, formatPercentage } from '@/lib/utils';
 import { PortfolioChart } from '@/components/portfolio/portfolio-chart';
 import { ModifiedDietzCalculator } from '@/components/portfolio/modified-dietz-calculator';
 import { IranPortfolioSection } from '@/components/portfolio/iran-portfolio-section';
@@ -50,10 +50,9 @@ const DEFAULT_SECTOR: Record<string, string> = {
   JNJ: 'سلامت', PG: 'مصرفی', KO: 'مصرفی', JPM: 'مالی',
 };
 
-const CURRENCY_LABELS: Record<CurrencyUnit, string> = {
+const CURRENCY_LABELS: Record<'IRT' | 'IRR', string> = {
   IRT: 'تومان',
   IRR: 'ریال',
-  USD: 'دلار',
 };
 
 const MOCK_PORTFOLIOS: Portfolio[] = [
@@ -72,9 +71,9 @@ export function PortfolioContent() {
   const [portfolios] = useState<Portfolio[]>(MOCK_PORTFOLIOS);
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(MOCK_PORTFOLIOS[0]);
   const [positions] = useState<Position[]>(MOCK_POSITIONS);
-  const [currencyUnit, setCurrencyUnit] = useState<CurrencyUnit>('IRT');
+  const [currencyUnit, setCurrencyUnit] = useState<'IRT' | 'IRR'>('IRT');
 
-  const fmt = (v: number) => formatCurrency(v, currencyUnit);
+  const fmt = (v: number) => formatTomanValue(v, currencyUnit);
 
   const totalValue = selectedPortfolio?.current_value ?? 0;
   const totalCost = selectedPortfolio?.initial_capital ?? 0;
@@ -114,7 +113,7 @@ export function PortfolioContent() {
             <div>
               {/* Currency unit switcher */}
               <div className="flex items-center gap-1 mb-3">
-                {(['IRT', 'IRR', 'USD'] as CurrencyUnit[]).map((u) => (
+                {(['IRT', 'IRR'] as const).map((u) => (
                   <button
                     key={u}
                     onClick={() => setCurrencyUnit(u)}

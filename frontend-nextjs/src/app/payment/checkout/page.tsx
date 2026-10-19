@@ -1,15 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { TrendingUp, Shield, CreditCard, AlertCircle } from 'lucide-react';
 
-const PLANS = [
-  { id: 'basic', label: 'پایه', price: 99000, features: ['تحلیل تکنیکال', 'اخبار بازار', 'هشدار قیمت'] },
-  { id: 'pro',   label: 'حرفه‌ای', price: 249000, features: ['همه امکانات پایه', 'هوش مصنوعی معاملاتی', 'تحلیل آپشن', 'اسکن ریل‌تایم'] },
-  { id: 'elite', label: 'الیت', price: 499000, features: ['همه امکانات حرفه‌ای', 'API اختصاصی', 'گزارش هفتگی AI', 'پشتیبانی اولویت‌دار'] },
-];
+interface Plan {
+  code: string;
+  name_fa: string;
+  price_toman: number;
+  duration_days: number;
+  features: string[] | null;
+}
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
@@ -18,9 +20,34 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const plan = PLANS.find((p) => p.id === selected)!;
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plansLoading, setPlansLoading] = useState(true);
+  const [retry, setRetry] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    setPlansLoading(true);
+    setError('');
+    fetch('/api/subscriptions/plans', { cache: 'no-store', signal: controller.signal })
+      .then(async (res) => {
+        if (!res.ok) throw new Error('دریافت پلن‌ها ناموفق بود.');
+        const data: Plan[] = await res.json();
+        if (!Array.isArray(data) || !data.length) throw new Error('پلن فعالی موجود نیست.');
+        setPlans(data);
+        setSelected((value) => data.some((p) => p.code === value) ? value : data[0].code);
+      })
+      .catch((cause) => {
+        if (!controller.signal.aborted) {
+          setPlans([]);
+          setError(cause instanceof Error ? cause.message : 'دریافت پلن‌ها ناموفق بود.');
+        }
+      })
+      .finally(() => { if (!controller.signal.aborted) setPlansLoading(false); });
+    return () => controller.abort();
+  }, [retry]);
+  const plan = plans.find((p) => p.code === selected);
 
   async function handlePay() {
+    if (!plan || loading || plansLoading || status === 'loading') return;
     if (!session) {
       router.push('/auth/signin?callbackUrl=/payment/checkout');
       return;
@@ -31,7 +58,7 @@ export default function CheckoutPage() {
       const res = await fetch('/api/subscriptions/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan_code: plan.id }),
+        body: JSON.stringify({ plan_code: plan.code }),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
@@ -61,31 +88,31 @@ export default function CheckoutPage() {
 
         {/* Plans */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          {PLANS.map((p) => (
+          {plans.map((p) => (
             <button
-              key={p.id}
-              onClick={() => setSelected(p.id)}
+              key={p.code}
+              onClick={() => setSelected(p.code)}
               className={[
                 'text-right p-4 rounded-2xl border-2 transition-all duration-200',
-                selected === p.id
+                selected === p.code
                   ? 'border-green-500 bg-green-500/10 shadow-[0_0_16px_rgba(34,197,94,0.2)]'
                   : 'border-border bg-card hover:border-green-500/40',
               ].join(' ')}
             >
               <div className="flex items-center justify-between mb-3">
-                <span className={['text-xs font-bold px-2 py-0.5 rounded-full', selected === p.id ? 'bg-green-500/20 text-green-400' : 'bg-muted text-muted-foreground'].join(' ')}>
-                  {p.label}
+                <span className={['text-xs font-bold px-2 py-0.5 rounded-full', selected === p.code ? 'bg-green-500/20 text-green-400' : 'bg-muted text-muted-foreground'].join(' ')}>
+                  {p.name_fa}
                 </span>
-                <TrendingUp className={['h-4 w-4', selected === p.id ? 'text-green-400' : 'text-muted-foreground'].join(' ')} />
+                <TrendingUp className={['h-4 w-4', selected === p.code ? 'text-green-400' : 'text-muted-foreground'].join(' ')} />
               </div>
               <div className="text-xl font-bold text-foreground mb-1">
-                {p.price.toLocaleString('fa-IR')} تومان
+                {p.price_toman.toLocaleString('fa-IR')} تومان
               </div>
-              <div className="text-xs text-muted-foreground mb-3">ماهانه</div>
+              <div className="text-xs text-muted-foreground mb-3">{p.duration_days.toLocaleString('fa-IR')} روز</div>
               <ul className="space-y-1">
-                {p.features.map((f) => (
+                {(p.features ?? []).map((f) => (
                   <li key={f} className="text-xs text-muted-foreground flex items-center gap-1.5">
-                    <span className={selected === p.id ? 'text-green-400' : 'text-muted-foreground'}>✓</span>
+                    <span className={selected === p.code ? 'text-green-400' : 'text-muted-foreground'}>✓</span>
                     {f}
                   </li>
                 ))}
@@ -95,19 +122,21 @@ export default function CheckoutPage() {
         </div>
 
         {/* Summary */}
-        <div className="persian-card p-6 rounded-2xl mb-6">
+        {plansLoading && <p role="status" className="mb-4 text-center">در حال دریافت قیمت پلن‌ها…</p>}
+        {!plansLoading && !plans.length && <button className="mb-4 btn-persian p-3" onClick={() => setRetry((value) => value + 1)}>تلاش مجدد برای دریافت پلن‌ها</button>}
+        {plan && <div className="persian-card p-6 rounded-2xl mb-6">
           <div className="flex justify-between items-center mb-4">
             <span className="text-muted-foreground">پلن انتخاب‌شده:</span>
-            <span className="font-semibold text-foreground">{plan.label}</span>
+            <span className="font-semibold text-foreground">{plan.name_fa}</span>
           </div>
           <div className="persian-accent-bar mb-4" />
           <div className="flex justify-between items-center">
             <span className="text-muted-foreground">مبلغ قابل پرداخت:</span>
             <span className="text-2xl font-bold text-green-400">
-              {plan.price.toLocaleString('fa-IR')} <span className="text-sm">تومان</span>
+              {plan.price_toman.toLocaleString('fa-IR')} <span className="text-sm">تومان</span>
             </span>
           </div>
-        </div>
+        </div>}
 
         {/* Error */}
         {error && (
@@ -128,7 +157,7 @@ export default function CheckoutPage() {
         {/* CTA */}
         <button
           onClick={handlePay}
-          disabled={loading}
+          disabled={loading || plansLoading || !plan || status === 'loading'}
           className="w-full btn-persian flex items-center justify-center gap-2 h-13 text-base rounded-2xl disabled:opacity-60 disabled:cursor-not-allowed"
           style={{ height: '52px' }}
         >

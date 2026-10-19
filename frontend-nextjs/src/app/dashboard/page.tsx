@@ -22,6 +22,7 @@ const IranMarketOverview = dynamic(() => import('@/components/market/iran-market
 const AnalyticsOverview = dynamic(() => import('@/components/analytics/analytics-overview').then((mod) => mod.AnalyticsOverview), { ssr: false, loading: dashboardTabLoading });
 const HelpCenter = dynamic(() => import('@/components/help/help-center').then((mod) => mod.HelpCenter), { ssr: false, loading: dashboardTabLoading });
 
+type Tab = 'overview' | 'portfolio' | 'market' | 'trades' | 'analytics' | 'help';
 const VALID_TABS: Tab[] = ['overview', 'portfolio', 'market', 'trades', 'analytics', 'help'];
 
 const TABS = [
@@ -42,7 +43,7 @@ function DashboardPageContent() {
   const [riskValue, setRiskValue] = useState(34);
 
   useEffect(() => {
-    if (tabParam && VALID_TABS.includes(tabParam)) setActiveTab(tabParam);
+    setActiveTab(tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'overview');
   }, [tabParam]);
 
   useEffect(() => {
@@ -83,10 +84,10 @@ function DashboardPageContent() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <button className="rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm font-bold text-slate-200 transition hover:border-blue-400/30 hover:text-blue-300">
+              <button onClick={() => router.push('/reports')} className="rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-2.5 text-sm font-bold text-slate-200 transition hover:border-blue-400/30 hover:text-blue-300">
                 گزارش امروز
               </button>
-              <button className="rounded-2xl bg-[#3B82F6] px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-950/30 transition hover:bg-blue-400">
+              <button onClick={() => router.push('/dashboard?tab=portfolio&addAsset=1')} className="rounded-2xl bg-[#3B82F6] px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-blue-950/30 transition hover:bg-blue-400">
                 افزودن دارایی
               </button>
             </div>

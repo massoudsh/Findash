@@ -1,5 +1,6 @@
 "use client";
 
+import { getBackendUrl } from '@/lib/backend-url';
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, LockKeyhole, Mail, ShieldCheck, UserPlus } from "lucide-react";
@@ -16,8 +17,8 @@ export default function SignUpPage() {
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
     const confirm = (form.elements.namedItem("confirm") as HTMLInputElement).value;
-    const firstName = (form.elements.namedItem("firstName") as HTMLInputElement).value || "کاربر";
-    const lastName = (form.elements.namedItem("lastName") as HTMLInputElement).value || "جدید";
+    const firstName = (form.elements.namedItem("firstName") as HTMLInputElement | null)?.value || "کاربر";
+    const lastName = (form.elements.namedItem("lastName") as HTMLInputElement | null)?.value || "جدید";
 
     if (password !== confirm) {
       setError("رمز عبور و تأیید آن یکسان نیستند");
@@ -26,7 +27,7 @@ export default function SignUpPage() {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8011";
+      const apiUrl = getBackendUrl();
       const res = await fetch(`${apiUrl}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -44,7 +45,10 @@ export default function SignUpPage() {
         setLoading(false);
         return;
       }
-      window.location.href = "/auth/signin?signup=success";
+      const next = new URLSearchParams({ signup: 'success' });
+      const callbackUrl = new URLSearchParams(window.location.search).get('callbackUrl');
+      if (callbackUrl) next.set('callbackUrl', callbackUrl);
+      window.location.href = `/auth/signin?${next}`;
     } catch {
       setError("اتصال به سرور برقرار نشد. لطفاً اینترنت خود را بررسی کنید.");
       setLoading(false);
