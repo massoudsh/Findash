@@ -47,8 +47,9 @@ FastAPI (src/main_refactored.py)
 - `/api/risk-policy/{me,breaches}`
 - `/api/admin/{users,users/[id],audit-log}`
 - `/api/payment/zarinpal/create`
+- `/api/reports/portfolio` → FastAPI `/api/reports/portfolio.pdf` (session JWT; see [FRONTEND_SESSION.md](FRONTEND_SESSION.md) §7)
 
-Wallet, KYC, alerts, and PDF reports are FastAPI-only; call `NEXT_PUBLIC_API_URL` with a JWT.
+Wallet, KYC, and alerts are FastAPI-only; call `NEXT_PUBLIC_API_URL` with a JWT.
 
 ---
 
@@ -259,15 +260,29 @@ Admins **cannot** deactivate themselves or drop their own `admin` role. Successf
 
 **Code:** `src/api/endpoints/pdf_reports.py`, `src/services/pdf_reports.py`
 
+UI download path (Oct 2026): `/reports` button «PDF پرتفوی» → Next.js `GET /api/reports/portfolio` → this FastAPI route. The BFF is documented in [FRONTEND_SESSION.md](FRONTEND_SESSION.md) §7.
+
 | Method | Path | Behavior |
 |--------|------|----------|
 | GET | `/api/reports/portfolio.pdf` | `application/pdf`; optional `portfolio_id`, `include_trades` (default true, last 20) |
-| GET | `/api/reports/portfolio/preview` | metadata + `download_url` (Jalali date) |
+| GET | `/api/reports/portfolio/preview` | metadata + `download_url` (Jalali date). Not called by the UI. |
 
 - Another user’s (or missing) portfolio → **404**, not 403.
+- With no `portfolio_id`, the latest **active** portfolio for the JWT user is used.
 - Insights are deterministic (concentration ≥ 30%, return vs `initial_cash`) — no LLM.
 - Requires Vazirmatn at `/usr/share/fonts/truetype/vazirmatn/`. Missing font → **503**.
 - RTL needs `arabic_reshaper` + `python-bidi` + a Persian TTF (declared in `requirements/requirements.txt`).
+- FastAPI serves `Content-Disposition: inline`. The BFF rewrites that to `attachment`.
+
+```bash
+API=http://localhost:8011
+TOKEN=$(curl -s -X POST "$API/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@octopus.trading","password":"SecureAdmin2025!"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin).get('access_token',''))")
+curl -sS -H "Authorization: Bearer $TOKEN" -o portfolio-report.pdf \
+  "$API/api/reports/portfolio.pdf"
+```
 
 ---
 
@@ -352,6 +367,12 @@ Expected until a payout provider is connected. Unlock/complete the row only afte
 
 Install Vazirmatn on the API host (paths listed in `src/services/pdf_reports.py`) and the `arabic-reshaper` / `python-bidi` / `reportlab` packages.
 
+If the toast comes from `/reports` and `/health` is fine: the BFF may be calling `:8000` while Compose is on `:8011`, or there is no NextAuth `accessToken` (sign-in is a CTA). Sample dashboard holdings are **not** the SQLAlchemy `Portfolio` row this endpoint reads.
+
+### PDF 401 from `/reports`
+
+Expected for visitors. The BFF requires `session.accessToken`. `/auth/signin` does not collect credentials.
+
 ### OTP works in logs but not on a second replica
 
 In-memory store. Use a single API process locally, or move the store to Redis before horizontally scaling.
@@ -369,4 +390,4 @@ In-memory store. Use a single API process locally, or move the store to Redis be
 | `/risk/policy` | Risk-policy editor |
 | `/admin`, `/audit-log` | Admin + audit (admin role) |
 | `/auth/otp`, `/auth/phone` | Phone OTP |
-| `/reports` | Report UI (PDF download via `/api/reports/portfolio.pdf`) |
+| `/reports` | LLM insights + «PDF پرتفوی» via BFF `GET /api/reports/portfolio` |

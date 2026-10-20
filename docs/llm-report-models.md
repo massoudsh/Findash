@@ -2,7 +2,9 @@
 
 The platform can generate reports using **only open-source or free-tier LLMs**. **No paid API keys are required** (no OpenAI, Anthropic, or other commercial APIs).
 
-This document is the **LLM insight** path used by the Next.js `/reports` page (`frontend-nextjs/src/app/reports/page.tsx`, `/llm/reports/*`). It is **not** the Persian portfolio PDF (`GET /api/reports/portfolio.pdf` in `src/api/endpoints/pdf_reports.py`), which never calls an LLM and fails with 503 if Vazirmatn is missing — see [FRONTEND_SESSION.md](FRONTEND_SESSION.md) and [docker/README.md](../docker/README.md).
+This document is the **LLM insight** path used by the Next.js `/reports` page (`frontend-nextjs/src/app/reports/page.tsx`, `/llm/reports/*`). The LLM BFF (`app/api/llm/reports/*`) does **not** attach a session JWT.
+
+It is **not** the Persian portfolio PDF. That download is the «PDF پرتفوی» button → Next.js `GET /api/reports/portfolio` → FastAPI `GET /api/reports/portfolio.pdf` (`pdf_reports.py`). The PDF never calls an LLM and fails with 503 if Vazirmatn is missing — see [FRONTEND_SESSION.md](FRONTEND_SESSION.md) §7 and [docker/README.md](../docker/README.md). The page’s «دانلود» button still saves LLM text as Markdown, not a PDF.
 
 ## LLM options: all free / open source
 

@@ -92,7 +92,7 @@ Production: those four env vars are required; Redis/Postgres failure exits 1.
 | `/auth/phone`, `/auth/otp` | Call **`/api/proxy/auth/send-otp`** and **`/api/proxy/auth/verify-otp`**. There is **no** `frontend-nextjs/src/app/api/proxy/` tree. OTP verify then `signIn('credentials', { phone, otp_token })`, but `authOptions` only reads `email`/`password`. |
 | FastAPI OTP | `POST /api/auth/send-otp` and `/verify-otp` in `otp_auth.py`. In-memory store; KaveNegar if `SMS_PROVIDER`/`SMS_API_KEY` are set, otherwise the code is logged. |
 
-Session-backed pages (`/account/subscription`, `/risk/policy`, `/payment/checkout`, admin BFF) still call `useSession` / `getServerSession`. Without a session they prompt “وارد شوید” and send the user to the CTA-only sign-in page.
+Session-backed pages (`/account/subscription`, `/risk/policy`, `/payment/checkout`, admin BFF, and `/reports` «PDF پرتفوی») still call `useSession` / `getServerSession`. Without a session they prompt “وارد شوید” or return 401 and send the user to the CTA-only sign-in page. The PDF button does **not** read the sample dashboard holdings.
 
 ---
 

@@ -13,6 +13,7 @@ Full runbook (ports, `start.py`, leftover OTP/admin login): **[docs/PUBLIC_DEMO_
 | Compose API | http://localhost:8011 |
 | Sign-in | CTA → `/dashboard`, not a credentials form |
 | Admin | Still needs a NextAuth admin session; sign-in no longer collects one |
+| `/reports` PDF | BFF 401 without `accessToken`; sample holdings are not the SQLAlchemy portfolio |
 
 ## Next
 

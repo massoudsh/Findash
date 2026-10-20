@@ -136,7 +136,7 @@ Full workflows: [[Account Platform]] and [docs/ACCOUNT_PLATFORM.md](https://gith
 | POST | `/api/risk-policy/evaluate-all` | Admin |
 | GET/PATCH | `/api/admin/users` | Admin; no self-demote |
 | GET | `/api/admin/audit-log` | Admin |
-| GET | `/api/reports/portfolio.pdf` | 404 if not owned; 503 if no Persian font |
+| GET | `/api/reports/portfolio.pdf` | 404 if not owned / no active portfolio; 503 if no Persian font. UI uses Next.js `GET /api/reports/portfolio` (session), not this URL from the browser. |
 | POST | `/api/trading-bots/{id}/start` | **402** without active subscription |
 
 ```http

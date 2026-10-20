@@ -116,11 +116,12 @@ Each entry should include these fields where applicable:
 
 ---
 
-### 2026-10 · Docs: investing tools
+### 2026-10 · Docs: investing tools and portfolio PDF BFF
 
 | Date       | Version | Area     | Type    | Summary | Details | Ref |
 |------------|---------|----------|---------|---------|---------|-----|
 | 2026-10-03 | —       | docs     | added   | Allocation copilot + investor-tools runbook. | HHI API, file-backed watchlists/paper/dividends, `/investing` missing BFF, port `:8000` vs `:8011`. | |
+| 2026-10-05 | —       | docs     | changed | Document `/reports` PDF download BFF. | Next.js `GET /api/reports/portfolio` + session 401; FastAPI still `/api/reports/portfolio.pdf`; CTA sign-in and Vazirmatn 503. | #18 |
 
 ---
 
@@ -138,4 +139,4 @@ Each entry should include these fields where applicable:
 
 ---
 
-*Last updated: 2026-10-03. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*
+*Last updated: 2026-10-05. When adding entries, append to the appropriate section and refresh the Version reference and “Last updated” date.*

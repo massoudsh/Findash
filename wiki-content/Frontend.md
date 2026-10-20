@@ -6,6 +6,8 @@ The Octopus Trading Platform frontend is built with **Next.js 15**, TypeScript, 
 
 **Public sample dashboard (2026-09):** `/dashboard` is open without a session. `/auth/signin` is a CTA, not a login form. Overview/portfolio are hardcoded samples; the blue ticker calls `GET /api/iran-market/ticker`. Runbook: [[Public Demo Dashboard]].
 
+**Reports PDF (2026-10):** `/reports` «PDF پرتفوی» calls Next.js `GET /api/reports/portfolio` with the session JWT, then FastAPI `GET /api/reports/portfolio.pdf`. Visitors get 401. LLM «دانلود» is Markdown. Runbook: [[Frontend Auth]].
+
 **i18n:** `translations.ts` covers nav and the command palette. Feature pages use hardcoded Persian — the language switcher does not rewrite them.
 
 ## App Structure & Page Flow
@@ -466,5 +468,6 @@ NEXT_PUBLIC_APP_NAME=Octopus Trading
 
 - [[Architecture]] - Overall system architecture
 - [[API Reference]] - Backend API documentation
+- [[Frontend Auth]] - Session, BFF, `/reports` PDF proxy
 - [[Investing Tools]] - Allocation copilot (`/dashboard?tab=portfolio`) and `/investing`
 - [[Configuration]] - Environment configuration
