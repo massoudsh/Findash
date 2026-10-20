@@ -2,6 +2,8 @@
 
 **From market updates to visualizations and reports** — a step-by-step view of how Octopus agents and users collaborate for investment decisions (Aladdin-style decision support).
 
+The in-app page `/workflow` (`frontend-nextjs/src/app/workflow/page.tsx`) is a **static Persian guide** of this same loop: four stage cards, a React Flow chart (`workflow-flow-chart.tsx`, hardcoded M1–M11 nodes), and a “you stay in the loop” aside. It does **not** poll agent health or orders. Links: `/trading`, `/dashboard`, `/reports`.
+
 ---
 
 ## Overview

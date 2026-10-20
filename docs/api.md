@@ -276,4 +276,8 @@ The lists above are historical. For the file-backed investing APIs that are actu
 - `POST /api/copilot/allocation-analysis`
 - `/api/investor-tools/*` (watchlists, screener, paper, events placeholder, dividends)
 
-*Last updated: 2026-10-03* 
+Iran-market ticker/overview (`src/api/endpoints/iran_market.py`): Nobitex crypto `price` is **Rial** (`currency: "IRR"`). TEDPIX is a placeholder. See [PUBLIC_DEMO_DASHBOARD.md](./PUBLIC_DEMO_DASHBOARD.md).
+
+The portfolio-tab Modified Dietz calculator has **no API** — [MODIFIED_DIETZ.md](./MODIFIED_DIETZ.md).
+
+*Last updated: 2026-10-12* 

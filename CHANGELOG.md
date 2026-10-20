@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Modified Dietz calculator runbook (`docs/MODIFIED_DIETZ.md`) — client-only cash-flow-weighted period return on `/dashboard?tab=portfolio`
 - Account-platform engineering docs: payments, IRT wallet, subscriptions, KYC, alerts, risk policy, admin, OTP, and Persian PDF ([docs/ACCOUNT_PLATFORM.md](docs/ACCOUNT_PLATFORM.md), wiki [[Account Platform]])
 - Frontend session, BFF, dashboard, and navigation runbook (`docs/FRONTEND_SESSION.md`)
 - `docs/PUBLIC_DEMO_DASHBOARD.md` — public sample dashboard, local `start.py` import path, port matrix, leftover auth pitfalls
@@ -20,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wiki publish automation script
 
 ### Changed
+- Docs: ticker default is `:8000`; Nobitex crypto `price` is Rial; dashboard secondary tabs are lazy-loaded; landing CTAs go to `/demo` and `/auth/signup`
 - Enhanced card components with variants (glass, gradient, elevated, bordered)
 - Reorganized navigation tabs into logical groups
 - Improved dashboard styling with modern design patterns

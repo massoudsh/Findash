@@ -1,6 +1,6 @@
 # Public Demo Dashboard
 
-The UI opens without login. `/dashboard` is a **sample** view; only the Iran-market ticker is a live FastAPI call (TEDPIX is a placeholder).
+The UI opens without login. `/dashboard` is a **sample** view; only the Iran-market ticker is a live FastAPI call (TEDPIX is a placeholder; Nobitex crypto prices are Rial). Landing hero goes to `/demo`; the bottom CTA goes to `/auth/signup`.
 
 Full runbook (ports, `start.py`, leftover OTP/admin login): **[docs/PUBLIC_DEMO_DASHBOARD.md](https://github.com/massoudsh/Findash/blob/main/docs/PUBLIC_DEMO_DASHBOARD.md)** in the repo.
 
@@ -18,4 +18,5 @@ Full runbook (ports, `start.py`, leftover OTP/admin login): **[docs/PUBLIC_DEMO_
 
 - [[Getting Started]] — install, `start.py` from repo root, port mismatch
 - [[Frontend]] — App Router, BFF, i18n split
+- [[Modified Dietz]] — portfolio-tab period return
 - [[Home]]
